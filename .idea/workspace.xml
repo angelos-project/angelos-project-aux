@@ -4,32 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3aebaf64-2652-4603-a66d-45621bd9c576" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/angelos_project_aux_js_0_0_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/angelos_project_aux_jvm_0_0_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/commonMain/kotlin/org.angproj.aux.util/Flag.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/commonMain/kotlin/org.angproj.aux.util/Glyph.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/commonMain/kotlin/org.angproj.aux.util/Internal.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/commonMain/kotlin/org.angproj.aux.util/RW.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/commonMain/kotlin/org.angproj.aux.util/Swap.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/commonTest/kotlin/org/angproj/aux/util/FlagTest.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/commonTest/kotlin/org/angproj/aux/util/RWTest.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/commonTest/kotlin/org/angproj/aux/util/SwapTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
+    <list default="true" id="11ae4733-bb2f-46e7-82bb-e2f341b13397" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/angelos_project_aux_wasm_0_0_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +34,11 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="angelos-project-aux" type="f1a62948:ProjectNode" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="angelos-project-aux" type="f1a62948:ProjectNode" />
+                <item name="Run Configurations" type="7b0102dc:RunConfigurationsNode" />
+              </path>
             </expand>
             <select />
           </tree_state>
@@ -74,42 +59,78 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectId" id="2TncFXW8p4nAVzaDzh0MymxHzra" />
+  <component name="ProjectId" id="2TngYEEr0mmZWgX2JTwgEXckB43" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "notification.kotlin.js.compiler.ignored": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;notification.kotlin.js.compiler.ignored&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-    </key>
+}</component>
+  <component name="RunManager">
+    <configuration name="FlagTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":cleanWasmNodeTest" />
+            <option value=":wasmNodeTest" />
+            <option value="--tests &quot;org.angproj.aux.util.FlagTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <ForceTestExec>true</ForceTestExec>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.FlagTest" />
+        <item itemvalue="Gradle.FlagTest" />
+        <item itemvalue="Gradle.FlagTest" />
+        <item itemvalue="Gradle.FlagTest" />
+        <item itemvalue="Gradle.FlagTest" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="3aebaf64-2652-4603-a66d-45621bd9c576" name="Changes" comment="" />
-      <created>1691682181895</created>
+      <changelist id="11ae4733-bb2f-46e7-82bb-e2f341b13397" name="Changes" comment="" />
+      <created>1691684303382</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1691682181895</updated>
-      <workItem from="1691682184543" duration="232000" />
-      <workItem from="1691682423366" duration="148000" />
-      <workItem from="1691682586400" duration="509000" />
+      <updated>1691684303382</updated>
+      <workItem from="1691684304879" duration="199000" />
+      <workItem from="1691684506791" duration="100000" />
+      <workItem from="1692041432697" duration="469000" />
+      <workItem from="1692041979619" duration="63000" />
+      <workItem from="1692043787863" duration="243000" />
+      <workItem from="1692044684511" duration="7000" />
+      <workItem from="1692045012731" duration="637000" />
+      <workItem from="1692100785442" duration="749000" />
     </task>
     <servers />
   </component>

@@ -24,8 +24,14 @@ kotlin {
     }
     js(IR) {
         binaries.executable()
-        browser {
-        }
+        browser()
+        nodejs()
+        /*@Suppress("OPT_IN_USAGE")
+        wasm {
+            browser()
+            nodejs()
+            d8()
+        }*/
         generateTypeScriptDefinitions()
     }
     val hostOs = System.getProperty("os.name")
