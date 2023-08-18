@@ -1,7 +1,16 @@
 package org.angproj.aux.util
 
+import kotlin.jvm.JvmInline
+
 
 typealias Glyph = Int
+
+
+@JvmInline
+value class GlyphString(private val glyphs: IntArray)
+
+@JvmInline
+value class UtfString (private val str: ByteArray)
 
 
 // https://www.ietf.org/rfc/rfc2279.txt
