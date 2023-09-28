@@ -3,14 +3,14 @@ package org.angproj.aux.util
 import kotlin.jvm.JvmInline
 
 
-typealias Glyph = Int
+public typealias Glyph = Int
 
 
 @JvmInline
-value class GlyphString(private val glyphs: IntArray)
+public value class GlyphString(private val glyphs: IntArray)
 
 @JvmInline
-value class UtfString (private val str: ByteArray)
+public value class UtfString (private val str: ByteArray)
 
 
 // https://www.ietf.org/rfc/rfc2279.txt
@@ -20,7 +20,7 @@ value class UtfString (private val str: ByteArray)
 /**
  *
  */
-fun glyphSize(glyph: Glyph): Int = when (glyph) {
+public fun glyphSize(glyph: Glyph): Int = when (glyph) {
     in 0x00..0x7F -> 1
     in 0x80..0x7FF -> 2
     in 0x800..0xFFFF -> 3
@@ -35,7 +35,7 @@ fun glyphSize(glyph: Glyph): Int = when (glyph) {
  * Takes a UTF-8 leading octet as a Byte and check what size the multibyte character has.
  * Also works as validation of the first octet in a UTF-8 binary octet sequence.
  */
-fun glyphSize(octet: Byte): Int = when {
+public fun glyphSize(octet: Byte): Int = when {
     (octet.toInt() and -0B1000_0000) == 0 -> 1
     (octet.toInt() and 0B1110_0000) == 0B1100_0000 -> 2
     (octet.toInt() and 0B1111_0000) == 0B1110_0000 -> 3
@@ -49,7 +49,7 @@ fun glyphSize(octet: Byte): Int = when {
 /**
  * Validates a UTF-8 binary sequence, presuming that the first octet is already known.
  */
-fun glyphIsValid(data: ByteArray, pos: Int, size: Int): Boolean = when (size){
+public fun glyphIsValid(data: ByteArray, pos: Int, size: Int): Boolean = when (size){
     1 -> true
     2 -> data[pos + 1].toInt() and -0B1000000 == -0B10000000
     3 -> data[pos + 1].toInt() and -0B1000000 == -0B10000000 &&
@@ -69,7 +69,7 @@ fun glyphIsValid(data: ByteArray, pos: Int, size: Int): Boolean = when (size){
     else -> false
 }
 
-fun glyphRead(data: ByteArray, pos: Int, size: Int): Glyph = when (size){
+public fun glyphRead(data: ByteArray, pos: Int, size: Int): Glyph = when (size){
     1 -> 0B01111111 and data[pos].toInt()
     2 -> (0B00011111 and data[pos].toInt() shl 6) and
             (0B00111111 and data[pos+1].toInt())
@@ -94,7 +94,7 @@ fun glyphRead(data: ByteArray, pos: Int, size: Int): Glyph = when (size){
     else -> error("Invalid size of UTF-8 code point: ${data[pos]}")
 }
 
-fun glyphWrite(data: ByteArray, pos: Int, glyph: Glyph, size: Int) = when (size){
+public fun glyphWrite(data: ByteArray, pos: Int, glyph: Glyph, size: Int): Unit = when (size){
     1 -> data[pos] = (0B0000000_00000000_00000000_01111111 or glyph).toByte()
     2 -> {
         data[pos] = ((0B0000000_00000000_00000111_11000000 and glyph shr 6) or -0B01000000).toByte()
@@ -130,6 +130,6 @@ fun glyphWrite(data: ByteArray, pos: Int, glyph: Glyph, size: Int) = when (size)
 }
 
 
-fun ByteArray.readGlyphAt(pos: Int): Glyph = glyphRead(this, pos, glyphSize(this[pos]))
+public fun ByteArray.readGlyphAt(pos: Int): Glyph = glyphRead(this, pos, glyphSize(this[pos]))
 
-fun ByteArray.writeGlyphAt(offset: Int, value: Glyph) = glyphWrite(this, offset, value, glyphSize(value))
+public fun ByteArray.writeGlyphAt(offset: Int, value: Glyph): Unit = glyphWrite(this, offset, value, glyphSize(value))

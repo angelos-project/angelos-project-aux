@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.9.0"
+    kotlin("multiplatform") version "1.8.22"
     `maven-publish`
 }
 
@@ -12,27 +12,24 @@ repositories {
 }
 
 kotlin {
-    withSourcesJar(publish = true)
+    explicitApi()
     jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "1.8"
         }
-        withJava()
         testRuns["test"].executionTask.configure {
-            useJUnitPlatform()
+            useJUnit()
         }
     }
     js(IR) {
-        binaries.executable()
+        binaries.library()
         browser()
         nodejs()
-        /*@Suppress("OPT_IN_USAGE")
-        wasm {
-            browser()
-            nodejs()
-            d8()
-        }*/
-        generateTypeScriptDefinitions()
+    }
+    wasm {
+        //browser()
+        //nodejs()
+        d8()
     }
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
@@ -43,7 +40,6 @@ kotlin {
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
 
-    
     sourceSets {
         val commonMain by getting
         val commonTest by getting {
@@ -62,9 +58,7 @@ kotlin {
 
 publishing {
     repositories {
-        maven {
-
-        }
+        maven {}
     }
     publications {
         getByName<MavenPublication>("kotlinMultiplatform") {

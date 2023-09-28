@@ -24,7 +24,7 @@ package org.angproj.aux.util
  * @param offset
  * @return
  */
-fun ByteArray.readShortAt(offset: Int): Short = (
+public fun ByteArray.readShortAt(offset: Int): Short = (
         (this[offset + 1].toInt() shl 8 and 0xFF00) or (this[offset + 0].toInt() and 0xFF)
         ).toShort()
 
@@ -34,7 +34,7 @@ fun ByteArray.readShortAt(offset: Int): Short = (
  * @param offset
  * @return
  */
-fun ByteArray.readUShortAt(offset: Int): UShort = readShortAt(offset).toUShort()
+public fun ByteArray.readUShortAt(offset: Int): UShort = readShortAt(offset).toUShort()
 
 /**
  * Read Char at offset.
@@ -42,7 +42,7 @@ fun ByteArray.readUShortAt(offset: Int): UShort = readShortAt(offset).toUShort()
  * @param offset
  * @return
  */
-fun ByteArray.readCharAt(offset: Int): Char = readShortAt(offset).toInt().toChar()
+public fun ByteArray.readCharAt(offset: Int): Char = readShortAt(offset).toInt().toChar()
 
 /**
  * Read Int at offset.
@@ -50,7 +50,7 @@ fun ByteArray.readCharAt(offset: Int): Char = readShortAt(offset).toInt().toChar
  * @param offset
  * @return
  */
-fun ByteArray.readIntAt(offset: Int): Int = (this[offset + 3].toInt() shl 24 and -0x1000000) or
+public fun ByteArray.readIntAt(offset: Int): Int = (this[offset + 3].toInt() shl 24 and -0x1000000) or
         (this[offset + 2].toInt() shl 16 and 0xFF0000) or
         (this[offset + 1].toInt() shl 8 and 0xFF00) or
         (this[offset + 0].toInt() and 0xFF)
@@ -61,7 +61,7 @@ fun ByteArray.readIntAt(offset: Int): Int = (this[offset + 3].toInt() shl 24 and
  * @param offset
  * @return
  */
-fun ByteArray.readUIntAt(offset: Int): UInt = readIntAt(offset).toUInt()
+public fun ByteArray.readUIntAt(offset: Int): UInt = readIntAt(offset).toUInt()
 
 /**
  * Read Long at offset.
@@ -69,7 +69,7 @@ fun ByteArray.readUIntAt(offset: Int): UInt = readIntAt(offset).toUInt()
  * @param offset
  * @return
  */
-fun ByteArray.readLongAt(offset: Int): Long = (this[offset + 7].toLong() shl 56 and -0x1000000_00000000) or
+public fun ByteArray.readLongAt(offset: Int): Long = (this[offset + 7].toLong() shl 56 and -0x1000000_00000000) or
         (this[offset + 6].toLong() shl 48 and 0xFF0000_00000000) or
         (this[offset + 5].toLong() shl 40 and 0xFF00_00000000) or
         (this[offset + 4].toLong() shl 32 and 0xFF_00000000) or
@@ -84,7 +84,7 @@ fun ByteArray.readLongAt(offset: Int): Long = (this[offset + 7].toLong() shl 56 
  * @param offset
  * @return
  */
-fun ByteArray.readULongAt(offset: Int): ULong = readLongAt(offset).toULong()
+public fun ByteArray.readULongAt(offset: Int): ULong = readLongAt(offset).toULong()
 
 /**
  * Read Float at offset.
@@ -92,7 +92,7 @@ fun ByteArray.readULongAt(offset: Int): ULong = readLongAt(offset).toULong()
  * @param offset
  * @return
  */
-fun ByteArray.readFloatAt(offset: Int): Float = Float.fromBits(readIntAt(offset))
+public fun ByteArray.readFloatAt(offset: Int): Float = Float.fromBits(readIntAt(offset))
 
 /**
  * Read Double at offset.
@@ -100,7 +100,7 @@ fun ByteArray.readFloatAt(offset: Int): Float = Float.fromBits(readIntAt(offset)
  * @param offset
  * @return
  */
-fun ByteArray.readDoubleAt(offset: Int): Double = Double.fromBits(readLongAt(offset))
+public fun ByteArray.readDoubleAt(offset: Int): Double = Double.fromBits(readLongAt(offset))
 
 /**
  * Write Short at offset.
@@ -108,7 +108,7 @@ fun ByteArray.readDoubleAt(offset: Int): Double = Double.fromBits(readLongAt(off
  * @param offset
  * @param value
  */
-fun ByteArray.writeShortAt(offset: Int, value: Short) {
+public fun ByteArray.writeShortAt(offset: Int, value: Short) {
     this[offset + 1] = (value.toInt() shr 8 and 0xFF).toByte()
     this[offset] = (value.toInt() and 0xFF).toByte()
 }
@@ -119,7 +119,7 @@ fun ByteArray.writeShortAt(offset: Int, value: Short) {
  * @param offset
  * @param value
  */
-fun ByteArray.writeUShortAt(offset: Int, value: UShort) = writeShortAt(offset, value.toShort())
+public fun ByteArray.writeUShortAt(offset: Int, value: UShort): Unit = writeShortAt(offset, value.toShort())
 
 /**
  * Write Char at offset.
@@ -127,7 +127,7 @@ fun ByteArray.writeUShortAt(offset: Int, value: UShort) = writeShortAt(offset, v
  * @param offset
  * @param value
  */
-fun ByteArray.writeCharAt(offset: Int, value: Char) = writeShortAt(offset, value.code.toShort())
+public fun ByteArray.writeCharAt(offset: Int, value: Char): Unit = writeShortAt(offset, value.code.toShort())
 
 /**
  * Write Int at offset.
@@ -135,7 +135,7 @@ fun ByteArray.writeCharAt(offset: Int, value: Char) = writeShortAt(offset, value
  * @param offset
  * @param value
  */
-fun ByteArray.writeIntAt(offset: Int, value: Int) {
+public fun ByteArray.writeIntAt(offset: Int, value: Int) {
     this[offset + 3] = (value shr 24 and 0xFF).toByte()
     this[offset + 2] = (value shr 16 and 0xFF).toByte()
     this[offset + 1] = (value shr 8 and 0xFF).toByte()
@@ -148,7 +148,7 @@ fun ByteArray.writeIntAt(offset: Int, value: Int) {
  * @param offset
  * @param value
  */
-fun ByteArray.writeUIntAt(offset: Int, value: UInt) = writeIntAt(offset, value.toInt())
+public fun ByteArray.writeUIntAt(offset: Int, value: UInt): Unit = writeIntAt(offset, value.toInt())
 
 /**
  * Write Long at offset.
@@ -156,7 +156,7 @@ fun ByteArray.writeUIntAt(offset: Int, value: UInt) = writeIntAt(offset, value.t
  * @param offset
  * @param value
  */
-fun ByteArray.writeLongAt(offset: Int, value: Long) {
+public fun ByteArray.writeLongAt(offset: Int, value: Long) {
     this[offset + 7] = (value shr 56 and 0xFF).toByte()
     this[offset + 6] = (value shr 48 and 0xFF).toByte()
     this[offset + 5] = (value shr 40 and 0xFF).toByte()
@@ -173,7 +173,7 @@ fun ByteArray.writeLongAt(offset: Int, value: Long) {
  * @param offset
  * @param value
  */
-fun ByteArray.writeULongAt(offset: Int, value: ULong) = writeLongAt(offset, value.toLong())
+public fun ByteArray.writeULongAt(offset: Int, value: ULong): Unit = writeLongAt(offset, value.toLong())
 
 /**
  * Write Float at offset.
@@ -181,7 +181,7 @@ fun ByteArray.writeULongAt(offset: Int, value: ULong) = writeLongAt(offset, valu
  * @param offset
  * @param value
  */
-fun ByteArray.writeFloatAt(offset: Int, value: Float) = writeIntAt(offset, value.toBits())
+public fun ByteArray.writeFloatAt(offset: Int, value: Float): Unit = writeIntAt(offset, value.toBits())
 
 /**
  * Write Double at offset.
@@ -189,4 +189,4 @@ fun ByteArray.writeFloatAt(offset: Int, value: Float) = writeIntAt(offset, value
  * @param offset
  * @param value
  */
-fun ByteArray.writeDoubleAt(offset: Int, value: Double) = writeLongAt(offset, value.toBits())
+public fun ByteArray.writeDoubleAt(offset: Int, value: Double): Unit = writeLongAt(offset, value.toBits())

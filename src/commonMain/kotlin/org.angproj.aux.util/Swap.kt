@@ -23,60 +23,60 @@ package org.angproj.aux.util
  *
  * @return
  */
-fun Short.swapEndian(): Short = reverseShort(this)
+public fun Short.swapEndian(): Short = reverseShort(this)
 
 /**
  * Swap endian on UShort.
  *
  * @return
  */
-fun UShort.swapEndian(): UShort = reverseShort(this.toShort()).toUShort()
+public fun UShort.swapEndian(): UShort = reverseShort(this.toShort()).toUShort()
 
 /**
  * Swap endian on Char.
  *
  * @return
  */
-fun Char.swapEndian(): Char = reverseShort(this.code.toShort()).toInt().toChar()
+public fun Char.swapEndian(): Char = reverseShort(this.code.toShort()).toInt().toChar()
 
 /**
  * Swap endian on Int.
  *
  * @return
  */
-fun Int.swapEndian(): Int = reverseInt(this)
+public fun Int.swapEndian(): Int = reverseInt(this)
 
 /**
  * Swap endian on UInt.
  *
  * @return
  */
-fun UInt.swapEndian(): UInt = reverseInt(this.toInt()).toUInt()
+public fun UInt.swapEndian(): UInt = reverseInt(this.toInt()).toUInt()
 
 /**
  * Swap endian on Long.
  *
  * @return
  */
-fun Long.swapEndian(): Long = reverseLong(this)
+public fun Long.swapEndian(): Long = reverseLong(this)
 
 /**
  * Swap endian on ULong.
  *
  * @return
  */
-fun ULong.swapEndian(): ULong = reverseLong(this.toLong()).toULong()
+public fun ULong.swapEndian(): ULong = reverseLong(this.toLong()).toULong()
 
 /**
  * Swap endian on Float.
  *
  * @return
  */
-fun Float.swapEndian(): Float = Float.fromBits(reverseInt(this.toBits()))
+public fun Float.swapEndian(): Float = Float.fromBits(reverseInt(this.toBits()))
 
 /**
  * Swap endian on Double.
  *
  * @return
  */
-fun Double.swapEndian(): Double = Double.fromBits(reverseLong(this.toBits()))
+public fun Double.swapEndian(): Double = Double.fromBits(reverseLong(this.toBits()))
