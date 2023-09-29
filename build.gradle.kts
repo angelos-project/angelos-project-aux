@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "org.angproj.aux.util"
-version = "0.0.1"
+version = "0.0.2"
 
 repositories {
     mavenCentral()
@@ -22,14 +22,8 @@ kotlin {
         }
     }
     js(IR) {
-        binaries.library()
         browser()
         nodejs()
-    }
-    wasm {
-        //browser()
-        //nodejs()
-        d8()
     }
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
