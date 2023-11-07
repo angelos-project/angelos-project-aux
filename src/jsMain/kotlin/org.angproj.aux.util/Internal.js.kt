@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2021-2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -14,6 +14,6 @@
  */
 package org.angproj.aux.util
 
-public interface DslBlock
-
-public inline operator fun <E: DslBlock> E.invoke(block: E.() -> Unit): Unit = this.block()
+internal actual fun getCurrentEndian(): Endian = when {
+    else -> Endian.UNKNOWN
+}

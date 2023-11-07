@@ -53,3 +53,4 @@ internal fun reverseLong(value: Long): Long = (value shl 56 and -0x1000000_00000
         (value shr 40 and 0xFF00) or
         (value shr 56 and 0xFF)
 
+internal expect fun getCurrentEndian(): Endian

@@ -14,6 +14,16 @@
  */
 package org.angproj.aux.util
 
-public interface DslBlock
+public enum class Endian {
+    BIG, LITTLE, UNKNOWN;
 
-public inline operator fun <E: DslBlock> E.invoke(block: E.() -> Unit): Unit = this.block()
+    public fun isBig(): Boolean = this == BIG
+    public fun isLittle(): Boolean = this == LITTLE
+    public fun asLittleIfUnknown(): Boolean = this in assumeLittle
+
+    public companion object {
+        private val assumeLittle = listOf(UNKNOWN, LITTLE)
+
+        public val native: Endian = getCurrentEndian()
+    }
+}
