@@ -14,6 +14,20 @@
  */
 package org.angproj.aux.util
 
-internal actual fun getCurrentEndian(): Endian = when {
-    else -> Endian.UNKNOWN
+import org.khronos.webgl.*
+
+/**
+ * Little/big endian test from:
+ * https://developers.redhat.com/articles/2021/12/09/how-nodejs-uses-v8-javascript-engine-run-your-code#big_endian_byte_order_on_v8
+ */
+internal actual fun getCurrentEndian(): Endian {
+    val buffer = ArrayBuffer(16)
+    val int8View = Int8Array(buffer)
+    val int16View = Int16Array(buffer)
+    int16View[0] = 5
+
+    return when (int8View[0].toInt()) {
+        5 -> Endian.LITTLE
+        else -> Endian.BIG
+    }
 }
