@@ -28,6 +28,18 @@ public interface EndianAware {
     public fun Float.asBig(): Float = if(bigEndian) this else this.swapEndian()
     public fun Double.asBig(): Double = if(bigEndian) this else this.swapEndian()
 
+    public fun Short.asLittle(): Short = if(bigEndian) this.swapEndian() else this
+    public fun UShort.asLittle(): UShort = if(bigEndian) this.swapEndian() else this
+    public fun Char.asLittle(): Char = if(bigEndian) this.swapEndian() else this
+
+    public fun Int.asLittle(): Int = if(bigEndian) this.swapEndian() else this
+    public fun UInt.asLittle(): UInt = if(bigEndian) this.swapEndian() else this
+    public fun Long.asLittle(): Long = if(bigEndian) this.swapEndian() else this
+    public fun ULong.asLittle(): ULong = if(bigEndian) this.swapEndian() else this
+
+    public fun Float.asLittle(): Float = if(bigEndian) this.swapEndian() else this
+    public fun Double.asLittle(): Double = if(bigEndian) this.swapEndian() else this
+
     public companion object {
         public val bigEndian: Boolean = !Endian.native.asLittleIfUnknown()
 
@@ -42,5 +54,18 @@ public interface EndianAware {
 
         public fun Float.asBig(): Float = if(bigEndian) this else this.swapEndian()
         public fun Double.asBig(): Double = if(bigEndian) this else this.swapEndian()
+
+
+        public fun Short.asLittle(): Short = if(bigEndian) this.swapEndian() else this
+        public fun UShort.asLittle(): UShort = if(bigEndian) this.swapEndian() else this
+        public fun Char.asLittle(): Char = if(bigEndian) this.swapEndian() else this
+
+        public fun Int.asLittle(): Int = if(bigEndian) this.swapEndian() else this
+        public fun UInt.asLittle(): UInt = if(bigEndian) this.swapEndian() else this
+        public fun Long.asLittle(): Long = if(bigEndian) this.swapEndian() else this
+        public fun ULong.asLittle(): ULong = if(bigEndian) this.swapEndian() else this
+
+        public fun Float.asLittle(): Float = if(bigEndian) this.swapEndian() else this
+        public fun Double.asLittle(): Double = if(bigEndian) this.swapEndian() else this
     }
 }
