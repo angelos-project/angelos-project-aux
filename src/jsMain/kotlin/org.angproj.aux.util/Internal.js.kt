@@ -15,6 +15,7 @@
 package org.angproj.aux.util
 
 import org.khronos.webgl.*
+import kotlin.js.Date
 
 /**
  * Little/big endian test from:
@@ -30,4 +31,8 @@ internal actual fun getCurrentEndian(): Endian {
         5 -> Endian.LITTLE
         else -> Endian.BIG
     }
+}
+
+internal actual fun unixEpoch(): Long {
+    return Date.now().toLong() / 1000
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -14,13 +14,10 @@
  */
 package org.angproj.aux.util
 
-import java.nio.ByteOrder
-internal actual fun getCurrentEndian(): Endian = when(ByteOrder.nativeOrder()) {
-    ByteOrder.LITTLE_ENDIAN -> Endian.LITTLE
-    ByteOrder.BIG_ENDIAN -> Endian.BIG
-    else -> Endian.UNKNOWN
-}
+import kotlin.jvm.JvmStatic
 
-internal actual fun unixEpoch(): Long {
-    return System.currentTimeMillis() / 1000
+public object Epoch {
+
+    @JvmStatic
+    public fun getEpochSecs(): Long = unixEpoch()
 }

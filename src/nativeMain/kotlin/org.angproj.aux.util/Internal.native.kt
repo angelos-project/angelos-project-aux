@@ -18,3 +18,7 @@ internal actual fun getCurrentEndian(): Endian = when(Platform.isLittleEndian) {
     true -> Endian.LITTLE
     else -> Endian.BIG
 }
+
+internal actual fun unixEpoch(): Long {
+    return platform.posix.time(null)
+}
