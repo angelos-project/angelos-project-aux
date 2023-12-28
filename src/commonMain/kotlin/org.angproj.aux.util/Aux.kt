@@ -16,5 +16,5 @@ package org.angproj.aux.util
 
 import kotlin.math.absoluteValue
 
-public fun Int.floorMod(other: Int): Int = this.absoluteValue.mod(other)
-public fun Long.floorMod(other: Long): Long = this.absoluteValue.mod(other)
+public fun Int.floorMod(other: Int): Int = this.absoluteValue.mod(other.absoluteValue)
+public fun Long.floorMod(other: Long): Long = this.absoluteValue.mod(other.absoluteValue)

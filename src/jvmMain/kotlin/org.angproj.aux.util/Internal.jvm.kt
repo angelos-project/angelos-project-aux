@@ -22,5 +22,5 @@ internal actual fun getCurrentEndian(): Endian = when(ByteOrder.nativeOrder()) {
 }
 
 internal actual fun unixEpoch(): Long {
-    return System.currentTimeMillis() / 1000
+    return System.currentTimeMillis()
 }

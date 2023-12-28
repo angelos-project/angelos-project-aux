@@ -34,5 +34,5 @@ internal actual fun getCurrentEndian(): Endian {
 }
 
 internal actual fun unixEpoch(): Long {
-    return Date.now().toLong() / 1000
+    return Date.now().toLong()
 }

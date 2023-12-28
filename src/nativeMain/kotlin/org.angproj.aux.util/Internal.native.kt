@@ -14,11 +14,18 @@
  */
 package org.angproj.aux.util
 
+import kotlinx.cinterop.*
+import platform.posix.*
+
 internal actual fun getCurrentEndian(): Endian = when(Platform.isLittleEndian) {
     true -> Endian.LITTLE
     else -> Endian.BIG
 }
 
-internal actual fun unixEpoch(): Long {
-    return platform.posix.time(null)
+internal actual fun unixEpoch(): Long = memScoped {
+    val tv = nativeHeap.alloc<timeval>()
+    gettimeofday(tv.ptr, null)
+    val timestamp: Long = 1000 * tv.tv_sec + tv.tv_usec / 1000
+    free(tv.ptr)
+    return timestamp
 }

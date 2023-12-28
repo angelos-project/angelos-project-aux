@@ -7,6 +7,6 @@ class EpochTest {
 
     @Test
     fun epochTest() {
-        assertTrue(Epoch.getEpochSecs() > 0)
+        assertTrue(Epoch.getEpochMilliSecs() > 0)
     }
 }

@@ -19,5 +19,8 @@ import kotlin.jvm.JvmStatic
 public object Epoch {
 
     @JvmStatic
-    public fun getEpochSecs(): Long = unixEpoch()
+    public fun getEpochSecs(): Long = unixEpoch() / 1000
+
+    @JvmStatic
+    public fun getEpochMilliSecs(): Long = unixEpoch()
 }
