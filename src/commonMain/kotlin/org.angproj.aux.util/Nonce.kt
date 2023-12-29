@@ -22,7 +22,7 @@ import kotlin.native.concurrent.ThreadLocal
  * is not to be considered as cryptographically secure random!
  * */
 @ThreadLocal
-public object Nonce: EndianAware {
+public object Nonce {
     private var counter: Long = Long.MIN_VALUE
     private var seed1: Long = 0xF069EC9F3E02D799u.toLong()
     private var seed2: Long = 0xC5D12A7F2E67ABC7u.toLong()
@@ -50,9 +50,9 @@ public object Nonce: EndianAware {
     public fun getNonce(withTimestamp: Boolean = false): ByteArray {
         if (withTimestamp) reseedWithTimestamp()
         val pair = getFastNonce()
-        val nonce = ByteArray(16)
-        nonce.writeLongAt(0, pair.first.asLittle())
-        nonce.writeLongAt(8, pair.second.asLittle())
-        return nonce
+        return ByteArray(16).also {
+            it.writeLongAt(0, pair.first)
+            it.writeLongAt(8, pair.second)
+        }
     }
 }

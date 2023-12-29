@@ -23,4 +23,22 @@ class Uuid4Test {
         assertEquals(uuid4().toString()[14].code, "4"[0].code)
         assertEquals(uuid4().toString().length, 36)
     }
+
+    //@Test
+    fun testPrintUuid4() {
+        repeat(100) { println(uuid4()) }
+    }
+
+    //@Test
+    fun testRandom() {
+        repeat(1000) {
+            val monteCarlo = Benchmark()
+            val rand = Random.getRandom()
+            repeat(10_000_000) {
+                monteCarlo.scatterPoint(rand.nextLong(), rand.nextLong())
+            }
+            //println((monteCarlo.distribution() - PI).absoluteValue)
+            println(monteCarlo.distribution())
+        }
+    }
 }
