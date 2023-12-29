@@ -35,9 +35,7 @@ public class Uuid4 internal constructor() {
 
     public fun toByteArray(): ByteArray = uuid.copyOf()
 
-    override fun toString(): String {
-        return hex
-    }
+    override fun toString(): String = hex
 }
 
 public fun uuid4(): Uuid4 = Uuid4()

@@ -26,18 +26,19 @@ public object Nonce {
     private var counter: Long = Long.MIN_VALUE
     private var epoch: Long = Epoch.getEpochMilliSecs()
 
-    private  var seed0: Long = 0xED28AF9A51751F4Fu.toLong()
+    private var seed0: Long = 0xED28AF9A51751F4Fu.toLong()
     private var seed1: Long = 0xF069EC9F3E02D799u.toLong()
     private var seed2: Long = 0xC5D12A7F2E67ABC7u.toLong()
-    private  var seed3: Long = 0xDBECCEFB1DE98AABu.toLong()
+    private var seed3: Long = 0xDBECCEFB1DE98AABu.toLong()
 
-    init { repeat(16) { scramble() } }
+    init { repeat(16) { cycle() } }
 
-    private fun scramble() {
+    private fun cycle() {
         seed0 = seed0 xor -(seed1 + counter).rotateRight(2) xor (seed1 + epoch).inv().rotateLeft(17)
         seed1 = seed1 xor -(seed2 + epoch).rotateRight(2) xor (seed2 + counter).inv().rotateLeft(17)
         seed2 = seed2 xor -(seed3 + counter).rotateRight(2) xor (seed3 + epoch).inv().rotateLeft(17)
         seed3 = seed3 xor -(seed0 + epoch).rotateRight(2) xor (seed0 + counter).inv().rotateLeft(17)
+        counter++
     }
 
     @JvmStatic
@@ -45,16 +46,14 @@ public object Nonce {
 
     @JvmStatic
     public fun getFastNonce(): LongArray {
-        counter++
-        scramble()
+        cycle()
         return longArrayOf(seed0, seed1, seed2, seed3)
     }
 
     @JvmStatic
     public fun getNonce(withTimestamp: Boolean = false): ByteArray {
         if (withTimestamp) reseedWithTimestamp()
-        counter++
-        scramble()
+        cycle()
         return ByteArray(32).also {
             it.writeLongAt(0, seed0)
             it.writeLongAt(8, seed1)
