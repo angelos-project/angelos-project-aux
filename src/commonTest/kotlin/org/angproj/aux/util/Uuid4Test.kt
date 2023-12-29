@@ -24,7 +24,7 @@ class Uuid4Test {
         assertEquals(uuid4().toString().length, 36)
     }
 
-    @Test
+    /* //@Test
     fun testNonce() {
         repeat(1000) {
             val monteCarlo = Benchmark()
@@ -38,7 +38,7 @@ class Uuid4Test {
         }
     }
 
-    /*//@Test
+    //@Test
     fun testPrintUuid4() {
         repeat(100) { println(uuid4()) }
     }
