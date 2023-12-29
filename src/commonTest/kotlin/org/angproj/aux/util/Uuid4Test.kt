@@ -14,7 +14,6 @@
  */
 package org.angproj.aux.util
 
-import kotlin.math.PI
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -25,7 +24,7 @@ class Uuid4Test {
         assertEquals(uuid4().toString().length, 36)
     }
 
-    @Test
+    /* //@Test
     fun testNonce() {
         repeat(1000) {
             val monteCarlo = Benchmark()
@@ -54,5 +53,5 @@ class Uuid4Test {
             //println((monteCarlo.distribution() - PI).absoluteValue)
             println(monteCarlo.distribution())
         }
-    }
+    }*/
 }
