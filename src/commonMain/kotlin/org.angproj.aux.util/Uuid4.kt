@@ -16,7 +16,7 @@ package org.angproj.aux.util
 
 public class Uuid4 internal constructor() {
 
-    private val uuid: ByteArray = Nonce.getNonce(withTimestamp = true).also {
+    private val uuid: ByteArray = Nonce.getNonce(withTimestamp = true).copyOf(16).also {
         // Modifying data to make it a version 4 UUID
         it[6] = it[6].flipOffFlag7()
         it[6] = it[6].flipOnFlag6()
