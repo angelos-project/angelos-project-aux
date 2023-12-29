@@ -24,16 +24,16 @@ import kotlin.native.concurrent.ThreadLocal
 @ThreadLocal
 public object Nonce {
     private var counter: Long = Long.MIN_VALUE
+    private var epoch: Long = Epoch.getEpochMilliSecs()
+
     private var seed1: Long = 0xF069EC9F3E02D799u.toLong()
     private var seed2: Long = 0xC5D12A7F2E67ABC7u.toLong()
-    private var epoch: Long = Epoch.getEpochMilliSecs()
 
     init { repeat(16) { scramble() } }
 
     private fun scramble() {
-        val temp = -counter.rotateRight(7) xor epoch.inv().rotateLeft(2)
-        seed1 = seed2.inv() xor -seed1.rotateRight(19) xor (seed1+1).inv().rotateLeft(19) xor temp
-        seed2 = -seed1 xor -seed2.rotateRight(53) xor (seed2+1).inv().rotateLeft(53) xor temp
+        seed2 = -(seed1 + counter).rotateRight(2) xor (seed1 + epoch).inv().rotateLeft(17)
+        seed1 = -(seed2 + epoch).rotateRight(2) xor (seed2 + counter).inv().rotateLeft(17)
     }
 
     @JvmStatic

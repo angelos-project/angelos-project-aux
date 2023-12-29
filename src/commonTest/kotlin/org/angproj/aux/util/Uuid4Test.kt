@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.util
 
+import kotlin.math.PI
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -22,6 +23,19 @@ class Uuid4Test {
     fun testUuid4() {
         assertEquals(uuid4().toString()[14].code, "4"[0].code)
         assertEquals(uuid4().toString().length, 36)
+    }
+
+    @Test
+    fun testNonce() {
+        repeat(1000) {
+            val monteCarlo = Benchmark()
+            Nonce.reseedWithTimestamp()
+            repeat(10_000_000) {
+                val data = Nonce.getFastNonce()
+                monteCarlo.scatterPoint(data.first, data.second)
+            }
+            println(monteCarlo.distribution())
+        }
     }
 
     //@Test
