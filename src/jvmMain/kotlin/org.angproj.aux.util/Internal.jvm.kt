@@ -27,7 +27,7 @@ internal actual fun unixEpoch(): Long {
     return System.currentTimeMillis()
 }
 
-private var entropyCounter: Long = 0
+private var entropyCounter: Long = 1
 
 internal actual fun epochEntropy(): Long {
     entropyCounter = max(1, entropyCounter + 1)

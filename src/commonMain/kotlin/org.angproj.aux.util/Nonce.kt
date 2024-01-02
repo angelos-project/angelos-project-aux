@@ -15,11 +15,12 @@
 package org.angproj.aux.util
 
 import kotlin.jvm.JvmStatic
+import kotlin.math.max
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
 public object Nonce {
-    private var counter: Long = 0
+    private var counter: Long = 1
     private var reseed: Long = Epoch.getEpochMilliSecs()
     private var entropy: Long = Epoch.entropy()
     private var nlfMask: Long = 0
@@ -33,7 +34,8 @@ public object Nonce {
     }
 
     private fun round() {
-        if(counter.floorMod(10_000) == 0L) {
+
+        if(counter.mod(10_000) == 0) {
             val seed = Epoch.getEpochMilliSecs()
             if(seed != reseed) {
                 entropy = -(Epoch.entropy() - seed).rotateRight(2) xor
@@ -50,7 +52,7 @@ public object Nonce {
         s3 = -(s0 + counter).rotateRight(2) xor (s0 - entropy).inv().rotateLeft(17)
         s0 = temp
 
-        counter++
+        counter = max(1, counter + 1)
     }
 
     @JvmStatic
@@ -62,7 +64,7 @@ public object Nonce {
     @JvmStatic
     public fun someEntropy(entropy: ByteArray) {
         entropy.indices.forEach {
-            entropy[it] = (when(it.floorMod(4)) {
+            entropy[it] = (when(it.mod(4)) {
                 0 -> {
                     round()
                     s0
@@ -71,7 +73,7 @@ public object Nonce {
                 2 -> s2
                 3 -> s3
                 else -> 0
-            } xor it.toLong() xor nlfMask).toByte()
+            } xor nlfMask).toByte()
         }
     }
 }

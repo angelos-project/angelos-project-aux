@@ -31,7 +31,7 @@ internal actual fun unixEpoch(): Long = memScoped {
     return timestamp
 }
 
-private var entropyCounter: Long = 0
+private var entropyCounter: Long = 1
 
 internal actual fun epochEntropy(): Long  = memScoped {
     entropyCounter = max(1, entropyCounter + 1)
