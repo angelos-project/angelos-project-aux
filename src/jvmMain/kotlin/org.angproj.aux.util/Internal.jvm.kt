@@ -15,6 +15,8 @@
 package org.angproj.aux.util
 
 import java.nio.ByteOrder
+import kotlin.math.max
+
 internal actual fun getCurrentEndian(): Endian = when(ByteOrder.nativeOrder()) {
     ByteOrder.LITTLE_ENDIAN -> Endian.LITTLE
     ByteOrder.BIG_ENDIAN -> Endian.BIG
@@ -28,7 +30,7 @@ internal actual fun unixEpoch(): Long {
 private var entropyCounter: Long = 0
 
 internal actual fun epochEntropy(): Long {
-    entropyCounter++
+    entropyCounter = max(1, entropyCounter + 1)
     val timestamp = System.currentTimeMillis()
     val nanos = System.nanoTime().floorMod(1_000_000_000)
     return -(timestamp + nanos + 1).rotateRight(53) xor

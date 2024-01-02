@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.util
 
+import kotlin.math.max
 import kotlinx.cinterop.*
 import platform.posix.*
 
@@ -33,7 +34,7 @@ internal actual fun unixEpoch(): Long = memScoped {
 private var entropyCounter: Long = 0
 
 internal actual fun epochEntropy(): Long  = memScoped {
-    entropyCounter++
+    entropyCounter = max(1, entropyCounter + 1)
     val tv = nativeHeap.alloc<timeval>()
     gettimeofday(tv.ptr, null)
     val timestamp = tv.tv_sec * 1000

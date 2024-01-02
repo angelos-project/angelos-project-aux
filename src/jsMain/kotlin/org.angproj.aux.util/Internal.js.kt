@@ -16,6 +16,7 @@ package org.angproj.aux.util
 
 import org.khronos.webgl.*
 import kotlin.js.Date
+import kotlin.math.max
 
 /**
  * Little/big endian test from:
@@ -40,7 +41,7 @@ internal actual fun unixEpoch(): Long {
 private var entropyCounter: Long = 0
 
 internal actual fun epochEntropy(): Long {
-    entropyCounter++
+    entropyCounter = max(1, entropyCounter + 1)
     val timestamp = Date.now().toLong()
     val nanos = Date.now().toLong().floorMod(1_000_000_000)
     return -(timestamp + nanos + 1).rotateRight(53) xor
