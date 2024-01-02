@@ -56,3 +56,5 @@ internal fun reverseLong(value: Long): Long = (value shl 56 and -0x1000000_00000
 internal expect fun getCurrentEndian(): Endian
 
 internal expect fun unixEpoch(): Long
+
+internal expect fun epochEntropy(): Long

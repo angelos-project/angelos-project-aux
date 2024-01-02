@@ -24,26 +24,12 @@ class Uuid4Test {
         assertEquals(uuid4().toString().length, 36)
     }
 
-    /* //@Test
-    fun testNonce() {
-        repeat(1000) {
-            val monteCarlo = Benchmark()
-            Nonce.reseedWithTimestamp()
-            repeat(5_000_000) {
-                val data = Nonce.getNonce()
-                monteCarlo.scatterPoint(data.readLongAt(0), data.readLongAt(8))
-                monteCarlo.scatterPoint(data.readLongAt(16), data.readLongAt(24))
-            }
-            println(monteCarlo.distribution())
-        }
-    }
-
-    //@Test
+    @Test
     fun testPrintUuid4() {
         repeat(100) { println(uuid4()) }
     }
 
-    //@Test
+    @Test
     fun testRandom() {
         repeat(1000) {
             val monteCarlo = Benchmark()
@@ -51,8 +37,7 @@ class Uuid4Test {
             repeat(10_000_000) {
                 monteCarlo.scatterPoint(rand.nextLong(), rand.nextLong())
             }
-            //println((monteCarlo.distribution() - PI).absoluteValue)
             println(monteCarlo.distribution())
         }
-    }*/
+    }
 }

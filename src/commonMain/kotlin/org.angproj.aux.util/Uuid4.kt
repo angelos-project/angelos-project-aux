@@ -16,7 +16,8 @@ package org.angproj.aux.util
 
 public class Uuid4 internal constructor() {
 
-    private val uuid: ByteArray = Nonce.getNonce(withTimestamp = true).copyOf(16).also {
+    private val uuid: ByteArray = ByteArray(16).also {
+        Nonce.someEntropy(it)
         // Modifying data to make it a version 4 UUID
         it[6] = it[6].flipOffFlag7()
         it[6] = it[6].flipOnFlag6()
@@ -30,7 +31,7 @@ public class Uuid4 internal constructor() {
         val _3 = BinHex.encodeToHex(uuid.sliceArray(6 until 8))
         val _4 = BinHex.encodeToHex(uuid.sliceArray(8 until 10))
         val _5 = BinHex.encodeToHex(uuid.sliceArray(10 until 16))
-        "$_1-$_2-$_3-$_4-$_5".uppercase()
+        "$_1-$_2-$_3-$_4-$_5"
     }
 
     public fun toByteArray(): ByteArray = uuid.copyOf()

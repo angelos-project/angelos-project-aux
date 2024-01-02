@@ -23,4 +23,7 @@ public object Epoch {
 
     @JvmStatic
     public fun getEpochMilliSecs(): Long = unixEpoch()
+
+    @JvmStatic
+    public fun entropy(): Long = epochEntropy()
 }

@@ -17,7 +17,7 @@ package org.angproj.aux.util
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class RWTest {
+class ByteArrayTest {
     private val refChar: Char = 'Ö'
 
     private val refShort: Short = 0B1010101_10101010

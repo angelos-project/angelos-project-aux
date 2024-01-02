@@ -17,14 +17,16 @@ package org.angproj.aux.util
 import kotlin.random.Random as KotlinRandom
 
 public abstract class AbstractRandom(private var seed: Long) : KotlinRandom()  {
+    private var counter: Long = 0
     override fun nextBits(bitCount: Int): Int {
-        seed = -seed.rotateRight(2) xor (seed+1).inv().rotateLeft(17)
+        counter++
+        seed = -(seed - counter).rotateRight(2) xor (seed + counter).inv().rotateLeft(17)
         return (seed and (0xffffffff shl bitCount).inv()).toInt()
     }
 }
 
 public class SimpleRandom(seed: Long) : AbstractRandom(seed)
 
-public object Random: AbstractRandom(Nonce.getNonce(true).readLongAt(0)) {
+public object Random: AbstractRandom(Nonce.someEntropy()[0]) {
     public fun getRandom(seed: Long = Random.nextLong()): SimpleRandom = SimpleRandom(seed)
 }

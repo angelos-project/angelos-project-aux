@@ -17,48 +17,61 @@ package org.angproj.aux.util
 import kotlin.jvm.JvmStatic
 import kotlin.native.concurrent.ThreadLocal
 
-/**
- * This nonce generator though it contains timestamp seeding and a sequence counter,
- * is not to be considered as cryptographically secure random!
- * */
 @ThreadLocal
 public object Nonce {
-    private var counter: Long = Long.MIN_VALUE
-    private var epoch: Long = Epoch.getEpochMilliSecs()
+    private var counter: Long = 0
+    private var reseed: Long = Epoch.getEpochMilliSecs()
+    private var entropy: Long = Epoch.entropy()
+    private var nlfMask: Long = 0
+    private var s0: Long = 0
+    private var s1: Long = 0
+    private var s2: Long = 0
+    private var s3: Long = 0
 
-    private var seed0: Long = 0xED28AF9A51751F4Fu.toLong()
-    private var seed1: Long = 0xF069EC9F3E02D799u.toLong()
-    private var seed2: Long = 0xC5D12A7F2E67ABC7u.toLong()
-    private var seed3: Long = 0xDBECCEFB1DE98AABu.toLong()
+    init {
+        repeat(16) { round() }
+    }
 
-    init { repeat(16) { cycle() } }
+    private fun round() {
+        if(counter.floorMod(10_000) == 0L) {
+            val seed = Epoch.getEpochMilliSecs()
+            if(seed != reseed) {
+                entropy = -(Epoch.entropy() - seed).rotateRight(2) xor
+                        (entropy + reseed).inv().rotateLeft(17) * counter
+                reseed = seed
+            }
+        }
 
-    private fun cycle() {
-        seed0 = seed0 xor -(seed1 + counter).rotateRight(2) xor (seed1 + epoch).inv().rotateLeft(17)
-        seed1 = seed1 xor -(seed2 + epoch).rotateRight(2) xor (seed2 + counter).inv().rotateLeft(17)
-        seed2 = seed2 xor -(seed3 + counter).rotateRight(2) xor (seed3 + epoch).inv().rotateLeft(17)
-        seed3 = seed3 xor -(seed0 + epoch).rotateRight(2) xor (seed0 + counter).inv().rotateLeft(17)
+        nlfMask = (entropy and nlfMask and s0) xor ((s1 and s2) * 2) xor (s3 * 4)
+
+        val temp = -(s1 - entropy).rotateRight(2) xor (s1 + counter).inv().rotateLeft(17)
+        s1 = -(s2 + entropy).rotateRight(2) xor (s2 - counter).inv().rotateLeft(17)
+        s2 = -(s3 - counter).rotateRight(2) xor (s3 + entropy).inv().rotateLeft(17)
+        s3 = -(s0 + counter).rotateRight(2) xor (s0 - entropy).inv().rotateLeft(17)
+        s0 = temp
+
         counter++
     }
 
     @JvmStatic
-    public fun reseedWithTimestamp() { epoch = Epoch.getEpochMilliSecs() }
-
-    @JvmStatic
-    public fun getFastNonce(): LongArray {
-        cycle()
-        return longArrayOf(seed0, seed1, seed2, seed3)
+    public fun someEntropy(): LongArray {
+        round()
+        return longArrayOf(s0 xor nlfMask, s1 xor nlfMask, s2 xor nlfMask, s3 xor nlfMask)
     }
 
     @JvmStatic
-    public fun getNonce(withTimestamp: Boolean = false): ByteArray {
-        if (withTimestamp) reseedWithTimestamp()
-        cycle()
-        return ByteArray(32).also {
-            it.writeLongAt(0, seed0)
-            it.writeLongAt(8, seed1)
-            it.writeLongAt(16, seed2)
-            it.writeLongAt(24, seed3)
+    public fun someEntropy(entropy: ByteArray) {
+        entropy.indices.forEach {
+            entropy[it] = (when(it.floorMod(4)) {
+                0 -> {
+                    round()
+                    s0
+                }
+                1 -> s1
+                2 -> s2
+                3 -> s3
+                else -> 0
+            } xor it.toLong() xor nlfMask).toByte()
         }
     }
 }
