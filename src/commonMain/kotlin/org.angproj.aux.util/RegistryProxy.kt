@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -14,13 +14,6 @@
  */
 package org.angproj.aux.util
 
-import kotlin.jvm.JvmStatic
-
-public object Epoch {
-
-    @JvmStatic
-    public fun getEpochSecs(): Long = unixEpoch() / 1000
-
-    @JvmStatic
-    public fun getEpochMilliSecs(): Long = unixEpoch()
+public interface RegistryProxy {
+    public val identifier: String
 }

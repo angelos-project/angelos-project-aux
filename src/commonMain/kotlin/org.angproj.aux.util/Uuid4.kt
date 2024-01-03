@@ -14,9 +14,12 @@
  */
 package org.angproj.aux.util
 
+import org.angproj.aux.util.rand.Nonce
+import kotlin.math.max
+
 public class Uuid4 internal constructor() {
 
-    private val uuid: ByteArray = ByteArray(16).also {
+    private val uuid: ByteArray = generate().also {
         Nonce.someEntropy(it)
         // Modifying data to make it a version 4 UUID
         it[6] = it[6].flipOffFlag7()
@@ -37,6 +40,24 @@ public class Uuid4 internal constructor() {
     public fun toByteArray(): ByteArray = uuid.copyOf()
 
     override fun toString(): String = hex
+
+    private companion object {
+
+        private var seed: Long = 0xFFF73E99668196E9uL.toLong()
+        private var counter: Long = 1
+
+        private fun entropy(data: ByteArray) {
+            val hash = data.hashCode()
+            seed = -(seed - hash).rotateRight(53) xor (seed + hash).inv().rotateLeft(53) }
+
+        private fun generate(): ByteArray = longArrayOf(
+            epochEntropy() xor seed * counter,
+            epochEntropy() xor seed * -counter
+        ).toByteArray().also {
+            entropy(it)
+            counter = max(1, counter + 1)
+        }
+    }
 }
 
 public fun uuid4(): Uuid4 = Uuid4()

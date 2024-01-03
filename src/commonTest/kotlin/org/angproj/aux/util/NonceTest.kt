@@ -1,5 +1,6 @@
 package org.angproj.aux.util
 
+import org.angproj.aux.util.rand.Nonce
 import kotlin.test.Test
 
 class NonceTest {

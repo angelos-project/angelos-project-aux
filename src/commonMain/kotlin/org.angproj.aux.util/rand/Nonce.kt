@@ -12,8 +12,9 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux.util.rand
 
+import org.angproj.aux.util.Epoch
 import kotlin.jvm.JvmStatic
 import kotlin.math.max
 import kotlin.native.concurrent.ThreadLocal

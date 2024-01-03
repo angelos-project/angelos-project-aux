@@ -12,15 +12,11 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux.util.rand
 
-import kotlin.jvm.JvmStatic
+import org.angproj.aux.util.AbstractRegistry
 
-public object Epoch {
-
-    @JvmStatic
-    public fun getEpochSecs(): Long = unixEpoch() / 1000
-
-    @JvmStatic
-    public fun getEpochMilliSecs(): Long = unixEpoch()
+public object Random: AbstractRegistry<AbstractBufferedRandom>() {
+    public val default: AbstractBufferedRandom
+        get() = receive(lookup("SimpleRandom-Stupid"))
 }

@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.util
 
+import org.angproj.aux.util.rand.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -27,17 +28,5 @@ class Uuid4Test {
     @Test
     fun testPrintUuid4() {
         repeat(100) { println(uuid4()) }
-    }
-
-    @Test
-    fun testRandom() {
-        repeat(1000) {
-            val monteCarlo = Benchmark()
-            val rand = Random.getRandom()
-            repeat(10_000_000) {
-                monteCarlo.scatterPoint(rand.nextLong(), rand.nextLong())
-            }
-            println(monteCarlo.distribution())
-        }
     }
 }
