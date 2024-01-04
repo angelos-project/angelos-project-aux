@@ -15,8 +15,9 @@
 package org.angproj.aux.util
 
 import org.angproj.aux.util.rand.*
+import org.angproj.aux.util.reg.AbstractRegistry
 
-public object Random: AbstractRegistry<AbstractBufferedRandom, RandomProxy>() {
+public object Random : AbstractRegistry<AbstractBufferedRandom, RandomProxy>() {
 
     init {
         val erHandle = register(EntropyRandom())

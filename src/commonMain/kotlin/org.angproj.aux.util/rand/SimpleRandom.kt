@@ -16,7 +16,7 @@ package org.angproj.aux.util.rand
 
 import org.angproj.aux.util.Random
 
-public class SimpleRandom(private var seederHandle: Int = 0): AbstractBufferedRandom() {
+public class SimpleRandom(private var seederHandle: Int = 0) : AbstractBufferedRandom() {
 
     public override val identifier: String
         get() = name

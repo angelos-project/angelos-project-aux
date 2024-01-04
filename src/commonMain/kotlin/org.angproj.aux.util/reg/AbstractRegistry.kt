@@ -12,9 +12,9 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux.util.reg
 
-public abstract class AbstractRegistry<I: RegistryItem, P: RegistryProxy> {
+public abstract class AbstractRegistry<I : RegistryItem, P : RegistryProxy> : Registry<I, P> {
 
     private val itemCodes: MutableSet<Int> = mutableSetOf()
 
@@ -24,17 +24,21 @@ public abstract class AbstractRegistry<I: RegistryItem, P: RegistryProxy> {
 
     private val protectedItems: MutableSet<Int> = mutableSetOf()
 
-    abstract protected fun wrapInProxy(item: I): P
+    protected abstract fun wrapInProxy(item: I): P
 
-    protected fun protect(handle: Int) { protectedItems.add(handle)}
+    protected fun protect(handle: Int) {
+        protectedItems.add(handle)
+    }
 
-    public fun register(item: I): Int {
+    public override fun register(item: I): Int {
         val handle = item.identifier.hashCode()
 
         check(handle != 0) {
-            "Unfortunate accident, this item's identifier '${item.identifier}' generates hashCode 0!" }
+            "Unfortunate accident, this item's identifier '${item.identifier}' generates hashCode 0!"
+        }
         check(!itemCodes.contains(handle)) {
-            "Item already registered: ${item.identifier}, ${handle}" }
+            "Item already registered: ${item.identifier}, ${handle}"
+        }
 
         itemCodes.add(handle)
         itemMap.put(item.identifier, handle)
@@ -45,7 +49,7 @@ public abstract class AbstractRegistry<I: RegistryItem, P: RegistryProxy> {
         return handle
     }
 
-    public fun unregister(handle: Int): I {
+    public override fun unregister(handle: Int): I {
         check(itemCodes.contains(handle)) { "Item not registered: $handle" }
         check(!protectedItems.contains(handle)) { "Can't unregister protected item!" }
 
@@ -58,10 +62,10 @@ public abstract class AbstractRegistry<I: RegistryItem, P: RegistryProxy> {
         return item
     }
 
-    public fun receive(handle: Int): P {
+    public override fun receive(handle: Int): P {
         check(itemCodes.contains(handle)) { "Item not registered: $handle" }
         return wrapInProxy(itemHandles.get(handle)!!)
     }
 
-    public fun lookup(identifier: String): Int = if(itemMap.contains(identifier)) itemMap[identifier]!! else 0
+    public override fun lookup(identifier: String): Int = if (itemMap.contains(identifier)) itemMap[identifier]!! else 0
 }

@@ -12,14 +12,15 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux.util.reg
 
-public interface RegistryItem: RegistryProxy {
+public interface Registry<I : RegistryItem, P : RegistryProxy> {
 
+    public fun register(item: I): Int
 
-    public val instantiated: Boolean
+    public fun unregister(handle: Int): I
 
-    public fun initialize()
+    public fun receive(handle: Int): P
 
-    public fun finalize()
+    public fun lookup(identifier: String): Int
 }

@@ -19,7 +19,7 @@ import org.angproj.aux.util.Random
 import org.angproj.aux.util.floorMod
 import kotlin.math.max
 
-public class NonceRandom(private var seederHandle: Int): AbstractBufferedRandom() {
+public class NonceRandom(private var seederHandle: Int) : AbstractBufferedRandom() {
 
     private var seedPos = 0
 
@@ -61,9 +61,9 @@ public class NonceRandom(private var seederHandle: Int): AbstractBufferedRandom(
 
     private fun round() {
 
-        if(counter.mod(10_000) == 0) {
+        if (counter.mod(10_000) == 0) {
             val seed = Epoch.getEpochMilliSecs()
-            if(seed != reseed) {
+            if (seed != reseed) {
                 entropy = -(Random.receive(seederHandle).getLong() - seed).rotateRight(2) xor
                         (entropy + reseed).inv().rotateLeft(17) * counter
                 reseed = seed
@@ -81,12 +81,12 @@ public class NonceRandom(private var seederHandle: Int): AbstractBufferedRandom(
         counter = max(1, counter + 1)
     }
 
-    override fun getRawLong(): Long = when(seedPos.floorMod(4)) {
-            0 -> s0
-            1 -> s1
-            2-> s2
-            else -> s3.also { round() }
-        } xor nlfMask.also { seedPos++ }
+    override fun getRawLong(): Long = when (seedPos.floorMod(4)) {
+        0 -> s0
+        1 -> s1
+        2 -> s2
+        else -> s3.also { round() }
+    } xor nlfMask.also { seedPos++ }
 
     public companion object {
         public const val name: String = "NonceRandom-Standard"

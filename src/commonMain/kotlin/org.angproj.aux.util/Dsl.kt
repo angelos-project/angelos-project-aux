@@ -16,4 +16,4 @@ package org.angproj.aux.util
 
 public interface DslBlock
 
-public inline operator fun <E: DslBlock> E.invoke(block: E.() -> Unit): Unit = this.block()
+public inline operator fun <E : DslBlock> E.invoke(block: E.() -> Unit): Unit = this.block()

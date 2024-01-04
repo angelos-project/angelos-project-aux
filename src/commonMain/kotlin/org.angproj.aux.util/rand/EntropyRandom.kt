@@ -17,7 +17,7 @@ package org.angproj.aux.util.rand
 import org.angproj.aux.util.epochEntropy
 import kotlin.math.max
 
-public class EntropyRandom: AbstractBufferedRandom() {
+public class EntropyRandom : AbstractBufferedRandom() {
 
     private var counter: Long = 0
 

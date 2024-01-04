@@ -16,7 +16,6 @@ package org.angproj.aux.util
 
 import org.khronos.webgl.*
 import kotlin.js.Date
-import kotlin.math.max
 
 /**
  * Little/big endian test from:

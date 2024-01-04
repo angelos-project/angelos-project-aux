@@ -15,8 +15,9 @@
 package org.angproj.aux.util.rand
 
 import org.angproj.aux.util.*
+import org.angproj.aux.util.reg.RegistryItem
 
-public abstract class AbstractBufferedRandom: RandomGenerator, RegistryItem {
+public abstract class AbstractBufferedRandom : RandomGenerator, RegistryItem {
 
     private val buffer = ByteArray(1024)
 
@@ -26,11 +27,11 @@ public abstract class AbstractBufferedRandom: RandomGenerator, RegistryItem {
     override val instantiated: Boolean
         get() = _instantiated
 
-    override abstract fun initialize()
+    abstract override fun initialize()
 
-    override abstract fun finalize()
+    abstract override fun finalize()
 
-    override abstract val identifier: String
+    abstract override val identifier: String
 
     protected abstract fun getRawLong(): Long
 
@@ -39,11 +40,11 @@ public abstract class AbstractBufferedRandom: RandomGenerator, RegistryItem {
         bufPos = 0
     }
 
-    private fun <E>getValue(size: Int, block: () -> E): E {
+    private fun <E> getValue(size: Int, block: () -> E): E {
         require(instantiated) { "Not instantiated - $identifier" }
-        if(bufPos + size > buffer.lastIndex) refill()
+        if (bufPos + size > buffer.lastIndex) refill()
         val value = block()
-        bufPos+= size
+        bufPos += size
         return value
     }
 
@@ -68,7 +69,8 @@ public abstract class AbstractBufferedRandom: RandomGenerator, RegistryItem {
     override fun getDouble(): Double = getValue(Double.SIZE_BYTES) { buffer.readDoubleAt(bufPos) }
 
     override fun getByteArray(size: Int): ByteArray = LongArray(
-        size.div(Long.SIZE_BYTES) + if(size.floorMod(Long.SIZE_BYTES) == 0) 0 else 1) {
+        size.div(Long.SIZE_BYTES) + if (size.floorMod(Long.SIZE_BYTES) == 0) 0 else 1
+    ) {
         getRawLong()
     }.toByteArray().copyOf(size)
 

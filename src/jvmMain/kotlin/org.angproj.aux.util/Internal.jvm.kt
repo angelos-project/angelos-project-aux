@@ -15,7 +15,6 @@
 package org.angproj.aux.util
 
 import java.nio.ByteOrder
-import kotlin.math.max
 
 internal actual fun getCurrentEndian(): Endian = when(ByteOrder.nativeOrder()) {
     ByteOrder.LITTLE_ENDIAN -> Endian.LITTLE

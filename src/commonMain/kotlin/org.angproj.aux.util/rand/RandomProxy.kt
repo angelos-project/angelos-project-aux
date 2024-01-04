@@ -14,9 +14,9 @@
  */
 package org.angproj.aux.util.rand
 
-import org.angproj.aux.util.RegistryProxy
+import org.angproj.aux.util.reg.RegistryProxy
 
-public class RandomProxy(private val item: AbstractBufferedRandom): RandomGenerator, RegistryProxy {
+public class RandomProxy(private val item: AbstractBufferedRandom) : RandomGenerator, RegistryProxy {
     override fun getByte(): Byte = item.getByte()
 
     override fun getUByte(): UByte = item.getUByte()

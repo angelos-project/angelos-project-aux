@@ -14,7 +14,6 @@
  */
 package org.angproj.aux.util
 
-import kotlin.math.max
 import kotlinx.cinterop.*
 import platform.posix.*
 
@@ -35,7 +34,7 @@ internal actual fun epochEntropy(): Pair<Long, Long> = memScoped {
     val tv = nativeHeap.alloc<timeval>()
     gettimeofday(tv.ptr, null)
     val timestamp = tv.tv_sec * 1000
-    val nanos = (tv.tv_usec * 1000).toLong()
+    val nanos = tv.tv_usec.toLong() * 1000
     free(tv.ptr)
     Pair(
         timestamp,

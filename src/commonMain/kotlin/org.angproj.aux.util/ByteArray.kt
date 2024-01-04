@@ -195,29 +195,34 @@ public fun ByteArray.writeDoubleAt(offset: Int, value: Double): Unit = writeLong
  * Convert ShortArray to ByteArray.
  * */
 public fun ShortArray.toByteArray(): ByteArray = ByteArray(Short.SIZE_BYTES * this.size).also {
-    this.forEachIndexed { idx, value -> it.writeShortAt(idx * Short.SIZE_BYTES, value) } }
+    this.forEachIndexed { idx, value -> it.writeShortAt(idx * Short.SIZE_BYTES, value) }
+}
 
 
 /**
  * Convert IntArray to ByteArray.
  * */
 public fun IntArray.toByteArray(): ByteArray = ByteArray(Int.SIZE_BYTES * this.size).also {
-    this.forEachIndexed { idx, value -> it.writeIntAt(idx * Int.SIZE_BYTES, value) } }
+    this.forEachIndexed { idx, value -> it.writeIntAt(idx * Int.SIZE_BYTES, value) }
+}
 
 /**
  * Convert LongArray to ByteArray.
  * */
 public fun LongArray.toByteArray(): ByteArray = ByteArray(Long.SIZE_BYTES * this.size).also {
-    this.forEachIndexed { idx, value -> it.writeLongAt(idx * Long.SIZE_BYTES, value) } }
+    this.forEachIndexed { idx, value -> it.writeLongAt(idx * Long.SIZE_BYTES, value) }
+}
 
 /**
  * Convert FloatArray to ByteArray.
  * */
 public fun FloatArray.toByteArray(): ByteArray = ByteArray(Float.SIZE_BYTES * this.size).also {
-    this.forEachIndexed { idx, value -> it.writeFloatAt(idx * Float.SIZE_BYTES, value) } }
+    this.forEachIndexed { idx, value -> it.writeFloatAt(idx * Float.SIZE_BYTES, value) }
+}
 
 /**
  * Convert DoubleArray to ByteArray.
  * */
 public fun DoubleArray.toByteArray(): ByteArray = ByteArray(Double.SIZE_BYTES * this.size).also {
-    this.forEachIndexed { idx, value -> it.writeDoubleAt(idx * Double.SIZE_BYTES, value) } }
+    this.forEachIndexed { idx, value -> it.writeDoubleAt(idx * Double.SIZE_BYTES, value) }
+}

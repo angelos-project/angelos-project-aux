@@ -12,7 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux.util.reg
 
 public interface RegistryProxy {
     public val identifier: String

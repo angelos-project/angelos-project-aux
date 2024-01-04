@@ -17,72 +17,70 @@ package org.angproj.aux.util
 import kotlin.jvm.JvmStatic
 
 
-internal enum class HexDigits(val digit: Char) {
-    ZERO('0'),
-    ONE('1'),
-    TWO('2'),
-    THREE('3'),
-    FOUR('4'),
-    FIVE('5'),
-    SIX('6'),
-    SEVEN('7'),
-    EIGHT('8'),
-    NINE('9'),
-
-    A_CAPITAL('A'),
-    B_CAPITAL('B'),
-    C_CAPITAL('C'),
-    D_CAPITAL('D'),
-    E_CAPITAL('E'),
-    F_CAPITAL('F'),
-
-    A_SMALL('a'),
-    B_SMALL('b'),
-    C_SMALL('c'),
-    D_SMALL('d'),
-    E_SMALL('e'),
-    F_SMALL('f'),
-}
-
-
-internal enum class HexValues(val value: Int) {
-    ZERO(0),
-    ONE(1),
-    TWO(2),
-    THREE(3),
-    FOUR(4),
-    FIVE(5),
-    SIX(6),
-    SEVEN(7),
-    EIGHT(8),
-    NINE(9),
-    A(10),
-    B(11),
-    C(12),
-    D(13),
-    E(14),
-    F(15),
-
-    U_ZERO(ZERO.value shl 4),
-    U_ONE(ONE.value shl 4),
-    U_TWO(TWO.value shl 4),
-    U_THREE(THREE.value shl 4),
-    U_FOUR(FOUR.value shl 4),
-    U_FIVE(FIVE.value shl 4),
-    U_SIX(SIX.value shl 4),
-    U_SEVEN(SEVEN.value shl 4),
-    U_EIGHT(EIGHT.value shl 4),
-    U_NINE(NINE.value shl 4),
-    U_A(A.value shl 4),
-    U_B(B.value shl 4),
-    U_C(C.value shl 4),
-    U_D(D.value shl 4),
-    U_E(E.value shl 4),
-    U_F(F.value shl 4),
-}
-
-
 public object BinHex {
+
+    internal enum class HexDigits(val digit: Char) {
+        ZERO('0'),
+        ONE('1'),
+        TWO('2'),
+        THREE('3'),
+        FOUR('4'),
+        FIVE('5'),
+        SIX('6'),
+        SEVEN('7'),
+        EIGHT('8'),
+        NINE('9'),
+
+        A_CAPITAL('A'),
+        B_CAPITAL('B'),
+        C_CAPITAL('C'),
+        D_CAPITAL('D'),
+        E_CAPITAL('E'),
+        F_CAPITAL('F'),
+
+        A_SMALL('a'),
+        B_SMALL('b'),
+        C_SMALL('c'),
+        D_SMALL('d'),
+        E_SMALL('e'),
+        F_SMALL('f'),
+    }
+
+    internal enum class HexValues(val value: Int) {
+        ZERO(0),
+        ONE(1),
+        TWO(2),
+        THREE(3),
+        FOUR(4),
+        FIVE(5),
+        SIX(6),
+        SEVEN(7),
+        EIGHT(8),
+        NINE(9),
+        A(10),
+        B(11),
+        C(12),
+        D(13),
+        E(14),
+        F(15),
+
+        U_ZERO(ZERO.value shl 4),
+        U_ONE(ONE.value shl 4),
+        U_TWO(TWO.value shl 4),
+        U_THREE(THREE.value shl 4),
+        U_FOUR(FOUR.value shl 4),
+        U_FIVE(FIVE.value shl 4),
+        U_SIX(SIX.value shl 4),
+        U_SEVEN(SEVEN.value shl 4),
+        U_EIGHT(EIGHT.value shl 4),
+        U_NINE(NINE.value shl 4),
+        U_A(A.value shl 4),
+        U_B(B.value shl 4),
+        U_C(C.value shl 4),
+        U_D(D.value shl 4),
+        U_E(E.value shl 4),
+        U_F(F.value shl 4),
+    }
 
     private fun upperBits(byte: Int): Char = when (byte) {
         HexValues.U_ZERO.value -> HexDigits.ZERO.digit

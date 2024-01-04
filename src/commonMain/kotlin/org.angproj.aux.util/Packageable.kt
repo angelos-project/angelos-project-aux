@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.util
 
-public interface Packageable: EndianAware {
+public interface Packageable : EndianAware {
 
     public fun enfold()
 

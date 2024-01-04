@@ -81,5 +81,3 @@ public class Uuid4 internal constructor() {
         }
     }
 }
-
-public fun uuid4(): Uuid4 = Uuid4()
