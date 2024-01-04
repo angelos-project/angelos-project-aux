@@ -38,12 +38,7 @@ internal actual fun unixEpoch(): Long {
     return Date.now().toLong()
 }
 
-private var entropyCounter: Long = 1
-
-internal actual fun epochEntropy(): Long {
-    entropyCounter = max(1, entropyCounter + 1)
-    val timestamp = Date.now().toLong()
-    val nanos = Date.now().toLong().floorMod(1_000_000_000)
-    return -(timestamp + nanos + 1).rotateRight(53) xor
-            (timestamp - nanos - 1).inv().rotateLeft(53) * entropyCounter
-}
+internal actual fun epochEntropy(): Pair<Long, Long> = Pair(
+    Date.now().toLong(),
+    Date.now().toLong().floorMod(1_000_000_000)
+)

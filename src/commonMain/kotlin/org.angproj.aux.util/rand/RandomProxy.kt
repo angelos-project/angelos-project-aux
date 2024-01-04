@@ -1,70 +1,54 @@
+/**
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ *
+ * This software is available under the terms of the MIT license. Parts are licensed
+ * under different terms if stated. The legal terms are attached to the LICENSE file
+ * and are made available on:
+ *
+ *      https://opensource.org/licenses/MIT
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Contributors:
+ *      Kristoffer Paulsson - initial implementation
+ */
 package org.angproj.aux.util.rand
 
-public class RandomProxy(private val item: AbstractBufferedRandom): RandomGenerator {
-    override fun getByte(): Byte {
-        TODO("Not yet implemented")
-    }
+import org.angproj.aux.util.RegistryProxy
 
-    override fun getUByte(): UByte {
-        TODO("Not yet implemented")
-    }
+public class RandomProxy(private val item: AbstractBufferedRandom): RandomGenerator, RegistryProxy {
+    override fun getByte(): Byte = item.getByte()
 
-    override fun getShort(): Short {
-        TODO("Not yet implemented")
-    }
+    override fun getUByte(): UByte = item.getUByte()
 
-    override fun getUShort(): UShort {
-        TODO("Not yet implemented")
-    }
+    override fun getShort(): Short = item.getShort()
 
-    override fun getInt(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun getUShort(): UShort = item.getUShort()
 
-    override fun getUInt(): UInt {
-        TODO("Not yet implemented")
-    }
+    override fun getInt(): Int = item.getInt()
 
-    override fun getLong(): Long {
-        TODO("Not yet implemented")
-    }
+    override fun getUInt(): UInt = item.getUInt()
 
-    override fun getULong(): ULong {
-        TODO("Not yet implemented")
-    }
+    override fun getLong(): Long = item.getLong()
 
-    override fun getFloat(): Float {
-        TODO("Not yet implemented")
-    }
+    override fun getULong(): ULong = item.getULong()
 
-    override fun getDouble(): Double {
-        TODO("Not yet implemented")
-    }
+    override fun getFloat(): Float = item.getFloat()
 
-    override fun getByteArray(size: Int): ByteArray {
-        TODO("Not yet implemented")
-    }
+    override fun getDouble(): Double = item.getDouble()
 
-    override fun getShortArray(size: Int): ShortArray {
-        TODO("Not yet implemented")
-    }
+    override fun getByteArray(size: Int): ByteArray = item.getByteArray(size)
 
-    override fun getIntArray(size: Int): IntArray {
-        TODO("Not yet implemented")
-    }
+    override fun getShortArray(size: Int): ShortArray = item.getShortArray(size)
 
-    override fun getLongArray(size: Int): LongArray {
-        TODO("Not yet implemented")
-    }
+    override fun getIntArray(size: Int): IntArray = item.getIntArray(size)
 
-    override fun getFloatArray(size: Int): FloatArray {
-        TODO("Not yet implemented")
-    }
+    override fun getLongArray(size: Int): LongArray = item.getLongArray(size)
 
-    override fun getDoubleArray(size: Int): DoubleArray {
-        TODO("Not yet implemented")
-    }
+    override fun getFloatArray(size: Int): FloatArray = item.getFloatArray(size)
+
+    override fun getDoubleArray(size: Int): DoubleArray = item.getDoubleArray(size)
 
     override val identifier: String
-        get() = TODO("Not yet implemented")
+        get() = item.identifier
 }

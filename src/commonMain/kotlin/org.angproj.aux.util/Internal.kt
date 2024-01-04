@@ -57,4 +57,4 @@ internal expect fun getCurrentEndian(): Endian
 
 internal expect fun unixEpoch(): Long
 
-internal expect fun epochEntropy(): Long
+internal expect fun epochEntropy(): Pair<Long, Long>

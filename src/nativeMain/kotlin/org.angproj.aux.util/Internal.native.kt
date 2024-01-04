@@ -31,16 +31,14 @@ internal actual fun unixEpoch(): Long = memScoped {
     return timestamp
 }
 
-private var entropyCounter: Long = 1
-
-internal actual fun epochEntropy(): Long  = memScoped {
-    entropyCounter = max(1, entropyCounter + 1)
+internal actual fun epochEntropy(): Pair<Long, Long> = memScoped {
     val tv = nativeHeap.alloc<timeval>()
     gettimeofday(tv.ptr, null)
     val timestamp = tv.tv_sec * 1000
-    val nanos = tv.tv_usec * 1000
-    val entropy = -(timestamp + nanos + 1).rotateRight(53) xor
-            (timestamp - nanos - 1).inv().rotateLeft(53) * entropyCounter
+    val nanos = (tv.tv_usec * 1000).toLong()
     free(tv.ptr)
-    return@memScoped entropy
+    Pair(
+        timestamp,
+        nanos
+    )
 }

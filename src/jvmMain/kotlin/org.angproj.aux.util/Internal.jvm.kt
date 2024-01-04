@@ -27,12 +27,7 @@ internal actual fun unixEpoch(): Long {
     return System.currentTimeMillis()
 }
 
-private var entropyCounter: Long = 1
-
-internal actual fun epochEntropy(): Long {
-    entropyCounter = max(1, entropyCounter + 1)
-    val timestamp = System.currentTimeMillis()
-    val nanos = System.nanoTime().floorMod(1_000_000_000)
-    return -(timestamp + nanos + 1).rotateRight(53) xor
-            (timestamp - nanos - 1).inv().rotateLeft(53) * entropyCounter
-}
+internal actual fun epochEntropy(): Pair<Long, Long> = Pair(
+    System.currentTimeMillis(),
+    System.nanoTime().floorMod(1_000_000_000)
+)

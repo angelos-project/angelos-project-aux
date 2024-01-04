@@ -15,25 +15,29 @@
 package org.angproj.aux.util.rand
 
 import org.angproj.aux.util.epochEntropy
+import kotlin.math.max
 
 public class EntropyRandom: AbstractBufferedRandom() {
 
-    public val identifier: String
+    private var counter: Long = 0
+
+    override val identifier: String
         get() = name
 
-    override fun intialize() {
-        instantiated = true
-    }
-
     override fun initialize() {
-        TODO("Not yet implemented")
+        _instantiated = true
     }
 
     override fun finalize() {
-        instantiated = false
+        _instantiated = false
     }
 
-    override fun getRawLong(): Long = epochEntropy()
+    override fun getRawLong(): Long {
+        counter = max(1, counter + 1)
+        val (timestamp, nanos) = epochEntropy()
+        return -(timestamp + nanos + 1).rotateRight(53) xor
+                (timestamp - nanos - 1).inv().rotateLeft(53) * counter
+    }
 
     public companion object {
         public const val name: String = "EntropyRandom-SystemClock"

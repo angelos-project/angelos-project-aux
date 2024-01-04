@@ -14,9 +14,7 @@
  */
 package org.angproj.aux.util.rand
 
-import org.angproj.aux.util.RegistryProxy
-
-public interface RandomGenerator: RegistryProxy {
+public interface RandomGenerator {
     public fun getByte(): Byte
 
     public fun getUByte(): UByte

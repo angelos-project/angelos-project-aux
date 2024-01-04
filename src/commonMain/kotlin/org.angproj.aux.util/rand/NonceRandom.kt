@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -15,23 +15,48 @@
 package org.angproj.aux.util.rand
 
 import org.angproj.aux.util.Epoch
-import kotlin.jvm.JvmStatic
+import org.angproj.aux.util.Random
+import org.angproj.aux.util.floorMod
 import kotlin.math.max
-import kotlin.native.concurrent.ThreadLocal
 
-@ThreadLocal
-public object Nonce {
+public class NonceRandom(private var seederHandle: Int): AbstractBufferedRandom() {
+
+    private var seedPos = 0
+
     private var counter: Long = 1
-    private var reseed: Long = Epoch.getEpochMilliSecs()
-    private var entropy: Long = Epoch.entropy()
+    private var reseed: Long = 0
+    private var entropy: Long = 0
     private var nlfMask: Long = 0
     private var s0: Long = 0
     private var s1: Long = 0
     private var s2: Long = 0
     private var s3: Long = 0
 
-    init {
+    override val identifier: String
+        get() = name
+
+    override fun initialize() {
+        require(seederHandle != 0) { "No entropy source found." }
+
+        reseed = Epoch.getEpochMilliSecs()
+
+        entropy = Random.receive(seederHandle).getLong()
         repeat(16) { round() }
+        _instantiated = true
+    }
+
+    override fun finalize() {
+        seederHandle = 0
+        seedPos = 0
+        counter = 1
+        reseed = 0
+        entropy = 0
+        nlfMask = 0
+        s0 = 0
+        s1 = 0
+        s2 = 0
+        s3 = 0
+        _instantiated = false
     }
 
     private fun round() {
@@ -39,7 +64,7 @@ public object Nonce {
         if(counter.mod(10_000) == 0) {
             val seed = Epoch.getEpochMilliSecs()
             if(seed != reseed) {
-                entropy = -(Epoch.entropy() - seed).rotateRight(2) xor
+                entropy = -(Random.receive(seederHandle).getLong() - seed).rotateRight(2) xor
                         (entropy + reseed).inv().rotateLeft(17) * counter
                 reseed = seed
             }
@@ -56,25 +81,14 @@ public object Nonce {
         counter = max(1, counter + 1)
     }
 
-    @JvmStatic
-    public fun someEntropy(): LongArray {
-        round()
-        return longArrayOf(s0 xor nlfMask, s1 xor nlfMask, s2 xor nlfMask, s3 xor nlfMask)
-    }
+    override fun getRawLong(): Long = when(seedPos.floorMod(4)) {
+            0 -> s0
+            1 -> s1
+            2-> s2
+            else -> s3.also { round() }
+        } xor nlfMask.also { seedPos++ }
 
-    @JvmStatic
-    public fun someEntropy(entropy: ByteArray) {
-        entropy.indices.forEach {
-            entropy[it] = (when(it.mod(4)) {
-                0 -> {
-                    round()
-                    s0
-                }
-                1 -> s1
-                2 -> s2
-                3 -> s3
-                else -> 0
-            } xor nlfMask).toByte()
-        }
+    public companion object {
+        public const val name: String = "NonceRandom-Standard"
     }
 }

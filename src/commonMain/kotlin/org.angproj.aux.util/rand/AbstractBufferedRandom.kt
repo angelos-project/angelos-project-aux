@@ -29,8 +29,8 @@ public abstract class AbstractBufferedRandom: RandomGenerator, RegistryItem {
     override abstract fun initialize()
 
     override abstract fun finalize()
-    override val identifier: String
-        get() = TODO("Not yet implemented")
+
+    override abstract val identifier: String
 
     protected abstract fun getRawLong(): Long
 
@@ -67,7 +67,10 @@ public abstract class AbstractBufferedRandom: RandomGenerator, RegistryItem {
 
     override fun getDouble(): Double = getValue(Double.SIZE_BYTES) { buffer.readDoubleAt(bufPos) }
 
-    override fun getByteArray(size: Int): ByteArray { TODO("Not yet implemented") }
+    override fun getByteArray(size: Int): ByteArray = LongArray(
+        size.div(Long.SIZE_BYTES) + if(size.floorMod(Long.SIZE_BYTES) == 0) 0 else 1) {
+        getRawLong()
+    }.toByteArray().copyOf(size)
 
     override fun getShortArray(size: Int): ShortArray = ShortArray(size) { getShort() }
 
