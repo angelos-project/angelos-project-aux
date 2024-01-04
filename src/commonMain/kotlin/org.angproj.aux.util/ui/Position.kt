@@ -12,22 +12,9 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux.util.ui
 
-import org.angproj.aux.util.io.Readable
-import org.angproj.aux.util.io.Storable
-import org.angproj.aux.util.io.Writable
-import org.angproj.io.buf.Retrievable
-
-public interface Packageable : EndianAware {
-
-    public fun enfold(outStream: Writable)
-
-    public fun enfold(outBlock: Storable)
-
-    public fun unfold(inStream: Readable)
-
-    public fun unfold(inBlock: Retrievable)
-
-    public fun foldSize(): Long
+public interface Position {
+    public var x: Float
+    public var y: Float
 }
