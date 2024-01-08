@@ -3,8 +3,8 @@ plugins {
     `maven-publish`
 }
 
-group = "org.angproj.aux.util"
-version = "0.5.1"
+group = "org.angproj.aux"
+version = "0.5.2"
 
 repositories {
     mavenCentral()

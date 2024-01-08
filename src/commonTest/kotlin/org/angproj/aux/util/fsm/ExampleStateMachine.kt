@@ -1,11 +1,11 @@
 package org.angproj.aux.sm
 
-import org.angproj.aux.util.fsm.States
+import org.angproj.aux.fsm.States
 
 enum class ExampleStateMachine {
     START, RUNNING, FINNISH;
 
-    companion object: States<ExampleStateMachine> {
+    companion object: org.angproj.aux.fsm.States<ExampleStateMachine> {
         override val transitionMap = mapOf(
             START to listOf(RUNNING),
             RUNNING to listOf(RUNNING, FINNISH),
