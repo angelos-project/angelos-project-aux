@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -12,11 +12,13 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux.pkg
 
-import kotlin.math.absoluteValue
+import org.angproj.aux.util.EndianAware
 
-public fun uuid4(): Uuid4 = Uuid4()
+public interface Packageable : EndianAware {
 
-public fun Int.floorMod(other: Int): Int = this.absoluteValue.mod(other.absoluteValue)
-public fun Long.floorMod(other: Long): Long = this.absoluteValue.mod(other.absoluteValue)
+    public fun foldSize(): Long
+
+    public val foldType: FoldType
+}

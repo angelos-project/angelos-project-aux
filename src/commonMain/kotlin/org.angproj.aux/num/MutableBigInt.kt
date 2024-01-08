@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.num
 
+import org.angproj.aux.util.mutableBigIntOf
+
 public class MutableBigInt internal constructor(magnitude: MutableList<Int>, sigNum: BigSigned) :
     AbstractBigInt<MutableList<Int>>(magnitude, sigNum) {
 
@@ -48,12 +50,3 @@ public class MutableBigInt internal constructor(magnitude: MutableList<Int>, sig
 
 public fun emptyMutableBigIntOf(value: IntArray = intArrayOf(0)): MutableBigInt =
     MutableBigInt(value, BigSigned.POSITIVE)
-
-public fun mutableBigIntOf(value: IntArray): MutableBigInt =
-    AbstractBigInt.fromIntArray(value) { a, b -> MutableBigInt(a, b) }
-
-public fun mutableBigIntOf(value: ByteArray): MutableBigInt =
-    AbstractBigInt.fromByteArray(value) { a, b -> MutableBigInt(a, b) }
-
-public fun mutableBigIntOf(value: Long): MutableBigInt =
-    AbstractBigInt.fromLong(value) { a, b -> MutableBigInt(a, b) }

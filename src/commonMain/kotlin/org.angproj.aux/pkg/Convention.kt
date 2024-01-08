@@ -12,19 +12,22 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux.pkg
 
+import org.angproj.aux.num.AbstractBigInt
+import org.angproj.aux.num.BigInt
+import org.angproj.aux.util.EndianAware
+import org.angproj.aux.util.bigIntOf
 import org.angproj.io.buf.Retrievable
 
-public interface Packageable : EndianAware {
+public enum class Convention(
+    public val type: Short,
+    //public val load: () -> Unit,
+    //public val save: () -> Unit
+) {
+    BIG_INT(10240),
+    UUID4(10239);
 
-    public fun enfold(outStream: org.angproj.aux.io.Writable)
-
-    public fun enfold(outBlock: org.angproj.aux.io.Storable)
-
-    public fun unfold(inStream: org.angproj.aux.io.Readable)
-
-    public fun unfold(inBlock: Retrievable)
-
-    public fun foldSize(): Long
+    public companion object: EndianAware {
+    }
 }

@@ -17,14 +17,13 @@ package org.angproj.aux.util
 import kotlin.math.max
 import kotlin.native.concurrent.ThreadLocal
 
-public class Uuid4 internal constructor() {
+public class Uuid4 internal constructor(private val uuid: ByteArray) {
 
-    private val uuid: ByteArray = generateByteArray().also {
-        // Modifying data to make it a version 4 UUID
-        it[6] = it[6].flipOffFlag7()
-        it[6] = it[6].flipOnFlag6()
-        it[6] = it[6].flipOffFlag5()
-        it[6] = it[6].flipOffFlag4()
+    public constructor() : this(generateByteArray())
+
+    init {
+        require(uuid.size == 16) { "Wrong size of data!" }
+        require(uuid[6].toInt() and 0xf0 == 64) { "Not UUID version 4!" }
     }
 
     private val hex: String by lazy {
@@ -76,6 +75,11 @@ public class Uuid4 internal constructor() {
                         (seed + entropy).inv().rotateLeft(17),
             ).toByteArray()
             reseed(data.hashCode())
+
+            data[6] = data[6].flipOffFlag7()
+            data[6] = data[6].flipOnFlag6()
+            data[6] = data[6].flipOffFlag5()
+            data[6] = data[6].flipOffFlag4()
 
             return data
         }

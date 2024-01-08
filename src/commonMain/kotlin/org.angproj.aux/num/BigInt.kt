@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.num
 
+import org.angproj.aux.util.bigIntOf
+
 public class BigInt internal constructor(magnitude: List<Int>, sigNum: BigSigned) :
     AbstractBigInt<List<Int>>(magnitude, sigNum) {
 
@@ -35,11 +37,3 @@ public class BigInt internal constructor(magnitude: List<Int>, sigNum: BigSigned
         public val minusOne: BigInt by lazy { MutableBigInt.minusOne.toBigInt() }
     }
 }
-
-public fun bigIntOf(value: IntArray): BigInt =
-    AbstractBigInt.fromIntArray(value) { a, b -> BigInt(a, b) }
-
-public fun bigIntOf(value: ByteArray): BigInt =
-    AbstractBigInt.fromByteArray(value) { a, b -> BigInt(a, b) }
-
-public fun bigIntOf(value: Long): BigInt = AbstractBigInt.fromLong(value) { a, b -> BigInt(a, b) }
