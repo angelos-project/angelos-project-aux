@@ -32,6 +32,7 @@ public class BigInt internal constructor(magnitude: List<Int>, sigNum: BigSigned
     public override fun toBigInt(): BigInt = this
 
     public companion object {
+        public val two: BigInt by lazy { MutableBigInt.two.toBigInt() }
         public val one: BigInt by lazy { MutableBigInt.one.toBigInt() }
         public val zero: BigInt by lazy { MutableBigInt.zero.toBigInt() }
         public val minusOne: BigInt by lazy { MutableBigInt.minusOne.toBigInt() }
