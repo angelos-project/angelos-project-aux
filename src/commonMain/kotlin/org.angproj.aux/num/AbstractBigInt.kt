@@ -84,6 +84,8 @@ public abstract class AbstractBigInt<E : List<Int>>(
         else -> this
     }
 
+    public fun toLong(): Long = (this.getIdxL(1) shl 32) or this.getIdxL(0)
+
     public fun toByteArray(): ByteArray {
         if (sigNum.isZero()) return byteArrayOf(0)
 
