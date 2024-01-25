@@ -16,6 +16,7 @@ package org.angproj.aux.util
 
 import kotlinx.cinterop.*
 import platform.posix.*
+import kotlin.system.getTimeNanos
 
 internal actual fun getCurrentEndian(): Endian = when(Platform.isLittleEndian) {
     true -> Endian.LITTLE
@@ -30,11 +31,23 @@ internal actual fun unixEpoch(): Long = memScoped {
     return timestamp
 }
 
-internal actual fun epochEntropy(): Pair<Long, Long> = memScoped {
+/*internal actual fun epochEntropy(): Pair<Long, Long> = memScoped {
     val tv = nativeHeap.alloc<timeval>()
     gettimeofday(tv.ptr, null)
     val timestamp = tv.tv_sec * 1000
     val nanos = tv.tv_usec.toLong() * 1000
+    free(tv.ptr)
+    Pair(
+        timestamp,
+        nanos
+    )
+}*/
+
+internal actual fun epochEntropy(): Pair<Long, Long> = memScoped {
+    val tv = nativeHeap.alloc<timeval>()
+    gettimeofday(tv.ptr, null)
+    val timestamp = tv.tv_sec * 1000
+    val nanos = getTimeNanos().floorMod(1_000_000_000)
     free(tv.ptr)
     Pair(
         timestamp,

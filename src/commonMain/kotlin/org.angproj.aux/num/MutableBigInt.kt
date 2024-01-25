@@ -19,7 +19,10 @@ import org.angproj.aux.util.mutableBigIntOf
 public class MutableBigInt internal constructor(magnitude: MutableList<Int>, sigNum: BigSigned) :
     AbstractBigInt<MutableList<Int>>(magnitude, sigNum) {
 
-    public constructor(magnitude: IntArray, sigNum: BigSigned) : this(magnitude.toMutableList(), sigNum)
+    public constructor(magnitude: IntArray, sigNum: BigSigned) : this(
+        magnitude.toMutableList(),
+        sigNumZeroAdjust(magnitude, sigNum)
+    )
 
     public fun setIdx(index: Int, num: Int): Unit = mag.revSet(index, num)
 

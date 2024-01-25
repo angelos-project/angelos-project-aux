@@ -19,7 +19,10 @@ import org.angproj.aux.util.bigIntOf
 public class BigInt internal constructor(magnitude: List<Int>, sigNum: BigSigned) :
     AbstractBigInt<List<Int>>(magnitude, sigNum) {
 
-    public constructor(magnitude: IntArray, sigNum: BigSigned) : this(magnitude.asList(), sigNum)
+    public constructor(magnitude: IntArray, sigNum: BigSigned) : this(
+        magnitude.asList(),
+        sigNumZeroAdjust(magnitude, sigNum)
+    )
 
     override fun negate(): BigInt = BigInt(mag, sigNum.negate())
 

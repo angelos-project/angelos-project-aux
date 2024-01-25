@@ -17,8 +17,7 @@ package org.angproj.aux.num
 import org.angproj.aux.util.readIntAt
 import org.angproj.aux.util.swapEndian
 import org.angproj.aux.util.writeIntAt
-import kotlin.math.max
-
+import kotlin.jvm.JvmStatic
 
 public abstract class AbstractBigInt<E : List<Int>>(
     public val mag: E,
@@ -172,7 +171,7 @@ public abstract class AbstractBigInt<E : List<Int>>(
                 else -> stripLeadingZeros(value)
             }
 
-            return build(mag, sigNumZeroAdjust(mag, sigNum))
+            return build(mag, sigNum)
         }
 
         public fun <T : AbstractBigInt<*>> fromIntArray(
@@ -191,7 +190,7 @@ public abstract class AbstractBigInt<E : List<Int>>(
                 else -> stripLeadingZeros(value)
             }
 
-            return build(mag, sigNumZeroAdjust(mag, sigNum))
+            return build(mag, sigNum)
         }
 
         public fun <T : AbstractBigInt<*>> fromLong(
@@ -210,10 +209,11 @@ public abstract class AbstractBigInt<E : List<Int>>(
                 else -> stripLeadingZeros(tmp)
             }
 
-            return build(mag, sigNumZeroAdjust(mag, sigNum))
+            return build(mag, sigNum)
         }
 
-        private fun sigNumZeroAdjust(
+        @JvmStatic
+        protected fun sigNumZeroAdjust(
             mag: IntArray,
             sigNum: BigSigned
         ): BigSigned = when {
@@ -261,7 +261,7 @@ public abstract class AbstractBigInt<E : List<Int>>(
             return result
         }
 
-        private fun stripLeadingZeros(value: ByteArray): IntArray {
+        internal fun stripLeadingZeros(value: ByteArray): IntArray {
             val keep = keep(value, BigSigned.POSITIVE)
             val result = IntArray((value.size - keep + 3).floorDiv(Int.SIZE_BYTES))
             val cache = ByteArray(
