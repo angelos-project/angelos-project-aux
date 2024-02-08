@@ -68,7 +68,7 @@ public abstract class AbstractBigInt<E : List<Int>>(
         mag.size > other.mag.size -> BigCompare.GREATER
         else -> {
             mag.indices.forEach { idx ->
-                val xNum = mag[idx]
+                val xNum = mag[idx] // Should NOT use getL()
                 val yNum = other.mag[idx]
                 if (xNum != yNum) return@compareMagnitude if (xNum xor -0x80000000 < yNum xor -0x80000000
                 ) BigCompare.LESSER else BigCompare.GREATER
@@ -146,6 +146,7 @@ public abstract class AbstractBigInt<E : List<Int>>(
             this[index] = value.toInt()
         }
 
+        public inline fun <E : List<Int>> E.getL(index: Int): Long = this[index].getL()
         public inline fun <E : List<Int>> E.revIdx(index: Int): Int = lastIndex - index
         public inline fun <E : List<Int>> E.revGet(index: Int): Int = this[lastIndex - index]
         public inline fun <E : List<Int>> E.revGetL(index: Int): Long = this[lastIndex - index].getL()

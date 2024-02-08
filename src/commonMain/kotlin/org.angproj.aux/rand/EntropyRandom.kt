@@ -14,29 +14,29 @@
  */
 package org.angproj.aux.rand
 
-import org.angproj.aux.util.epochEntropy
-import kotlin.math.max
+import org.angproj.aux.util.SecureEntropy
+import org.angproj.aux.util.readLongAt
 
 public class EntropyRandom : AbstractBufferedRandom() {
 
-    private var counter: Long = 0
+    private val buffer = ByteArray(8)
 
     override val identifier: String
         get() = name
 
     override fun initialize() {
+        buffer.fill(0)
         _instantiated = true
     }
 
     override fun finalize() {
+        buffer.fill(0)
         _instantiated = false
     }
 
     override fun getRawLong(): Long {
-        counter = max(1, counter + 1)
-        val (timestamp, nanos) = epochEntropy()
-        return -(timestamp + nanos + 1).rotateRight(53) xor
-                (timestamp - nanos - 1).inv().rotateLeft(53) * counter
+        SecureEntropy.getEntropy(buffer)
+        return buffer.readLongAt(0)
     }
 
     public companion object {

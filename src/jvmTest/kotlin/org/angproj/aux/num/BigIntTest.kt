@@ -7,7 +7,6 @@ class BigIntBasicTest {
     val vectorList1 = Combinator.generateValueVector()
     val vectorList2 = Combinator.generateValueVector()
 
-
     @Test
     fun compareToTest() {
         Combinator.doMatrixIntTests(vectorList1, vectorList2) { xbi, ybi, x, y ->
