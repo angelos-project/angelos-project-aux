@@ -1,6 +1,5 @@
 package org.angproj.aux.util
 
-import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 
 class Benchmark {
