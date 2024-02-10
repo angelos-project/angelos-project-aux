@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.util
 
+import org.angproj.aux.sec.SecureEntropy
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.test.Test

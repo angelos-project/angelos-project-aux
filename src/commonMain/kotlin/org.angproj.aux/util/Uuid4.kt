@@ -14,6 +14,10 @@
  */
 package org.angproj.aux.util
 
+import org.angproj.aux.sec.SecureEntropy
+import org.angproj.aux.sec.SecureFeed
+import org.angproj.aux.sec.SecureRandom
+
 public class Uuid4 internal constructor(private val uuid: ByteArray) {
 
     public constructor() : this(generateByteArray())
@@ -38,10 +42,20 @@ public class Uuid4 internal constructor(private val uuid: ByteArray) {
 
     internal companion object {
 
-        fun generateByteArray(): ByteArray {
-            val data = ByteArray(16)
+        private val rand = ByteArray(64)
+        private var round = 4
 
-            SecureEntropy.getEntropy(data)
+        fun generateByteArray(): ByteArray {
+            if(round == 4) {
+                SecureFeed.getFeed(rand, 0)
+                round = 0
+            }
+
+            val data = ByteArray(16)
+            val start = round * 16
+            val end = start + 16
+            rand.copyInto(data, 0, start, end)
+            round++
 
             data[6] = data[6].flipOffFlag7()
             data[6] = data[6].flipOnFlag6()

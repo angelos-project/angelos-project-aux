@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.rand
 
-import org.angproj.aux.util.SecureEntropy
+import org.angproj.aux.sec.SecureEntropy
 import org.angproj.aux.util.readLongAt
 
 public class EntropyRandom : AbstractBufferedRandom() {

@@ -1,5 +1,7 @@
 package org.angproj.aux.num
 
+import org.angproj.aux.sec.SecureFeed
+import java.io.File
 import kotlin.test.Test
 
 class BigIntBasicTest {
@@ -26,5 +28,25 @@ class BigIntBasicTest {
         Combinator.doVectorTests(vectorList1) { xbi, x ->
             Pair(xbi.abs(), x.abs())
         }
+    }
+
+    @Test
+    fun testNonceGenerateGigaByte() {
+        val data = ByteArray(4096)
+        generateGibaByte("secure_feed.bin", 4) {
+            repeat(data.size / 64) { idx ->
+                SecureFeed.getFeed(data, idx * 64) }
+            data
+        }
+    }
+
+    fun generateGibaByte(name: String, gigs: Long, block: () -> ByteArray) {
+        val targetFile = File(name)
+        val output = targetFile.outputStream()
+        val times = gigs * 1024L * 1024L * 1024L / block().size.toLong() + 1
+        repeat(times.toInt()) {
+            output.write(block())
+        }
+        output.close()
     }
 }

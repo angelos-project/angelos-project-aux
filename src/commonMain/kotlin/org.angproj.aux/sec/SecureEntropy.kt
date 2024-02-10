@@ -12,8 +12,10 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux.sec
 
+import org.angproj.aux.util.epochEntropy
+import org.angproj.aux.util.readLongAt
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.native.concurrent.ThreadLocal
