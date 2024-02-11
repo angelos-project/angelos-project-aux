@@ -14,9 +14,8 @@
  */
 package org.angproj.aux.util
 
-import org.angproj.aux.sec.SecureEntropy
 import org.angproj.aux.sec.SecureFeed
-import org.angproj.aux.sec.SecureRandom
+import kotlin.native.concurrent.ThreadLocal
 
 public class Uuid4 internal constructor(private val uuid: ByteArray) {
 
@@ -40,6 +39,7 @@ public class Uuid4 internal constructor(private val uuid: ByteArray) {
 
     override fun toString(): String = hex
 
+    @ThreadLocal
     internal companion object {
 
         private val rand = ByteArray(64)

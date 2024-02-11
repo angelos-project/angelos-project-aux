@@ -24,19 +24,12 @@ import kotlin.native.concurrent.ThreadLocal
 public object SecureEntropy {
 
     private var entropy: Long = 0xFFF73E99668196E9uL.toLong()
-    private var counter: Long = 1
-
-    init {
-        val start = ByteArray(16) { cycle().toByte() }
-        entropy = start.readLongAt(0)
-        counter = start.readLongAt(8).absoluteValue
-    }
+    private var counter: Long = 0xFFFF7D5BF9259763uL.toLong()
 
     private fun cycle(): Long {
-        counter = max(1, counter + 1)
         val (timestamp, nanos) = epochEntropy()
-        entropy = -(entropy + timestamp).rotateRight(53) xor
-                (entropy - nanos).inv().rotateLeft(53) * -counter
+        counter++
+        entropy = ((-entropy.inv() xor timestamp) * 3) xor ((-entropy.inv() xor nanos) * 5) * -counter.inv()
         return entropy
     }
 
@@ -44,4 +37,6 @@ public object SecureEntropy {
         require(entropy.size <= 1024)
         (0..entropy.lastIndex).forEach { entropy[it] = cycle().toByte() }
     }
+
+    public fun getEntropy(): Long = cycle()
 }

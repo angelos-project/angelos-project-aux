@@ -1,5 +1,7 @@
 package org.angproj.aux.util
 
+import org.angproj.aux.sec.SecureEntropy
+import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 
 class Benchmark {
@@ -22,6 +24,14 @@ class Benchmark {
     fun distribution(): Double {
         val n = (r + b).toDouble()
         return 4 * r / n
+    }
+
+    operator fun invoke(loops: Int, oneValue: (iter: Int) -> Long): Double {
+        var iter = 0
+        repeat(loops.absoluteValue) {
+            scatterPoint(oneValue(iter++), oneValue(iter++))
+        }
+        return distribution()
     }
 
     companion object {

@@ -16,7 +16,9 @@ package org.angproj.aux.sec
 
 import org.angproj.aux.util.readLongAt
 import org.angproj.aux.util.writeLongAt
+import kotlin.native.concurrent.ThreadLocal
 
+@ThreadLocal
 public object SecureFeed {
     private var counter: Long = 0
     private var entropy: Long = 0
@@ -26,19 +28,16 @@ public object SecureFeed {
     private val data = ByteArray(8)
 
     init {
-        val start = ByteArray(72)
-        SecureEntropy.getEntropy(start)
-        (0 until 8).forEach { state[it] = start.readLongAt(it * 8) }
+        (0 until 8).forEach { state[it] = SecureEntropy.getEntropy() }
+        entropy = SecureEntropy.getEntropy()
         repeat(9) { cycle() }
-        entropy = start.readLongAt(64)
     }
 
     private fun cycle() {
         counter++
 
         if(counter > 131072) {
-            SecureEntropy.getEntropy(data)
-            entropy = data.readLongAt(0)
+            entropy = SecureEntropy.getEntropy()
             state[8] = state[8] xor entropy
             counter = 1
         }
@@ -73,7 +72,6 @@ public object SecureFeed {
         state[6] = state[6] xor s2
         state[7] = state[7] xor s2
         state[8] = state[8] xor s2
-
     }
 
     public fun getFeed(buf: ByteArray, offset: Int = 0) {

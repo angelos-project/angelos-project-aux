@@ -17,10 +17,12 @@ package org.angproj.aux.sec
 import org.angproj.aux.rand.RandomGenerator
 import org.angproj.aux.util.*
 import kotlin.math.ceil
+import kotlin.native.concurrent.ThreadLocal
 
+@ThreadLocal
 public object SecureRandom: RandomGenerator {
-    private val buffer = ByteArray(1024)
 
+    private val buffer = ByteArray(1024)
     private var bufPos: Int = buffer.size
 
     private fun refill() {
