@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "org.angproj.aux"
-version = "0.6.10"
+version = "0.7.0"
 
 repositories {
     mavenCentral()

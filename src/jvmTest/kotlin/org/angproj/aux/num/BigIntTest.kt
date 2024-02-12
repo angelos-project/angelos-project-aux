@@ -39,7 +39,7 @@ class BigIntBasicTest {
     @Test
     fun testNonceGenerateGigaByte() {
         val data = ByteArray(4096)
-        generateGibaByte("secure_feed.bin", 4) {
+        generateGibaByte("secure_feed.bin", 32) {
             repeat(data.size / 64) { idx ->
                 SecureFeed.getFeed(data, idx * 64) }
             data

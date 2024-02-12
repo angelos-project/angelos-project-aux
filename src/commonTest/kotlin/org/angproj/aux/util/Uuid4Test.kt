@@ -35,11 +35,8 @@ class Uuid4Test {
 
     @Test
     fun testMonteCarlo() {
-        val data = ByteArray(16)
         val monteCarlo = Benchmark()
         repeat(10_000_000) {
-            //SecureEntropy.getEntropy(data)
-            //monteCarlo.scatterPoint(data.readLongAt(0), data.readLongAt(8))
             SecureEntropy.getEntropy()
             monteCarlo.scatterPoint(SecureEntropy.getEntropy(), SecureEntropy.getEntropy())
         }
