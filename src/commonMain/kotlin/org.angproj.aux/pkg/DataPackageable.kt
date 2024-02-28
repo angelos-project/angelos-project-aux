@@ -14,8 +14,8 @@
  */
 package org.angproj.aux.pkg
 
+import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
-import org.angproj.io.buf.Retrievable
 
 public interface DataPackageable: Packageable {
 

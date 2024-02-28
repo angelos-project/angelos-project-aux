@@ -15,37 +15,38 @@
 package org.angproj.aux.pkg.type
 
 import org.angproj.aux.io.Readable
+import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.io.Writable
-import org.angproj.aux.pkg.Convention
-import org.angproj.aux.pkg.Enfoldable
-import org.angproj.aux.pkg.FoldType
-import org.angproj.aux.pkg.Unfoldable
-import org.angproj.io.buf.Retrievable
+import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class UByteType(public val value: UByte) : Enfoldable {
-    override fun foldSize(foldType: FoldType): Long = UByte.SIZE_BYTES.toLong()
+public value class UByteType(public val value: UByte) : EnfoldablePrime {
+    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
+        FoldFormat.BLOCK -> UByte.SIZE_BYTES.toLong()
+        FoldFormat.STREAM -> UByte.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
+        else -> error("Specify size for valid type.")
+    }
 
     override fun enfold(outData: Storable, offset: Int): Long {
         outData.storeUByte(offset, value)
-        return foldSize(FoldType.BLOCK)
+        return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
-        outStream.writeShort(Convention.UBTYE.type)
+        Enfoldable.setType(outStream, Convention.UBTYE)
         outStream.writeUByte(value)
-        return foldSize(FoldType.STREAM) + 2
+        return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : Unfoldable<UByteType> {
-        override val foldType: FoldType = FoldType.BLOCK
+    public companion object : UnfoldablePrime<UByteType> {
+        override val foldFormat: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): UByteType = UByteType(inData.retrieveUByte(offset))
 
         override fun unfold(inStream: Readable): UByteType {
-            require(inStream.readShort() == Convention.UBTYE.type)
+            require(Unfoldable.getType(inStream, Convention.UBTYE))
             return UByteType(inStream.readUByte())
         }
     }

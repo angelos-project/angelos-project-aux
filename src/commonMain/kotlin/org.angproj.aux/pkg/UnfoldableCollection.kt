@@ -14,11 +14,12 @@
  */
 package org.angproj.aux.pkg
 
-import org.angproj.aux.util.EndianAware
+import org.angproj.aux.io.Readable
+import org.angproj.aux.io.Retrievable
 
-public interface Packageable : EndianAware {
+public interface UnfoldableCollection<E: EnfoldableCollection>: Unfoldable<EnfoldableCollection> {
 
-    public fun foldSize(): Long
+    public fun unfold(inData: Retrievable, offset: Int, size: Int) : E
 
-    public val foldFormat: FoldFormat
+    public fun unfold(inStream: Readable) : E
 }

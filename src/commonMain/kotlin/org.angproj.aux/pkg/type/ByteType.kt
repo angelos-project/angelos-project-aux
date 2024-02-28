@@ -15,37 +15,38 @@
 package org.angproj.aux.pkg.type
 
 import org.angproj.aux.io.Readable
+import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.io.Writable
-import org.angproj.aux.pkg.Convention
-import org.angproj.aux.pkg.Enfoldable
-import org.angproj.aux.pkg.FoldType
-import org.angproj.aux.pkg.Unfoldable
-import org.angproj.io.buf.Retrievable
+import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class ByteType(public val value: Byte) : Enfoldable {
-    override fun foldSize(foldType: FoldType): Long = Byte.SIZE_BYTES.toLong()
+public value class ByteType(public val value: Byte) : EnfoldablePrime {
+    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
+        FoldFormat.BLOCK -> Byte.SIZE_BYTES.toLong()
+        FoldFormat.STREAM -> Byte.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
+        else -> error("Specify size for valid type.")
+    }
 
     override fun enfold(outData: Storable, offset: Int): Long {
         outData.storeByte(offset, value)
-        return foldSize(FoldType.BLOCK)
+        return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
-        outStream.writeShort(Convention.BYTE.type)
+        Enfoldable.setType(outStream, Convention.BYTE)
         outStream.writeByte(value)
-        return foldSize(FoldType.STREAM) + 2
+        return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : Unfoldable<ByteType> {
-        override val foldType: FoldType = FoldType.BLOCK
+    public companion object : UnfoldablePrime<ByteType> {
+        override val foldFormat: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): ByteType = ByteType(inData.retrieveByte(offset))
 
         override fun unfold(inStream: Readable): ByteType {
-            require(inStream.readShort() == Convention.BYTE.type)
+            require(Unfoldable.getType(inStream, Convention.BYTE))
             return ByteType(inStream.readByte())
         }
     }

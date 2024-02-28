@@ -15,12 +15,13 @@
 package org.angproj.aux.pkg
 
 import org.angproj.aux.io.Readable
-import org.angproj.io.buf.Retrievable
 
 public interface Unfoldable<E: Enfoldable> {
-    public val foldType: FoldType
+    public val foldFormat: FoldFormat
+    public companion object {
+        public fun getType(inStream: Readable, type: Convention) : Boolean = inStream.readShort() == type.type
 
-    public fun unfold(inData: Retrievable, offset: Int) : E
+        public fun getCount(inStream: Readable): Int = inStream.readInt()
 
-    public fun unfold(inStream: Readable) : E
+    }
 }

@@ -14,11 +14,6 @@
  */
 package org.angproj.aux.pkg
 
-import org.angproj.aux.util.EndianAware
-
-public interface Packageable : EndianAware {
-
-    public fun foldSize(): Long
-
-    public val foldFormat: FoldFormat
+public enum class FoldFormat {
+    BLOCK, STREAM, BOTH
 }

@@ -18,9 +18,16 @@ import org.angproj.aux.io.Storable
 import org.angproj.aux.io.Writable
 
 public interface Enfoldable {
-    public fun foldSize(foldType: FoldType): Long
+    public fun foldSize(foldFormat: FoldFormat): Long
 
-    public fun enfold(outData: Storable, offset: Int): Long
+    public companion object {
+        public const val TYPE_SIZE: Long = 2
+        public const val COUNT_SIZE: Long = 4
 
-    public fun enfold(outStream: Writable): Long
+        public fun setType(outStream: Writable, type: Convention) { outStream.writeShort(type.type) }
+
+        public fun setCount(outStream: Writable, count: Int) { outStream.writeInt(count) }
+
+        public fun setCount(outData: Storable, offset: Int, count: Int) { outData.storeInt(offset, count) }
+    }
 }

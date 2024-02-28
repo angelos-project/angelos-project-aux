@@ -15,37 +15,38 @@
 package org.angproj.aux.pkg.type
 
 import org.angproj.aux.io.Readable
+import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.io.Writable
-import org.angproj.aux.pkg.Convention
-import org.angproj.aux.pkg.Enfoldable
-import org.angproj.aux.pkg.FoldType
-import org.angproj.aux.pkg.Unfoldable
-import org.angproj.io.buf.Retrievable
+import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class ULongType(public val value: ULong) : Enfoldable {
-    override fun foldSize(foldType: FoldType): Long = ULong.SIZE_BYTES.toLong()
+public value class ULongType(public val value: ULong) : EnfoldablePrime {
+    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
+        FoldFormat.BLOCK -> ULong.SIZE_BYTES.toLong()
+        FoldFormat.STREAM -> ULong.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
+        else -> error("Specify size for valid type.")
+    }
 
     override fun enfold(outData: Storable, offset: Int): Long {
         outData.storeULong(offset, value)
-        return foldSize(FoldType.BLOCK)
+        return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
-        outStream.writeShort(Convention.ULONG.type)
+        Enfoldable.setType(outStream, Convention.ULONG)
         outStream.writeULong(value)
-        return foldSize(FoldType.STREAM) + 2
+        return foldSize(FoldFormat.STREAM) + Enfoldable.TYPE_SIZE
     }
 
-    public companion object : Unfoldable<ULongType> {
-        override val foldType: FoldType = FoldType.BLOCK
+    public companion object : UnfoldablePrime<ULongType> {
+        override val foldFormat: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): ULongType = ULongType(inData.retrieveULong(offset))
 
         override fun unfold(inStream: Readable): ULongType {
-            require(inStream.readShort() == Convention.ULONG.type)
+            require(Unfoldable.getType(inStream, Convention.ULONG))
             return ULongType(inStream.readULong())
         }
     }

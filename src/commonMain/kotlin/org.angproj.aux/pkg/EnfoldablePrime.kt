@@ -14,6 +14,12 @@
  */
 package org.angproj.aux.pkg
 
-public enum class FoldType {
-    BLOCK, STREAM, BOTH
+import org.angproj.aux.io.Storable
+import org.angproj.aux.io.Writable
+
+public interface EnfoldablePrime: Enfoldable {
+
+    public fun enfold(outData: Storable, offset: Int): Long
+
+    public fun enfold(outStream: Writable): Long
 }

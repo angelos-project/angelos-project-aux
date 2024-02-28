@@ -12,7 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.io.buf
+package org.angproj.aux.io
 
 /**
  * Imported from angelos-project-buffer package.

@@ -14,13 +14,7 @@
  */
 package org.angproj.aux.pkg
 
-import org.angproj.aux.util.EndianAware
-
-public enum class Convention(
-    public val type: Short,
-    //public val load: () -> Unit,
-    //public val save: () -> Unit
-) {
+public enum class Convention(public val type: Short) {
     BIG_INT(10240),
     UUID4(10239),
 
@@ -33,8 +27,18 @@ public enum class Convention(
     LONG(10006),
     ULONG(10007),
     FLOAT(10008),
-    DOUBLE(10009);
+    DOUBLE(10009),
 
-    public companion object: EndianAware {
-    }
+    //ARRAY_BYTE(10015),
+    ARRAY_SHORT(10020),
+    ARRAY_INT(10021),
+    ARRAY_LONG(10022),
+    ARRAY_FLOAT(10023),
+    ARRAY_DOUBLE(10024),
+    //ARRAY_UBYTE(10030),
+    //ARRAY_USHORT(10031),
+    //ARRAY_UINT(10032),
+    //ARRAY_ULONG(10033),
+
+    RESERVED(10128);
 }
