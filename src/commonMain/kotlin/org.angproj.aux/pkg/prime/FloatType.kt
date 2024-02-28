@@ -12,7 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pkg.type
+package org.angproj.aux.pkg.prime
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
@@ -22,32 +22,32 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class ShortType(public val value: Short) : EnfoldablePrime {
+public value class FloatType(public val value: Float) : EnfoldablePrime {
     override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
-        FoldFormat.BLOCK -> Short.SIZE_BYTES.toLong()
-        FoldFormat.STREAM -> Short.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
+        FoldFormat.BLOCK -> Float.SIZE_BYTES.toLong()
+        FoldFormat.STREAM -> Float.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
         else -> error("Specify size for valid type.")
     }
 
     override fun enfold(outData: Storable, offset: Int): Long {
-        outData.storeShort(offset, value)
+        outData.storeFloat(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
-        Enfoldable.setType(outStream, Convention.SHORT)
-        outStream.writeShort(value)
-        return foldSize(FoldFormat.STREAM) + Enfoldable.TYPE_SIZE
+        Enfoldable.setType(outStream, Convention.FLOAT)
+        outStream.writeFloat(value)
+        return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldablePrime<ShortType> {
+    public companion object : UnfoldablePrime<FloatType> {
         override val foldFormat: FoldFormat = FoldFormat.BOTH
 
-        override fun unfold(inData: Retrievable, offset: Int): ShortType = ShortType(inData.retrieveShort(offset))
+        override fun unfold(inData: Retrievable, offset: Int): FloatType = FloatType(inData.retrieveFloat(offset))
 
-        override fun unfold(inStream: Readable): ShortType {
-            require(Unfoldable.getType(inStream, Convention.SHORT))
-            return ShortType(inStream.readShort())
+        override fun unfold(inStream: Readable): FloatType {
+            require(Unfoldable.getType(inStream, Convention.FLOAT))
+            return FloatType(inStream.readFloat())
         }
     }
 }

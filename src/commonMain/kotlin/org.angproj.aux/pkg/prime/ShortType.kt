@@ -12,7 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pkg.type
+package org.angproj.aux.pkg.prime
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
@@ -22,32 +22,32 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class ULongType(public val value: ULong) : EnfoldablePrime {
+public value class ShortType(public val value: Short) : EnfoldablePrime {
     override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
-        FoldFormat.BLOCK -> ULong.SIZE_BYTES.toLong()
-        FoldFormat.STREAM -> ULong.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
+        FoldFormat.BLOCK -> Short.SIZE_BYTES.toLong()
+        FoldFormat.STREAM -> Short.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
         else -> error("Specify size for valid type.")
     }
 
     override fun enfold(outData: Storable, offset: Int): Long {
-        outData.storeULong(offset, value)
+        outData.storeShort(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
-        Enfoldable.setType(outStream, Convention.ULONG)
-        outStream.writeULong(value)
+        Enfoldable.setType(outStream, Convention.SHORT)
+        outStream.writeShort(value)
         return foldSize(FoldFormat.STREAM) + Enfoldable.TYPE_SIZE
     }
 
-    public companion object : UnfoldablePrime<ULongType> {
+    public companion object : UnfoldablePrime<ShortType> {
         override val foldFormat: FoldFormat = FoldFormat.BOTH
 
-        override fun unfold(inData: Retrievable, offset: Int): ULongType = ULongType(inData.retrieveULong(offset))
+        override fun unfold(inData: Retrievable, offset: Int): ShortType = ShortType(inData.retrieveShort(offset))
 
-        override fun unfold(inStream: Readable): ULongType {
-            require(Unfoldable.getType(inStream, Convention.ULONG))
-            return ULongType(inStream.readULong())
+        override fun unfold(inStream: Readable): ShortType {
+            require(Unfoldable.getType(inStream, Convention.SHORT))
+            return ShortType(inStream.readShort())
         }
     }
 }

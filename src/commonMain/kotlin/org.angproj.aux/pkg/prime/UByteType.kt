@@ -12,7 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pkg.type
+package org.angproj.aux.pkg.prime
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
@@ -22,32 +22,32 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class UShortType(public val value: UShort) : EnfoldablePrime {
+public value class UByteType(public val value: UByte) : EnfoldablePrime {
     override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
-        FoldFormat.BLOCK -> UShort.SIZE_BYTES.toLong()
-        FoldFormat.STREAM -> UShort.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
+        FoldFormat.BLOCK -> UByte.SIZE_BYTES.toLong()
+        FoldFormat.STREAM -> UByte.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
         else -> error("Specify size for valid type.")
     }
 
     override fun enfold(outData: Storable, offset: Int): Long {
-        outData.storeUShort(offset, value)
+        outData.storeUByte(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
-        Enfoldable.setType(outStream, Convention.USHORT)
-        outStream.writeUShort(value)
+        Enfoldable.setType(outStream, Convention.UBTYE)
+        outStream.writeUByte(value)
         return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldablePrime<UShortType> {
+    public companion object : UnfoldablePrime<UByteType> {
         override val foldFormat: FoldFormat = FoldFormat.BOTH
 
-        override fun unfold(inData: Retrievable, offset: Int): UShortType = UShortType(inData.retrieveUShort(offset))
+        override fun unfold(inData: Retrievable, offset: Int): UByteType = UByteType(inData.retrieveUByte(offset))
 
-        override fun unfold(inStream: Readable): UShortType {
-            require(Unfoldable.getType(inStream, Convention.USHORT))
-            return UShortType(inStream.readUShort())
+        override fun unfold(inStream: Readable): UByteType {
+            require(Unfoldable.getType(inStream, Convention.UBTYE))
+            return UByteType(inStream.readUByte())
         }
     }
 }

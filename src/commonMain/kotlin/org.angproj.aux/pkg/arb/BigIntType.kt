@@ -12,7 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pkg.type
+package org.angproj.aux.pkg.arb
 
 import org.angproj.aux.num.BigInt
 import kotlin.jvm.JvmInline

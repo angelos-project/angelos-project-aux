@@ -15,7 +15,7 @@
 package org.angproj.aux.pkg
 
 public enum class Convention(public val type: Short) {
-    BIG_INT(10240),
+    BIGINT(10240),
     UUID4(10239),
 
     BYTE(10000),

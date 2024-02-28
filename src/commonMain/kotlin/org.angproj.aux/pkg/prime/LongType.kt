@@ -12,7 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pkg.type
+package org.angproj.aux.pkg.prime
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
@@ -22,32 +22,32 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class UByteType(public val value: UByte) : EnfoldablePrime {
+public value class LongType(public val value: Long) : EnfoldablePrime {
     override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
-        FoldFormat.BLOCK -> UByte.SIZE_BYTES.toLong()
-        FoldFormat.STREAM -> UByte.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
+        FoldFormat.BLOCK -> Long.SIZE_BYTES.toLong()
+        FoldFormat.STREAM -> Long.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
         else -> error("Specify size for valid type.")
     }
 
     override fun enfold(outData: Storable, offset: Int): Long {
-        outData.storeUByte(offset, value)
+        outData.storeLong(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
-        Enfoldable.setType(outStream, Convention.UBTYE)
-        outStream.writeUByte(value)
+        Enfoldable.setType(outStream, Convention.LONG)
+        outStream.writeLong(value)
         return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldablePrime<UByteType> {
+    public companion object : UnfoldablePrime<LongType> {
         override val foldFormat: FoldFormat = FoldFormat.BOTH
 
-        override fun unfold(inData: Retrievable, offset: Int): UByteType = UByteType(inData.retrieveUByte(offset))
+        override fun unfold(inData: Retrievable, offset: Int): LongType = LongType(inData.retrieveLong(offset))
 
-        override fun unfold(inStream: Readable): UByteType {
-            require(Unfoldable.getType(inStream, Convention.UBTYE))
-            return UByteType(inStream.readUByte())
+        override fun unfold(inStream: Readable): LongType {
+            require(Unfoldable.getType(inStream, Convention.LONG))
+            return LongType(inStream.readLong())
         }
     }
 }

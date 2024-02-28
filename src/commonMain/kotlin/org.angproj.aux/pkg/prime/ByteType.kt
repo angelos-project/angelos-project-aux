@@ -12,7 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pkg.type
+package org.angproj.aux.pkg.prime
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
@@ -22,32 +22,32 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class LongType(public val value: Long) : EnfoldablePrime {
+public value class ByteType(public val value: Byte) : EnfoldablePrime {
     override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
-        FoldFormat.BLOCK -> Long.SIZE_BYTES.toLong()
-        FoldFormat.STREAM -> Long.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
+        FoldFormat.BLOCK -> Byte.SIZE_BYTES.toLong()
+        FoldFormat.STREAM -> Byte.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
         else -> error("Specify size for valid type.")
     }
 
     override fun enfold(outData: Storable, offset: Int): Long {
-        outData.storeLong(offset, value)
+        outData.storeByte(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
-        Enfoldable.setType(outStream, Convention.LONG)
-        outStream.writeLong(value)
+        Enfoldable.setType(outStream, Convention.BYTE)
+        outStream.writeByte(value)
         return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldablePrime<LongType> {
+    public companion object : UnfoldablePrime<ByteType> {
         override val foldFormat: FoldFormat = FoldFormat.BOTH
 
-        override fun unfold(inData: Retrievable, offset: Int): LongType = LongType(inData.retrieveLong(offset))
+        override fun unfold(inData: Retrievable, offset: Int): ByteType = ByteType(inData.retrieveByte(offset))
 
-        override fun unfold(inStream: Readable): LongType {
-            require(Unfoldable.getType(inStream, Convention.LONG))
-            return LongType(inStream.readLong())
+        override fun unfold(inStream: Readable): ByteType {
+            require(Unfoldable.getType(inStream, Convention.BYTE))
+            return ByteType(inStream.readByte())
         }
     }
 }

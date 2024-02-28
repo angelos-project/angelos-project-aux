@@ -12,9 +12,10 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pkg.type
+package org.angproj.aux.pkg.arb
 
+import org.angproj.aux.util.Uuid4
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class StringType(public val value: String)
+public value class Uuid4Type(public val value: Uuid4)

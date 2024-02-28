@@ -12,7 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pkg.type
+package org.angproj.aux.pkg.mem
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
