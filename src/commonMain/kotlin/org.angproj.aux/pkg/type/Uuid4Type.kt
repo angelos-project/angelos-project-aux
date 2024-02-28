@@ -12,12 +12,10 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.ui
+package org.angproj.aux.pkg.type
 
-public interface Measure {
+import org.angproj.aux.util.Uuid4
+import kotlin.jvm.JvmInline
 
-    public enum class Units { PCT, EM, DP }
-
-    public var horiz: Units
-    public var vert: Units
-}
+@JvmInline
+public value class Uuid4Type(public val value: Uuid4)

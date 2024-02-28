@@ -12,12 +12,15 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.ui
+package org.angproj.aux.pkg
 
-public interface Measure {
+import org.angproj.aux.io.Readable
+import org.angproj.io.buf.Retrievable
 
-    public enum class Units { PCT, EM, DP }
+public interface Unfoldable<E: Enfoldable> {
+    public val foldType: FoldType
 
-    public var horiz: Units
-    public var vert: Units
+    public fun unfold(inData: Retrievable, offset: Int) : E
+
+    public fun unfold(inStream: Readable) : E
 }

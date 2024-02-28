@@ -12,12 +12,15 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.ui
+package org.angproj.aux.pkg
 
-public interface Measure {
+import org.angproj.aux.io.Storable
+import org.angproj.aux.io.Writable
 
-    public enum class Units { PCT, EM, DP }
+public interface Enfoldable {
+    public fun foldSize(foldType: FoldType): Long
 
-    public var horiz: Units
-    public var vert: Units
+    public fun enfold(outData: Storable, offset: Int): Long
+
+    public fun enfold(outStream: Writable): Long
 }

@@ -1,0 +1,52 @@
+/**
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ *
+ * This software is available under the terms of the MIT license. Parts are licensed
+ * under different terms if stated. The legal terms are attached to the LICENSE file
+ * and are made available on:
+ *
+ *      https://opensource.org/licenses/MIT
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Contributors:
+ *      Kristoffer Paulsson - initial implementation
+ */
+package org.angproj.aux.pkg.type
+
+import org.angproj.aux.io.Readable
+import org.angproj.aux.io.Storable
+import org.angproj.aux.io.Writable
+import org.angproj.aux.pkg.Convention
+import org.angproj.aux.pkg.Enfoldable
+import org.angproj.aux.pkg.FoldType
+import org.angproj.aux.pkg.Unfoldable
+import org.angproj.io.buf.Retrievable
+import kotlin.jvm.JvmInline
+
+@JvmInline
+public value class UShortType(public val value: UShort) : Enfoldable {
+    override fun foldSize(foldType: FoldType): Long = UShort.SIZE_BYTES.toLong()
+
+    override fun enfold(outData: Storable, offset: Int): Long {
+        outData.storeUShort(offset, value)
+        return foldSize(FoldType.BLOCK)
+    }
+
+    override fun enfold(outStream: Writable): Long {
+        outStream.writeShort(Convention.USHORT.type)
+        outStream.writeUShort(value)
+        return foldSize(FoldType.STREAM) + 2
+    }
+
+    public companion object : Unfoldable<UShortType> {
+        override val foldType: FoldType = FoldType.BLOCK
+
+        override fun unfold(inData: Retrievable, offset: Int): UShortType = UShortType(inData.retrieveUShort(offset))
+
+        override fun unfold(inStream: Readable): UShortType {
+            require(inStream.readShort() == Convention.USHORT.type)
+            return UShortType(inStream.readUShort())
+        }
+    }
+}

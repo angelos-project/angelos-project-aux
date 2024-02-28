@@ -20,7 +20,6 @@ import kotlin.math.absoluteValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-
 class Uuid4Test {
     @Test
     fun testUuid4() {

@@ -12,12 +12,9 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.ui
+package org.angproj.aux.pkg.type
 
-public interface Measure {
+import kotlin.jvm.JvmInline
 
-    public enum class Units { PCT, EM, DP }
-
-    public var horiz: Units
-    public var vert: Units
-}
+@JvmInline
+public value class IntArrayType(public val value: IntArray)

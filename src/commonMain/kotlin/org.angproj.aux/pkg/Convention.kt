@@ -14,11 +14,7 @@
  */
 package org.angproj.aux.pkg
 
-import org.angproj.aux.num.AbstractBigInt
-import org.angproj.aux.num.BigInt
 import org.angproj.aux.util.EndianAware
-import org.angproj.aux.util.bigIntOf
-import org.angproj.io.buf.Retrievable
 
 public enum class Convention(
     public val type: Short,
@@ -26,7 +22,18 @@ public enum class Convention(
     //public val save: () -> Unit
 ) {
     BIG_INT(10240),
-    UUID4(10239);
+    UUID4(10239),
+
+    BYTE(10000),
+    UBTYE(10001),
+    SHORT(10002),
+    USHORT(10003),
+    INT(10004),
+    UINT(10005),
+    LONG(10006),
+    ULONG(10007),
+    FLOAT(10008),
+    DOUBLE(10009);
 
     public companion object: EndianAware {
     }
