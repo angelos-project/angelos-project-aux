@@ -46,7 +46,7 @@ public value class IntArrayType(public val value: IntArray) : EnfoldableCollecti
 
     public companion object : UnfoldableCollection<EnfoldableCollection> {
 
-        override val foldFormat: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int, count: Int): IntArrayType {
             val data = IntArray(count) { inData.retrieveInt(offset + it * count) }

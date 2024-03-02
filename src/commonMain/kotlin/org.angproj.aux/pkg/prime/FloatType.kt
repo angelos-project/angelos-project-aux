@@ -41,7 +41,7 @@ public value class FloatType(public val value: Float) : EnfoldablePrime {
     }
 
     public companion object : UnfoldablePrime<FloatType> {
-        override val foldFormat: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): FloatType = FloatType(inData.retrieveFloat(offset))
 

@@ -41,7 +41,7 @@ public value class ShortType(public val value: Short) : EnfoldablePrime {
     }
 
     public companion object : UnfoldablePrime<ShortType> {
-        override val foldFormat: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): ShortType = ShortType(inData.retrieveShort(offset))
 

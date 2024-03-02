@@ -41,7 +41,7 @@ public value class UIntType(public val value: UInt) : EnfoldablePrime {
     }
 
     public companion object : UnfoldablePrime<UIntType> {
-        override val foldFormat: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): UIntType = UIntType(inData.retrieveUInt(offset))
 

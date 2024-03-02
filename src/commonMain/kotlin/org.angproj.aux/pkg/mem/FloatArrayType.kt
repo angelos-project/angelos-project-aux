@@ -46,7 +46,7 @@ public value class FloatArrayType(public val value: FloatArray) : EnfoldableColl
 
     public companion object : UnfoldableCollection<EnfoldableCollection> {
 
-        override val foldFormat: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int, count: Int): FloatArrayType {
             val data = FloatArray(count) { inData.retrieveFloat(offset + it * count) }

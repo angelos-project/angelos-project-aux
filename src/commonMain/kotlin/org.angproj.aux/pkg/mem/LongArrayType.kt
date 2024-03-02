@@ -46,7 +46,7 @@ public value class LongArrayType(public val value: LongArray) : EnfoldableCollec
 
     public companion object : UnfoldableCollection<EnfoldableCollection> {
 
-        override val foldFormat: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int, count: Int): LongArrayType {
             val data = LongArray(count) { inData.retrieveLong(offset + it * count) }

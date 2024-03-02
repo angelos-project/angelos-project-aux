@@ -18,6 +18,9 @@ import org.angproj.aux.io.Storable
 import org.angproj.aux.io.Writable
 
 public interface Enfoldable {
+
+    public val foldFormat: FoldFormat
+
     public fun foldSize(foldFormat: FoldFormat): Long
 
     public companion object {

@@ -41,7 +41,7 @@ public value class DoubleType(public val value: Double) : EnfoldablePrime {
     }
 
     public companion object : UnfoldablePrime<DoubleType> {
-        override val foldFormat: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): DoubleType = DoubleType(inData.retrieveDouble(offset))
 

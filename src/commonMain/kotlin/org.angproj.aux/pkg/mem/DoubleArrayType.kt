@@ -46,7 +46,7 @@ public value class DoubleArrayType(public val value: DoubleArray) : EnfoldableCo
 
     public companion object : UnfoldableCollection<EnfoldableCollection> {
 
-        override val foldFormat: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int,  count: Int): DoubleArrayType {
             val data = DoubleArray(count) { inData.retrieveDouble(offset + it * count) }

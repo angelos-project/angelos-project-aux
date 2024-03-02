@@ -41,7 +41,7 @@ public value class ULongType(public val value: ULong) : EnfoldablePrime {
     }
 
     public companion object : UnfoldablePrime<ULongType> {
-        override val foldFormat: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): ULongType = ULongType(inData.retrieveULong(offset))
 

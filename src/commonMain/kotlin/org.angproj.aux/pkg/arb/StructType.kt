@@ -12,16 +12,11 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pkg
+package org.angproj.aux.pkg.arb
 
-import org.angproj.aux.io.Readable
+import org.angproj.aux.pkg.DataPackageable
+import kotlin.jvm.JvmInline
 
-public interface Unfoldable<E: Enfoldable> {
-    public val foldFormatSupport: FoldFormat
-    public companion object {
-        public fun getType(inStream: Readable, type: Convention) : Boolean = inStream.readShort() == type.type
-
-        public fun getCount(inStream: Readable): Int = inStream.readInt()
-
-    }
+@JvmInline
+public value class StructType<P: DataPackageable>(public val value: P) {
 }

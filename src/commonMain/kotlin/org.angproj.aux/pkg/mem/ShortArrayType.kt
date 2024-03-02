@@ -46,7 +46,7 @@ public value class ShortArrayType(public val value: ShortArray) : EnfoldableColl
 
     public companion object : UnfoldableCollection<EnfoldableCollection> {
 
-        override val foldFormat: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int, count: Int): ShortArrayType {
             val data = ShortArray(count) { inData.retrieveShort(offset + it * count) }

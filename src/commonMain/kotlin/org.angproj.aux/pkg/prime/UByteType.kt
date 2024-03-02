@@ -41,7 +41,7 @@ public value class UByteType(public val value: UByte) : EnfoldablePrime {
     }
 
     public companion object : UnfoldablePrime<UByteType> {
-        override val foldFormat: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): UByteType = UByteType(inData.retrieveUByte(offset))
 
