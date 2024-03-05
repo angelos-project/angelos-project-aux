@@ -18,7 +18,7 @@ import org.angproj.aux.util.EndianAware
 
 public interface Packageable : EndianAware {
 
-    public fun foldSize(): Long
+    public fun foldSize(foldFormat: FoldFormat): Long
 
     public val foldFormat: FoldFormat
 }

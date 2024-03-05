@@ -14,12 +14,4 @@
  */
 package org.angproj.aux.pkg
 
-import org.angproj.aux.io.Retrievable
-import org.angproj.aux.io.Storable
-
-public interface BlockPackageable: Packageable {
-
-
-
-
-}
+public interface BlockPackageable: BlockEnpackageable, BlockUnpackageable

@@ -16,6 +16,8 @@ package org.angproj.aux.pkg
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
+import org.angproj.aux.pkg.arb.StructType
+
 public interface Unfoldable<E: Enfoldable> {
     public val foldFormatSupport: FoldFormat
 
@@ -24,6 +26,10 @@ public interface Unfoldable<E: Enfoldable> {
     public fun unfold(inData: Retrievable, offset: Int, size: Int) : E { throw UnsupportedOperationException() }
 
     public fun unfold(inStream: Readable) : E { throw UnsupportedOperationException() }
+
+    public fun <P : BlockPackageable> unfold(
+        inData: Retrievable, offset: Int, unpack: (Retrievable, Int) -> P
+    ) : StructType<P> { throw UnsupportedOperationException() }
 
     public companion object {
         public fun getType(inStream: Readable, type: Convention) : Boolean = inStream.readShort() == type.type

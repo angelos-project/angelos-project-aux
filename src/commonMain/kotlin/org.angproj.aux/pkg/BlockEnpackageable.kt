@@ -19,7 +19,7 @@ import org.angproj.aux.pkg.arb.Uuid4Type
 import org.angproj.aux.pkg.mem.*
 import org.angproj.aux.pkg.prime.*
 
-public interface BlockEnpackageable: BlockPackageable {
+public interface BlockEnpackageable: Packageable {
     public fun enfold(outData: Storable, offset: Int)
 
     public companion object {
