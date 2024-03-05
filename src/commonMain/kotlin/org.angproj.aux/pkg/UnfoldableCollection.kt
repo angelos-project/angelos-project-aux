@@ -21,5 +21,5 @@ public interface UnfoldableCollection<E: EnfoldableCollection>: Unfoldable<Enfol
 
     public fun unfold(inData: Retrievable, offset: Int, size: Int) : E
 
-    public fun unfold(inStream: Readable) : E
+    public override fun unfold(inStream: Readable) : E
 }

@@ -22,12 +22,10 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class UShortType(public val value: UShort) : EnfoldablePrime {
-    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
-        FoldFormat.BLOCK -> UShort.SIZE_BYTES.toLong()
-        FoldFormat.STREAM -> UShort.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
-        else -> error("Specify size for valid type.")
-    }
+public value class UShortType(public val value: UShort) : Enfoldable {
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
+    override fun foldSize(foldFormat: FoldFormat): Long = UShort.SIZE_BYTES.toLong()
 
     override fun enfold(outData: Storable, offset: Int): Long {
         outData.storeUShort(offset, value)
@@ -35,19 +33,15 @@ public value class UShortType(public val value: UShort) : EnfoldablePrime {
     }
 
     override fun enfold(outStream: Writable): Long {
-        Enfoldable.setType(outStream, Convention.USHORT)
         outStream.writeUShort(value)
         return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldablePrime<UShortType> {
+    public companion object : Unfoldable<UShortType> {
         override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): UShortType = UShortType(inData.retrieveUShort(offset))
 
-        override fun unfold(inStream: Readable): UShortType {
-            require(Unfoldable.getType(inStream, Convention.USHORT))
-            return UShortType(inStream.readUShort())
-        }
+        override fun unfold(inStream: Readable): UShortType = UShortType(inStream.readUShort())
     }
 }

@@ -22,12 +22,10 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class UIntType(public val value: UInt) : EnfoldablePrime {
-    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
-        FoldFormat.BLOCK -> UInt.SIZE_BYTES.toLong()
-        FoldFormat.STREAM -> UInt.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
-        else -> error("Specify size for valid type.")
-    }
+public value class UIntType(public val value: UInt) : Enfoldable {
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
+    override fun foldSize(foldFormat: FoldFormat): Long = UInt.SIZE_BYTES.toLong()
 
     override fun enfold(outData: Storable, offset: Int): Long {
         outData.storeUInt(offset, value)
@@ -35,19 +33,15 @@ public value class UIntType(public val value: UInt) : EnfoldablePrime {
     }
 
     override fun enfold(outStream: Writable): Long {
-        Enfoldable.setType(outStream, Convention.UINT)
         outStream.writeUInt(value)
         return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldablePrime<UIntType> {
+    public companion object : Unfoldable<UIntType> {
         override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): UIntType = UIntType(inData.retrieveUInt(offset))
 
-        override fun unfold(inStream: Readable): UIntType {
-            require(Unfoldable.getType(inStream, Convention.UINT))
-            return UIntType(inStream.readUInt())
-        }
+        override fun unfold(inStream: Readable): UIntType = UIntType(inStream.readUInt())
     }
 }

@@ -15,13 +15,23 @@
 package org.angproj.aux.pkg
 
 import org.angproj.aux.io.Readable
-
+import org.angproj.aux.io.Retrievable
 public interface Unfoldable<E: Enfoldable> {
     public val foldFormatSupport: FoldFormat
+
+    public fun unfold(inData: Retrievable, offset: Int) : E { throw UnsupportedOperationException() }
+
+    public fun unfold(inData: Retrievable, offset: Int, size: Int) : E { throw UnsupportedOperationException() }
+
+    public fun unfold(inStream: Readable) : E { throw UnsupportedOperationException() }
+
     public companion object {
         public fun getType(inStream: Readable, type: Convention) : Boolean = inStream.readShort() == type.type
 
         public fun getCount(inStream: Readable): Int = inStream.readInt()
 
+        public fun getLength(inStream: Readable): Long = inStream.readLong()
+
+        public fun getEnd(inStream: Readable, end: Convention) : Boolean = inStream.readByte() == end.end
     }
 }

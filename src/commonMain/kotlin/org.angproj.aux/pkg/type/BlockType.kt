@@ -14,19 +14,25 @@
  */
 package org.angproj.aux.pkg.type
 
+import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
+import org.angproj.aux.io.Writable
+import org.angproj.aux.pkg.Convention
+import org.angproj.aux.pkg.Enfoldable
+import org.angproj.aux.pkg.FoldFormat
+import org.angproj.aux.pkg.Unfoldable
 import org.angproj.aux.util.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class BlockType(public val block: ByteArray) : Storable, Retrievable {
+public value class BlockType(public val block: ByteArray) : Storable, Retrievable, Enfoldable {
 
     public constructor(size: Int) : this(ByteArray(size))
 
-    override fun retrieveByte(position: Int): Byte = block.get(position)
+    override fun retrieveByte(position: Int): Byte = block[position]
 
-    override fun retrieveUByte(position: Int): UByte = block.get(position).toUByte()
+    override fun retrieveUByte(position: Int): UByte = block[position].toUByte()
 
     override fun retrieveChar(position: Int): Char = block.readCharAt(position)
 
@@ -46,9 +52,13 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
 
     override fun retrieveDouble(position: Int): Double = block.readDoubleAt(position)
 
-    override fun storeByte(position: Int, value: Byte) { block.set(position, value) }
+    override fun storeByte(position: Int, value: Byte) {
+        block[position] = value
+    }
 
-    override fun storeUByte(position: Int, value: UByte) { block.set(position, value.toByte()) }
+    override fun storeUByte(position: Int, value: UByte) {
+        block[position] = value.toByte()
+    }
 
     override fun storeChar(position: Int, value: Char) { block.writeCharAt(position, value) }
 
@@ -67,4 +77,111 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
     override fun storeFloat(position: Int, value: Float) { block.writeFloatAt(position, value) }
 
     override fun storeDouble(position: Int, value: Double) { block.writeDoubleAt(position, value) }
+
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
+
+    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
+        FoldFormat.BLOCK -> block.size.toLong()
+        FoldFormat.STREAM -> Enfoldable.TYPE_SIZE + Enfoldable.LENGTH_SIZE + block.size + Enfoldable.END_SIZE
+        else -> error("Unsupported format")
+    }
+
+    public override fun enfold(outData: Storable, offset: Int): Long {
+        var index = 0
+        (index until block.size step Long.SIZE_BYTES).forEach {
+            index = it
+            outData.storeLong(offset + index, block.readLongAt(index))
+        }
+        (index until block.size step Int.SIZE_BYTES).forEach {
+            index = it
+            outData.storeInt(offset + index, block.readIntAt(index))
+        }
+        (index until block.size step Short.SIZE_BYTES).forEach {
+            index = it
+            outData.storeShort(offset + index, block.readShortAt(index))
+        }
+        (index until block.size step Byte.SIZE_BYTES).forEach {
+            index = it
+            outData.storeByte(offset + index, block[index])
+        }
+        return foldSize(FoldFormat.BLOCK)
+    }
+
+    public override fun enfold(outStream: Writable): Long {
+        Enfoldable.setType(outStream, Convention.BLOCK)
+        Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM))
+        var index = 0
+        (index until block.size step Long.SIZE_BYTES).forEach {
+            index = it
+            outStream.writeLong(block.readLongAt(index))
+        }
+        (index until block.size step Int.SIZE_BYTES).forEach {
+            index = it
+            outStream.writeInt(block.readIntAt(index))
+        }
+        (index until block.size step Short.SIZE_BYTES).forEach {
+            index = it
+            outStream.writeShort(block.readShortAt(index))
+        }
+        (index until block.size step Byte.SIZE_BYTES).forEach {
+            index = it
+            outStream.writeByte(block[index])
+        }
+        Enfoldable.setEnd(outStream, Convention.BLOCK)
+        return foldSize(FoldFormat.STREAM)
+    }
+
+    public companion object: Unfoldable<BlockType> {
+        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
+
+        public fun unfold(inData: Retrievable, offset: Int, length: Long) : BlockType {
+            require(length <= Int.MAX_VALUE)
+            val block = BlockType(length.toInt())
+            var index = 0
+            (index until block.block.size step Long.SIZE_BYTES).forEach {
+                index = it
+                block.storeLong(index, inData.retrieveLong(offset + index))
+            }
+            (index until block.block.size step Int.SIZE_BYTES).forEach {
+                index = it
+                block.storeInt(index, inData.retrieveInt(offset + index))
+            }
+            (index until block.block.size step Short.SIZE_BYTES).forEach {
+                index = it
+                block.storeShort(index, inData.retrieveShort(offset + index))
+            }
+            (index until block.block.size step Short.SIZE_BYTES).forEach {
+                index = it
+                block.storeByte(index, inData.retrieveByte(offset + index))
+            }
+            return block
+        }
+
+        public override fun unfold(inStream: Readable) : BlockType {
+            require(Unfoldable.getType(inStream, Convention.BLOCK))
+            val length = Unfoldable.getLength(inStream)
+            require(length <= Int.MAX_VALUE)
+            val block = BlockType(length.toInt())
+            var index = 0
+            (index until block.block.size step Long.SIZE_BYTES).forEach {
+                index = it
+                block.storeLong(index, inStream.readLong())
+            }
+            (index until block.block.size step Int.SIZE_BYTES).forEach {
+                index = it
+                block.storeInt(index, inStream.readInt())
+            }
+            (index until block.block.size step Short.SIZE_BYTES).forEach {
+                index = it
+                block.storeShort(index, inStream.readShort())
+            }
+            (index until block.block.size step Short.SIZE_BYTES).forEach {
+                index = it
+                block.storeByte(index, inStream.readByte())
+            }
+            require(Unfoldable.getEnd(inStream, Convention.BLOCK))
+            return block
+        }
+    }
 }

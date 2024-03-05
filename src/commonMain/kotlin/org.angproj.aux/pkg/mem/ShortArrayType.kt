@@ -22,29 +22,33 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class ShortArrayType(public val value: ShortArray) : EnfoldableCollection {
+public value class ShortArrayType(public val value: ShortArray) : Enfoldable {
+
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long  = when(foldFormat) {
         FoldFormat.BLOCK -> (Short.SIZE_BYTES * value.size).toLong()
         FoldFormat.STREAM -> (Short.SIZE_BYTES * value.size
-                ).toLong() + Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE
+                ).toLong() + Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE + Enfoldable.END_SIZE
         else -> error("Specify size for valid type.")
     }
 
     override fun enfold(outData: Storable, offset: Int): Long {
         value.indices.forEach {
             outData.storeShort((it * Short.SIZE_BYTES), value[it]) }
-        return (Short.SIZE_BYTES * value.size).toLong()
+        return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
         Enfoldable.setType(outStream, Convention.ARRAY_SHORT)
         Enfoldable.setCount(outStream, value.size)
         value.forEach { outStream.writeShort(it) }
-        return Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE + Short.SIZE_BYTES * value.size
+        Enfoldable.setEnd(outStream, Convention.ARRAY_SHORT)
+        return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldableCollection<EnfoldableCollection> {
+    public companion object : Unfoldable<ShortArrayType> {
 
         override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
@@ -57,6 +61,7 @@ public value class ShortArrayType(public val value: ShortArray) : EnfoldableColl
             require(Unfoldable.getType(inStream, Convention.ARRAY_SHORT))
             val count = Unfoldable.getCount(inStream)
             val data = ShortArray(count) { inStream.readShort() }
+            require(Unfoldable.getEnd(inStream, Convention.ARRAY_SHORT))
             return ShortArrayType(data)
         }
     }

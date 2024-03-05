@@ -22,29 +22,33 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class FloatArrayType(public val value: FloatArray) : EnfoldableCollection {
+public value class FloatArrayType(public val value: FloatArray) : Enfoldable {
+
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long  = when(foldFormat) {
         FoldFormat.BLOCK -> (Float.SIZE_BYTES * value.size).toLong()
         FoldFormat.STREAM -> (Float.SIZE_BYTES * value.size
-                ).toLong() + Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE
+                ).toLong() + Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE + Enfoldable.END_SIZE
         else -> error("Specify size for valid type.")
     }
 
     override fun enfold(outData: Storable, offset: Int): Long {
         value.indices.forEach {
             outData.storeFloat((it * Double.SIZE_BYTES), value[it]) }
-        return (Double.SIZE_BYTES * value.size).toLong()
+        return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
         Enfoldable.setType(outStream, Convention.ARRAY_FLOAT)
         Enfoldable.setCount(outStream, value.size)
         value.forEach { outStream.writeFloat(it) }
-        return Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE + Float.SIZE_BYTES * value.size
+        Enfoldable.setEnd(outStream, Convention.ARRAY_FLOAT)
+        return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldableCollection<EnfoldableCollection> {
+    public companion object : Unfoldable<FloatArrayType> {
 
         override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
@@ -57,6 +61,7 @@ public value class FloatArrayType(public val value: FloatArray) : EnfoldableColl
             require(Unfoldable.getType(inStream, Convention.ARRAY_FLOAT))
             val count = Unfoldable.getCount(inStream)
             val data = FloatArray(count) { inStream.readFloat() }
+            require(Unfoldable.getEnd(inStream, Convention.ARRAY_FLOAT))
             return FloatArrayType(data)
         }
     }

@@ -22,33 +22,37 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class DoubleArrayType(public val value: DoubleArray) : EnfoldableCollection {
+public value class DoubleArrayType(public val value: DoubleArray) : Enfoldable {
+
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long  = when(foldFormat) {
         FoldFormat.BLOCK -> (Double.SIZE_BYTES * value.size).toLong()
         FoldFormat.STREAM -> (Double.SIZE_BYTES * value.size
-                ).toLong() + Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE
+                ).toLong() + Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE + Enfoldable.END_SIZE
         else -> error("Specify size for valid type.")
     }
 
     override fun enfold(outData: Storable, offset: Int): Long {
         value.indices.forEach {
             outData.storeDouble((it * Double.SIZE_BYTES), value[it]) }
-        return (Double.SIZE_BYTES * value.size).toLong()
+        return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
         Enfoldable.setType(outStream, Convention.ARRAY_DOUBLE)
         Enfoldable.setCount(outStream, value.size)
         value.forEach { outStream.writeDouble(it) }
-        return Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE + Double.SIZE_BYTES * value.size
+        Enfoldable.setEnd(outStream, Convention.ARRAY_DOUBLE)
+        return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldableCollection<EnfoldableCollection> {
+    public companion object : Unfoldable<DoubleArrayType> {
 
         override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
-        override fun unfold(inData: Retrievable, offset: Int,  count: Int): DoubleArrayType {
+        override fun unfold(inData: Retrievable, offset: Int, count: Int): DoubleArrayType {
             val data = DoubleArray(count) { inData.retrieveDouble(offset + it * count) }
             return DoubleArrayType(data)
         }
@@ -57,6 +61,7 @@ public value class DoubleArrayType(public val value: DoubleArray) : EnfoldableCo
             require(Unfoldable.getType(inStream, Convention.ARRAY_DOUBLE))
             val count = Unfoldable.getCount(inStream)
             val data = DoubleArray(count) {inStream.readDouble()}
+            require(Unfoldable.getEnd(inStream, Convention.ARRAY_DOUBLE))
             return DoubleArrayType(data)
         }
     }

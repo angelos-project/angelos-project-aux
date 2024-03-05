@@ -22,29 +22,33 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class LongArrayType(public val value: LongArray) : EnfoldableCollection {
+public value class LongArrayType(public val value: LongArray) : Enfoldable {
+
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long  = when(foldFormat) {
         FoldFormat.BLOCK -> (Long.SIZE_BYTES * value.size).toLong()
         FoldFormat.STREAM -> (Long.SIZE_BYTES * value.size
-                ).toLong() + Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE
+                ).toLong() + Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE + Enfoldable.END_SIZE
         else -> error("Specify size for valid type.")
     }
 
     override fun enfold(outData: Storable, offset: Int): Long {
         value.indices.forEach {
             outData.storeLong((it * Long.SIZE_BYTES), value[it]) }
-        return (Long.SIZE_BYTES * value.size).toLong()
+        return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
         Enfoldable.setType(outStream, Convention.ARRAY_LONG)
         Enfoldable.setCount(outStream, value.size)
         value.forEach { outStream.writeLong(it) }
-        return Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE + Long.SIZE_BYTES * value.size
+        Enfoldable.setEnd(outStream, Convention.ARRAY_LONG)
+        return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldableCollection<EnfoldableCollection> {
+    public companion object : Unfoldable<LongArrayType> {
 
         override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
@@ -57,6 +61,7 @@ public value class LongArrayType(public val value: LongArray) : EnfoldableCollec
             require(Unfoldable.getType(inStream, Convention.ARRAY_LONG))
             val count = Unfoldable.getCount(inStream)
             val data = LongArray(count) { inStream.readLong() }
+            require(Unfoldable.getEnd(inStream, Convention.ARRAY_LONG))
             return LongArrayType(data)
         }
     }

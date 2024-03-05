@@ -23,14 +23,26 @@ public interface Enfoldable {
 
     public fun foldSize(foldFormat: FoldFormat): Long
 
+    public fun enfold(outData: Storable, offset: Int): Long { throw UnsupportedOperationException() }
+
+    public fun enfold(outStream: Writable): Long { throw UnsupportedOperationException() }
+
     public companion object {
         public const val TYPE_SIZE: Long = 2
         public const val COUNT_SIZE: Long = 4
+        public const val LENGTH_SIZE: Long = 8
+        public const val END_SIZE: Long = 1
 
         public fun setType(outStream: Writable, type: Convention) { outStream.writeShort(type.type) }
 
         public fun setCount(outStream: Writable, count: Int) { outStream.writeInt(count) }
 
         public fun setCount(outData: Storable, offset: Int, count: Int) { outData.storeInt(offset, count) }
+
+        public fun setLength(outStream: Writable, length: Long) { outStream.writeLong(length) }
+
+        public fun setLength(outData: Storable, offset: Int, length: Long) { outData.storeLong(offset, length) }
+
+        public fun setEnd(outStream: Writable, end: Convention) { outStream.writeByte(end.end) }
     }
 }

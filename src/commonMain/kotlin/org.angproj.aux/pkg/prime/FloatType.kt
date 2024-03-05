@@ -22,12 +22,10 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class FloatType(public val value: Float) : EnfoldablePrime {
-    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
-        FoldFormat.BLOCK -> Float.SIZE_BYTES.toLong()
-        FoldFormat.STREAM -> Float.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
-        else -> error("Specify size for valid type.")
-    }
+public value class FloatType(public val value: Float) : Enfoldable {
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
+    override fun foldSize(foldFormat: FoldFormat): Long = Float.SIZE_BYTES.toLong()
 
     override fun enfold(outData: Storable, offset: Int): Long {
         outData.storeFloat(offset, value)
@@ -35,19 +33,15 @@ public value class FloatType(public val value: Float) : EnfoldablePrime {
     }
 
     override fun enfold(outStream: Writable): Long {
-        Enfoldable.setType(outStream, Convention.FLOAT)
         outStream.writeFloat(value)
         return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldablePrime<FloatType> {
+    public companion object : Unfoldable<FloatType> {
         override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): FloatType = FloatType(inData.retrieveFloat(offset))
 
-        override fun unfold(inStream: Readable): FloatType {
-            require(Unfoldable.getType(inStream, Convention.FLOAT))
-            return FloatType(inStream.readFloat())
-        }
+        override fun unfold(inStream: Readable): FloatType = FloatType(inStream.readFloat())
     }
 }

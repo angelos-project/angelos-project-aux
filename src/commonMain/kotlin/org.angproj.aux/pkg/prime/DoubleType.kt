@@ -22,12 +22,10 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class DoubleType(public val value: Double) : EnfoldablePrime {
-    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
-        FoldFormat.BLOCK -> Double.SIZE_BYTES.toLong()
-        FoldFormat.STREAM -> Double.SIZE_BYTES.toLong() + Enfoldable.TYPE_SIZE
-        else -> error("Specify size for valid type.")
-    }
+public value class DoubleType(public val value: Double) : Enfoldable {
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
+    override fun foldSize(foldFormat: FoldFormat): Long = Double.SIZE_BYTES.toLong()
 
     override fun enfold(outData: Storable, offset: Int): Long {
         outData.storeDouble(offset, value)
@@ -35,19 +33,15 @@ public value class DoubleType(public val value: Double) : EnfoldablePrime {
     }
 
     override fun enfold(outStream: Writable): Long {
-        Enfoldable.setType(outStream, Convention.DOUBLE)
         outStream.writeDouble(value)
         return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldablePrime<DoubleType> {
+    public companion object : Unfoldable<DoubleType> {
         override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
         override fun unfold(inData: Retrievable, offset: Int): DoubleType = DoubleType(inData.retrieveDouble(offset))
 
-        override fun unfold(inStream: Readable): DoubleType {
-            require(Unfoldable.getType(inStream, Convention.DOUBLE))
-            return DoubleType(inStream.readDouble())
-        }
+        override fun unfold(inStream: Readable): DoubleType = DoubleType(inStream.readDouble())
     }
 }

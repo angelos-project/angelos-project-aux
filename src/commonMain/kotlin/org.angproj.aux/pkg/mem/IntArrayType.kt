@@ -22,29 +22,33 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class IntArrayType(public val value: IntArray) : EnfoldableCollection {
+public value class IntArrayType(public val value: IntArray) : Enfoldable {
+
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long  = when(foldFormat) {
         FoldFormat.BLOCK -> (Int.SIZE_BYTES * value.size).toLong()
         FoldFormat.STREAM -> (Int.SIZE_BYTES * value.size
-                ).toLong() + Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE
+                ).toLong() + Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE + Enfoldable.END_SIZE
         else -> error("Specify size for valid type.")
     }
 
     override fun enfold(outData: Storable, offset: Int): Long {
         value.indices.forEach {
             outData.storeInt((it * Int.SIZE_BYTES), value[it]) }
-        return (Int.SIZE_BYTES * value.size).toLong()
+        return foldSize(FoldFormat.BLOCK)
     }
 
     override fun enfold(outStream: Writable): Long {
         Enfoldable.setType(outStream, Convention.ARRAY_INT)
         Enfoldable.setCount(outStream, value.size)
         value.forEach { outStream.writeInt(it) }
-        return Enfoldable.TYPE_SIZE + Enfoldable.COUNT_SIZE + Int.SIZE_BYTES * value.size
+        Enfoldable.setEnd(outStream, Convention.ARRAY_INT)
+        return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : UnfoldableCollection<EnfoldableCollection> {
+    public companion object : Unfoldable<IntArrayType> {
 
         override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
 
@@ -57,6 +61,7 @@ public value class IntArrayType(public val value: IntArray) : EnfoldableCollecti
             require(Unfoldable.getType(inStream, Convention.ARRAY_INT))
             val count = Unfoldable.getCount(inStream)
             val data = IntArray(count) { inStream.readInt() }
+            require(Unfoldable.getEnd(inStream, Convention.ARRAY_INT))
             return IntArrayType(data)
         }
     }

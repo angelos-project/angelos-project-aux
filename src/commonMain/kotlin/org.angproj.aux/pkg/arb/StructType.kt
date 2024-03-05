@@ -14,9 +14,32 @@
  */
 package org.angproj.aux.pkg.arb
 
-import org.angproj.aux.pkg.DataPackageable
+import org.angproj.aux.io.Retrievable
+import org.angproj.aux.io.Storable
+import org.angproj.aux.pkg.BlockPackageable
+import org.angproj.aux.pkg.Enfoldable
+import org.angproj.aux.pkg.FoldFormat
+import org.angproj.aux.pkg.Unfoldable
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class StructType<P: DataPackageable>(public val value: P) {
+public value class StructType<P: BlockPackageable>(public val value: P) : Enfoldable {
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
+
+    override fun foldSize(foldFormat: FoldFormat): Long {
+        TODO("Not yet implemented")
+    }
+
+    public override fun enfold(outData: Storable, offset: Int): Long {
+
+    }
+
+    public companion object : Unfoldable<StructType<BlockPackageable>> {
+        override val foldFormatSupport: FoldFormat
+            get() = TODO("Not yet implemented")
+
+        public override fun unfold(inData: Retrievable, offset: Int) : StructType<BlockPackageable> { throw UnsupportedOperationException() }
+
+    }
 }
