@@ -83,7 +83,7 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
 
     override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
         FoldFormat.BLOCK -> block.size.toLong()
-        FoldFormat.STREAM -> Enfoldable.TYPE_SIZE + Enfoldable.LENGTH_SIZE + block.size + Enfoldable.END_SIZE
+        FoldFormat.STREAM -> overheadSize() + block.size
         else -> error("Unsupported format")
     }
 
@@ -108,8 +108,8 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public override fun enfold(outStream: Writable): Long {
-        Enfoldable.setType(outStream, Convention.BLOCK)
+    public fun enfold(outStream: Writable, type: Convention): Long {
+        Enfoldable.setType(outStream, type)
         Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM))
         var index = 0
         (index until block.size step Long.SIZE_BYTES).forEach {
@@ -128,12 +128,16 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
             index = it
             outStream.writeByte(block[index])
         }
-        Enfoldable.setEnd(outStream, Convention.BLOCK)
+        Enfoldable.setEnd(outStream, type)
         return foldSize(FoldFormat.STREAM)
     }
 
+    public override fun enfold(outStream: Writable): Long = enfold(outStream, Convention.BLOCK)
+
     public companion object: Unfoldable<BlockType> {
         override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
+
+        public fun overheadSize() : Long = Enfoldable.TYPE_SIZE + Enfoldable.LENGTH_SIZE + Enfoldable.END_SIZE
 
         public fun unfold(inData: Retrievable, offset: Int, length: Long) : BlockType {
             require(length <= Int.MAX_VALUE)
@@ -158,8 +162,8 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
             return block
         }
 
-        public override fun unfold(inStream: Readable) : BlockType {
-            require(Unfoldable.getType(inStream, Convention.BLOCK))
+        public fun unfold(inStream: Readable, type: Convention) : BlockType {
+            require(Unfoldable.getType(inStream, type))
             val length = Unfoldable.getLength(inStream)
             require(length <= Int.MAX_VALUE)
             val block = BlockType(length.toInt())
@@ -180,8 +184,10 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
                 index = it
                 block.storeByte(index, inStream.readByte())
             }
-            require(Unfoldable.getEnd(inStream, Convention.BLOCK))
+            require(Unfoldable.getEnd(inStream, type))
             return block
         }
+
+        public override fun unfold(inStream: Readable) : BlockType = unfold(inStream, Convention.BLOCK)
     }
 }
