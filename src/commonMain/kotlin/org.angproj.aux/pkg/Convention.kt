@@ -16,7 +16,7 @@ package org.angproj.aux.pkg
 
 public enum class Convention(public val type: Short, public val end: Byte) {
     BYTE(10000, 0),
-    UBTYE(10001, 0),
+    UBYTE(10001, 0),
     SHORT(10002, 0),
     USHORT(10003, 0),
     INT(10004, 0),
@@ -45,6 +45,7 @@ public enum class Convention(public val type: Short, public val end: Byte) {
 
     BIGINT(10050, -50),
     UUID4(10051, -51),
+    STRING(10052, -52),
 
     RESERVED(10128, -128);
 }

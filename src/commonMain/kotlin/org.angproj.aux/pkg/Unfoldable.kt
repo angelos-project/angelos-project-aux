@@ -19,7 +19,11 @@ import org.angproj.aux.io.Retrievable
 import org.angproj.aux.pkg.arb.StructType
 
 public interface Unfoldable<E: Enfoldable> {
-    public val foldFormatSupport: FoldFormat
+    public val foldFormatSupport: List<FoldFormat>
+
+    public val conventionType: Convention
+
+    public fun isFoldFormatSupported(format: FoldFormat): Boolean = foldFormatSupport.contains(format)
 
     public fun unfold(inData: Retrievable, offset: Int) : E { throw UnsupportedOperationException() }
 
@@ -32,6 +36,7 @@ public interface Unfoldable<E: Enfoldable> {
     ) : StructType<P> { throw UnsupportedOperationException() }
 
     public companion object {
+
         public fun getType(inStream: Readable, type: Convention) : Boolean = inStream.readShort() == type.type
 
         public fun getCount(inStream: Readable): Int = inStream.readInt()

@@ -33,6 +33,10 @@ public interface Enfoldable {
         public const val LENGTH_SIZE: Long = 8
         public const val END_SIZE: Long = 1
 
+        public const val OVERHEAD_BASIC: Long = TYPE_SIZE + END_SIZE
+        public const val OVERHEAD_LENGTH: Long = TYPE_SIZE + LENGTH_SIZE + END_SIZE
+        public const val OVERHEAD_COUNT: Long = TYPE_SIZE + COUNT_SIZE + END_SIZE
+
         public fun setType(outStream: Writable, type: Convention) { outStream.writeShort(type.type) }
 
         public fun setCount(outStream: Writable, count: Int) { outStream.writeInt(count) }

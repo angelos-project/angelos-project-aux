@@ -105,6 +105,25 @@ public abstract class AbstractBigInt<E : List<Int>>(
         }
     }
 
+    public fun getByteSize(): Int {
+        if (sigNum.isZero()) return 0
+
+        val output = ByteArray(mag.size * 4)
+        mag.indices.forEach { output.writeIntAt(it * 4, getIdx(mag.lastIndex - it).swapEndian()) }
+        val keep = keep(output, sigNum)
+
+        if (keep == output.size) return 0
+
+        val prepend = sigNum.isNonNegative() == output[keep] < 0
+        return when {
+            keep == 0 && prepend -> 1 + output.size
+            keep == 1 && prepend -> output.size
+            keep > 1 && prepend -> 1 + output.size - keep
+            keep > 0 -> output.size - keep
+            else -> output.size
+        }
+    }
+
     public fun toReversedComplementedIntArray(): IntArray = IntArray(mag.size) { getIdx(it) }
     public fun toComplementedIntArray(): IntArray = IntArray(mag.size) { getUnreversedIdx(it) }
     public fun toRawIntArray(): IntArray = mag.toIntArray()

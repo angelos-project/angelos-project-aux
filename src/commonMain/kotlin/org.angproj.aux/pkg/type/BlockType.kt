@@ -83,8 +83,7 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
 
     override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
         FoldFormat.BLOCK -> block.size.toLong()
-        FoldFormat.STREAM -> overheadSize() + block.size
-        else -> error("Unsupported format")
+        FoldFormat.STREAM -> block.size + Enfoldable.OVERHEAD_LENGTH
     }
 
     public override fun enfold(outData: Storable, offset: Int): Long {
@@ -110,7 +109,7 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
 
     public fun enfold(outStream: Writable, type: Convention): Long {
         Enfoldable.setType(outStream, type)
-        Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM))
+        Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH)
         var index = 0
         (index until block.size step Long.SIZE_BYTES).forEach {
             index = it
@@ -132,12 +131,11 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
         return foldSize(FoldFormat.STREAM)
     }
 
-    public override fun enfold(outStream: Writable): Long = enfold(outStream, Convention.BLOCK)
+    public override fun enfold(outStream: Writable): Long = enfold(outStream, conventionType)
 
     public companion object: Unfoldable<BlockType> {
-        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
-
-        public fun overheadSize() : Long = Enfoldable.TYPE_SIZE + Enfoldable.LENGTH_SIZE + Enfoldable.END_SIZE
+        override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
+        override val conventionType: Convention = Convention.BLOCK
 
         public fun unfold(inData: Retrievable, offset: Int, length: Long) : BlockType {
             require(length <= Int.MAX_VALUE)
@@ -188,6 +186,6 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
             return block
         }
 
-        public override fun unfold(inStream: Readable) : BlockType = unfold(inStream, Convention.BLOCK)
+        public override fun unfold(inStream: Readable) : BlockType = unfold(inStream, conventionType)
     }
 }

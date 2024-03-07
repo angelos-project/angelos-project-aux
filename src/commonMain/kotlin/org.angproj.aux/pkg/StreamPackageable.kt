@@ -14,12 +14,4 @@
  */
 package org.angproj.aux.pkg
 
-import org.angproj.aux.io.Readable
-import org.angproj.aux.io.Writable
-
-public interface StreamPackageable: Packageable {
-
-    public fun enfold(outStream: Writable)
-
-    public fun unfold(inStream: Readable)
-}
+public interface StreamPackageable: StreamEnpackageable, StreamUnpackageable

@@ -25,6 +25,7 @@ import kotlin.jvm.JvmInline
 public value class DoubleType(public val value: Double) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
+
     override fun foldSize(foldFormat: FoldFormat): Long = Double.SIZE_BYTES.toLong()
 
     override fun enfold(outData: Storable, offset: Int): Long {
@@ -38,7 +39,8 @@ public value class DoubleType(public val value: Double) : Enfoldable {
     }
 
     public companion object : Unfoldable<DoubleType> {
-        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
+        override val conventionType: Convention = Convention.DOUBLE
 
         override fun unfold(inData: Retrievable, offset: Int): DoubleType = DoubleType(inData.retrieveDouble(offset))
 

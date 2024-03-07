@@ -18,13 +18,17 @@ import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.io.Writable
-import org.angproj.aux.pkg.*
+import org.angproj.aux.pkg.Convention
+import org.angproj.aux.pkg.Enfoldable
+import org.angproj.aux.pkg.FoldFormat
+import org.angproj.aux.pkg.Unfoldable
 import kotlin.jvm.JvmInline
 
 @JvmInline
 public value class IntType(public val value: Int) : Enfoldable {
     override val foldFormat: FoldFormat
-    get() = TODO("Not yet implemented")
+        get() = TODO("Not yet implemented")
+
     override fun foldSize(foldFormat: FoldFormat): Long = Int.SIZE_BYTES.toLong()
 
     override fun enfold(outData: Storable, offset: Int): Long {
@@ -38,7 +42,8 @@ public value class IntType(public val value: Int) : Enfoldable {
     }
 
     public companion object : Unfoldable<IntType> {
-        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
+        override val conventionType: Convention = Convention.INT
 
         override fun unfold(inData: Retrievable, offset: Int): IntType = IntType(inData.retrieveInt(offset))
 

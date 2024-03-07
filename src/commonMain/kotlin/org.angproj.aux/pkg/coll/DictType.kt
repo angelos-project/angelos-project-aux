@@ -14,9 +14,29 @@
  */
 package org.angproj.aux.pkg.coll
 
-import org.angproj.aux.pkg.Packageable
+import org.angproj.aux.io.Readable
+import org.angproj.aux.io.Writable
+import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class DictType<P: Packageable>(public val value: Map<String, P>) {
+public value class DictType<P: Packageable>(public val value: Map<String, P>) : Enfoldable {
+    override val foldFormat: FoldFormat
+        get() = TODO("Not yet implemented")
+
+    override fun foldSize(foldFormat: FoldFormat): Long = TODO("Not yet implemented")
+
+    public override fun enfold(outStream: Writable): Long {
+        TODO("Not yet implemented")
+    }
+
+    public companion object : Unfoldable<DictType<StreamPackageable>> {
+        override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.STREAM)
+        override val conventionType: Convention = Convention.DICT
+        public fun unfold(
+            inStream: Readable, unpack: (Readable) -> Packageable
+        ): DictType<StreamPackageable> {
+            TODO("Not yet implemented")
+        }
+    }
 }

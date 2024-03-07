@@ -15,5 +15,5 @@
 package org.angproj.aux.pkg
 
 public enum class FoldFormat {
-    BLOCK, STREAM, BOTH
+    BLOCK, STREAM
 }

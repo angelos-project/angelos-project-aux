@@ -25,6 +25,7 @@ import kotlin.jvm.JvmInline
 public value class FloatType(public val value: Float) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
+
     override fun foldSize(foldFormat: FoldFormat): Long = Float.SIZE_BYTES.toLong()
 
     override fun enfold(outData: Storable, offset: Int): Long {
@@ -38,7 +39,8 @@ public value class FloatType(public val value: Float) : Enfoldable {
     }
 
     public companion object : Unfoldable<FloatType> {
-        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
+        override val conventionType: Convention = Convention.FLOAT
 
         override fun unfold(inData: Retrievable, offset: Int): FloatType = FloatType(inData.retrieveFloat(offset))
 

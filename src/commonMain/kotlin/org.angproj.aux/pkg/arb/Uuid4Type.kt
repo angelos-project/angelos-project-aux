@@ -22,11 +22,9 @@ import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.Unfoldable
-import org.angproj.aux.pkg.prime.ByteType
 import org.angproj.aux.pkg.type.BlockType
 import org.angproj.aux.util.Uuid4
 import org.angproj.aux.util.readLongAt
-import org.angproj.aux.util.writeLongAt
 import kotlin.jvm.JvmInline
 
 @JvmInline
@@ -34,10 +32,9 @@ public value class Uuid4Type(public val value: Uuid4) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long  = when(foldFormat) {
+    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
         FoldFormat.BLOCK -> UUID4_SIZE
-        FoldFormat.STREAM -> UUID4_SIZE + Enfoldable.TYPE_SIZE + Enfoldable.END_SIZE
-        else -> error("Specify size for valid type.")
+        FoldFormat.STREAM -> UUID4_SIZE + Enfoldable.OVERHEAD_BASIC
     }
 
     override fun enfold(outData: Storable, offset: Int): Long {
@@ -49,17 +46,18 @@ public value class Uuid4Type(public val value: Uuid4) : Enfoldable {
 
     override fun enfold(outStream: Writable): Long {
         val uuid = value.toByteArray()
-        Enfoldable.setType(outStream, Convention.UUID4)
+        Enfoldable.setType(outStream, conventionType)
         outStream.writeLong(uuid.readLongAt(0))
         outStream.writeLong(uuid.readLongAt(8))
-        Enfoldable.setType(outStream, Convention.UUID4)
+        Enfoldable.setType(outStream, conventionType)
         return foldSize(FoldFormat.STREAM)
     }
 
     public companion object : Unfoldable<Uuid4Type> {
         public const val UUID4_SIZE: Long = 16L
 
-        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
+        override val conventionType: Convention = Convention.UUID4
 
         override fun unfold(inData: Retrievable, offset: Int): Uuid4Type {
             return Uuid4Type(Uuid4(BlockType.unfold(inData, offset, UUID4_SIZE).block))

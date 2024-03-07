@@ -18,13 +18,17 @@ import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.io.Writable
-import org.angproj.aux.pkg.*
+import org.angproj.aux.pkg.Convention
+import org.angproj.aux.pkg.Enfoldable
+import org.angproj.aux.pkg.FoldFormat
+import org.angproj.aux.pkg.Unfoldable
 import kotlin.jvm.JvmInline
 
 @JvmInline
 public value class ShortType(public val value: Short) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
+
     override fun foldSize(foldFormat: FoldFormat): Long = Short.SIZE_BYTES.toLong()
 
     override fun enfold(outData: Storable, offset: Int): Long {
@@ -38,7 +42,8 @@ public value class ShortType(public val value: Short) : Enfoldable {
     }
 
     public companion object : Unfoldable<ShortType> {
-        override val foldFormatSupport: FoldFormat = FoldFormat.BOTH
+        override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
+        override val conventionType: Convention = Convention.SHORT
 
         override fun unfold(inData: Retrievable, offset: Int): ShortType = ShortType(inData.retrieveShort(offset))
 
