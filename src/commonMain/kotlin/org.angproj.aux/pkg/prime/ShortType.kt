@@ -29,14 +29,14 @@ public value class ShortType(public val value: Short) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long = Short.SIZE_BYTES.toLong()
+    override fun foldSize(foldFormat: FoldFormat): Long = atomicSize.toLong()
 
-    override fun enfold(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int): Long {
         outData.storeShort(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         outStream.writeShort(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -44,9 +44,9 @@ public value class ShortType(public val value: Short) : Enfoldable {
     public companion object : Unfoldable<ShortType> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.SHORT
+        override val atomicSize: Int = Short.SIZE_BYTES
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int): ShortType = ShortType(inData.retrieveShort(offset))
 
-        override fun unfold(inData: Retrievable, offset: Int): ShortType = ShortType(inData.retrieveShort(offset))
-
-        override fun unfold(inStream: Readable): ShortType = ShortType(inStream.readShort())
+        public fun unfoldFromStream(inStream: Readable): ShortType = ShortType(inStream.readShort())
     }
 }

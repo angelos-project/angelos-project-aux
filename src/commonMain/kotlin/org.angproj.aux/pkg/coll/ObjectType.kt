@@ -26,7 +26,7 @@ public value class ObjectType<P : StreamPackageable>(public val value: P) : Enfo
 
     override fun foldSize(foldFormat: FoldFormat): Long = value.foldSize(foldFormat) + Enfoldable.OVERHEAD_LENGTH
 
-    public override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         Enfoldable.setType(outStream, conventionType)
         Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH)
         value.enfold(outStream)
@@ -37,7 +37,9 @@ public value class ObjectType<P : StreamPackageable>(public val value: P) : Enfo
     public companion object : Unfoldable<ObjectType<StreamPackageable>> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.STREAM)
         override val conventionType: Convention = Convention.OBJECT
-        public fun unfold(
+        override val atomicSize: Int = 0
+
+        public fun unfoldFromStream(
             inStream: Readable, unpack: (Readable) -> StreamPackageable
         ): ObjectType<StreamPackageable> {
             require(Unfoldable.getType(inStream, conventionType))

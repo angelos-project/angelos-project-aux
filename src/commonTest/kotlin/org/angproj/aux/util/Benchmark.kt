@@ -1,6 +1,5 @@
 package org.angproj.aux.util
 
-import org.angproj.aux.sec.SecureEntropy
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 

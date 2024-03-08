@@ -23,13 +23,15 @@ public interface Unfoldable<E: Enfoldable> {
 
     public val conventionType: Convention
 
+    public val atomicSize: Int
+
     public fun isFoldFormatSupported(format: FoldFormat): Boolean = foldFormatSupport.contains(format)
 
-    public fun unfold(inData: Retrievable, offset: Int) : E { throw UnsupportedOperationException() }
+    public fun unfoldBlock(inData: Retrievable, offset: Int) : E { throw UnsupportedOperationException() }
 
-    public fun unfold(inData: Retrievable, offset: Int, size: Int) : E { throw UnsupportedOperationException() }
+    public fun unfoldBlock(inData: Retrievable, offset: Int, size: Int) : E { throw UnsupportedOperationException() }
 
-    public fun unfold(inStream: Readable) : E { throw UnsupportedOperationException() }
+    public fun unfoldStream(inStream: Readable) : E { throw UnsupportedOperationException() }
 
     public fun <P : BlockPackageable> unfold(
         inData: Retrievable, offset: Int, unpack: (Retrievable, Int) -> P

@@ -31,18 +31,18 @@ public value class LongArrayType(public val value: LongArray) : Enfoldable {
         get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
-        FoldFormat.BLOCK -> (Long.SIZE_BYTES * value.size).toLong()
-        FoldFormat.STREAM -> (Long.SIZE_BYTES * value.size).toLong() + Enfoldable.OVERHEAD_COUNT
+        FoldFormat.BLOCK -> (atomicSize * value.size).toLong()
+        FoldFormat.STREAM -> (atomicSize * value.size).toLong() + Enfoldable.OVERHEAD_COUNT
     }
 
-    override fun enfold(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long {
         value.indices.forEach {
-            outData.storeLong((it * Long.SIZE_BYTES), value[it])
+            outData.storeLong((offset + it * atomicSize), value[it])
         }
         return foldSize(FoldFormat.BLOCK)
     }
 
-    override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         Enfoldable.setType(outStream, conventionType)
         Enfoldable.setCount(outStream, value.size)
         value.forEach { outStream.writeLong(it) }
@@ -53,13 +53,16 @@ public value class LongArrayType(public val value: LongArray) : Enfoldable {
     public companion object : Unfoldable<LongArrayType> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.ARRAY_LONG
+        override val atomicSize: Int = Long.SIZE_BYTES
 
-        override fun unfold(inData: Retrievable, offset: Int, count: Int): LongArrayType {
-            val data = LongArray(count) { inData.retrieveLong(offset + it * count) }
+        public fun unfoldFromBlock(inData: Retrievable, count: Int): LongArrayType = unfoldFromBlock(inData, 0, count)
+
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int, count: Int): LongArrayType {
+            val data = LongArray(count) { inData.retrieveLong(offset + it * atomicSize) }
             return LongArrayType(data)
         }
 
-        override fun unfold(inStream: Readable): LongArrayType {
+        public fun unfoldFromStream(inStream: Readable): LongArrayType {
             require(Unfoldable.getType(inStream, conventionType))
             val count = Unfoldable.getCount(inStream)
             val data = LongArray(count) { inStream.readLong() }

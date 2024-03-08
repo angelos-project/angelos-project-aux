@@ -29,14 +29,14 @@ public value class UByteType(public val value: UByte) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long = UByte.SIZE_BYTES.toLong()
+    override fun foldSize(foldFormat: FoldFormat): Long = atomicSize.toLong()
 
-    override fun enfold(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int): Long {
         outData.storeUByte(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         outStream.writeUByte(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -44,9 +44,9 @@ public value class UByteType(public val value: UByte) : Enfoldable {
     public companion object : Unfoldable<UByteType> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.UBYTE
+        override val atomicSize: Int = UByte.SIZE_BYTES
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int): UByteType = UByteType(inData.retrieveUByte(offset))
 
-        override fun unfold(inData: Retrievable, offset: Int): UByteType = UByteType(inData.retrieveUByte(offset))
-
-        override fun unfold(inStream: Readable): UByteType = UByteType(inStream.readUByte())
+        public fun unfoldFromStream(inStream: Readable): UByteType = UByteType(inStream.readUByte())
     }
 }

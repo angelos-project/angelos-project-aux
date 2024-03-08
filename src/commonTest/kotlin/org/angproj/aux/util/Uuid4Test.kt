@@ -15,6 +15,8 @@
 package org.angproj.aux.util
 
 import org.angproj.aux.sec.SecureEntropy
+import org.angproj.aux.sec.SecureFeed
+import org.angproj.aux.sec.SecureRandom
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.test.Test
@@ -48,6 +50,16 @@ class Uuid4Test {
         val monteCarlo = Benchmark()
         repeat(10_000_000) {
             monteCarlo.scatterPoint(SecureEntropy.getEntropy(), SecureEntropy.getEntropy())
+        }
+        println(monteCarlo.distribution())
+        println((monteCarlo.distribution() - PI).absoluteValue)
+    }
+
+    @Test
+    fun testMonteCarlo2() {
+        val monteCarlo = Benchmark()
+        repeat(10_000_000) {
+            monteCarlo.scatterPoint(SecureRandom.getLong(), SecureRandom.getLong())
         }
         println(monteCarlo.distribution())
         println((monteCarlo.distribution() - PI).absoluteValue)

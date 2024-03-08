@@ -26,14 +26,16 @@ public value class ListType<P: Packageable>(public val value: List<P>) : Enfolda
 
     override fun foldSize(foldFormat: FoldFormat): Long = TODO("Not yet implemented")
 
-    public override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         TODO("Not yet implemented")
     }
 
     public companion object : Unfoldable<ListType<StreamPackageable>> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.STREAM)
         override val conventionType: Convention = Convention.DICT
-        public fun unfold(
+        override val atomicSize: Int = 0
+
+        public fun unfoldFromStream(
             inStream: Readable, unpack: (Readable) -> Packageable
         ): ListType<StreamPackageable> {
             TODO("Not yet implemented")

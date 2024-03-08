@@ -26,14 +26,14 @@ public value class FloatType(public val value: Float) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long = Float.SIZE_BYTES.toLong()
+    override fun foldSize(foldFormat: FoldFormat): Long = atomicSize.toLong()
 
-    override fun enfold(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int): Long {
         outData.storeFloat(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         outStream.writeFloat(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -41,9 +41,10 @@ public value class FloatType(public val value: Float) : Enfoldable {
     public companion object : Unfoldable<FloatType> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.FLOAT
+        override val atomicSize: Int = Float.SIZE_BYTES
 
-        override fun unfold(inData: Retrievable, offset: Int): FloatType = FloatType(inData.retrieveFloat(offset))
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int): FloatType = FloatType(inData.retrieveFloat(offset))
 
-        override fun unfold(inStream: Readable): FloatType = FloatType(inStream.readFloat())
+        public fun unfoldFromStream(inStream: Readable): FloatType = FloatType(inStream.readFloat())
     }
 }

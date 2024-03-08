@@ -29,14 +29,14 @@ public value class UShortType(public val value: UShort) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long = UShort.SIZE_BYTES.toLong()
+    override fun foldSize(foldFormat: FoldFormat): Long = atomicSize.toLong()
 
-    override fun enfold(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int): Long {
         outData.storeUShort(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         outStream.writeUShort(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -44,9 +44,9 @@ public value class UShortType(public val value: UShort) : Enfoldable {
     public companion object : Unfoldable<UShortType> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.USHORT
+        override val atomicSize: Int = UShort.SIZE_BYTES
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int): UShortType = UShortType(inData.retrieveUShort(offset))
 
-        override fun unfold(inData: Retrievable, offset: Int): UShortType = UShortType(inData.retrieveUShort(offset))
-
-        override fun unfold(inStream: Readable): UShortType = UShortType(inStream.readUShort())
+        public fun unfoldFromStream(inStream: Readable): UShortType = UShortType(inStream.readUShort())
     }
 }

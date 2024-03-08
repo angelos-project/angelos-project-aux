@@ -36,17 +36,18 @@ public value class BigIntType(public val value: BigInt) : Enfoldable {
         FoldFormat.STREAM -> value.getByteSize() + Enfoldable.OVERHEAD_LENGTH
     }
 
-    public override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         val block = BlockType(value.toByteArray())
-        return block.enfold(outStream, conventionType)
+        return block.enfoldToStreamByConvention(outStream, conventionType)
     }
 
     public companion object : Unfoldable<BigIntType> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.STREAM)
         override val conventionType: Convention = Convention.BIGINT
+        override val atomicSize: Int = 0
 
-        public override fun unfold(inStream: Readable): BigIntType {
-            val block = BlockType.unfold(inStream, conventionType)
+        public fun unfoldFromStream(inStream: Readable): BigIntType {
+            val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
             return BigIntType(bigIntOf(block.block))
         }
     }

@@ -26,14 +26,16 @@ public value class DictType<P: Packageable>(public val value: Map<String, P>) : 
 
     override fun foldSize(foldFormat: FoldFormat): Long = TODO("Not yet implemented")
 
-    public override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         TODO("Not yet implemented")
     }
 
     public companion object : Unfoldable<DictType<StreamPackageable>> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.STREAM)
         override val conventionType: Convention = Convention.DICT
-        public fun unfold(
+        override val atomicSize: Int = 0
+
+        public fun unfoldFromStream(
             inStream: Readable, unpack: (Readable) -> Packageable
         ): DictType<StreamPackageable> {
             TODO("Not yet implemented")

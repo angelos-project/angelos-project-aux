@@ -35,28 +35,34 @@ public value class StructType<P: BlockPackageable>(public val value: P) : Enfold
         }
     }
 
-    public override fun enfold(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long {
         value.enfold(outData, offset)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public override fun enfold(outStream: Writable): Long {
-        val block = BlockType(foldSize(FoldFormat.BLOCK).toInt())
-        enfold(block, 0)
-        return block.enfold(outStream, conventionType)
+    public fun enfoldToStream(outStream: Writable): Long {
+        val block = BlockType(foldSize(FoldFormat.BLOCK))
+        enfoldToBlock(block, 0)
+        return block.enfoldToStreamByConvention(outStream, conventionType)
     }
 
     public companion object : Unfoldable<StructType<BlockPackageable>> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.STRUCT
+        override val atomicSize: Int = 0
 
-        public fun unfold(
+        public fun unfoldFromBlock(
+            inData: Retrievable, unpack: (Retrievable, Int) -> BlockPackageable
+        ) : StructType<BlockPackageable> = unfoldFromBlock(inData, 0, unpack)
+
+        public fun unfoldFromBlock(
             inData: Retrievable, offset: Int, unpack: (Retrievable, Int) -> BlockPackageable
         ) : StructType<BlockPackageable> = StructType(unpack(inData, offset))
 
-        public fun unfold(inStream: Readable, unpack: (Retrievable, Int) -> BlockPackageable
+        public fun unfoldFromStream(
+            inStream: Readable, unpack: (Retrievable, Int) -> BlockPackageable
         ) : StructType<BlockPackageable> {
-            val block = BlockType.unfold(inStream, conventionType)
+            val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
             return StructType(unpack(block, 0))
         }
     }

@@ -19,19 +19,27 @@ import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
 public object SecureFeed {
-    private var counter: Long = -26
+    private var counter: Long = 0
     private var entropy: Long = 0
     private var mask: Long = 0
     private var state: LongArray = LongArray(9)
+    private var next: Long = 0
 
     init {
-        repeat(27) { cycle() }
         entropy = SecureEntropy.getEntropy()
+        entropy()
+        next()
+        repeat(9) { cycle() }
     }
 
+    private fun next() { next = 131072L + entropy.mod(65536) }
+    private fun entropy() { state[8] = -state[8].inv() xor entropy }
+
     private fun cycle() {
-        if(counter > 131072) {
+        if(counter > next) {
             entropy = SecureEntropy.getEntropy()
+            next()
+            entropy()
             counter = 1
         }
 

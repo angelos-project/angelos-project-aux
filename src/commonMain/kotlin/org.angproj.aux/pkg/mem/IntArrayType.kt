@@ -31,18 +31,18 @@ public value class IntArrayType(public val value: IntArray) : Enfoldable {
         get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
-        FoldFormat.BLOCK -> (Int.SIZE_BYTES * value.size).toLong()
-        FoldFormat.STREAM -> (Int.SIZE_BYTES * value.size).toLong() + Enfoldable.OVERHEAD_COUNT
+        FoldFormat.BLOCK -> (atomicSize* value.size).toLong()
+        FoldFormat.STREAM -> (atomicSize * value.size).toLong() + Enfoldable.OVERHEAD_COUNT
     }
 
-    override fun enfold(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long {
         value.indices.forEach {
-            outData.storeInt((it * Int.SIZE_BYTES), value[it])
+            outData.storeInt((offset + it * atomicSize), value[it])
         }
         return foldSize(FoldFormat.BLOCK)
     }
 
-    override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         Enfoldable.setType(outStream, conventionType)
         Enfoldable.setCount(outStream, value.size)
         value.forEach { outStream.writeInt(it) }
@@ -53,13 +53,16 @@ public value class IntArrayType(public val value: IntArray) : Enfoldable {
     public companion object : Unfoldable<IntArrayType> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.ARRAY_INT
+        override val atomicSize: Int = Int.SIZE_BYTES
 
-        override fun unfold(inData: Retrievable, offset: Int, count: Int): IntArrayType {
-            val data = IntArray(count) { inData.retrieveInt(offset + it * count) }
+        public fun unfoldFromBlock(inData: Retrievable, count: Int): IntArrayType = unfoldFromBlock(inData, 0, count)
+
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int, count: Int): IntArrayType {
+            val data = IntArray(count) { inData.retrieveInt(offset + it * atomicSize) }
             return IntArrayType(data)
         }
 
-        override fun unfold(inStream: Readable): IntArrayType {
+        public fun unfoldFromStream(inStream: Readable): IntArrayType {
             require(Unfoldable.getType(inStream, conventionType))
             val count = Unfoldable.getCount(inStream)
             val data = IntArray(count) { inStream.readInt() }

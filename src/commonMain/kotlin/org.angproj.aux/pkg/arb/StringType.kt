@@ -35,17 +35,18 @@ public value class StringType(public val value: ByteArray) : Enfoldable {
         FoldFormat.STREAM -> value.size + Enfoldable.OVERHEAD_LENGTH
     }
 
-    public override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         val block = BlockType(value)
-        return block.enfold(outStream, conventionType)
+        return block.enfoldToStreamByConvention(outStream, conventionType)
     }
 
     public companion object : Unfoldable<StringType> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.STREAM)
         override val conventionType: Convention = Convention.STRING
+        override val atomicSize: Int = 0
 
-        public override fun unfold(inStream: Readable): StringType {
-            val block = BlockType.unfold(inStream, conventionType)
+        public fun unfoldFromStream(inStream: Readable): StringType {
+            val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
             return StringType(block.block)
         }
     }

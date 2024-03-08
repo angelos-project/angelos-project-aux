@@ -23,12 +23,15 @@ import kotlin.native.concurrent.ThreadLocal
 public object SecureRandom: RandomGenerator {
 
     private val buffer = ByteArray(1024)
-    private var bufPos: Int = buffer.size
+    private var bufPos: Int = 0
+
+    init {
+        refill()
+    }
 
     private fun refill() {
         repeat(1024 / 64) { index ->
-            SecureFeed.getFeed(buffer, index * 64)
-        }
+            SecureFeed.getFeed(buffer, index * 64) }
         bufPos = 0
     }
 

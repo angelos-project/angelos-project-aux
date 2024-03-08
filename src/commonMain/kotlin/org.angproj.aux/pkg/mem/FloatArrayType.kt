@@ -31,18 +31,18 @@ public value class FloatArrayType(public val value: FloatArray) : Enfoldable {
         get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
-        FoldFormat.BLOCK -> (Float.SIZE_BYTES * value.size).toLong()
-        FoldFormat.STREAM -> (Float.SIZE_BYTES * value.size).toLong() + Enfoldable.OVERHEAD_COUNT
+        FoldFormat.BLOCK -> (atomicSize * value.size).toLong()
+        FoldFormat.STREAM -> (atomicSize * value.size).toLong() + Enfoldable.OVERHEAD_COUNT
     }
 
-    override fun enfold(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long {
         value.indices.forEach {
-            outData.storeFloat((it * Double.SIZE_BYTES), value[it])
+            outData.storeFloat((offset + it * atomicSize), value[it])
         }
         return foldSize(FoldFormat.BLOCK)
     }
 
-    override fun enfold(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: Writable): Long {
         Enfoldable.setType(outStream, conventionType)
         Enfoldable.setCount(outStream, value.size)
         value.forEach { outStream.writeFloat(it) }
@@ -53,13 +53,16 @@ public value class FloatArrayType(public val value: FloatArray) : Enfoldable {
     public companion object : Unfoldable<FloatArrayType> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.ARRAY_FLOAT
+        override val atomicSize: Int = Float.SIZE_BYTES
 
-        override fun unfold(inData: Retrievable, offset: Int, count: Int): FloatArrayType {
-            val data = FloatArray(count) { inData.retrieveFloat(offset + it * count) }
+        public fun unfoldFromBlock(inData: Retrievable, count: Int): FloatArrayType = unfoldFromBlock(inData, 0, count)
+
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int, count: Int): FloatArrayType {
+            val data = FloatArray(count) { inData.retrieveFloat(offset + it * atomicSize) }
             return FloatArrayType(data)
         }
 
-        override fun unfold(inStream: Readable): FloatArrayType {
+        public fun unfoldFromStream(inStream: Readable): FloatArrayType {
             require(Unfoldable.getType(inStream, conventionType))
             val count = Unfoldable.getCount(inStream)
             val data = FloatArray(count) { inStream.readFloat() }

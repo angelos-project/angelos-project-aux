@@ -23,9 +23,9 @@ public interface Enfoldable {
 
     public fun foldSize(foldFormat: FoldFormat): Long
 
-    public fun enfold(outData: Storable, offset: Int): Long { throw UnsupportedOperationException() }
+    public fun enfoldBlock(outData: Storable, offset: Int): Long { throw UnsupportedOperationException() }
 
-    public fun enfold(outStream: Writable): Long { throw UnsupportedOperationException() }
+    public fun enfoldStream(outStream: Writable): Long { throw UnsupportedOperationException() }
 
     public companion object {
         public const val TYPE_SIZE: Long = 2

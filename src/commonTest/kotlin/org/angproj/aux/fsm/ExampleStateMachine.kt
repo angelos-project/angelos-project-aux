@@ -1,4 +1,4 @@
-package org.angproj.aux.sm
+package org.angproj.aux.fsm
 
 import org.angproj.aux.fsm.States
 
