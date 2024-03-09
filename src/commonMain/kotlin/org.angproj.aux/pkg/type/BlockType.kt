@@ -86,8 +86,18 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
         FoldFormat.STREAM -> block.size + Enfoldable.OVERHEAD_LENGTH
     }
 
+    protected fun chunk(index: Int, length: Int, slice: Int, action: (Int) -> Unit): Int {
+        val steps = (length - index) / slice
+        val size = steps * slice
+        if(steps > 0) (index until (index + size) step slice).forEach { action(it) }
+        return index + size
+    }
+
     public fun enfoldToBlock(outData: Storable, offset: Int): Long {
-        var index = 0
+        var index = chunk(0, block.size, Long.SIZE_BYTES) {
+            outData.storeLong(offset + it, block.readLongAt(it)) }
+
+        /*var index = 0
         (index until block.size step Long.SIZE_BYTES).forEach {
             index = it
             outData.storeLong(offset + index, block.readLongAt(index))
@@ -103,7 +113,7 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
         (index until block.size step Byte.SIZE_BYTES).forEach {
             index = it
             outData.storeByte(offset + index, block[index])
-        }
+        }*/
         return foldSize(FoldFormat.BLOCK)
     }
 
@@ -154,7 +164,7 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
                 index = it
                 block.storeShort(index, inData.retrieveShort(offset + index))
             }
-            (index until block.block.size step Short.SIZE_BYTES).forEach {
+            (index until block.block.size step Byte.SIZE_BYTES).forEach {
                 index = it
                 block.storeByte(index, inData.retrieveByte(offset + index))
             }
@@ -179,7 +189,7 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
                 index = it
                 block.storeShort(index, inStream.readShort())
             }
-            (index until block.block.size step Short.SIZE_BYTES).forEach {
+            (index until block.block.size step Byte.SIZE_BYTES).forEach {
                 index = it
                 block.storeByte(index, inStream.readByte())
             }
