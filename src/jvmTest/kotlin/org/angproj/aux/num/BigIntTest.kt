@@ -39,8 +39,7 @@ class BigIntBasicTest {
     fun testNonceGenerateGigaByte() {
         val data = ByteArray(4096)
         generateGibaByte("secure_feed.bin", 32) {
-            repeat(data.size / 64) { idx ->
-                SecureFeed.getFeed(data, idx * 64) }
+            SecureFeed.read(data)
             data
         }
     }
@@ -59,7 +58,7 @@ class BigIntBasicTest {
     fun testSomeRandom() {
         val monteCarlo = Benchmark()
         val distribution = monteCarlo(10_000_000) {
-            SecureRandom.getLong()
+            SecureRandom.readLong()
         }
         println(distribution)
         println((distribution - PI).absoluteValue)
@@ -69,7 +68,7 @@ class BigIntBasicTest {
     fun testSomeEntropy() {
         val monteCarlo = Benchmark()
         val distribution = monteCarlo(10_000_000) {
-            SecureEntropy.getEntropy()
+            SecureEntropy.readLong()
         }
         println(distribution)
         println((distribution - PI).absoluteValue)

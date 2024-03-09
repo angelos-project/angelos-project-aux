@@ -14,30 +14,36 @@
  */
 package org.angproj.aux.sec
 
+import org.angproj.aux.io.Reader
+import org.angproj.aux.util.BufferSize
+import org.angproj.aux.util.floorMod
 import org.angproj.aux.util.writeLongAt
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
-public object SecureFeed {
+public object SecureFeed: Reader {
+    private val ROUNDS_64K: Int = BufferSize._64K.size
+    private val ROUNDS_128K: Int = BufferSize._128K.size
+
     private var counter: Long = 0
     private var entropy: Long = 0
     private var mask: Long = 0
     private var state: LongArray = LongArray(9)
-    private var next: Long = 0
+    private var next: Int = 0
 
     init {
-        entropy = SecureEntropy.getEntropy()
+        entropy = SecureEntropy.readLong()
         entropy()
         next()
         repeat(9) { cycle() }
     }
 
-    private fun next() { next = 131072L + entropy.mod(65536) }
+    private fun next() { next = ROUNDS_128K + entropy.mod(ROUNDS_64K) }
     private fun entropy() { state[8] = -state[8].inv() xor entropy }
 
     private fun cycle() {
         if(counter > next) {
-            entropy = SecureEntropy.getEntropy()
+            entropy = SecureEntropy.readLong()
             next()
             entropy()
             counter = 1
@@ -77,9 +83,26 @@ public object SecureFeed {
         counter++
     }
 
-    public fun getFeed(buf: ByteArray, offset: Int = 0) {
-        require(buf.size >= 64 + offset)
-        cycle()
-        (0 until 8).forEach { index -> buf.writeLongAt(offset + index * 8, state[index] xor mask) }
+    private fun require(length: Int) {
+        require(length.floorMod(64) == 0) { "Length must be divisible by 64." }
+        require(length <= BufferSize._8K.size) { "Length must not surpass 8 Kilobytes."}
+    }
+
+    private fun fill(data: ByteArray) {
+        (data.indices step 64).forEach { offset ->
+            cycle()
+            (0 until 64 step Long.SIZE_BYTES).forEach { index ->
+                data.writeLongAt(offset + index, state[index / 8] xor mask) } }
+    }
+
+    override fun read(length: Int): ByteArray {
+        require(length)
+        return ByteArray(length).also { fill(it) }
+    }
+
+    override fun read(data: ByteArray): Int {
+        require(data.size)
+        fill(data)
+        return data.size
     }
 }

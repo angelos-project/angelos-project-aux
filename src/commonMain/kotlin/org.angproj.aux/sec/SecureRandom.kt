@@ -14,69 +14,55 @@
  */
 package org.angproj.aux.sec
 
-import org.angproj.aux.rand.RandomGenerator
+import org.angproj.aux.io.Readable
+import org.angproj.aux.io.Reader
 import org.angproj.aux.util.*
-import kotlin.math.ceil
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
-public object SecureRandom: RandomGenerator {
+public object SecureRandom: Reader, Readable {
 
-    private val buffer = ByteArray(1024)
-    private var bufPos: Int = 0
+    private val buffer = DataBuffer(BufferSize._1K.size)
 
-    init {
-        refill()
-    }
+    init { refill() }
 
     private fun refill() {
-        repeat(1024 / 64) { index ->
-            SecureFeed.getFeed(buffer, index * 64) }
-        bufPos = 0
+        buffer.reset(false)
+        SecureFeed.read(buffer.getArray())
     }
 
-    private fun <E> getValue(size: Int, block: () -> E): E {
-        if (bufPos + size > buffer.lastIndex) refill()
-        val value = block()
-        bufPos += size
-        return value
+    private fun <E> withinLimit(size: Int, block: () -> E): E {
+        if (buffer.remaining < size) refill()
+        return block()
     }
 
-    override fun getByte(): Byte = getValue(Byte.SIZE_BYTES) { buffer[bufPos] }
+    override fun readByte(): Byte = withinLimit(Byte.SIZE_BYTES) { buffer.readByte() }
+    override fun readUByte(): UByte = withinLimit(UByte.SIZE_BYTES) { buffer.readUByte() }
+    override fun readChar(): Char = withinLimit(Char.SIZE_BYTES) { buffer.readChar() }
+    override fun readShort(): Short = withinLimit(Short.SIZE_BYTES) { buffer.readShort() }
+    override fun readUShort(): UShort = withinLimit(UShort.SIZE_BYTES) { buffer.readUShort() }
+    override fun readInt(): Int = withinLimit(Int.SIZE_BYTES) { buffer.readInt() }
+    override fun readUInt(): UInt = withinLimit(UInt.SIZE_BYTES) { buffer.readUInt() }
+    override fun readLong(): Long = withinLimit(Long.SIZE_BYTES) { buffer.readLong() }
+    override fun readULong(): ULong = withinLimit(ULong.SIZE_BYTES) { buffer.readULong() }
+    override fun readFloat(): Float = withinLimit(Float.SIZE_BYTES) { buffer.readFloat() }
+    override fun readDouble(): Double = withinLimit(Double.SIZE_BYTES) { buffer.readDouble() }
 
-    override fun getUByte(): UByte = getValue(UByte.SIZE_BYTES) { buffer[bufPos].toUByte() }
-
-    override fun getShort(): Short = getValue(Short.SIZE_BYTES) { buffer.readShortAt(bufPos) }
-
-    override fun getUShort(): UShort = getValue(UShort.SIZE_BYTES) { buffer.readUShortAt(bufPos) }
-
-    override fun getInt(): Int = getValue(Int.SIZE_BYTES) { buffer.readIntAt(bufPos) }
-
-    override fun getUInt(): UInt = getValue(UInt.SIZE_BYTES) { buffer.readUIntAt(bufPos) }
-
-    override fun getLong(): Long = getValue(Long.SIZE_BYTES) { buffer.readLongAt(bufPos) }
-
-    override fun getULong(): ULong = getValue(ULong.SIZE_BYTES) { buffer.readULongAt(bufPos) }
-
-    override fun getFloat(): Float = getValue(Float.SIZE_BYTES) { buffer.readFloatAt(bufPos) }
-
-    override fun getDouble(): Double = getValue(Double.SIZE_BYTES) { buffer.readDoubleAt(bufPos) }
-
-    override fun getByteArray(size: Int): ByteArray {
-        val data = ByteArray(ceil(size / 64f).toInt())
-        repeat(data.size / 64) { index ->
-            SecureFeed.getFeed(data, index)
+    private fun fill(data: ByteArray) {
+        val buffer = ByteArray(BufferSize._1K.size)
+        (data.indices step buffer.size).forEach { offset ->
+            SecureFeed.read(buffer)
+            buffer.copyInto(data, offset, 0, buffer.size)
         }
-        return data
+
+        val remaining = data.size.floorMod(buffer.size)
+        if(remaining > 0) {
+            SecureFeed.read(buffer)
+            buffer.copyInto(data, data.size - remaining, 0, remaining)
+        }
     }
 
-    override fun getShortArray(size: Int): ShortArray = ShortArray(size) { getShort() }
+    override fun read(length: Int): ByteArray = ByteArray(length).also { fill(it) }
 
-    override fun getIntArray(size: Int): IntArray = IntArray(size) { getInt() }
-
-    override fun getLongArray(size: Int): LongArray = LongArray(size) { getLong() }
-
-    override fun getFloatArray(size: Int): FloatArray = FloatArray(size) { getFloat() }
-
-    override fun getDoubleArray(size: Int): DoubleArray = DoubleArray(size) { getDouble() }
+    override fun read(data: ByteArray): Int = (data.size).also { fill(data) }
 }

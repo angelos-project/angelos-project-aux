@@ -49,7 +49,7 @@ class Uuid4Test {
     fun testMonteCarlo() {
         val monteCarlo = Benchmark()
         repeat(10_000_000) {
-            monteCarlo.scatterPoint(SecureEntropy.getEntropy(), SecureEntropy.getEntropy())
+            monteCarlo.scatterPoint(SecureEntropy.readLong(), SecureEntropy.readLong())
         }
         println(monteCarlo.distribution())
         println((monteCarlo.distribution() - PI).absoluteValue)
@@ -59,7 +59,7 @@ class Uuid4Test {
     fun testMonteCarlo2() {
         val monteCarlo = Benchmark()
         repeat(10_000_000) {
-            monteCarlo.scatterPoint(SecureRandom.getLong(), SecureRandom.getLong())
+            monteCarlo.scatterPoint(SecureRandom.readLong(), SecureRandom.readLong())
         }
         println(monteCarlo.distribution())
         println((monteCarlo.distribution() - PI).absoluteValue)

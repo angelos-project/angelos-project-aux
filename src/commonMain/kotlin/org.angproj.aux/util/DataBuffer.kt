@@ -22,17 +22,21 @@ public class DataBuffer(data: ByteArray): Readable, Writable {
     public constructor(size: Int = 4096) : this(ByteArray(size))
 
     private val _data = data
-    private var _position: Int = 0
+    public fun getArray(): ByteArray = _data
 
     public val size: Int
         get() = _data.size
 
+    private var _position: Int = 0
     public val position: Int
         get() = _position
 
     private var _limit: Int = _data.size
     public val limit: Int
         get() = _limit
+
+    public val remaining: Int
+        get() = _limit - _position
 
     public fun rewind() {
         _position = 0
@@ -43,8 +47,8 @@ public class DataBuffer(data: ByteArray): Readable, Writable {
         rewind()
     }
 
-    public fun reset() {
-        _data.fill(0)
+    public fun reset(erase: Boolean = true) {
+        if(erase) _data.fill(0)
         _position = 0
         _limit = _data.size
     }

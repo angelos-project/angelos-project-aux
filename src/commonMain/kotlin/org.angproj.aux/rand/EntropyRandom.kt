@@ -16,6 +16,7 @@ package org.angproj.aux.rand
 
 import org.angproj.aux.sec.SecureEntropy
 import org.angproj.aux.util.readLongAt
+import org.angproj.aux.util.writeLongAt
 
 public class EntropyRandom : AbstractBufferedRandom() {
 
@@ -35,7 +36,7 @@ public class EntropyRandom : AbstractBufferedRandom() {
     }
 
     override fun getRawLong(): Long {
-        SecureEntropy.getEntropy(buffer)
+        buffer.writeLongAt(0, SecureEntropy.readLong())
         return buffer.readLongAt(0)
     }
 

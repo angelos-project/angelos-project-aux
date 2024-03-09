@@ -43,11 +43,13 @@ public class Uuid4 internal constructor(private val uuid: ByteArray) {
     internal companion object {
 
         private val rand = ByteArray(64)
-        private var round = 4
+        private var round = 0
+
+        init { SecureFeed.read(rand) }
 
         fun generateByteArray(): ByteArray {
             if(round == 4) {
-                SecureFeed.getFeed(rand, 0)
+                SecureFeed.read(rand)
                 round = 0
             }
 
