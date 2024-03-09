@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2023-2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -49,3 +49,5 @@ public fun decodeFromHex(hex: String): ByteArray = BinHex.decodeToBin(hex)
 
 public fun Int.floorMod(other: Int): Int = this.absoluteValue.mod(other.absoluteValue)
 public fun Long.floorMod(other: Long): Long = this.absoluteValue.mod(other.absoluteValue)
+
+public fun bitArrayOf(value: ByteArray): BitArray = BitArray(value)

@@ -1,6 +1,6 @@
 package org.angproj.aux.pkg.mem
 
-import org.angproj.aux.pkg.DataBuffer
+import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
 import kotlin.test.Test

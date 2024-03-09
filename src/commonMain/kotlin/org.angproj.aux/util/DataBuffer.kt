@@ -1,30 +1,49 @@
-package org.angproj.aux.pkg
+/**
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ *
+ * This software is available under the terms of the MIT license. Parts are licensed
+ * under different terms if stated. The legal terms are attached to the LICENSE file
+ * and are made available on:
+ *
+ *      https://opensource.org/licenses/MIT
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Contributors:
+ *      Kristoffer Paulsson - initial implementation
+ */
+package org.angproj.aux.util
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Writable
-import org.angproj.aux.util.*
 
-class DataBuffer(size: Int = 4096): Readable, Writable {
+public class DataBuffer(data: ByteArray): Readable, Writable {
 
-    private val _data = ByteArray(size)
+    public constructor(size: Int = 4096) : this(ByteArray(size))
+
+    private val _data = data
     private var _position: Int = 0
-    val position: Int
+
+    public val size: Int
+        get() = _data.size
+
+    public val position: Int
         get() = _position
 
     private var _limit: Int = _data.size
-    val limit: Int
+    public val limit: Int
         get() = _limit
 
-    fun rewind() {
+    public fun rewind() {
         _position = 0
     }
 
-    fun flip() {
+    public fun flip() {
         _limit = _position
         rewind()
     }
 
-    fun reset() {
+    public fun reset() {
         _data.fill(0)
         _position = 0
         _limit = _data.size
