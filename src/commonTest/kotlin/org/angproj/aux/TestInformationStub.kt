@@ -2,6 +2,24 @@ package org.angproj.aux
 
 object TestInformationStub {
 
+    const val number1 = "" +
+            "15638aafb152690877aa62faff228c72ff407b1d75860486a5885409ce8d6292" +
+            "a51911e8b7128f926b5307f4673232a445952e346d61fb0d7dc2edd77ccbfbe5" +
+            "1549009775d07c681f971d8e07e79443e72210c7f96069fa158c876491311f61" +
+            "edfed0ba8834b200f732460c981592c5936cafe7e61dc17481c8d4c368eb4eb5"
+
+    const val number2 = "00" +
+            "a1f7944df6e26e7a6b42e31a8536450ca3dc9aa1571e6e2ca9b383aee3db73fe" +
+            "b9f3db434c66543aa94b29a9b107709250fa8630ee0f4d5ea9f9c4931060f4ba" +
+            "e5e0c5e0e40aa5e9779476fc5274f7756f35c7bce5817ec745d89aa19f0b95bd" +
+            "e5328e2feadf2163ab9a00bad65ddc360dfb5a95738c37e46d79e2cb0b70d8"
+
+    const val number3 = "ff" +
+            "25ca787b4f0681d81f51d06044183670b7aafbd33b055d9c654197c8f5c8e34b" +
+            "9d251b5097824e5e2710df10770fe967ab0ef0837d6d505a810c21f8843867fd" +
+            "a16ae618fb987842c30efa92b6d3da22cbef99450653230391e6bdb1a3bbb97e" +
+            "71a7700f76846efde955847745f2171d92ccd93d246f9c02cde1bd37d2a04a"
+
     /**
      * 2 Kilobytes of octet data in hexadecimal format for use in testing.
      * */
@@ -69,4 +87,21 @@ object TestInformationStub {
             "fd83577c35161b947f926ae1ca0a97df791938395fb3ae4af3406c0f579b4def" +
             "c58d16748c605ffbbffe09330e1d1b98679ce5af543d67ea957164315e642a41" +
             "f3ed02a321f7d89e5da821677849bfb39b4c084411ce8b20eb3e64d5d416a40a"
+
+    const val lipsumLong = """Aenean dapibus tellus in metus viverra pellentesque. Etiam et ultrices
+magna. Nulla quam sapien, tempus eu odio ac, molestie rutrum urna. In hac
+habitasse platea dictumst. Praesent ultrices ullamcorper convallis. Vestibulum
+ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
+curae; In ultrices, nulla a imperdiet consectetur, sem felis fermentum orci,
+semper rhoncus lacus felis eget dolor. Duis ut lacus nec velit ultricies
+vestibulum non in massa. Donec vel odio efficitur, consectetur odio eget,
+pulvinar enim. Donec sollicitudin quis augue non aliquet. Nam varius, nibh a
+tempor dapibus, est nisl elementum lacus, in lobortis metus metus ut leo. Nam
+rutrum libero libero, ac viverra nunc mollis eget. Class aptent taciti
+sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean
+elit ante, egestas bibendum porta tincidunt, fermentum quis nisl."""
+
+    const val lipsumMedium = """Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis quis urna quis nisl fermentum commodo. Integer pellentesque leo at molestie blandit. Fusce odio ex, feugiat nec luctus sed, porttitor eu libero."""
+
+    const val lipsumShort = """Duis lobortis a libero fringilla porta."""
 }

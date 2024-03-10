@@ -33,8 +33,8 @@ public value class Uuid4Type(public val value: Uuid4) : Enfoldable {
         get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
-        FoldFormat.BLOCK -> UUID4_SIZE
-        FoldFormat.STREAM -> UUID4_SIZE + Enfoldable.OVERHEAD_BASIC
+        FoldFormat.BLOCK -> atomicSize.toLong()
+        FoldFormat.STREAM -> atomicSize.toLong() + Enfoldable.OVERHEAD_BASIC
     }
 
     public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long {
@@ -49,25 +49,25 @@ public value class Uuid4Type(public val value: Uuid4) : Enfoldable {
         Enfoldable.setType(outStream, conventionType)
         outStream.writeLong(uuid.readLongAt(0))
         outStream.writeLong(uuid.readLongAt(8))
-        Enfoldable.setType(outStream, conventionType)
+        Enfoldable.setEnd(outStream, conventionType)
         return foldSize(FoldFormat.STREAM)
     }
 
     public companion object : Unfoldable<Uuid4Type> {
-        public const val UUID4_SIZE: Long = 16L
-
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.UUID4
         override val atomicSize: Int = 16
 
         public fun unfoldFromBlock(inData: Retrievable, offset: Int = 0): Uuid4Type {
-            return Uuid4Type(Uuid4(BlockType.unfoldFromBlock(inData, offset, UUID4_SIZE).block))
+            return Uuid4Type(Uuid4(BlockType.unfoldFromBlock(inData, offset, atomicSize.toLong()).block))
         }
 
         public fun unfoldFromStream(inStream: Readable): Uuid4Type {
-            val block = BlockType(UUID4_SIZE)
+            val block = BlockType(atomicSize.toLong())
+            require(Unfoldable.getType(inStream, conventionType))
             block.storeLong(0, inStream.readLong())
             block.storeLong(8, inStream.readLong())
+            require(Unfoldable.getEnd(inStream, conventionType))
             return Uuid4Type(Uuid4(block.block))
         }
     }
