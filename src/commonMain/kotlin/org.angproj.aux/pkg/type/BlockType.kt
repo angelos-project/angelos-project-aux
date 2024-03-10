@@ -31,51 +31,27 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
     public constructor(size: Long) : this(ByteArray(size.toInt()))
 
     override fun retrieveByte(position: Int): Byte = block[position]
-
     override fun retrieveUByte(position: Int): UByte = block[position].toUByte()
-
     override fun retrieveChar(position: Int): Char = block.readCharAt(position)
-
     override fun retrieveShort(position: Int): Short = block.readShortAt(position)
-
     override fun retrieveUShort(position: Int): UShort = block.readUShortAt(position)
-
     override fun retrieveInt(position: Int): Int = block.readIntAt(position)
-
     override fun retrieveUInt(position: Int): UInt = block.readUIntAt(position)
-
     override fun retrieveLong(position: Int): Long = block.readLongAt(position)
-
     override fun retrieveULong(position: Int): ULong = block.readULongAt(position)
-
     override fun retrieveFloat(position: Int): Float = block.readFloatAt(position)
-
     override fun retrieveDouble(position: Int): Double = block.readDoubleAt(position)
 
-    override fun storeByte(position: Int, value: Byte) {
-        block[position] = value
-    }
-
-    override fun storeUByte(position: Int, value: UByte) {
-        block[position] = value.toByte()
-    }
-
+    override fun storeByte(position: Int, value: Byte) { block[position] = value }
+    override fun storeUByte(position: Int, value: UByte) { block[position] = value.toByte() }
     override fun storeChar(position: Int, value: Char) { block.writeCharAt(position, value) }
-
     override fun storeShort(position: Int, value: Short) { block.writeShortAt(position, value) }
-
     override fun storeUShort(position: Int, value: UShort) { block.writeUShortAt(position, value) }
-
     override fun storeInt(position: Int, value: Int) { block.writeIntAt(position, value) }
-
     override fun storeUInt(position: Int, value: UInt) { block.writeUIntAt(position, value) }
-
     override fun storeLong(position: Int, value: Long) { block.writeLongAt(position, value) }
-
     override fun storeULong(position: Int, value: ULong) { block.writeULongAt(position, value) }
-
     override fun storeFloat(position: Int, value: Float) { block.writeFloatAt(position, value) }
-
     override fun storeDouble(position: Int, value: Double) { block.writeDoubleAt(position, value) }
 
     override val foldFormat: FoldFormat
@@ -86,57 +62,28 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
         FoldFormat.STREAM -> block.size + Enfoldable.OVERHEAD_LENGTH
     }
 
-    protected fun chunk(index: Int, length: Int, slice: Int, action: (Int) -> Unit): Int {
-        val steps = (length - index) / slice
-        val size = steps * slice
-        if(steps > 0) (index until (index + size) step slice).forEach { action(it) }
-        return index + size
-    }
-
     public fun enfoldToBlock(outData: Storable, offset: Int): Long {
-        var index = chunk(0, block.size, Long.SIZE_BYTES) {
+        var index = chunkLoop(0, block.size, Long.SIZE_BYTES) {
             outData.storeLong(offset + it, block.readLongAt(it)) }
-
-        /*var index = 0
-        (index until block.size step Long.SIZE_BYTES).forEach {
-            index = it
-            outData.storeLong(offset + index, block.readLongAt(index))
-        }
-        (index until block.size step Int.SIZE_BYTES).forEach {
-            index = it
-            outData.storeInt(offset + index, block.readIntAt(index))
-        }
-        (index until block.size step Short.SIZE_BYTES).forEach {
-            index = it
-            outData.storeShort(offset + index, block.readShortAt(index))
-        }
-        (index until block.size step Byte.SIZE_BYTES).forEach {
-            index = it
-            outData.storeByte(offset + index, block[index])
-        }*/
-        return foldSize(FoldFormat.BLOCK)
+        index = chunkSimple(index, block.size, Int.SIZE_BYTES) {
+            outData.storeInt(offset + it, block.readIntAt(it)) }
+        index = chunkSimple(index, block.size, Short.SIZE_BYTES) {
+            outData.storeShort(offset + it, block.readShortAt(it)) }
+        return chunkSimple(index, block.size, Byte.SIZE_BYTES) {
+            outData.storeByte(offset + it, block[it]) }.toLong()
     }
 
     public fun enfoldToStreamByConvention(outStream: Writable, type: Convention): Long {
         Enfoldable.setType(outStream, type)
         Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH)
-        var index = 0
-        (index until block.size step Long.SIZE_BYTES).forEach {
-            index = it
-            outStream.writeLong(block.readLongAt(index))
-        }
-        (index until block.size step Int.SIZE_BYTES).forEach {
-            index = it
-            outStream.writeInt(block.readIntAt(index))
-        }
-        (index until block.size step Short.SIZE_BYTES).forEach {
-            index = it
-            outStream.writeShort(block.readShortAt(index))
-        }
-        (index until block.size step Byte.SIZE_BYTES).forEach {
-            index = it
-            outStream.writeByte(block[index])
-        }
+        var index = chunkLoop(0, block.size, Long.SIZE_BYTES) {
+            outStream.writeLong(block.readLongAt(it)) }
+        index = chunkSimple(index, block.size, Int.SIZE_BYTES) {
+            outStream.writeInt(block.readIntAt(it)) }
+        index = chunkSimple(index, block.size, Short.SIZE_BYTES) {
+            outStream.writeShort(block.readShortAt(it)) }
+        chunkSimple(index, block.size, Byte.SIZE_BYTES) {
+            outStream.writeByte(block[it]) }.toLong()
         Enfoldable.setEnd(outStream, type)
         return foldSize(FoldFormat.STREAM)
     }
@@ -148,26 +95,31 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
         override val conventionType: Convention = Convention.BLOCK
         override val atomicSize: Int = 0
 
+        protected fun chunkSimple(
+            index: Int, length: Int, slice: Int, action: (Int) -> Unit
+        ): Int = when(length - index >= slice) {
+            true -> (index + slice).also { action(index) }
+            else -> index
+        }
+
+        protected fun chunkLoop(index: Int, length: Int, slice: Int, action: (Int) -> Unit): Int {
+            val steps = (length - index) / slice
+            val size = steps * slice
+            if(steps > 0) (index until (index + size) step slice).forEach { action(it) }
+            return index + size
+        }
+
         public fun unfoldFromBlock(inData: Retrievable, offset: Int, length: Long) : BlockType {
             require(length <= Int.MAX_VALUE)
             val block = BlockType(length)
-            var index = 0
-            (index until block.block.size step Long.SIZE_BYTES).forEach {
-                index = it
-                block.storeLong(index, inData.retrieveLong(offset + index))
-            }
-            (index until block.block.size step Int.SIZE_BYTES).forEach {
-                index = it
-                block.storeInt(index, inData.retrieveInt(offset + index))
-            }
-            (index until block.block.size step Short.SIZE_BYTES).forEach {
-                index = it
-                block.storeShort(index, inData.retrieveShort(offset + index))
-            }
-            (index until block.block.size step Byte.SIZE_BYTES).forEach {
-                index = it
-                block.storeByte(index, inData.retrieveByte(offset + index))
-            }
+            var index = chunkLoop(0, length.toInt(), Long.SIZE_BYTES) {
+                block.storeLong(it, inData.retrieveLong(offset + it)) }
+            index = chunkSimple(index, length.toInt(), Int.SIZE_BYTES) {
+                block.storeInt(it, inData.retrieveInt(offset + it)) }
+            index = chunkSimple(index,length.toInt(), Short.SIZE_BYTES) {
+                block.storeShort(it, inData.retrieveShort(offset + it)) }
+            chunkSimple(index, length.toInt(), Byte.SIZE_BYTES) {
+                block.storeByte(it, inData.retrieveByte(offset + it)) }
             return block
         }
 
@@ -176,23 +128,14 @@ public value class BlockType(public val block: ByteArray) : Storable, Retrievabl
             val length = Unfoldable.getLength(inStream)
             require(length <= Int.MAX_VALUE)
             val block = BlockType(length)
-            var index = 0
-            (index until block.block.size step Long.SIZE_BYTES).forEach {
-                index = it
-                block.storeLong(index, inStream.readLong())
-            }
-            (index until block.block.size step Int.SIZE_BYTES).forEach {
-                index = it
-                block.storeInt(index, inStream.readInt())
-            }
-            (index until block.block.size step Short.SIZE_BYTES).forEach {
-                index = it
-                block.storeShort(index, inStream.readShort())
-            }
-            (index until block.block.size step Byte.SIZE_BYTES).forEach {
-                index = it
-                block.storeByte(index, inStream.readByte())
-            }
+            var index = chunkLoop(0, length.toInt(), Long.SIZE_BYTES) {
+                block.storeLong(it, inStream.readLong()) }
+            index = chunkSimple(index, length.toInt(), Int.SIZE_BYTES) {
+                block.storeInt(it, inStream.readInt()) }
+            index = chunkSimple(index,length.toInt(), Short.SIZE_BYTES) {
+                block.storeShort(it, inStream.readShort()) }
+            chunkSimple(index, length.toInt(), Byte.SIZE_BYTES) {
+                block.storeByte(it, inStream.readByte()) }
             require(Unfoldable.getEnd(inStream, type))
             return block
         }
