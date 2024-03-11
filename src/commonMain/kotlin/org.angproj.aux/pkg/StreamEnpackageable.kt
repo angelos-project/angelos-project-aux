@@ -53,9 +53,16 @@ public interface StreamEnpackageable : Packageable {
         protected fun saveString(outStream: Writable, type: StringType): Long = type.enfoldToStream(outStream)
         protected fun saveBigInt(outStream: Writable, type: BigIntType): Long = type.enfoldToStream(outStream)
 
-        protected fun <P: BlockPackageable> saveStruct(outStream: Writable, type: StructType<P>): Long = type.enfoldToStream(outStream)
-        protected fun <P: StreamPackageable> saveObject(outStream: Writable, type: ObjectType<P>): Long = type.enfoldToStream(outStream)
-        protected fun <P: Packageable> saveDict(outStream: Writable, type: DictType<P>): Long = type.enfoldToStream(outStream)
-        protected fun <P: Packageable> saveList(outStream: Writable, type: ListType<P>): Long = type.enfoldToStream(outStream)
+        protected fun <P : BlockPackageable> saveStruct(outStream: Writable, type: StructType<P>): Long =
+            type.enfoldToStream(outStream)
+
+        protected fun <P : StreamPackageable> saveObject(outStream: Writable, type: ObjectType<P>): Long =
+            type.enfoldToStream(outStream)
+
+        protected fun <P : Packageable> saveDict(outStream: Writable, type: DictType<P>): Long =
+            type.enfoldToStream(outStream)
+
+        protected fun <P : Packageable> saveList(outStream: Writable, type: ListType<P>): Long =
+            type.enfoldToStream(outStream)
     }
 }

@@ -45,7 +45,8 @@ public value class UByteType(public val value: UByte) : Enfoldable {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.UBYTE
         override val atomicSize: Int = UByte.SIZE_BYTES
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int): UByteType = UByteType(inData.retrieveUByte(offset))
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int): UByteType =
+            UByteType(inData.retrieveUByte(offset))
 
         public fun unfoldFromStream(inStream: Readable): UByteType = UByteType(inStream.readUByte())
     }

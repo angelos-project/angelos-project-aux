@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.rand
 
-public abstract class AbstractSponge1024: AbstractSponge(16, 16) {
+public abstract class AbstractSponge1024 : AbstractSponge(16, 16) {
     override fun round() {
         val r0 = state[0] xor state[4] xor state[8] xor state[12]
         val r1 = state[1] xor state[5] xor state[9] xor state[13]

@@ -23,14 +23,18 @@ public value class BitArray(private val array: ByteArray) : Collection<Boolean> 
 
     override fun isEmpty(): Boolean = array.isEmpty()
 
-    override fun containsAll(elements: Collection<Boolean>): Boolean { throw UnsupportedOperationException() }
+    override fun containsAll(elements: Collection<Boolean>): Boolean {
+        throw UnsupportedOperationException()
+    }
 
-    override fun contains(element: Boolean): Boolean { throw UnsupportedOperationException() }
+    override fun contains(element: Boolean): Boolean {
+        throw UnsupportedOperationException()
+    }
 
     override fun iterator(): Iterator<Boolean> = BitIterator(array)
 }
 
-public class BitIterator(private val bytes: ByteArray): Iterator<Boolean> {
+public class BitIterator(private val bytes: ByteArray) : Iterator<Boolean> {
     private val size = bytes.size * 8
     private var position = 0
 
@@ -38,7 +42,7 @@ public class BitIterator(private val bytes: ByteArray): Iterator<Boolean> {
 
     override fun next(): Boolean {
         val index = position / 8
-        return when((position++).floorMod(8)) {
+        return when ((position++).floorMod(8)) {
             0 -> bytes[index].checkFlag7()
             1 -> bytes[index].checkFlag6()
             2 -> bytes[index].checkFlag5()

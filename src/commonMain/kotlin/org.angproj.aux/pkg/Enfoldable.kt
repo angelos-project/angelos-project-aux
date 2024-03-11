@@ -23,9 +23,13 @@ public interface Enfoldable {
 
     public fun foldSize(foldFormat: FoldFormat): Long
 
-    public fun enfoldBlock(outData: Storable, offset: Int): Long { throw UnsupportedOperationException() }
+    public fun enfoldBlock(outData: Storable, offset: Int): Long {
+        throw UnsupportedOperationException()
+    }
 
-    public fun enfoldStream(outStream: Writable): Long { throw UnsupportedOperationException() }
+    public fun enfoldStream(outStream: Writable): Long {
+        throw UnsupportedOperationException()
+    }
 
     public companion object {
         public const val TYPE_SIZE: Long = 2
@@ -37,16 +41,28 @@ public interface Enfoldable {
         public const val OVERHEAD_LENGTH: Long = TYPE_SIZE + LENGTH_SIZE + END_SIZE
         public const val OVERHEAD_COUNT: Long = TYPE_SIZE + COUNT_SIZE + END_SIZE
 
-        public fun setType(outStream: Writable, type: Convention) { outStream.writeShort(type.type) }
+        public fun setType(outStream: Writable, type: Convention) {
+            outStream.writeShort(type.type)
+        }
 
-        public fun setCount(outStream: Writable, count: Int) { outStream.writeInt(count) }
+        public fun setCount(outStream: Writable, count: Int) {
+            outStream.writeInt(count)
+        }
 
-        public fun setCount(outData: Storable, offset: Int, count: Int) { outData.storeInt(offset, count) }
+        public fun setCount(outData: Storable, offset: Int, count: Int) {
+            outData.storeInt(offset, count)
+        }
 
-        public fun setLength(outStream: Writable, length: Long) { outStream.writeLong(length) }
+        public fun setLength(outStream: Writable, length: Long) {
+            outStream.writeLong(length)
+        }
 
-        public fun setLength(outData: Storable, offset: Int, length: Long) { outData.storeLong(offset, length) }
+        public fun setLength(outData: Storable, offset: Int, length: Long) {
+            outData.storeLong(offset, length)
+        }
 
-        public fun setEnd(outStream: Writable, end: Convention) { outStream.writeByte(end.end) }
+        public fun setEnd(outStream: Writable, end: Convention) {
+            outStream.writeByte(end.end)
+        }
     }
 }

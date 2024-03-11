@@ -44,7 +44,9 @@ public class Uuid4 internal constructor(private val uuid: ByteArray) {
 
         private val buffer = DataBuffer(64)
 
-        init { revitalize() }
+        init {
+            revitalize()
+        }
 
         private fun revitalize() {
             buffer.reset(false)
@@ -52,7 +54,7 @@ public class Uuid4 internal constructor(private val uuid: ByteArray) {
         }
 
         fun generateByteArray(): ByteArray {
-            if(buffer.remaining == 0) revitalize()
+            if (buffer.remaining == 0) revitalize()
 
             val data = ByteArray(16)
             data.writeLongAt(0, buffer.readLong())

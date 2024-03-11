@@ -32,7 +32,7 @@ public value class Uuid4Type(public val value: Uuid4) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
+    override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
         FoldFormat.BLOCK -> atomicSize.toLong()
         FoldFormat.STREAM -> atomicSize.toLong() + Enfoldable.OVERHEAD_BASIC
     }

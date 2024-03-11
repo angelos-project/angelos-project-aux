@@ -18,7 +18,10 @@ import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.io.Writable
-import org.angproj.aux.pkg.*
+import org.angproj.aux.pkg.Convention
+import org.angproj.aux.pkg.Enfoldable
+import org.angproj.aux.pkg.FoldFormat
+import org.angproj.aux.pkg.Unfoldable
 import kotlin.jvm.JvmInline
 
 @JvmInline
@@ -43,7 +46,8 @@ public value class FloatType(public val value: Float) : Enfoldable {
         override val conventionType: Convention = Convention.FLOAT
         override val atomicSize: Int = Float.SIZE_BYTES
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int): FloatType = FloatType(inData.retrieveFloat(offset))
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int): FloatType =
+            FloatType(inData.retrieveFloat(offset))
 
         public fun unfoldFromStream(inStream: Readable): FloatType = FloatType(inStream.readFloat())
     }

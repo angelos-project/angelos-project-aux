@@ -16,15 +16,19 @@ package org.angproj.aux.sec
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Reader
-import org.angproj.aux.util.*
+import org.angproj.aux.util.BufferSize
+import org.angproj.aux.util.DataBuffer
+import org.angproj.aux.util.floorMod
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
-public object SecureRandom: Reader, Readable {
+public object SecureRandom : Reader, Readable {
 
     private val buffer = DataBuffer(BufferSize._1K.size)
 
-    init { refill() }
+    init {
+        refill()
+    }
 
     private fun refill() {
         buffer.reset(false)
@@ -56,7 +60,7 @@ public object SecureRandom: Reader, Readable {
         }
 
         val remaining = data.size.floorMod(buffer.size)
-        if(remaining > 0) {
+        if (remaining > 0) {
             SecureFeed.read(buffer)
             buffer.copyInto(data, data.size - remaining, 0, remaining)
         }

@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.rand
 
-public abstract class AbstractSponge256: AbstractSponge(4, 4) {
+public abstract class AbstractSponge256 : AbstractSponge(4, 4) {
     override fun round() {
         val r0 = state[0] xor state[2]
         val r1 = state[1] xor state[3]
@@ -25,10 +25,10 @@ public abstract class AbstractSponge256: AbstractSponge(4, 4) {
         state[1] = -state[0].inv() * 3
         state[0] = temp
 
-        mask = (state[0] and r0 and counter and mask) xor
-                ((state[1] and r1 and -mask.inv()) * 2) xor
-                ((state[2] and -counter.inv()) * 4) xor
-                (state[3] * 8)
+        mask = (state[0] and state[2] and counter and mask) xor
+                ((state[1] and state[3] and -mask.inv()) * 2) xor
+                ((r0 and r1) * 4) xor
+                (counter.inv() * 8)
 
         state[0] = state[0] xor r0
         state[1] = state[1] xor r0

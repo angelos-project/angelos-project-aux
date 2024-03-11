@@ -23,7 +23,7 @@ import org.angproj.aux.util.readLongAt
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
-public object SecureFeed: AbstractSponge512(), Reader {
+public object SecureFeed : AbstractSponge512(), Reader {
     private val ROUNDS_64K: Int = BufferSize._64K.size
     private val ROUNDS_128K: Int = BufferSize._128K.size
 
@@ -35,13 +35,15 @@ public object SecureFeed: AbstractSponge512(), Reader {
     }
 
     private fun revitalize() {
-        SecureEntropy.read(32).also {entropy ->
+        SecureEntropy.read(32).also { entropy ->
             (entropy.indices step Long.SIZE_BYTES).forEach {
-                absorb(entropy.readLongAt(it), it / Long.SIZE_BYTES) } }
+                absorb(entropy.readLongAt(it), it / Long.SIZE_BYTES)
+            }
+        }
     }
 
     private fun cycle() {
-        if(counter > next) {
+        if (counter > next) {
             next = ROUNDS_128K + state[0].mod(ROUNDS_64K)
             revitalize()
             counter = 1
@@ -56,8 +58,8 @@ public object SecureFeed: AbstractSponge512(), Reader {
 
     private fun fill(data: ByteArray) {
         val buffer = DataBuffer(data)
-        (0 until data.size / 64).forEach { rnd ->
-            (0 until accessibleSize).forEach { pos ->
+        repeat(data.size / 64) { _ ->
+            repeat(accessibleSize) { pos ->
                 buffer.writeLong(squeeze(pos)) }
             cycle()
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -12,13 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux.codec
 
-public interface DslBlock
-
-public inline operator fun <E : DslBlock> E.invoke(block: E.() -> Unit): E = this.also { block() }
-
-
-public fun interface Lambda<E> {
-    public operator fun invoke(): E
+public class DecoderEncoder: Decoder, Encoder {
 }

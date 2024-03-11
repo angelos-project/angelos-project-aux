@@ -53,9 +53,13 @@ public interface StreamUnpackageable : Packageable {
         protected fun loadString(inStream: Readable): StringType = StringType.unfoldFromStream(inStream)
         protected fun loadBigInt(inStream: Readable): BigIntType = BigIntType.unfoldFromStream(inStream)
 
-        protected fun <P: BlockPackageable> loadStruct(inStream: Readable): StructType<*> = StructType.unfoldStream(inStream)
-        protected fun <P: StreamPackageable> loadObject(inStream: Readable): ObjectType<*> = ObjectType.unfoldStream(inStream)
-        protected fun <P: Packageable> loadDict(inStream: Readable): DictType<*> = DictType.unfoldStream(inStream)
-        protected fun <P: Packageable> loadList(inStream: Readable): ListType<*> = ListType.unfoldStream(inStream)
+        protected fun <P : BlockPackageable> loadStruct(inStream: Readable): StructType<*> =
+            StructType.unfoldStream(inStream)
+
+        protected fun <P : StreamPackageable> loadObject(inStream: Readable): ObjectType<*> =
+            ObjectType.unfoldStream(inStream)
+
+        protected fun <P : Packageable> loadDict(inStream: Readable): DictType<*> = DictType.unfoldStream(inStream)
+        protected fun <P : Packageable> loadList(inStream: Readable): ListType<*> = ListType.unfoldStream(inStream)
     }
 }

@@ -14,4 +14,4 @@
  */
 package org.angproj.aux.pkg
 
-public interface StreamPackageable: StreamEnpackageable, StreamUnpackageable
+public interface StreamPackageable : StreamEnpackageable, StreamUnpackageable

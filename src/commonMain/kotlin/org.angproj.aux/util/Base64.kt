@@ -63,7 +63,7 @@ public object Base64 {
 
         val fullBlkCnt = src.size / 3
         val remainder = src.size % 3
-        val extra = if(remainder > 0) 1 else 0
+        val extra = if (remainder > 0) 1 else 0
         val dest = CharArray(4 * (fullBlkCnt + extra))
 
         (0 until fullBlkCnt).forEach { blkIdx ->
@@ -80,7 +80,7 @@ public object Base64 {
             dest[destIdx + 3] = alphabet[bits and 0x3f]
         }
 
-        when(remainder) {
+        when (remainder) {
             1 -> {
                 val byte0 = src[src.lastIndex].toInt() and 0xff
 
@@ -89,8 +89,9 @@ public object Base64 {
                 dest[dest.lastIndex - 1] = padding
                 dest[dest.lastIndex] = padding
             }
+
             2 -> {
-                val byte0 = src[src.lastIndex-1].toInt() and 0xff
+                val byte0 = src[src.lastIndex - 1].toInt() and 0xff
                 val byte1 = src[src.lastIndex].toInt() and 0xff
 
                 dest[dest.lastIndex - 3] = alphabet[byte0 shr 2]
@@ -110,8 +111,8 @@ public object Base64 {
             src[src.lastIndex] -> 2
             else -> 0
         }
-        val extra = if(remainder > 0) 1 else 0
-        val dest = ByteArray(3 * fullBlkCnt - if(remainder == 1) 1 else 0)
+        val extra = if (remainder > 0) 1 else 0
+        val dest = ByteArray(3 * fullBlkCnt - if (remainder == 1) 1 else 0)
 
         (0 until fullBlkCnt - extra).forEach { blkIdx ->
             val srcIdx = blkIdx * 4
@@ -127,7 +128,7 @@ public object Base64 {
             dest[destIdx + 2] = bits.toByte()
         }
 
-        when(remainder) {
+        when (remainder) {
             1 -> {
                 val bits = (alphabet.getValue(src[src.lastIndex - 3]).shl(18)) or
                         (alphabet.getValue(src[src.lastIndex - 2]).shl(12))
@@ -135,6 +136,7 @@ public object Base64 {
                 dest[dest.lastIndex - 1] = (bits shr 16).toByte()
                 dest[dest.lastIndex] = (bits shr 8).toByte()
             }
+
             2 -> {
                 val bits = (alphabet.getValue(src[src.lastIndex - 3]).shl(18)) or
                         (alphabet.getValue(src[src.lastIndex - 2]).shl(12)) or

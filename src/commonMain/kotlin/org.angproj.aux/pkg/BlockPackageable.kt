@@ -14,4 +14,4 @@
  */
 package org.angproj.aux.pkg
 
-public interface BlockPackageable: BlockEnpackageable, BlockUnpackageable
+public interface BlockPackageable : BlockEnpackageable, BlockUnpackageable

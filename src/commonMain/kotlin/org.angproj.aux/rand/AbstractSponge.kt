@@ -24,7 +24,8 @@ public abstract class AbstractSponge(stateSize: Int = 0, protected val accessibl
 
     init {
         require(accessibleSize <= stateSize) {
-            "Accessible size must be equal or less than the number of states." }
+            "Accessible size must be equal or less than the number of states."
+        }
     }
 
     protected abstract fun round()
@@ -39,5 +40,7 @@ public abstract class AbstractSponge(stateSize: Int = 0, protected val accessibl
         return state[offset] xor mask
     }
 
-    protected fun scramble() { repeat(state.size) { round() } }
+    protected fun scramble() {
+        repeat(state.size) { round() }
+    }
 }

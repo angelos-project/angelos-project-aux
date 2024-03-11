@@ -45,7 +45,8 @@ public value class ShortType(public val value: Short) : Enfoldable {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.SHORT
         override val atomicSize: Int = Short.SIZE_BYTES
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int): ShortType = ShortType(inData.retrieveShort(offset))
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int): ShortType =
+            ShortType(inData.retrieveShort(offset))
 
         public fun unfoldFromStream(inStream: Readable): ShortType = ShortType(inStream.readShort())
     }

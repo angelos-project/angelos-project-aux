@@ -14,8 +14,6 @@
  */
 package org.angproj.aux.util
 
-import org.angproj.aux.sec.SecureEntropy
-import org.angproj.aux.sec.SecureRandom
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.test.Test
@@ -24,7 +22,7 @@ import kotlin.test.assertEquals
 class Uuid4Test {
     @Test
     fun testUuid4() {
-        assertEquals(uuid4().toString()[14].code, "4"[0].code)
+        assertEquals(uuid4().toString()[14], '4')
         assertEquals(uuid4().toString().length, 36)
     }
 
@@ -34,7 +32,7 @@ class Uuid4Test {
     }
 
     @Test
-    fun testUuid4MonteCarlo() {
+    fun testMonteCarlo() {
         val monteCarlo = Benchmark()
         repeat(10_000_000) {
             val data = uuid4().toByteArray()
@@ -43,24 +41,4 @@ class Uuid4Test {
         println(monteCarlo.distribution())
         println((monteCarlo.distribution() - PI).absoluteValue)
     }
-
-    /*@Test
-    fun testMonteCarlo() {
-        val monteCarlo = Benchmark()
-        repeat(10_000_000) {
-            monteCarlo.scatterPoint(SecureEntropy.readLong(), SecureEntropy.readLong())
-        }
-        println(monteCarlo.distribution())
-        println((monteCarlo.distribution() - PI).absoluteValue)
-    }*/
-
-    /*@Test
-    fun testMonteCarlo2() {
-        val monteCarlo = Benchmark()
-        repeat(10_000_000) {
-            monteCarlo.scatterPoint(SecureRandom.readLong(), SecureRandom.readLong())
-        }
-        println(monteCarlo.distribution())
-        println((monteCarlo.distribution() - PI).absoluteValue)
-    }*/
 }

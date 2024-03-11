@@ -16,14 +16,18 @@ package org.angproj.aux.sec
 
 import org.angproj.aux.io.Reader
 import org.angproj.aux.rand.AbstractSponge256
-import org.angproj.aux.util.*
+import org.angproj.aux.util.BufferSize
+import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.epochEntropy
+import org.angproj.aux.util.floorMod
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
 public object SecureEntropy : AbstractSponge256(), Reader {
 
-    init { revitalize() }
+    init {
+        revitalize()
+    }
 
     private fun revitalize() {
         val (timestamp, nanos) = epochEntropy()
@@ -40,8 +44,8 @@ public object SecureEntropy : AbstractSponge256(), Reader {
     private fun fill(data: ByteArray) {
         val buffer = DataBuffer(data)
         revitalize()
-        (0 until data.size / 32).forEach { rnd ->
-            (0 until accessibleSize).forEach { pos ->
+        repeat(data.size / 32) {
+            repeat(accessibleSize) { pos ->
                 buffer.writeLong(squeeze(pos)) }
             round()
         }

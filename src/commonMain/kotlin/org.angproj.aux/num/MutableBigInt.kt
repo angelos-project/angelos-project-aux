@@ -45,7 +45,7 @@ public class MutableBigInt internal constructor(magnitude: MutableList<Int>, sig
     public override fun toMutableBigInt(): MutableBigInt = this
 
     public companion object {
-        public val two: MutableBigInt by lazy {MutableBigInt(intArrayOf(2), BigSigned.POSITIVE) }
+        public val two: MutableBigInt by lazy { MutableBigInt(intArrayOf(2), BigSigned.POSITIVE) }
         public val one: MutableBigInt by lazy { MutableBigInt(intArrayOf(1), BigSigned.POSITIVE) }
         public val zero: MutableBigInt by lazy { MutableBigInt(intArrayOf(0), BigSigned.ZERO) }
         public val minusOne: MutableBigInt by lazy { MutableBigInt(intArrayOf(1), BigSigned.NEGATIVE) }

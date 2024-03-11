@@ -14,18 +14,18 @@
  */
 package org.angproj.aux.io
 
-public object DevNull: Writer, Writable {
-    override fun writeByte(value: Byte) { }
-    override fun writeUByte(value: UByte) { }
-    override fun writeChar(value: Char) { }
-    override fun writeShort(value: Short) { }
-    override fun writeUShort(value: UShort) { }
-    override fun writeInt(value: Int) { }
-    override fun writeUInt(value: UInt) { }
-    override fun writeLong(value: Long) { }
-    override fun writeULong(value: ULong) { }
-    override fun writeFloat(value: Float) { }
-    override fun writeDouble(value: Double) { }
+public object DevNull : Writer, Writable {
+    override fun writeByte(value: Byte) {}
+    override fun writeUByte(value: UByte) {}
+    override fun writeChar(value: Char) {}
+    override fun writeShort(value: Short) {}
+    override fun writeUShort(value: UShort) {}
+    override fun writeInt(value: Int) {}
+    override fun writeUInt(value: UInt) {}
+    override fun writeLong(value: Long) {}
+    override fun writeULong(value: ULong) {}
+    override fun writeFloat(value: Float) {}
+    override fun writeDouble(value: Double) {}
 
     override fun write(data: ByteArray): Int = (data.size).also { data.fill(0) }
 }

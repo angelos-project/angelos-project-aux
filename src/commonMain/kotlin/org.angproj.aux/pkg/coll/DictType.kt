@@ -20,7 +20,7 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class DictType<P: Packageable>(public val value: Map<String, P>) : Enfoldable {
+public value class DictType<P : Packageable>(public val value: Map<String, P>) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 

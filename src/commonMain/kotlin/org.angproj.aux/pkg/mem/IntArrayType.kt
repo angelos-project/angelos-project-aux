@@ -31,7 +31,7 @@ public value class IntArrayType(public val value: IntArray) : Enfoldable {
         get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
-        FoldFormat.BLOCK -> (atomicSize* value.size).toLong()
+        FoldFormat.BLOCK -> (atomicSize * value.size).toLong()
         FoldFormat.STREAM -> (atomicSize * value.size).toLong() + Enfoldable.OVERHEAD_COUNT
     }
 

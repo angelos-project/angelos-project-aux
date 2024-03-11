@@ -23,13 +23,13 @@ import org.angproj.aux.pkg.type.BlockType
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class StructType<P: BlockPackageable>(public val value: P) : Enfoldable {
+public value class StructType<P : BlockPackageable>(public val value: P) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long {
         val size = value.foldSize(foldFormat)
-        return when(foldFormat) {
+        return when (foldFormat) {
             FoldFormat.BLOCK -> size
             FoldFormat.STREAM -> size + Enfoldable.OVERHEAD_LENGTH
         }
@@ -53,15 +53,15 @@ public value class StructType<P: BlockPackageable>(public val value: P) : Enfold
 
         public fun unfoldFromBlock(
             inData: Retrievable, unpack: (Retrievable, Int) -> BlockPackageable
-        ) : StructType<BlockPackageable> = unfoldFromBlock(inData, 0, unpack)
+        ): StructType<BlockPackageable> = unfoldFromBlock(inData, 0, unpack)
 
         public fun unfoldFromBlock(
             inData: Retrievable, offset: Int, unpack: (Retrievable, Int) -> BlockPackageable
-        ) : StructType<BlockPackageable> = StructType(unpack(inData, offset))
+        ): StructType<BlockPackageable> = StructType(unpack(inData, offset))
 
         public fun unfoldFromStream(
             inStream: Readable, unpack: (Retrievable, Int) -> BlockPackageable
-        ) : StructType<BlockPackageable> {
+        ): StructType<BlockPackageable> {
             val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
             return StructType(unpack(block, 0))
         }

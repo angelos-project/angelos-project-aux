@@ -36,7 +36,7 @@ public class EntropyRandom : AbstractBufferedRandom() {
     }
 
     override fun getRawLong(): Long {
-        if(buffer.remaining == 0) {
+        if (buffer.remaining == 0) {
             buffer.reset(false)
             SecureFeed.read(buffer.getArray())
         }

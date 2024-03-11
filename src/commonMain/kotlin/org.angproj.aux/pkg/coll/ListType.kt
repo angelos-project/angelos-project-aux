@@ -20,7 +20,7 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class ListType<P: Packageable>(public val value: List<P>) : Enfoldable {
+public value class ListType<P : Packageable>(public val value: List<P>) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 

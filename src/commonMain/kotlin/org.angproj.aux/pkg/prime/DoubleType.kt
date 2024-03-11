@@ -18,7 +18,10 @@ import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.io.Writable
-import org.angproj.aux.pkg.*
+import org.angproj.aux.pkg.Convention
+import org.angproj.aux.pkg.Enfoldable
+import org.angproj.aux.pkg.FoldFormat
+import org.angproj.aux.pkg.Unfoldable
 import kotlin.jvm.JvmInline
 
 @JvmInline
@@ -43,7 +46,8 @@ public value class DoubleType(public val value: Double) : Enfoldable {
         override val conventionType: Convention = Convention.DOUBLE
         override val atomicSize: Int = Double.SIZE_BYTES
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int): DoubleType = DoubleType(inData.retrieveDouble(offset))
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int): DoubleType =
+            DoubleType(inData.retrieveDouble(offset))
 
         public fun unfoldFromStream(inStream: Readable): DoubleType = DoubleType(inStream.readDouble())
     }

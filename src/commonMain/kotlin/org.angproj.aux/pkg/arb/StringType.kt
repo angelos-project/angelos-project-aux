@@ -16,7 +16,10 @@ package org.angproj.aux.pkg.arb
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Writable
-import org.angproj.aux.pkg.*
+import org.angproj.aux.pkg.Convention
+import org.angproj.aux.pkg.Enfoldable
+import org.angproj.aux.pkg.FoldFormat
+import org.angproj.aux.pkg.Unfoldable
 import org.angproj.aux.pkg.type.BlockType
 import kotlin.jvm.JvmInline
 
@@ -30,7 +33,7 @@ public value class StringType(public val value: ByteArray) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
+    override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
         FoldFormat.BLOCK -> error("Unsupported fold format.")
         FoldFormat.STREAM -> value.size + Enfoldable.OVERHEAD_LENGTH
     }

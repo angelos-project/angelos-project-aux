@@ -31,7 +31,7 @@ public value class BigIntType(public val value: BigInt) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long = when(foldFormat) {
+    override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
         FoldFormat.BLOCK -> error("Unsupported fold format.")
         FoldFormat.STREAM -> value.getByteSize() + Enfoldable.OVERHEAD_LENGTH
     }

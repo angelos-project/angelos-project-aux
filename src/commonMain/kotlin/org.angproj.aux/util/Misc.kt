@@ -24,7 +24,8 @@ public fun uuid4(): Uuid4 = Uuid4()
 
 public fun uuid4Of(data: ByteArray): Uuid4 = Uuid4(data)
 
-public fun unsignedBigIntOf(value: ByteArray): BigInt = BigInt(AbstractBigInt.stripLeadingZeros(value), BigSigned.POSITIVE)
+public fun unsignedBigIntOf(value: ByteArray): BigInt =
+    BigInt(AbstractBigInt.stripLeadingZeros(value), BigSigned.POSITIVE)
 
 public fun bigIntOf(value: IntArray): BigInt =
     AbstractBigInt.fromIntArray(value) { a, b -> BigInt(a, b) }

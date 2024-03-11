@@ -17,9 +17,11 @@ package org.angproj.aux.util
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Writable
 
-public class DataBuffer(data: ByteArray): Readable, Writable {
+public class DataBuffer(data: ByteArray) : Readable, Writable {
 
     public constructor(size: Int = 4096) : this(ByteArray(size))
+
+    public constructor(size: BufferSize) : this(size.size)
 
     private val _data = data
     public fun getArray(): ByteArray = _data
@@ -48,7 +50,7 @@ public class DataBuffer(data: ByteArray): Readable, Writable {
     }
 
     public fun reset(erase: Boolean = true) {
-        if(erase) _data.fill(0)
+        if (erase) _data.fill(0)
         _position = 0
         _limit = _data.size
     }
@@ -76,11 +78,14 @@ public class DataBuffer(data: ByteArray): Readable, Writable {
     override fun writeUByte(value: UByte): Unit = withinLimit(UByte.SIZE_BYTES) { _data[_position] = value.toByte() }
     override fun writeChar(value: Char): Unit = withinLimit(Char.SIZE_BYTES) { _data.writeCharAt(_position, value) }
     override fun writeShort(value: Short): Unit = withinLimit(Short.SIZE_BYTES) { _data.writeShortAt(_position, value) }
-    override fun writeUShort(value: UShort): Unit = withinLimit(UShort.SIZE_BYTES) { _data.writeUShortAt(_position, value) }
+    override fun writeUShort(value: UShort): Unit =
+        withinLimit(UShort.SIZE_BYTES) { _data.writeUShortAt(_position, value) }
+
     override fun writeInt(value: Int): Unit = withinLimit(Int.SIZE_BYTES) { _data.writeIntAt(_position, value) }
     override fun writeUInt(value: UInt): Unit = withinLimit(UInt.SIZE_BYTES) { _data.writeUIntAt(_position, value) }
     override fun writeLong(value: Long): Unit = withinLimit(Long.SIZE_BYTES) { _data.writeLongAt(_position, value) }
-    override fun writeULong(value: ULong): Unit = withinLimit(ULong.SIZE_BYTES) {_data.writeULongAt(_position, value) }
+    override fun writeULong(value: ULong): Unit = withinLimit(ULong.SIZE_BYTES) { _data.writeULongAt(_position, value) }
     override fun writeFloat(value: Float): Unit = withinLimit(Float.SIZE_BYTES) { _data.writeFloatAt(_position, value) }
-    override fun writeDouble(value: Double): Unit = withinLimit(Double.SIZE_BYTES) { _data.writeDoubleAt(_position, value) }
+    override fun writeDouble(value: Double): Unit =
+        withinLimit(Double.SIZE_BYTES) { _data.writeDoubleAt(_position, value) }
 }

@@ -45,7 +45,8 @@ public value class ULongType(public val value: ULong) : Enfoldable {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.ULONG
         override val atomicSize: Int = ULong.SIZE_BYTES
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int): ULongType = ULongType(inData.retrieveULong(offset))
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int): ULongType =
+            ULongType(inData.retrieveULong(offset))
 
         public fun unfoldFromStream(inStream: Readable): ULongType = ULongType(inStream.readULong())
     }
