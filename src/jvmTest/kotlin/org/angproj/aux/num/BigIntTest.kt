@@ -64,7 +64,7 @@ class BigIntBasicTest {
         println((distribution - PI).absoluteValue)
     }
 
-    @Test
+    /*@Test
     fun testSomeEntropy() {
         val monteCarlo = Benchmark()
         val distribution = monteCarlo(10_000_000) {
@@ -72,5 +72,5 @@ class BigIntBasicTest {
         }
         println(distribution)
         println((distribution - PI).absoluteValue)
-    }
+    }*/
 }

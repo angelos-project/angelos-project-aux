@@ -15,29 +15,32 @@
 package org.angproj.aux.rand
 
 import org.angproj.aux.sec.SecureEntropy
-import org.angproj.aux.util.readLongAt
-import org.angproj.aux.util.writeLongAt
+import org.angproj.aux.sec.SecureFeed
+import org.angproj.aux.util.DataBuffer
 
 public class EntropyRandom : AbstractBufferedRandom() {
 
-    private val buffer = ByteArray(8)
+    private val buffer = DataBuffer(32)
 
     override val identifier: String
         get() = name
 
     override fun initialize() {
-        buffer.fill(0)
+        SecureEntropy.read(buffer.getArray())
         _instantiated = true
     }
 
     override fun finalize() {
-        buffer.fill(0)
+        buffer.reset(true)
         _instantiated = false
     }
 
     override fun getRawLong(): Long {
-        buffer.writeLongAt(0, SecureEntropy.readLong())
-        return buffer.readLongAt(0)
+        if(buffer.remaining == 0) {
+            buffer.reset(false)
+            SecureFeed.read(buffer.getArray())
+        }
+        return buffer.readLong()
     }
 
     public companion object {

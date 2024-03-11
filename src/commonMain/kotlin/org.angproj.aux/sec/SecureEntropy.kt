@@ -15,32 +15,37 @@
 package org.angproj.aux.sec
 
 import org.angproj.aux.io.Reader
-import org.angproj.aux.util.BufferSize
+import org.angproj.aux.rand.AbstractSponge256
+import org.angproj.aux.util.*
 import org.angproj.aux.util.epochEntropy
-import org.angproj.aux.util.floorMod
-import org.angproj.aux.util.writeLongAt
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
-public object SecureEntropy : Reader {
+public object SecureEntropy : AbstractSponge256(), Reader {
 
-    private var entropy: Long = 0xFFF73E99668196E9uL.toLong()
-    private var counter: Long = 0xFFFF7D5BF9259763uL.toLong()
+    init { revitalize() }
 
-    private fun cycle(): Long {
+    private fun revitalize() {
         val (timestamp, nanos) = epochEntropy()
-        counter++
-        entropy = ((-entropy.inv() xor timestamp) * 3) xor ((-entropy.inv() xor nanos) * 5) * -counter.inv()
-        return entropy
+        absorb(timestamp, 0)
+        absorb(nanos, 1)
+        scramble()
     }
 
     private fun require(length: Int) {
-        require(length.floorMod(Long.SIZE_BYTES) == 0) { "Length must be divisible by 8." }
+        require(length.floorMod(32) == 0) { "Length must be divisible by 32." }
         require(length <= BufferSize._1K.size) { "Length must not surpass 1 Kilobyte." }
     }
 
     private fun fill(data: ByteArray) {
-        (data.indices step 8).forEach { index -> data.writeLongAt(index, cycle()) } }
+        val buffer = DataBuffer(data)
+        revitalize()
+        (0 until data.size / 32).forEach { rnd ->
+            (0 until accessibleSize).forEach { pos ->
+                buffer.writeLong(squeeze(pos)) }
+            round()
+        }
+    }
 
     override fun read(length: Int): ByteArray {
         require(length)
@@ -52,6 +57,4 @@ public object SecureEntropy : Reader {
         fill(data)
         return data.size
     }
-
-    public fun readLong(): Long = cycle()
 }

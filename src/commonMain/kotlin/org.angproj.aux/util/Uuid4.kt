@@ -42,22 +42,21 @@ public class Uuid4 internal constructor(private val uuid: ByteArray) {
     @ThreadLocal
     internal companion object {
 
-        private val rand = ByteArray(64)
-        private var round = 0
+        private val buffer = DataBuffer(64)
 
-        init { SecureFeed.read(rand) }
+        init { revitalize() }
+
+        private fun revitalize() {
+            buffer.reset(false)
+            SecureFeed.read(buffer.getArray())
+        }
 
         fun generateByteArray(): ByteArray {
-            if(round == 4) {
-                SecureFeed.read(rand)
-                round = 0
-            }
+            if(buffer.remaining == 0) revitalize()
 
             val data = ByteArray(16)
-            val start = round * 16
-            val end = start + 16
-            rand.copyInto(data, 0, start, end)
-            round++
+            data.writeLongAt(0, buffer.readLong())
+            data.writeLongAt(8, buffer.readLong())
 
             data[6] = data[6].flipOffFlag7()
             data[6] = data[6].flipOnFlag6()

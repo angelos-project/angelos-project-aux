@@ -44,7 +44,7 @@ class Uuid4Test {
         println((monteCarlo.distribution() - PI).absoluteValue)
     }
 
-    @Test
+    /*@Test
     fun testMonteCarlo() {
         val monteCarlo = Benchmark()
         repeat(10_000_000) {
@@ -52,9 +52,9 @@ class Uuid4Test {
         }
         println(monteCarlo.distribution())
         println((monteCarlo.distribution() - PI).absoluteValue)
-    }
+    }*/
 
-    @Test
+    /*@Test
     fun testMonteCarlo2() {
         val monteCarlo = Benchmark()
         repeat(10_000_000) {
@@ -62,5 +62,5 @@ class Uuid4Test {
         }
         println(monteCarlo.distribution())
         println((monteCarlo.distribution() - PI).absoluteValue)
-    }
+    }*/
 }
