@@ -44,7 +44,7 @@ public object SecureFeed : AbstractSponge512(), Reader {
 
     private fun cycle() {
         if (counter > next) {
-            next = ROUNDS_128K + state[0].mod(ROUNDS_64K)
+            next = ROUNDS_128K + sponge[0].mod(ROUNDS_64K)
             revitalize()
             counter = 1
         }

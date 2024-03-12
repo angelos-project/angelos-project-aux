@@ -16,14 +16,14 @@ package org.angproj.aux.rand
 
 import org.angproj.aux.util.floorMod
 
-public abstract class AbstractSponge(stateSize: Int = 0, protected val accessibleSize: Int = 0) {
+public abstract class AbstractSponge(spongeSize: Int = 0, protected val accessibleSize: Int = 0) {
 
     protected var counter: Long = 0
     protected var mask: Long = 0
-    protected val state: LongArray = LongArray(stateSize) { 0x8000_0000_0000_000L - 1 }
+    protected val sponge: LongArray = LongArray(spongeSize) { InitializationVector.entries[it].iv }
 
     init {
-        require(accessibleSize <= stateSize) {
+        require(accessibleSize <= spongeSize) {
             "Accessible size must be equal or less than the number of states."
         }
     }
@@ -32,15 +32,15 @@ public abstract class AbstractSponge(stateSize: Int = 0, protected val accessibl
 
     protected fun absorb(value: Long, position: Int) {
         val offset = position.floorMod(accessibleSize)
-        state[offset] = state[offset] xor value
+        sponge[offset] = sponge[offset] xor value
     }
 
     protected fun squeeze(position: Int): Long {
         val offset = position.floorMod(accessibleSize)
-        return state[offset] xor mask
+        return sponge[offset] xor mask
     }
 
     protected fun scramble() {
-        repeat(state.size) { round() }
+        repeat(sponge.size) { round() }
     }
 }

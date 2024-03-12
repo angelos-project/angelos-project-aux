@@ -19,7 +19,7 @@ import org.angproj.aux.io.Writable
 
 public class DataBuffer(data: ByteArray) : Readable, Writable {
 
-    public constructor(size: Int = 4096) : this(ByteArray(size))
+    public constructor(size: Int = BufferSize._4K.size) : this(ByteArray(size))
 
     public constructor(size: BufferSize) : this(size.size)
 
