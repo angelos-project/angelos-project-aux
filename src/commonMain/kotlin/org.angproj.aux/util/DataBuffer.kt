@@ -16,6 +16,7 @@ package org.angproj.aux.util
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Writable
+import org.angproj.aux.utf.*
 
 public class DataBuffer(data: ByteArray) : Readable, Writable {
 
@@ -80,7 +81,7 @@ public class DataBuffer(data: ByteArray) : Readable, Writable {
     override fun readDouble(): Double = withinLimit(Double.SIZE_BYTES) { _data.readDoubleAt(_position) }
 
     public fun readGlyph(): Glyph {
-        val size = glyphSize(_data[_position])
+        val size = _data[_position].glyphSize()
         return withinLimit(size) { _data.readGlyphAt(_position, size).escapeInvalid() }
     }
 

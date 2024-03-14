@@ -12,10 +12,12 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.codec
+package org.angproj.aux.utf
 
-public abstract class DecoderEncoder<I, O>: Decoder<I, O>{
+public class GlyphIterator(private val glyphs: IntArray) : Iterator<Glyph> {
+    private var position = 0
 
-    protected abstract fun process()
+    override fun hasNext(): Boolean = position < glyphs.size
 
+    override fun next(): Glyph = glyphs[position++]
 }

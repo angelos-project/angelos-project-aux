@@ -14,5 +14,6 @@
  */
 package org.angproj.aux.codec
 
-public interface Decoder {
+public interface Decoder<I, O> {
+    public fun decode(data: I): O
 }

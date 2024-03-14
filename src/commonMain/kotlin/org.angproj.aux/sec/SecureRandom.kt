@@ -16,6 +16,10 @@ package org.angproj.aux.sec
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Reader
+import org.angproj.aux.utf.GLYPH_HOLE
+import org.angproj.aux.utf.GLYPH_MAX_VALUE
+import org.angproj.aux.utf.Glyph
+import org.angproj.aux.utf.getSize
 import org.angproj.aux.util.*
 import kotlin.native.concurrent.ThreadLocal
 
@@ -55,8 +59,8 @@ public object SecureRandom : Reader, Readable {
         value + if(value in GLYPH_HOLE) G_HOLE else 0
     }
 
-    private const val G_HOLE = 0xDFFF - 0xD800
-    private const val G_RANGE = GLYPH_MAX_VALUE - G_HOLE - 1
+    private val G_HOLE = GLYPH_HOLE.last - GLYPH_HOLE.first
+    private val G_RANGE: Int = GLYPH_MAX_VALUE - G_HOLE - 1
 
     private fun fill(data: ByteArray) {
         val buffer = ByteArray(BufferSize._1K.size)

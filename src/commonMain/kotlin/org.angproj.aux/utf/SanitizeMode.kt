@@ -12,10 +12,10 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.codec
+package org.angproj.aux.utf
 
-public abstract class DecoderEncoder<I, O>: Decoder<I, O>{
-
-    protected abstract fun process()
-
+public enum class SanitizeMode {
+    ESCAPE,
+    FILTER,
+    CANCEL
 }
