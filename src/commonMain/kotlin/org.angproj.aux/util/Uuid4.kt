@@ -50,7 +50,7 @@ public class Uuid4 internal constructor(private val uuid: ByteArray) {
 
         private fun revitalize() {
             buffer.reset(false)
-            SecureFeed.read(buffer.getArray())
+            SecureFeed.read(buffer.asByteArray())
         }
 
         fun generateByteArray(): ByteArray {

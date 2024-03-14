@@ -15,7 +15,7 @@
 package org.angproj.aux.io
 
 public interface Reader {
-    public fun read(length: Int): ByteArray
-
     public fun read(data: ByteArray): Int
+
+    public fun read(length: Int): ByteArray // What to do
 }

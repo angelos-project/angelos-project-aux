@@ -24,7 +24,7 @@ public class DataBuffer(data: ByteArray) : Readable, Writable {
     public constructor(size: BufferSize) : this(size.size)
 
     private val _data = data
-    public fun getArray(): ByteArray = _data
+    public fun asByteArray(): ByteArray = _data
 
     public val size: Int
         get() = _data.size
@@ -34,8 +34,13 @@ public class DataBuffer(data: ByteArray) : Readable, Writable {
         get() = _position
 
     private var _limit: Int = _data.size
-    public val limit: Int
+    public var limit: Int
         get() = _limit
+        set(value) {
+            require(value in _data.indices) { "Limit not within boundaries." }
+            check(_limit == _data.size) { "Limit already set." }
+            _limit = value
+        }
 
     public val remaining: Int
         get() = _limit - _position
@@ -74,6 +79,11 @@ public class DataBuffer(data: ByteArray) : Readable, Writable {
     override fun readFloat(): Float = withinLimit(Float.SIZE_BYTES) { _data.readFloatAt(_position) }
     override fun readDouble(): Double = withinLimit(Double.SIZE_BYTES) { _data.readDoubleAt(_position) }
 
+    public fun readGlyph(): Glyph {
+        val size = glyphSize(_data[_position])
+        return withinLimit(size) { _data.readGlyphAt(_position, size).escapeInvalid() }
+    }
+
     override fun writeByte(value: Byte): Unit = withinLimit(Byte.SIZE_BYTES) { _data[_position] = value }
     override fun writeUByte(value: UByte): Unit = withinLimit(UByte.SIZE_BYTES) { _data[_position] = value.toByte() }
     override fun writeChar(value: Char): Unit = withinLimit(Char.SIZE_BYTES) { _data.writeCharAt(_position, value) }
@@ -88,4 +98,10 @@ public class DataBuffer(data: ByteArray) : Readable, Writable {
     override fun writeFloat(value: Float): Unit = withinLimit(Float.SIZE_BYTES) { _data.writeFloatAt(_position, value) }
     override fun writeDouble(value: Double): Unit =
         withinLimit(Double.SIZE_BYTES) { _data.writeDoubleAt(_position, value) }
+
+    public fun writeGlyph(glyph: Glyph) {
+        val escaped = glyph.escapeInvalid()
+        val size = escaped.getSize()
+        withinLimit(size) { _data.writeGlyphAt(_position, escaped, size) }
+    }
 }

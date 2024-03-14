@@ -16,9 +16,7 @@ package org.angproj.aux.sec
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Reader
-import org.angproj.aux.util.BufferSize
-import org.angproj.aux.util.DataBuffer
-import org.angproj.aux.util.floorMod
+import org.angproj.aux.util.*
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
@@ -32,7 +30,7 @@ public object SecureRandom : Reader, Readable {
 
     private fun refill() {
         buffer.reset(false)
-        SecureFeed.read(buffer.getArray())
+        SecureFeed.read(buffer.asByteArray())
     }
 
     private fun <E> withinLimit(size: Int, block: () -> E): E {
@@ -52,6 +50,14 @@ public object SecureRandom : Reader, Readable {
     override fun readFloat(): Float = withinLimit(Float.SIZE_BYTES) { buffer.readFloat() }
     override fun readDouble(): Double = withinLimit(Double.SIZE_BYTES) { buffer.readDouble() }
 
+    public fun readGlyph(): Glyph = withinLimit(UInt.SIZE_BYTES) {
+        val value = buffer.readUInt().mod(G_RANGE.toUInt()).toInt() + 1
+        value + if(value in GLYPH_HOLE) G_HOLE else 0
+    }
+
+    private const val G_HOLE = 0xDFFF - 0xD800
+    private const val G_RANGE = GLYPH_MAX_VALUE - G_HOLE - 1
+
     private fun fill(data: ByteArray) {
         val buffer = ByteArray(BufferSize._1K.size)
         (data.indices step buffer.size).forEach { offset ->
@@ -69,4 +75,16 @@ public object SecureRandom : Reader, Readable {
     override fun read(length: Int): ByteArray = ByteArray(length).also { fill(it) }
 
     override fun read(data: ByteArray): Int = (data.size).also { fill(data) }
+
+    public fun readLine(text: ByteArray): Int {
+        val buffer = DataBuffer(text)
+        var glyph = readGlyph()
+        while ((buffer.remaining-1) > glyph.getSize()) {
+            buffer.writeGlyph(glyph)
+            glyph = readGlyph()
+        }
+        buffer.writeGlyph('\n'.code)
+        buffer.flip()
+        return buffer.limit
+    }
 }

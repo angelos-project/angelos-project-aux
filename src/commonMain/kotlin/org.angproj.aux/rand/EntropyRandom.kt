@@ -26,7 +26,7 @@ public class EntropyRandom : AbstractBufferedRandom() {
         get() = name
 
     override fun initialize() {
-        SecureEntropy.read(buffer.getArray())
+        SecureEntropy.read(buffer.asByteArray())
         _instantiated = true
     }
 
@@ -38,7 +38,7 @@ public class EntropyRandom : AbstractBufferedRandom() {
     override fun getRawLong(): Long {
         if (buffer.remaining == 0) {
             buffer.reset(false)
-            SecureFeed.read(buffer.getArray())
+            SecureFeed.read(buffer.asByteArray())
         }
         return buffer.readLong()
     }

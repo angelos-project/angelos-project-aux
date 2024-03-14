@@ -14,19 +14,19 @@
  */
 package org.angproj.aux.util
 
-public fun Base64.encodeUrlSafe(data: ByteArray): CharSequence {
+public fun Base64.encodeUrlSafe(data: ByteArray): CharArray {
     return encode(data, URL_SAFE)
 }
 
-public fun Base64.decodeUrlSafe(data: CharSequence): ByteArray {
+public fun Base64.decodeUrlSafe(data: CharArray): ByteArray {
     return decode(data, MAP_URL_SAFE)
 }
 
-public fun Base64.encodeMimeSafe(data: ByteArray): CharSequence {
+public fun Base64.encodeMimeSafe(data: ByteArray): CharArray {
     TODO()
 }
 
-public fun Base64.decodeMimeSafe(data: CharSequence): ByteArray {
+public fun Base64.decodeMimeSafe(data: CharArray): ByteArray {
     TODO()
 }
 
@@ -58,7 +58,7 @@ public object Base64 {
         URL_SAFE.associateWith { start++ }
     }
 
-    public fun encode(src: ByteArray, alphabet: CharArray = STANDARD, padding: Char = '='): CharSequence {
+    public fun encode(src: ByteArray, alphabet: CharArray = STANDARD, padding: Char = '='): CharArray {
         require(alphabet.size == 64) { "Invalid alphabet length. Must be exactly 64 slots." }
 
         val fullBlkCnt = src.size / 3
@@ -101,11 +101,11 @@ public object Base64 {
             }
         }
 
-        return dest.toString()
+        return dest
     }
 
-    public fun decode(src: CharSequence, alphabet: Map<Char, Int> = MAP_STANDARD, padding: Char = '='): ByteArray {
-        val fullBlkCnt = src.length / 4
+    public fun decode(src: CharArray, alphabet: Map<Char, Int> = MAP_STANDARD, padding: Char = '='): ByteArray {
+        val fullBlkCnt = src.size / 4
         val remainder = when (padding) {
             src[src.lastIndex - 1] -> 1
             src[src.lastIndex] -> 2

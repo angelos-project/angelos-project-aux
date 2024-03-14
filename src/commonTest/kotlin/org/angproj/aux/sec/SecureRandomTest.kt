@@ -78,7 +78,7 @@ class SecureRandomTest {
     fun read() {
         val count = BufferSize._8K.size / Long.SIZE_BYTES
         val buffer = DataBuffer(BufferSize._8K)
-        SecureRandom.read(buffer.getArray())
+        SecureRandom.read(buffer.asByteArray())
         val values = LongArray(count) { buffer.readLong() }
         assertEquals(values.toSet().size, count)
     }
