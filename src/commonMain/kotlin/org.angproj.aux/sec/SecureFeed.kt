@@ -59,7 +59,7 @@ public object SecureFeed : AbstractSponge512(), Reader {
     private fun fill(data: ByteArray) {
         val buffer = DataBuffer(data)
         repeat(data.size / 64) { _ ->
-            repeat(accessibleSize) { pos ->
+            repeat(visibleSize) { pos ->
                 buffer.writeLong(squeeze(pos)) }
             cycle()
         }

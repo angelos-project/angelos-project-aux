@@ -16,27 +16,27 @@ package org.angproj.aux.rand
 
 import org.angproj.aux.util.floorMod
 
-public abstract class AbstractSponge(spongeSize: Int = 0, protected val accessibleSize: Int = 0) {
+public abstract class AbstractSponge(spongeSize: Int = 0, protected val visibleSize: Int = 0) {
 
     protected var counter: Long = 0
     protected var mask: Long = 0
     protected val sponge: LongArray = LongArray(spongeSize) { InitializationVector.entries[it].iv }
 
     init {
-        require(accessibleSize <= spongeSize) {
-            "Accessible size must be equal or less than the number of states."
+        require(visibleSize <= spongeSize) {
+            "Visible size must be equal or less than the number of sponge variables."
         }
     }
 
     protected abstract fun round()
 
     protected fun absorb(value: Long, position: Int) {
-        val offset = position.floorMod(accessibleSize)
+        val offset = position.floorMod(visibleSize)
         sponge[offset] = sponge[offset] xor value
     }
 
     protected fun squeeze(position: Int): Long {
-        val offset = position.floorMod(accessibleSize)
+        val offset = position.floorMod(visibleSize)
         return sponge[offset] xor mask
     }
 

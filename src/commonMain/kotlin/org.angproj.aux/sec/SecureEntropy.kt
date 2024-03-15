@@ -45,7 +45,7 @@ public object SecureEntropy : AbstractSponge256(), Reader {
         val buffer = DataBuffer(data)
         revitalize()
         repeat(data.size / 32) {
-            repeat(accessibleSize) { pos ->
+            repeat(visibleSize) { pos ->
                 buffer.writeLong(squeeze(pos)) }
             round()
         }

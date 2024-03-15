@@ -14,28 +14,26 @@
  */
 package org.angproj.aux.util
 
-import org.angproj.aux.io.Readable
-import org.angproj.aux.io.Writable
-import org.angproj.aux.utf.*
+import org.angproj.aux.codec.AbstractBuffer
 
-public class DataBuffer(data: ByteArray) : Readable, Writable {
+public class DataBuffer(data: ByteArray) : AbstractBuffer() {
 
-    public constructor(size: Int = BufferSize._4K.size) : this(ByteArray(size))
+    public constructor(size: Int) : this(ByteArray(size))
 
-    public constructor(size: BufferSize) : this(size.size)
+    public constructor(size: BufferSize = BufferSize._4K) : this(size.size)
 
-    private val _data = data
+    override val _data: ByteArray = data
     public fun asByteArray(): ByteArray = _data
 
-    public val size: Int
+    override val size: Int
         get() = _data.size
 
-    private var _position: Int = 0
-    public val position: Int
+    override var _position: Int = 0
+    public override val position: Int
         get() = _position
 
-    private var _limit: Int = _data.size
-    public var limit: Int
+    override var _limit: Int = _data.size
+    public override var limit: Int
         get() = _limit
         set(value) {
             require(value in _data.indices) { "Limit not within boundaries." }
@@ -43,66 +41,38 @@ public class DataBuffer(data: ByteArray) : Readable, Writable {
             _limit = value
         }
 
-    public val remaining: Int
+    public override val remaining: Int
         get() = _limit - _position
 
-    public fun rewind() {
+    public override fun rewind() {
         _position = 0
     }
 
-    public fun flip() {
+    public override fun flip() {
         _limit = _position
         rewind()
     }
 
-    public fun reset(erase: Boolean = true) {
-        if (erase) _data.fill(0)
-        _position = 0
-        _limit = _data.size
+    public override fun resetWithErase() {
+        _data.fill(0)
+        reset()
     }
 
-    private fun <E> withinLimit(length: Int, action: () -> E): E {
-        require(_position <= _limit + length)
+    public override fun reset() {
+        _limit = _data.size
+        rewind()
+    }
+
+    override fun <E> withinReadLimit(length: Int, action: () -> E): E {
+        require(remaining >= length) { "Buffer overflow, limit reached." }
         val out = action()
         _position += length
         return out
     }
 
-    override fun readByte(): Byte = withinLimit(Byte.SIZE_BYTES) { _data[_position] }
-    override fun readUByte(): UByte = withinLimit(UByte.SIZE_BYTES) { _data[_position].toUByte() }
-    override fun readChar(): Char = withinLimit(Char.SIZE_BYTES) { _data.readCharAt(_position) }
-    override fun readShort(): Short = withinLimit(Short.SIZE_BYTES) { _data.readShortAt(_position) }
-    override fun readUShort(): UShort = withinLimit(UShort.SIZE_BYTES) { _data.readUShortAt(_position) }
-    override fun readInt(): Int = withinLimit(Int.SIZE_BYTES) { _data.readIntAt(_position) }
-    override fun readUInt(): UInt = withinLimit(UInt.SIZE_BYTES) { _data.readUIntAt(_position) }
-    override fun readLong(): Long = withinLimit(Long.SIZE_BYTES) { _data.readLongAt(_position) }
-    override fun readULong(): ULong = withinLimit(ULong.SIZE_BYTES) { _data.readULongAt(_position) }
-    override fun readFloat(): Float = withinLimit(Float.SIZE_BYTES) { _data.readFloatAt(_position) }
-    override fun readDouble(): Double = withinLimit(Double.SIZE_BYTES) { _data.readDoubleAt(_position) }
-
-    public fun readGlyph(): Glyph {
-        val size = _data[_position].glyphSize()
-        return withinLimit(size) { _data.readGlyphAt(_position, size).escapeInvalid() }
-    }
-
-    override fun writeByte(value: Byte): Unit = withinLimit(Byte.SIZE_BYTES) { _data[_position] = value }
-    override fun writeUByte(value: UByte): Unit = withinLimit(UByte.SIZE_BYTES) { _data[_position] = value.toByte() }
-    override fun writeChar(value: Char): Unit = withinLimit(Char.SIZE_BYTES) { _data.writeCharAt(_position, value) }
-    override fun writeShort(value: Short): Unit = withinLimit(Short.SIZE_BYTES) { _data.writeShortAt(_position, value) }
-    override fun writeUShort(value: UShort): Unit =
-        withinLimit(UShort.SIZE_BYTES) { _data.writeUShortAt(_position, value) }
-
-    override fun writeInt(value: Int): Unit = withinLimit(Int.SIZE_BYTES) { _data.writeIntAt(_position, value) }
-    override fun writeUInt(value: UInt): Unit = withinLimit(UInt.SIZE_BYTES) { _data.writeUIntAt(_position, value) }
-    override fun writeLong(value: Long): Unit = withinLimit(Long.SIZE_BYTES) { _data.writeLongAt(_position, value) }
-    override fun writeULong(value: ULong): Unit = withinLimit(ULong.SIZE_BYTES) { _data.writeULongAt(_position, value) }
-    override fun writeFloat(value: Float): Unit = withinLimit(Float.SIZE_BYTES) { _data.writeFloatAt(_position, value) }
-    override fun writeDouble(value: Double): Unit =
-        withinLimit(Double.SIZE_BYTES) { _data.writeDoubleAt(_position, value) }
-
-    public fun writeGlyph(glyph: Glyph) {
-        val escaped = glyph.escapeInvalid()
-        val size = escaped.getSize()
-        withinLimit(size) { _data.writeGlyphAt(_position, escaped, size) }
+    override fun <E> withinWriteLimit(length: Int, action: () -> E) {
+        require(remaining >= length) { "Buffer overflow, limit reached." }
+        action()
+        _position += length
     }
 }
