@@ -52,27 +52,18 @@ public object SecureFeed : AbstractSponge512(), Reader {
     }
 
     private fun require(length: Int) {
-        require(length.floorMod(64) == 0) { "Length must be divisible by 54." }
+        require(length.floorMod(byteSize) == 0) { "Length must be divisible by 54." }
         require(length <= BufferSize._8K.size) { "Length must not surpass 8 Kilobyte." }
-    }
-
-    private fun fill(data: ByteArray) {
-        val buffer = DataBuffer(data)
-        repeat(data.size / 64) { _ ->
-            repeat(visibleSize) { pos ->
-                buffer.writeLong(squeeze(pos)) }
-            cycle()
-        }
     }
 
     override fun read(length: Int): ByteArray {
         require(length)
-        return ByteArray(length).also { fill(it) }
+        return ByteArray(length).also { fill(it) { cycle() } }
     }
 
     override fun read(data: ByteArray): Int {
         require(data.size)
-        fill(data)
+        fill(data) { cycle() }
         return data.size
     }
 }

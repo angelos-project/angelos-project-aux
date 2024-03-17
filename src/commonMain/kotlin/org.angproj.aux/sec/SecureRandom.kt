@@ -33,7 +33,7 @@ public object SecureRandom : Reader, Readable {
     }
 
     private fun refill() {
-        buffer.reset(false)
+        buffer.reset()
         SecureFeed.read(buffer.asByteArray())
     }
 

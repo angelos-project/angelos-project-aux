@@ -31,13 +31,13 @@ public class EntropyRandom : AbstractBufferedRandom() {
     }
 
     override fun finalize() {
-        buffer.reset(true)
+        buffer.resetWithErase()
         _instantiated = false
     }
 
     override fun getRawLong(): Long {
         if (buffer.remaining == 0) {
-            buffer.reset(false)
+            buffer.reset()
             SecureFeed.read(buffer.asByteArray())
         }
         return buffer.readLong()

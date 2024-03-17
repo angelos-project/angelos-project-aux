@@ -16,26 +16,27 @@ package org.angproj.aux.rand
 
 public abstract class AbstractSponge512 : AbstractSponge(9, 8) {
     override fun round() {
+        val d = sponge[0] xor sponge[4] xor sponge[8]
         val r0 = sponge[0] xor sponge[3] xor sponge[6]
         val r1 = sponge[1] xor sponge[4] xor sponge[7]
         val r2 = sponge[2] xor sponge[5] xor sponge[8]
 
         val temp = -sponge[8].inv() * 73
         sponge[8] = -sponge[7].inv() * 61
-        sponge[7] = -sponge[6].inv() * 53
+        sponge[7] = (-sponge[6].inv() * 53) shr 1
         sponge[6] = -sponge[5].inv() * 41
-        sponge[5] = -sponge[4].inv() * 37
+        sponge[5] = (-sponge[4].inv() * 37) shr 1
         sponge[4] = -sponge[3].inv() * 29
-        sponge[3] = -sponge[2].inv() * 17
+        sponge[3] = (-sponge[2].inv() * 17) shr 1
         sponge[2] = -sponge[1].inv() * 13
-        sponge[1] = -sponge[0].inv() * 5
+        sponge[1] = (-sponge[0].inv() * 5)
         sponge[0] = temp
 
-        mask = (mask and counter and sponge[0] and sponge[1] and sponge[2]) xor
-                ((r0 and sponge[3] and sponge[4] and sponge[5]) * 2) xor
-                ((r1 and sponge[6] and sponge[7]) * 4) xor
-                ((r2 and sponge[8]) * 8) xor
-                (-counter.inv() * 16)
+        mask = (mask and -counter.inv() and sponge[0] and sponge[3] and sponge[6]) xor
+                ((sponge[1] and sponge[4] and sponge[7] and sponge[8]) * 2) xor
+                ((sponge[2] and r2 and sponge[5]) * 4) xor
+                ((r0 and r1) * 8) xor
+                (d * 16)
 
         sponge[0] = sponge[0] xor r0
         sponge[1] = sponge[1] xor r0

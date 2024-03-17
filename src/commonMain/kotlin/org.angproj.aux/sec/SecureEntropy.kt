@@ -37,28 +37,18 @@ public object SecureEntropy : AbstractSponge256(), Reader {
     }
 
     private fun require(length: Int) {
-        require(length.floorMod(32) == 0) { "Length must be divisible by 32." }
+        require(length.floorMod(byteSize) == 0) { "Length must be divisible by 32." }
         require(length <= BufferSize._1K.size) { "Length must not surpass 1 Kilobyte." }
-    }
-
-    private fun fill(data: ByteArray) {
-        val buffer = DataBuffer(data)
-        revitalize()
-        repeat(data.size / 32) {
-            repeat(visibleSize) { pos ->
-                buffer.writeLong(squeeze(pos)) }
-            round()
-        }
     }
 
     override fun read(length: Int): ByteArray {
         require(length)
-        return ByteArray(length).also { fill(it) }
+        return ByteArray(length).also { fill(it) { round() } }
     }
 
     override fun read(data: ByteArray): Int {
         require(data.size)
-        fill(data)
+        fill(data) { round() }
         return data.size
     }
 }

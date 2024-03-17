@@ -33,7 +33,7 @@ class SecureFeedTest {
         val buffer = DataBuffer(1024)
         repeat(10_000_000) {
             if(buffer.remaining == 0) {
-                buffer.reset(false)
+                buffer.reset()
                 SecureFeed.read(buffer.asByteArray())
             }
             monteCarlo.scatterPoint(buffer.readLong(), buffer.readLong())
