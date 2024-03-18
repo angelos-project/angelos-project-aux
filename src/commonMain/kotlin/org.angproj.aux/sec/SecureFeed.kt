@@ -17,7 +17,6 @@ package org.angproj.aux.sec
 import org.angproj.aux.io.Reader
 import org.angproj.aux.rand.AbstractSponge512
 import org.angproj.aux.util.BufferSize
-import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.floorMod
 import org.angproj.aux.util.readLongAt
 import kotlin.native.concurrent.ThreadLocal
@@ -35,7 +34,7 @@ public object SecureFeed : AbstractSponge512(), Reader {
     }
 
     private fun revitalize() {
-        SecureEntropy.read(32).also { entropy ->
+        SecureEntropy.read(SecureEntropy.byteSize).also { entropy ->
             (entropy.indices step Long.SIZE_BYTES).forEach {
                 absorb(entropy.readLongAt(it), it / Long.SIZE_BYTES)
             }
@@ -52,7 +51,7 @@ public object SecureFeed : AbstractSponge512(), Reader {
     }
 
     private fun require(length: Int) {
-        require(length.floorMod(byteSize) == 0) { "Length must be divisible by 54." }
+        require(length.floorMod(byteSize) == 0) { "Length must be divisible by $byteSize." }
         require(length <= BufferSize._8K.size) { "Length must not surpass 8 Kilobyte." }
     }
 

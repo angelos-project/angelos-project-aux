@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.rand
 
+import org.angproj.aux.util.DataBuffer
+
 public abstract class AbstractSponge1024 : AbstractSponge(16, 16) {
 
     override fun round() {
@@ -65,5 +67,24 @@ public abstract class AbstractSponge1024 : AbstractSponge(16, 16) {
         sponge[15] = sponge[15] xor r3
 
         counter++
+    }
+
+    override fun squeeze(data: DataBuffer) {
+        data.writeLong((sponge[0] xor (mask * 3)).asLittle())
+        data.writeLong((sponge[1] xor (mask * 7)).asLittle())
+        data.writeLong((sponge[2] xor (mask * 11)).asLittle())
+        data.writeLong((sponge[3] xor (mask * 19)).asLittle())
+        data.writeLong((sponge[4] xor (mask * 23)).asLittle())
+        data.writeLong((sponge[5] xor (mask * 31)).asLittle())
+        data.writeLong((sponge[6] xor (mask * 43)).asLittle())
+        data.writeLong((sponge[7] xor (mask * 47)).asLittle())
+        data.writeLong((sponge[8] xor (mask * 59)).asLittle())
+        data.writeLong((sponge[9] xor (mask * 67)).asLittle())
+        data.writeLong((sponge[10] xor (mask * 71)).asLittle())
+        data.writeLong((sponge[11] xor (mask * 79)).asLittle())
+        data.writeLong((sponge[12] xor (mask * 83)).asLittle())
+        data.writeLong((sponge[13] xor (mask * 103)).asLittle())
+        data.writeLong((sponge[14] xor (mask * 107)).asLittle())
+        data.writeLong((sponge[15] xor (mask * 127)).asLittle())
     }
 }

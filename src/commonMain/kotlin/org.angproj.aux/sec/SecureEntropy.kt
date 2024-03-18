@@ -17,7 +17,6 @@ package org.angproj.aux.sec
 import org.angproj.aux.io.Reader
 import org.angproj.aux.rand.AbstractSponge256
 import org.angproj.aux.util.BufferSize
-import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.epochEntropy
 import org.angproj.aux.util.floorMod
 import kotlin.native.concurrent.ThreadLocal
@@ -37,7 +36,7 @@ public object SecureEntropy : AbstractSponge256(), Reader {
     }
 
     private fun require(length: Int) {
-        require(length.floorMod(byteSize) == 0) { "Length must be divisible by 32." }
+        require(length.floorMod(byteSize) == 0) { "Length must be divisible by $byteSize." }
         require(length <= BufferSize._1K.size) { "Length must not surpass 1 Kilobyte." }
     }
 

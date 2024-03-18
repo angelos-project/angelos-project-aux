@@ -26,7 +26,7 @@ import kotlin.native.concurrent.ThreadLocal
 @ThreadLocal
 public object SecureRandom : Reader, Readable {
 
-    private val buffer = DataBuffer(BufferSize._1K.size)
+    private val buffer = DataBuffer(BufferSize._1K)
 
     init {
         refill()

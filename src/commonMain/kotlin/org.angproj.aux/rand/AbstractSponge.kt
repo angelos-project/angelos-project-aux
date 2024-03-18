@@ -18,12 +18,12 @@ import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.EndianAware
 import org.angproj.aux.util.floorMod
 
-public abstract class AbstractSponge(spongeSize: Int = 0, protected val visibleSize: Int = 0) : EndianAware {
+public abstract class AbstractSponge(spongeSize: Int = 0, public val visibleSize: Int = 0) : EndianAware {
 
     protected var counter: Long = 0
     protected var mask: Long = 0
     protected val sponge: LongArray = LongArray(spongeSize) { InitializationVector.entries[it].iv }
-    protected val byteSize: Int = visibleSize * Long.SIZE_BYTES
+    public val byteSize: Int = visibleSize * Long.SIZE_BYTES
 
     init {
         require(visibleSize <= spongeSize) {
@@ -38,10 +38,7 @@ public abstract class AbstractSponge(spongeSize: Int = 0, protected val visibleS
         sponge[offset] = sponge[offset] xor value
     }
 
-    protected fun squeeze(position: Int): Long {
-        val offset = position.floorMod(visibleSize)
-        return sponge[offset] xor (mask * screen[offset]) //-(mask * (position+1)).inv()
-    }
+    protected abstract fun squeeze(data: DataBuffer)
 
     protected fun scramble() {
         repeat(sponge.size) { round() }
@@ -50,12 +47,8 @@ public abstract class AbstractSponge(spongeSize: Int = 0, protected val visibleS
     protected fun fill(data: ByteArray, cycle: () -> Unit) {
         val buffer = DataBuffer(data)
         repeat(data.size / byteSize) { _ ->
-            repeat(visibleSize) { pos ->
-                buffer.writeLong(squeeze(pos).asLittle()) }
+            squeeze(buffer)
             cycle()
         }
-    }
-    private companion object {
-        val screen = longArrayOf(3, 7, 11, 19, 23, 31, 43, 47, 59, 67, 71, 79, 83, 103, 107, 127)
     }
 }

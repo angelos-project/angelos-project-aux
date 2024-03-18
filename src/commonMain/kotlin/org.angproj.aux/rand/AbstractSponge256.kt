@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.rand
 
+import org.angproj.aux.util.DataBuffer
+
 public abstract class AbstractSponge256 : AbstractSponge(4, 4) {
 
     override fun round() {
@@ -38,5 +40,12 @@ public abstract class AbstractSponge256 : AbstractSponge(4, 4) {
         sponge[3] = sponge[3] xor r1
 
         counter++
+    }
+
+    override fun squeeze(data: DataBuffer) {
+        data.writeLong((sponge[0] xor (mask * 3)).asLittle())
+        data.writeLong((sponge[1] xor (mask * 7)).asLittle())
+        data.writeLong((sponge[2] xor (mask * 11)).asLittle())
+        data.writeLong((sponge[3] xor (mask * 19)).asLittle())
     }
 }
