@@ -16,16 +16,16 @@ package org.angproj.aux.rand
 
 public abstract class AbstractSponge256 : AbstractSponge(4, 4) {
 
-    public override fun round() {
+    override fun round() {
         val d = sponge[0] xor sponge[3]
         val r0 = sponge[0] xor sponge[2]
         val r1 = sponge[1] xor sponge[3]
 
-        val temp = (-sponge[3].inv() * 29) shr 1
-        sponge[3] = (-sponge[2].inv() * 17) shr 1
-        sponge[2] = (-sponge[1].inv() * 13) shr 1
-        sponge[1] = (-sponge[0].inv() * 5)  shr 1
-        sponge[0] = temp
+        val temp = -sponge[3].inv() * 29
+        sponge[3] = -sponge[2].inv() * 17
+        sponge[2] = -sponge[1].inv() * 13
+        sponge[1] = -sponge[0].inv() * 5
+        sponge[0] = temp.rotateLeft(32)
 
         mask = (sponge[0] and sponge[2] and counter and mask) xor
                 ((sponge[1] and sponge[3] and counter.inv()) * 2) xor

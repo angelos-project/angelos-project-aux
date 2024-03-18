@@ -2,12 +2,13 @@ package org.angproj.aux.rand
 
 import org.angproj.aux.io.Reader
 import org.angproj.aux.sec.SecureRandom
-import org.angproj.aux.util.*
+import org.angproj.aux.util.Benchmark
+import org.angproj.aux.util.DataBuffer
+import org.angproj.aux.util.floorMod
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.test.Test
-
 
 class TestRandom256(iv: LongArray = LongArray(4)): AbstractSponge256(), Reader {
 
