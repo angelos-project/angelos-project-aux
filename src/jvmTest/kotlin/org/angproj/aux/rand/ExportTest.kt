@@ -7,7 +7,7 @@ import kotlin.test.Test
 
 class ExportTest {
 
-    @Test
+    //@Test
     fun testExportSponge256() {
         val data = DataBuffer()
         val random = TestRandom256(LongArray(4) { SecureRandom.readLong() })
@@ -16,7 +16,7 @@ class ExportTest {
         }
     }
 
-    @Test
+    //@Test
     fun testExportSponge512() {
         val data = DataBuffer()
         val random = TestRandom512(LongArray(8) { SecureRandom.readLong() })
@@ -25,7 +25,7 @@ class ExportTest {
         }
     }
 
-    @Test
+    //@Test
     fun testExportSponge1024() {
         val data = DataBuffer()
         val random = TestRandom1024(LongArray(16) { SecureRandom.readLong() })

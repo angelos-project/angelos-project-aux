@@ -15,9 +15,10 @@
 package org.angproj.aux.util
 
 import org.angproj.aux.codec.AbstractBuffer
+import org.angproj.aux.io.DataSize
 
 public class MultiBuffer(
-    public val bufSize: BufferSize = BufferSize._4K,
+    public val bufSize: DataSize = DataSize._4K,
     public val bufMax: Int = 4
 ): AbstractBuffer() {
 

@@ -14,7 +14,11 @@
  */
 package org.angproj.aux.io
 
-public object DevNull : Writer, Writable {
+public object DevNull : Writer, Writable, Sizeable {
+
+    override val sizeMode: SizeMode = SizeMode.ARBITRARY
+    override val dataSize: DataSize = DataSize.UNKNOWN
+
     override fun writeByte(value: Byte) {}
     override fun writeUByte(value: UByte) {}
     override fun writeChar(value: Char) {}

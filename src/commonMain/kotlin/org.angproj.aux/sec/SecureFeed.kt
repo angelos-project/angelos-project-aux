@@ -15,16 +15,17 @@
 package org.angproj.aux.sec
 
 import org.angproj.aux.io.Reader
+import org.angproj.aux.io.SizeMode
 import org.angproj.aux.rand.AbstractSponge512
-import org.angproj.aux.util.BufferSize
+import org.angproj.aux.io.DataSize
 import org.angproj.aux.util.floorMod
 import org.angproj.aux.util.readLongAt
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
 public object SecureFeed : AbstractSponge512(), Reader {
-    private val ROUNDS_64K: Int = BufferSize._64K.size
-    private val ROUNDS_128K: Int = BufferSize._128K.size
+    private val ROUNDS_64K: Int = DataSize._64K.size
+    private val ROUNDS_128K: Int = DataSize._128K.size
 
     private var next: Int = 0
 
@@ -52,7 +53,7 @@ public object SecureFeed : AbstractSponge512(), Reader {
 
     private fun require(length: Int) {
         require(length.floorMod(byteSize) == 0) { "Length must be divisible by $byteSize." }
-        require(length <= BufferSize._8K.size) { "Length must not surpass 8 Kilobyte." }
+        require(length <= DataSize._8K.size) { "Length must not surpass 8 Kilobyte." }
     }
 
     override fun read(length: Int): ByteArray {

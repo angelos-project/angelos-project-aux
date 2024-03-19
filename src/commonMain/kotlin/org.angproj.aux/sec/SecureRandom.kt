@@ -14,8 +14,10 @@
  */
 package org.angproj.aux.sec
 
+import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Reader
+import org.angproj.aux.io.SizeMode
 import org.angproj.aux.utf.GLYPH_HOLE
 import org.angproj.aux.utf.GLYPH_MAX_VALUE
 import org.angproj.aux.utf.Glyph
@@ -26,7 +28,7 @@ import kotlin.native.concurrent.ThreadLocal
 @ThreadLocal
 public object SecureRandom : Reader, Readable {
 
-    private val buffer = DataBuffer(BufferSize._1K)
+    private val buffer = DataBuffer(DataSize._1K)
 
     init {
         refill()
@@ -63,7 +65,7 @@ public object SecureRandom : Reader, Readable {
     private val G_RANGE: Int = GLYPH_MAX_VALUE - G_HOLE - 1
 
     private fun fill(data: ByteArray) {
-        val buffer = ByteArray(BufferSize._1K.size)
+        val buffer = ByteArray(DataSize._1K.size)
         (data.indices step buffer.size).forEach { offset ->
             SecureFeed.read(buffer)
             buffer.copyInto(data, offset, 0, buffer.size)

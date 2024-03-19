@@ -14,9 +14,7 @@
  */
 package org.angproj.aux.io
 
-public interface Reader {
-
-    public fun read(data: ByteArray): Int
-
-    public fun read(length: Int): ByteArray // What to do
+public interface Sizeable {
+    public val sizeMode: SizeMode
+    public val dataSize: DataSize
 }

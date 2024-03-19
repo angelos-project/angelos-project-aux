@@ -1,10 +1,7 @@
 package org.angproj.aux.num
 
-import org.angproj.aux.sec.SecureEntropy
-import org.angproj.aux.sec.SecureFeed
 import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.*
-import java.io.File
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.test.Test
@@ -36,25 +33,6 @@ class BigIntBasicTest {
     }
 
     @Test
-    fun testNonceGenerateGigaByte() {
-        val data = ByteArray(4096)
-        generateGibaByte("secure_feed.bin", 32) {
-            SecureFeed.read(data)
-            data
-        }
-    }
-
-    fun generateGibaByte(name: String, gigs: Long, block: () -> ByteArray) {
-        val targetFile = File(name)
-        val output = targetFile.outputStream()
-        val times = gigs * 1024L * 1024L * 1024L / block().size.toLong() + 1
-        repeat(times.toInt()) {
-            output.write(block())
-        }
-        output.close()
-    }
-
-    @Test
     fun testSomeRandom() {
         val monteCarlo = Benchmark()
         val distribution = monteCarlo(10_000_000) {
@@ -63,14 +41,4 @@ class BigIntBasicTest {
         println(distribution)
         println((distribution - PI).absoluteValue)
     }
-
-    /*@Test
-    fun testSomeEntropy() {
-        val monteCarlo = Benchmark()
-        val distribution = monteCarlo(10_000_000) {
-            SecureEntropy.readLong()
-        }
-        println(distribution)
-        println((distribution - PI).absoluteValue)
-    }*/
 }

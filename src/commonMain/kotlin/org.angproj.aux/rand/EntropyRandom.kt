@@ -20,7 +20,7 @@ import org.angproj.aux.util.DataBuffer
 
 public class EntropyRandom : AbstractBufferedRandom() {
 
-    private val buffer = DataBuffer(32)
+    private val buffer = DataBuffer(64)
 
     override val identifier: String
         get() = name

@@ -15,12 +15,13 @@
 package org.angproj.aux.util
 
 import org.angproj.aux.codec.AbstractBuffer
+import org.angproj.aux.io.DataSize
 
 public class DataBuffer(data: ByteArray) : AbstractBuffer() {
 
     public constructor(size: Int) : this(ByteArray(size))
 
-    public constructor(size: BufferSize = BufferSize._4K) : this(size.size)
+    public constructor(size: DataSize = DataSize._4K) : this(size.size)
 
     override val _data: ByteArray = data
     public fun asByteArray(): ByteArray = _data

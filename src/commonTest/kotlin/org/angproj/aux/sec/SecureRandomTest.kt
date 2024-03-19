@@ -1,6 +1,6 @@
 package org.angproj.aux.sec
 
-import org.angproj.aux.util.BufferSize
+import org.angproj.aux.io.DataSize
 import org.angproj.aux.util.DataBuffer
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -76,8 +76,8 @@ class SecureRandomTest {
 
     @Test
     fun read() {
-        val count = BufferSize._8K.size / Long.SIZE_BYTES
-        val buffer = DataBuffer(BufferSize._8K)
+        val count = DataSize._8K.size / Long.SIZE_BYTES
+        val buffer = DataBuffer(DataSize._8K)
         SecureRandom.read(buffer.asByteArray())
         val values = LongArray(count) { buffer.readLong() }
         assertEquals(values.toSet().size, count)
@@ -85,8 +85,8 @@ class SecureRandomTest {
 
     @Test
     fun testRead() {
-        val count = BufferSize._8K.size / Long.SIZE_BYTES
-        val buffer = DataBuffer(SecureRandom.read(BufferSize._8K.size))
+        val count = DataSize._8K.size / Long.SIZE_BYTES
+        val buffer = DataBuffer(SecureRandom.read(DataSize._8K.size))
         val values = LongArray(count) { buffer.readLong() }
         assertEquals(values.toSet().size, count)
     }
