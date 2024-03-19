@@ -25,7 +25,7 @@ internal actual fun getCurrentEndian(): Endian = when(Platform.isLittleEndian) {
     else -> Endian.BIG
 }
 
-@ExperimentalForeignApi
+@OptIn(ExperimentalForeignApi::class)
 internal actual fun unixEpoch(): Long = memScoped {
     val tv = nativeHeap.alloc<timeval>()
     gettimeofday(tv.ptr, null)
