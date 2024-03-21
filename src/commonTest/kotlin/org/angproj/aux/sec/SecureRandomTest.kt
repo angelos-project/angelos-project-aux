@@ -90,4 +90,9 @@ class SecureRandomTest {
         val values = LongArray(count) { buffer.readLong() }
         assertEquals(values.toSet().size, count)
     }
+
+    @Test
+    fun getSecureEntropy() {
+        SecureRandom.read(1024).forEach { print("$it, ") }
+    }
 }

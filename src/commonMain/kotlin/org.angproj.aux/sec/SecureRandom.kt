@@ -22,6 +22,7 @@ import org.angproj.aux.utf.GLYPH_MAX_VALUE
 import org.angproj.aux.utf.Glyph
 import org.angproj.aux.utf.getSize
 import org.angproj.aux.util.*
+import kotlin.math.min
 import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
@@ -65,12 +66,12 @@ public object SecureRandom : Reader, Readable {
 
     private fun fill(data: ByteArray) {
         val buffer = ByteArray(DataSize._1K.size)
-        (data.indices step buffer.size).forEach { offset ->
+        val remaining = data.size.floorMod(buffer.size)
+        (0 until data.size-remaining step buffer.size).forEach { offset ->
             SecureFeed.read(buffer)
             buffer.copyInto(data, offset, 0, buffer.size)
         }
 
-        val remaining = data.size.floorMod(buffer.size)
         if (remaining > 0) {
             SecureFeed.read(buffer)
             buffer.copyInto(data, data.size - remaining, 0, remaining)
