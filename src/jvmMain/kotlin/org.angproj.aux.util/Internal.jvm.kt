@@ -21,12 +21,3 @@ internal actual fun getCurrentEndian(): Endian = when(ByteOrder.nativeOrder()) {
     ByteOrder.BIG_ENDIAN -> Endian.BIG
     else -> Endian.UNKNOWN
 }
-
-internal actual fun unixEpoch(): Long {
-    return System.currentTimeMillis()
-}
-
-internal actual fun epochEntropy(): Pair<Long, Long> = Pair(
-    System.currentTimeMillis(),
-    System.nanoTime().floorMod(1_000_000_000)
-)

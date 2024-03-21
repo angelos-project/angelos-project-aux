@@ -32,12 +32,3 @@ internal actual fun getCurrentEndian(): Endian {
         else -> Endian.BIG
     }
 }
-
-internal actual fun unixEpoch(): Long {
-    return Date.now().toLong()
-}
-
-internal actual fun epochEntropy(): Pair<Long, Long> = Pair(
-    Date.now().toLong(),
-    Date.now().toLong().floorMod(1_000_000_000)
-)

@@ -6,7 +6,6 @@ import kotlin.test.Test
 
 class Base64Test {
 
-    @OptIn(ExperimentalEncodingApi::class)
     @Test
     fun encode() {
         val buffer = DataBuffer()

@@ -17,7 +17,6 @@ package org.angproj.aux.sec
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Reader
-import org.angproj.aux.io.SizeMode
 import org.angproj.aux.utf.GLYPH_HOLE
 import org.angproj.aux.utf.GLYPH_MAX_VALUE
 import org.angproj.aux.utf.Glyph

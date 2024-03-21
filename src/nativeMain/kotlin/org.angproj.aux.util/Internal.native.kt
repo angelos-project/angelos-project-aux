@@ -24,25 +24,3 @@ internal actual fun getCurrentEndian(): Endian = when(Platform.isLittleEndian) {
     true -> Endian.LITTLE
     else -> Endian.BIG
 }
-
-@OptIn(ExperimentalForeignApi::class)
-internal actual fun unixEpoch(): Long = memScoped {
-    val tv = nativeHeap.alloc<timeval>()
-    gettimeofday(tv.ptr, null)
-    val timestamp: Long = 1000 * tv.tv_sec + tv.tv_usec / 1000
-    free(tv.ptr)
-    return timestamp
-}
-
-@OptIn(ExperimentalForeignApi::class)
-internal actual fun epochEntropy(): Pair<Long, Long> = memScoped {
-    val tv = nativeHeap.alloc<timeval>()
-    gettimeofday(tv.ptr, null)
-    val timestamp = tv.tv_sec * 1000
-    val nanos = getTimeNanos().floorMod(1_000_000_000)
-    free(tv.ptr)
-    Pair(
-        timestamp,
-        nanos
-    )
-}

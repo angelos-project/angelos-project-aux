@@ -1,10 +1,10 @@
 plugins {
-    kotlin("multiplatform") version "1.9.22"
+    kotlin("multiplatform") version "1.9.23"
     `maven-publish`
 }
 
 group = "org.angproj.aux"
-version = "0.8.1"
+version = "0.9"
 
 repositories {
     mavenCentral()
@@ -35,7 +35,11 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting{
+            dependencies {
+                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
