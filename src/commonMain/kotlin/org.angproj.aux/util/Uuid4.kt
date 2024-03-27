@@ -14,7 +14,8 @@
  */
 package org.angproj.aux.util
 
-import org.angproj.aux.sec.SecureFeed
+import org.angproj.aux.rand.AbstractSmallRandom
+import org.angproj.aux.rand.InitializationVector
 import kotlin.native.concurrent.ThreadLocal
 
 public class Uuid4 internal constructor(private val uuid: ByteArray) {
@@ -40,25 +41,31 @@ public class Uuid4 internal constructor(private val uuid: ByteArray) {
     override fun toString(): String = hex
 
     @ThreadLocal
-    internal companion object {
+    internal companion object : AbstractSmallRandom() {
 
-        private val buffer = DataBuffer(64)
+        private var counter: Int = 0
 
         init {
             revitalize()
         }
 
         private fun revitalize() {
-            buffer.reset()
-            SecureFeed.read(buffer.asByteArray())
+            val data = ByteArray(16)
+            InitializationVector.realTimeGatedEntropy(data)
+            reseed(data)
+            counter = 0
         }
 
         fun generateByteArray(): ByteArray {
-            if (buffer.remaining == 0) revitalize()
+            if (counter.floorMod(Int.MAX_VALUE) == 0) revitalize()
+            else counter++
 
             val data = ByteArray(16)
-            data.writeLongAt(0, buffer.readLong())
-            data.writeLongAt(8, buffer.readLong())
+
+            data.writeIntAt(0, round())
+            data.writeIntAt(4, round())
+            data.writeIntAt(8, round())
+            data.writeIntAt(12, round())
 
             data[6] = data[6].flipOffFlag7()
             data[6] = data[6].flipOnFlag6()

@@ -3,9 +3,17 @@ package org.angproj.aux.rand
 import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.DataBuffer
 import java.io.File
-import kotlin.test.Test
 
 class ExportTest {
+
+    //@Test
+    fun testExportSmallRandom() {
+        val data = DataBuffer()
+        val random = TestSmallRandom()
+        generateGigaByte("small_random.bin", 32) {
+            data.asByteArray().also { random.read(it) }
+        }
+    }
 
     //@Test
     fun testExportSponge256() {

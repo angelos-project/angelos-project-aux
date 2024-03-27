@@ -17,12 +17,15 @@ package org.angproj.aux.sec
 import org.angproj.aux.io.Reader
 import org.angproj.aux.rand.AbstractSponge256
 import org.angproj.aux.io.DataSize
+import org.angproj.aux.rand.InitializationVector
 import org.angproj.aux.util.floorMod
 import org.angproj.aux.util.readLongAt
-import kotlin.math.absoluteValue
 import kotlin.native.concurrent.ThreadLocal
-import kotlin.time.TimeSource
 
+/**
+ * Conditioned entropy mixed with pseudo-random but revitalizes with real entropy on every read.
+ * Supposed to pass Monte Carlo testing and security requirements of output quality.
+ * */
 @ThreadLocal
 public object SecureEntropy : AbstractSponge256(), Reader {
 
@@ -31,13 +34,8 @@ public object SecureEntropy : AbstractSponge256(), Reader {
     }
 
     private fun revitalize() {
-        var loops: Byte = 16
-        val entropy = ByteArray(visibleSize * Long.SIZE_BYTES) {
-            val mark = TimeSource.Monotonic.markNow()
-            repeat(loops.toInt().absoluteValue) { Unit }
-            loops = mark.elapsedNow().inWholeNanoseconds.toByte()
-            loops
-        }
+        val entropy = ByteArray(visibleSize * Long.SIZE_BYTES)
+        InitializationVector.realTimeGatedEntropy(entropy)
         (0 until visibleSize).forEach {
             absorb(entropy.readLongAt(it * Long.SIZE_BYTES), it)
         }
@@ -51,11 +49,13 @@ public object SecureEntropy : AbstractSponge256(), Reader {
 
     override fun read(length: Int): ByteArray {
         require(length)
+        revitalize()
         return ByteArray(length).also { fill(it) { round() } }
     }
 
     override fun read(data: ByteArray): Int {
         require(data.size)
+        revitalize()
         fill(data) { round() }
         return data.size
     }

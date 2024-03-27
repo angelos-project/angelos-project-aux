@@ -21,6 +21,10 @@ import org.angproj.aux.util.floorMod
 import org.angproj.aux.util.readLongAt
 import kotlin.native.concurrent.ThreadLocal
 
+/**
+ * Feed of secure random, revitalized with conditioned secure entropy
+ * about every 4th to 12th megabyte for high quality of secure output.
+ * */
 @ThreadLocal
 public object SecureFeed : AbstractSponge512(), Reader {
     private val ROUNDS_64K: Int = DataSize._64K.size
@@ -30,7 +34,6 @@ public object SecureFeed : AbstractSponge512(), Reader {
 
     init {
         revitalize()
-        scramble()
     }
 
     private fun revitalize() {
@@ -39,6 +42,7 @@ public object SecureFeed : AbstractSponge512(), Reader {
                 absorb(entropy.readLongAt(it), it / Long.SIZE_BYTES)
             }
         }
+        scramble()
     }
 
     private fun cycle() {

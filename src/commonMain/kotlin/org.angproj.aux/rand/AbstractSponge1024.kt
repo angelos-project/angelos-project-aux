@@ -16,6 +16,11 @@ package org.angproj.aux.rand
 
 import org.angproj.aux.util.DataBuffer
 
+/**
+ * Qualifies both using ent for a balanced natural random, and with die-harder on a high level when running:
+ * > dieharder -g AES_OFB -a -f random.bin
+ * with a 32 BG of random generated as a binary blob.
+ * */
 public abstract class AbstractSponge1024 : AbstractSponge(16, 16) {
 
     override fun round() {

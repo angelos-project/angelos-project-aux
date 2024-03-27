@@ -14,6 +14,10 @@
  */
 package org.angproj.aux.rand
 
+import org.angproj.aux.io.DataSize
+import kotlin.math.absoluteValue
+import kotlin.time.TimeSource
+
 /**
  * In order to get a balanced variety of ones and zeroes in clusters with minimum gaps
  * but individual patterns, the following four hexadecimals was chosen: 0x3, 0x5, 0xA and 0xC.
@@ -58,5 +62,23 @@ public enum class InitializationVector(public val iv: Long) {
     IV_C53A(0xC53AC53AC53AC53AuL.toLong()),
     IV_53CA(0x53CA53CA53CA53CAuL.toLong()),
     IV_A35C(0xA35CA35CA35CA35CuL.toLong()),
-    IV_3AC5(0x3AC53AC53AC53AC5uL.toLong())
+    IV_3AC5(0x3AC53AC53AC53AC5uL.toLong());
+
+    public companion object {
+
+        /**
+         * Natural random based on fluctuations on nanosecond intervals which produces byte level entropy.
+         * Actually costs precious processing time to generate, use sparsely.
+         * */
+        public fun realTimeGatedEntropy(data: ByteArray) {
+            require(data.size <= DataSize._256B.size) { "To large for time-gated entropy! Max 256 bytes." }
+            var loops: Byte = Byte.MAX_VALUE
+            data.indices.forEach {
+                val mark = TimeSource.Monotonic.markNow()
+                repeat(loops.toInt().absoluteValue) { Byte.MIN_VALUE - Byte.MAX_VALUE }
+                loops = mark.elapsedNow().inWholeNanoseconds.toByte()
+                data[it] = loops
+            }
+        }
+    }
 }

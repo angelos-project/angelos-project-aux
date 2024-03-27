@@ -22,9 +22,11 @@ import org.angproj.aux.utf.GLYPH_MAX_VALUE
 import org.angproj.aux.utf.Glyph
 import org.angproj.aux.utf.getSize
 import org.angproj.aux.util.*
-import kotlin.math.min
 import kotlin.native.concurrent.ThreadLocal
 
+/**
+ * Portions a secure feed of random into a serviceable format of data for cryptographically secure use.
+ * */
 @ThreadLocal
 public object SecureRandom : Reader, Readable {
 
