@@ -14,10 +14,7 @@
  */
 package org.angproj.aux.util
 
-import kotlinx.cinterop.*
-import platform.posix.*
 import kotlin.experimental.ExperimentalNativeApi
-import kotlin.system.getTimeNanos
 
 @OptIn(ExperimentalNativeApi::class)
 internal actual fun getCurrentEndian(): Endian = when(Platform.isLittleEndian) {
