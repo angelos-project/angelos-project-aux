@@ -16,6 +16,7 @@ package org.angproj.aux.utf
 
 import org.angproj.aux.codec.EncoderDecoder
 import org.angproj.aux.util.DataBuffer
+import org.angproj.aux.util.Null
 
 public class UtfSanitize(private val mode: SanitizeMode): EncoderDecoder<ByteArray, UtfString>() {
 
@@ -24,7 +25,7 @@ public class UtfSanitize(private val mode: SanitizeMode): EncoderDecoder<ByteArr
     private var position: Int = 0
     private var lastNew: Int = 0
     private var countFaul: Int = 0
-    private var input: ByteArray = byteArrayOf()
+    private var input: ByteArray = Null.emptyByteArray
     private var output: DataBuffer = DataBuffer()
     private var fsm = Sanitizer.create()
 

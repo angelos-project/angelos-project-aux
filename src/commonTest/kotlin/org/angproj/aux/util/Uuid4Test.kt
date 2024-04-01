@@ -19,7 +19,6 @@ import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.time.measureTime
 
 class Uuid4Test {
     @Test
