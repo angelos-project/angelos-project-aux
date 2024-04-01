@@ -19,8 +19,11 @@ import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class Uuid4Test {
+
     @Test
     fun testUuid4() {
         assertEquals(uuid4().toString()[14], '4')
@@ -28,11 +31,18 @@ class Uuid4Test {
     }
 
     @Test
+    fun testNullUuid4() {
+        assertTrue(NullObject.uuid4.isNull())
+        assertFalse(uuid4().isNull())
+
+    }
+
+    //@Test
     fun testPrintUuid4() {
         repeat(100) { println(uuid4()) }
     }
 
-    @Test
+    //@Test
     fun testMonteCarlo() {
         val monteCarlo = Benchmark()
         repeat(10_000_000) {
@@ -43,11 +53,11 @@ class Uuid4Test {
         println((monteCarlo.distribution() - PI).absoluteValue)
     }
 
-    @Test
+    //@Test
     fun testFractalEntropy() {
         val monteCarlo = Benchmark()
         val data = ByteArray(16)
-        repeat(10_000_000) {idx ->
+        repeat(10_000_000) { idx ->
             InitializationVector.realTimeGatedEntropy(data)
             monteCarlo.scatterPoint(data.readLongAt(0), data.readLongAt(8))
         }

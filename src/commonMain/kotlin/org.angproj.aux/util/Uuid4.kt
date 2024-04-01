@@ -80,3 +80,9 @@ public class Uuid4 internal constructor(private val uuid: ByteArray) {
 public fun uuid4(): Uuid4 = Uuid4()
 
 public fun uuid4Of(data: ByteArray): Uuid4 = Uuid4(data)
+
+public fun Uuid4.isNull(): Boolean = NullObject.uuid4 === this
+
+private val nullUuid4 = uuid4Of(byteArrayOf(0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0))
+public val NullObject.uuid4: Uuid4
+    get() = nullUuid4

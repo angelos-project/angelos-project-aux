@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2023-2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.num
 
+import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.bigIntOf
 
 public class BigInt internal constructor(magnitude: List<Int>, sigNum: BigSigned) :
@@ -41,3 +42,9 @@ public class BigInt internal constructor(magnitude: List<Int>, sigNum: BigSigned
         public val minusOne: BigInt by lazy { MutableBigInt.minusOne.toBigInt() }
     }
 }
+
+public fun BigInt.isNull(): Boolean = NullObject.bigInt === this
+
+private val nullBigInt = BigInt(NullObject.intArray, BigSigned.ZERO)
+public val NullObject.bigInt: BigInt
+    get() = nullBigInt

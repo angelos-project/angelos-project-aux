@@ -14,13 +14,13 @@
  */
 package org.angproj.aux.rand
 
-import org.angproj.aux.util.Null
+import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.readLongAt
 
 /**
  * Fast little random that is Monte Carlo proof.
  * */
-public abstract class AbstractSmallRandom(iv: ByteArray = Null.emptyByteArray) {
+public abstract class AbstractSmallRandom(iv: ByteArray = NullObject.byteArray) {
 
     private var state: Long = InitializationVector.IV_CA35.iv
     private var state1: Long = InitializationVector.IV_CA53.iv
@@ -50,5 +50,4 @@ public abstract class AbstractSmallRandom(iv: ByteArray = Null.emptyByteArray) {
         state1 = temp.rotateLeft(32)
         return state.toInt() xor state1.toInt()
     }
-
 }

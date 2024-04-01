@@ -22,27 +22,39 @@ import kotlin.jvm.JvmStatic
  * and objects of any type. The idea is to reduce the initialization of empty objects to reduce processing
  * power and memory consumption.
  * */
-public object Null {
+public object NullObject {
 
-    public const val emptyString: String = ""
-
-    @JvmStatic
-    public val emptyByteArray: ByteArray = byteArrayOf()
+    public const val string: String = ""
 
     @JvmStatic
-    public val emptyShortArray: ShortArray = shortArrayOf()
+    public val byteArray: ByteArray = byteArrayOf()
 
     @JvmStatic
-    public val emptyIntArray: IntArray = intArrayOf()
+    public val shortArray: ShortArray = shortArrayOf()
 
     @JvmStatic
-    public val emptyLongArray: LongArray = longArrayOf()
+    public val intArray: IntArray = intArrayOf()
 
     @JvmStatic
-    public val emptyFloatArray: FloatArray = floatArrayOf()
+    public val longArray: LongArray = longArrayOf()
 
     @JvmStatic
-    public val emptyDoubleArray: DoubleArray = doubleArrayOf()
+    public val floatArray: FloatArray = floatArrayOf()
 
-    public val emptyUuid4: Uuid4 = uuid4Of(byteArrayOf(0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0))
+    @JvmStatic
+    public val doubleArray: DoubleArray = doubleArrayOf()
 }
+
+public fun String.isNull(): Boolean = this.isEmpty()
+
+public fun ByteArray.isNull(): Boolean = NullObject.byteArray === this
+
+public fun ShortArray.isNull(): Boolean = NullObject.shortArray === this
+
+public fun IntArray.isNull(): Boolean = NullObject.intArray === this
+
+public fun LongArray.isNull(): Boolean = NullObject.longArray === this
+
+public fun FloatArray.isNull(): Boolean = NullObject.floatArray === this
+
+public fun DoubleArray.isNull(): Boolean = NullObject.doubleArray === this
