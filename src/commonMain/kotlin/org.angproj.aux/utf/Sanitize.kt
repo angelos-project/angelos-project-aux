@@ -14,38 +14,19 @@
  */
 package org.angproj.aux.utf
 
-import org.angproj.aux.codec.DecoderEncoder
-import org.angproj.aux.util.DataBuffer
+import org.angproj.aux.fsm.StateMachine
 import org.angproj.aux.util.NullObject
 
-public class UtfSanitize(private val mode: SanitizeMode): DecoderEncoder<ByteArray, IntArray>() {
-
+internal class Sanitize() {
+    var fsm: StateMachine<Sanitizer> = Sanitizer.create()
     private var octet: Byte = 0
     private var glyph: Glyph = 0
-    private var position: Int = 0
-    private var input: ByteArray = NullObject.byteArray
+    var input: ByteArray = NullObject.byteArray
     private var inPos: Int = 0
-    private var output: IntArray = NullObject.intArray
+    var output: IntArray = NullObject.intArray
     private var outPos: Int = 0
-    private var fsm = Sanitizer.create()
 
-    override fun process() {
-        TODO("Not yet implemented")
-    }
-
-    override fun encode(data: IntArray): ByteArray {
-        /*input = data
-        output = DataBuffer(input.size)
-        while(!fsm.done) process()
-        return UtfString(output.asByteArray())*/
-        TODO("Not yet implemented")
-    }
-
-    override fun decode(data: ByteArray): IntArray {
-        TODO("Not yet implemented")
-    }
-
-    protected fun processState(): Unit = when(fsm.state) {
+    public fun process(): Unit = when(fsm.state) {
         Sanitizer.START -> restart()
         Sanitizer.RESTART -> restart()
         Sanitizer.FINISH -> Unit
@@ -71,6 +52,10 @@ public class UtfSanitize(private val mode: SanitizeMode): DecoderEncoder<ByteArr
         Sanitizer.FIFTH_OF_SIX -> yOfX(Sanitizer.SIX_COMPLETED)
         Sanitizer.SIX_COMPLETED -> xCompleted()
         Sanitizer.ERROR -> Unit
+    }
+
+    public fun finish() {
+        fsm.state = Sanitizer.FINISH
     }
 
     private fun xCompleted() {
@@ -127,12 +112,12 @@ public class UtfSanitize(private val mode: SanitizeMode): DecoderEncoder<ByteArr
     }
 
     private fun printGlyph() {
-        //output.writeGlyph(glyph.escapeInvalid())
+        output[outPos++] = glyph
         glyph = 0
     }
 
     private fun acquireOctet() {
-        octet = input[position++]
+        octet = input[inPos++]
     }
 
     private fun ascii() {
@@ -142,7 +127,6 @@ public class UtfSanitize(private val mode: SanitizeMode): DecoderEncoder<ByteArr
     }
 
     private fun restart(): Unit = when {
-        position == input.size -> fsm.state = Sanitizer.FINISH
         else -> acquireOctet().also {
             when(SequenceType.qualify(octet)) {
                 SequenceType.START_ONE_LONG -> fsm.state = Sanitizer.ASCII

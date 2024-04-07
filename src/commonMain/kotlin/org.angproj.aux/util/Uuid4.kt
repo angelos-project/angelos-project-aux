@@ -41,7 +41,7 @@ public class Uuid4 internal constructor(private val uuid: ByteArray) {
     override fun toString(): String = hex
 
     @ThreadLocal
-    internal companion object : AbstractSmallRandom() {
+    private companion object : AbstractSmallRandom() {
 
         private var counter: Int = 0
 

@@ -29,6 +29,7 @@ public value class UtfString(private val octets: ByteArray) {
             index += jump
         }
     }
+
     public fun glyphStringSize(): Int {
         var count = 0
         var index = 0

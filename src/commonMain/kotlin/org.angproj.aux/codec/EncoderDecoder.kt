@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.codec
 
-public abstract class EncoderDecoder<I, O>: Encoder<I, O> {
+public abstract class EncoderDecoder<I, O>: Encoder<I, O>, Decoder<O, I> {
     protected abstract fun process()
 
 }

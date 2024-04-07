@@ -269,8 +269,7 @@ public abstract class AbstractBigInt<E : List<Int>>(
         }
 
         private fun makePositive(value: IntArray): IntArray {
-            val keep: Int =
-                keep(value, BigSigned.NEGATIVE)
+            val keep: Int = keep(value, BigSigned.NEGATIVE)
             val extra = (keep until value.size).indexOfFirst { value[it] != 0 }.let { if (it == -1) 1 else 0 }
             val result = IntArray(value.size - keep + extra)
 

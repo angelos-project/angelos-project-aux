@@ -10,7 +10,7 @@ import kotlin.test.Test
 class InitializationVectorTest {
 
     @Test
-    fun testPrintUuid4() {
+    fun testPrintEntropy() {
         val data = ByteArray(16)
         repeat(100) {
             InitializationVector.realTimeGatedEntropy(data)

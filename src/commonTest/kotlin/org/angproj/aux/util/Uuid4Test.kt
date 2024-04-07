@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022-2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2022-2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -23,7 +23,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class Uuid4Test {
-
     @Test
     fun testUuid4() {
         assertEquals(uuid4().toString()[14], '4')
@@ -31,13 +30,12 @@ class Uuid4Test {
     }
 
     @Test
-    fun testNullUuid4() {
+    fun testNullBigInt() {
         assertTrue(NullObject.uuid4.isNull())
         assertFalse(uuid4().isNull())
-
     }
 
-    //@Test
+    @Test
     fun testPrintUuid4() {
         repeat(100) { println(uuid4()) }
     }
@@ -57,7 +55,7 @@ class Uuid4Test {
     fun testFractalEntropy() {
         val monteCarlo = Benchmark()
         val data = ByteArray(16)
-        repeat(10_000_000) { idx ->
+        repeat(10_000_000) {idx ->
             InitializationVector.realTimeGatedEntropy(data)
             monteCarlo.scatterPoint(data.readLongAt(0), data.readLongAt(8))
         }

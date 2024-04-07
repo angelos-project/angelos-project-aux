@@ -11,11 +11,16 @@ import org.angproj.aux.io.Sizeable
  * */
 public class GlyphDecoder : Decoder<ByteArray, IntArray>, Sizeable {
 
-    override val sizeMode: SizeMode = SizeMode.FIXED
-    override val dataSize: DataSize = DataSize._4K
+    override val sizeMode: SizeMode = SizeMode.MAXIMUM
+    override val dataSize: DataSize = DataSize._1K
+
+
+    private val inQueue: ArrayDeque<ByteArray> = ArrayDeque()
+    private val outQueue: ArrayDeque<IntArray> = ArrayDeque()
 
     override fun decode(data: ByteArray): IntArray {
-        TODO("Not yet implemented")
+        inQueue.addLast(data)
+        return outQueue.removeFirst()
     }
 
 }
