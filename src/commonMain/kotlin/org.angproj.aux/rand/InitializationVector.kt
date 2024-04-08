@@ -17,7 +17,6 @@ package org.angproj.aux.rand
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.util.floorMod
 import kotlin.time.TimeSource
-import kotlin.time.measureTime
 
 /**
  * In order to get a balanced variety of ones and zeroes in clusters with minimum gaps
@@ -68,6 +67,7 @@ public enum class InitializationVector(public val iv: Long) {
     public companion object {
 
         private val moment = TimeSource.Monotonic.markNow()
+        private var entropy: Long = IV_3AC5.iv * moment.elapsedNow().inWholeNanoseconds
 
         /**
          * Natural random based on fluctuations on nanosecond intervals which produces byte level entropy.
@@ -76,11 +76,11 @@ public enum class InitializationVector(public val iv: Long) {
          * */
         public fun realTimeGatedEntropy(data: ByteArray) {
             require(data.size <= DataSize._256B.size) { "To large for time-gated entropy! Max 256 bytes." }
-            var entropy: Long = Long.MAX_VALUE
+
             var stub: Int = Int.MAX_VALUE
             data.indices.forEach {
                 repeat(it.floorMod(16)) { stub += stub * Int.MAX_VALUE }
-                entropy = moment.elapsedNow().inWholeNanoseconds * entropy.rotateLeft(32)
+                entropy = (moment.elapsedNow().inWholeNanoseconds * entropy).rotateLeft(32)
                 data[it] = entropy.toByte()
             }
         }
