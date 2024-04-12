@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.num
 
+
 public enum class BigSigned(public val state: Int, public val signed: Int) {
     POSITIVE(1, 0),
     ZERO(0, 0),

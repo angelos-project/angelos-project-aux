@@ -22,7 +22,7 @@ import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.Unfoldable
 import org.angproj.aux.pkg.type.BlockType
-import org.angproj.aux.util.bigIntOf
+import org.angproj.aux.num.bigIntOf
 import kotlin.jvm.JvmInline
 
 @JvmInline

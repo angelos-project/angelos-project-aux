@@ -14,31 +14,7 @@
  */
 package org.angproj.aux.util
 
-import org.angproj.aux.num.AbstractBigInt
-import org.angproj.aux.num.BigInt
-import org.angproj.aux.num.BigSigned
-import org.angproj.aux.num.MutableBigInt
 import kotlin.math.absoluteValue
-
-public fun unsignedBigIntOf(value: ByteArray): BigInt =
-    BigInt(AbstractBigInt.stripLeadingZeros(value), BigSigned.POSITIVE)
-
-public fun bigIntOf(value: IntArray): BigInt =
-    AbstractBigInt.fromIntArray(value) { a, b -> BigInt(a, b) }
-
-public fun bigIntOf(value: ByteArray): BigInt =
-    AbstractBigInt.fromByteArray(value) { a, b -> BigInt(a, b) }
-
-public fun bigIntOf(value: Long): BigInt = AbstractBigInt.fromLong(value) { a, b -> BigInt(a, b) }
-
-public fun mutableBigIntOf(value: IntArray): MutableBigInt =
-    AbstractBigInt.fromIntArray(value) { a, b -> MutableBigInt(a, b) }
-
-public fun mutableBigIntOf(value: ByteArray): MutableBigInt =
-    AbstractBigInt.fromByteArray(value) { a, b -> MutableBigInt(a, b) }
-
-public fun mutableBigIntOf(value: Long): MutableBigInt =
-    AbstractBigInt.fromLong(value) { a, b -> MutableBigInt(a, b) }
 
 public fun encodeToHex(data: ByteArray): String = BinHex.encodeToHex(data)
 

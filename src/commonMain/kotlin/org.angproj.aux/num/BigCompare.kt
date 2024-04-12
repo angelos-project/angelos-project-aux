@@ -14,7 +14,6 @@
  */
 package org.angproj.aux.num
 
-
 public enum class BigCompare(public val state: Int) {
     GREATER(1),
     EQUAL(0),

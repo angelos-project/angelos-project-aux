@@ -14,7 +14,6 @@
  */
 package org.angproj.aux.util
 
-import org.angproj.aux.rand.InitializationVector
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.test.Test
@@ -35,7 +34,7 @@ class Uuid4Test {
         assertFalse(uuid4().isNull())
     }
 
-    @Test
+    //@Test
     fun testPrintUuid4() {
         repeat(100) { println(uuid4()) }
     }
@@ -45,18 +44,6 @@ class Uuid4Test {
         val monteCarlo = Benchmark()
         repeat(10_000_000) {
             val data = uuid4().toByteArray()
-            monteCarlo.scatterPoint(data.readLongAt(0), data.readLongAt(8))
-        }
-        println(monteCarlo.distribution())
-        println((monteCarlo.distribution() - PI).absoluteValue)
-    }
-
-    //@Test
-    fun testFractalEntropy() {
-        val monteCarlo = Benchmark()
-        val data = ByteArray(16)
-        repeat(10_000_000) {idx ->
-            InitializationVector.realTimeGatedEntropy(data)
             monteCarlo.scatterPoint(data.readLongAt(0), data.readLongAt(8))
         }
         println(monteCarlo.distribution())

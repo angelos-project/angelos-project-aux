@@ -15,36 +15,54 @@
 package org.angproj.aux.num
 
 import org.angproj.aux.util.NullObject
-import org.angproj.aux.util.bigIntOf
 
-public class BigInt internal constructor(magnitude: List<Int>, sigNum: BigSigned) :
-    AbstractBigInt<List<Int>>(magnitude, sigNum) {
+public class BigInt(
+    override val mag: List<Int>,
+    override val sigNum: BigSigned
+): BigMath<List<Int>> {
 
-    public constructor(magnitude: IntArray, sigNum: BigSigned) : this(
-        magnitude.asList(),
-        sigNumZeroAdjust(magnitude, sigNum)
-    )
+    override val bitCount: Int by lazy { BigMath.bitCount(mag, sigNum) }
+    override val bitLength: Int by lazy { BigMath.bitLength(mag, sigNum) }
+    override val firstNonZero: Int by lazy { BigMath.firstNonZero(mag) }
 
-    override fun negate(): BigInt = BigInt(mag, sigNum.negate())
+    override fun equals(other: Any?): Boolean {
+        if(other == null) return false
+        return equalsCompare(other)
+    }
 
-    override fun copyOf(): BigInt = BigInt(mag, sigNum)
-    override fun of(value: IntArray): BigInt = bigIntOf(value)
-    override fun of(value: IntArray, sigNum: BigSigned): BigInt = BigInt(value, sigNum)
-    override fun of(value: Long): BigInt = bigIntOf(value)
+    public override fun hashCode(): Int {
+        var result = mag.hashCode()
+        result = 31 * result + sigNum.hashCode()
+        return result
+    }
 
-    public override fun toMutableBigInt(): MutableBigInt = MutableBigInt(mag.toIntArray(), sigNum)
-    public override fun toBigInt(): BigInt = this
+    public fun toInt(): Int = this.getIdx(0)
+
+    public fun toLong(): Long = (this.getIdxL(1) shl 32) or this.getIdxL(0)
+
+    public override fun asMutableBigInt(): MutableBigInt = MutableBigInt(mag.toMutableList(), sigNum)
+    override fun toBigInt(): BigInt = this
+
+    public fun ofIntArray(value: IntArray): BigInt = BigMath.fromIntArray(value) { m, s -> BigInt(m.toList(), s ) }
+    public fun ofLong(value: Long): BigInt = BigMath.fromLong(value) { m, s -> BigInt(m.toList(), s) }
 
     public companion object {
-        public val two: BigInt by lazy { MutableBigInt.two.toBigInt() }
-        public val one: BigInt by lazy { MutableBigInt.one.toBigInt() }
-        public val zero: BigInt by lazy { MutableBigInt.zero.toBigInt() }
-        public val minusOne: BigInt by lazy { MutableBigInt.minusOne.toBigInt() }
+        public val minusOne: BigInt by lazy { BigMath.fromLong(-1) { m, s -> BigInt(m.toList(), s ) } }
+        public val zero: BigInt by lazy { BigMath.fromLong(0) { m, s -> BigInt(m.toList(), s ) } }
+        public val one: BigInt by lazy { BigMath.fromLong(1) { m, s -> BigInt(m.toList(), s ) } }
+        public val two: BigInt by lazy { BigMath.fromLong(2) { m, s -> BigInt(m.toList(), s ) } }
     }
 }
 
 public fun BigInt.isNull(): Boolean = NullObject.bigInt === this
 
-private val nullBigInt = BigInt(NullObject.intArray, BigSigned.ZERO)
+private val nullBigInt = BigInt(NullObject.intArray.toList(), BigSigned.ZERO)
 public val NullObject.bigInt: BigInt
     get() = nullBigInt
+
+public fun bigIntOf(value: ByteArray): BigInt = BigMath.fromByteArray(value) { m, s -> BigInt(m.toList(), s ) }
+
+public fun bigIntOf(value: Long): BigInt = BigMath.fromLong(value) { m, s -> BigInt(m.toList(), s ) }
+
+public fun unsignedBigIntOf(value: ByteArray): BigInt =
+    BigInt(BigMath.stripLeadingZeros(value).toList(), BigSigned.POSITIVE)

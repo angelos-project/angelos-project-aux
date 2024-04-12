@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2023-2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -14,43 +14,51 @@
  */
 package org.angproj.aux.num
 
-import org.angproj.aux.util.mutableBigIntOf
+public class MutableBigInt(
+    override val mag: MutableList<Int>,
+    override val sigNum: BigSigned
+): BigMath<MutableList<Int>> {
 
-public class MutableBigInt internal constructor(magnitude: MutableList<Int>, sigNum: BigSigned) :
-    AbstractBigInt<MutableList<Int>>(magnitude, sigNum) {
+    override val bitCount: Int by lazy { BigMath.bitCount(mag, sigNum) }
+    override val bitLength: Int by lazy { BigMath.bitLength(mag, sigNum) }
+    override val firstNonZero: Int by lazy { BigMath.firstNonZero(mag) }
 
-    public constructor(magnitude: IntArray, sigNum: BigSigned) : this(
-        magnitude.toMutableList(),
-        sigNumZeroAdjust(magnitude, sigNum)
-    )
+    override fun equals(other: Any?): Boolean {
+        if(other == null) return false
+        return equalsCompare(other)
+    }
+
+    public override fun hashCode(): Int {
+        var result = mag.hashCode()
+        result = 31 * result + sigNum.hashCode()
+        return result
+    }
+
+    public fun <E : MutableList<Int>> E.revSet(index: Int, value: Int) {
+        this[lastIndex - index] = value
+    }
 
     public fun setIdx(index: Int, num: Int): Unit = mag.revSet(index, num)
 
     public fun setIdxL(index: Int, num: Long): Unit = setIdx(index, num.toInt())
 
-    public fun setUnreversedIdx(index: Int, num: Int) {
-        mag[index] = num
-    }
+    public fun setUnreversedIdx(index: Int, num: Int) { mag[index] = num }
 
     public fun setUnreversedIdxL(index: Int, num: Long): Unit = setUnreversedIdx(index, num.toInt())
 
-    override fun negate(): MutableBigInt = MutableBigInt(mag, sigNum.negate())
+    public fun toComplementedIntArray(): IntArray = IntArray(mag.size) { getUnreversedIdx(it) }
 
-    override fun copyOf(): MutableBigInt = MutableBigInt(mag, sigNum)
-    override fun of(value: IntArray): MutableBigInt = mutableBigIntOf(value)
-    override fun of(value: IntArray, sigNum: BigSigned): MutableBigInt = MutableBigInt(value, sigNum)
-    override fun of(value: Long): MutableBigInt = mutableBigIntOf(value)
+    public override fun asMutableBigInt(): MutableBigInt = this
+    override fun toBigInt(): BigInt = BigInt(mag.toList(), sigNum)
 
-    public override fun toBigInt(): BigInt = BigInt(mag.toIntArray(), sigNum)
-    public override fun toMutableBigInt(): MutableBigInt = this
+    public companion object: BigScope {
+        public fun emptyMutableBigIntOf(value: IntArray = intArrayOf(0)): MutableBigInt = MutableBigInt(
+            value.toMutableList(), BigSigned.POSITIVE)
 
-    public companion object {
-        public val two: MutableBigInt by lazy { MutableBigInt(intArrayOf(2), BigSigned.POSITIVE) }
-        public val one: MutableBigInt by lazy { MutableBigInt(intArrayOf(1), BigSigned.POSITIVE) }
-        public val zero: MutableBigInt by lazy { MutableBigInt(intArrayOf(0), BigSigned.ZERO) }
-        public val minusOne: MutableBigInt by lazy { MutableBigInt(intArrayOf(1), BigSigned.NEGATIVE) }
+        public fun ofIntArray(value: IntArray): MutableBigInt = BigMath.fromIntArray(value) { m, s ->
+            MutableBigInt(m.toMutableList(), s ) }
+
+        public fun ofLong(value: Long): MutableBigInt = BigMath.fromLong(value) { m, s ->
+            MutableBigInt(m.toMutableList(), s) }
     }
 }
-
-public fun emptyMutableBigIntOf(value: IntArray = intArrayOf(0)): MutableBigInt =
-    MutableBigInt(value, BigSigned.POSITIVE)

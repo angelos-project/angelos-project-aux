@@ -9,7 +9,7 @@ import kotlin.test.Test
 
 class InitializationVectorTest {
 
-    @Test
+    //@Test
     fun testPrintEntropy() {
         val data = ByteArray(16)
         repeat(100) {
@@ -18,7 +18,7 @@ class InitializationVectorTest {
         }
     }
 
-    @Test
+    //@Test
     fun testMonteCarlo() {
         val monteCarlo = Benchmark()
         val data = ByteArray(16)

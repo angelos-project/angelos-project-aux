@@ -1,10 +1,8 @@
 package org.angproj.aux.rand
 
 import org.angproj.aux.io.Reader
-import org.angproj.aux.io.SizeMode
 import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.Benchmark
-import org.angproj.aux.io.DataSize
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.floorMod
 import kotlin.math.PI
