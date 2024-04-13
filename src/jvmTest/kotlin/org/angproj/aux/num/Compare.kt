@@ -14,9 +14,9 @@
  */
 package org.angproj.aux.num
 
-public operator fun BigInt.compareTo(other: BigMath<*>): Int = compareSpecial(other).state
+internal operator fun BigInt.compareTo(other: BigMath<*>): Int = compareSpecial(other).state
 
-public fun BigInt.compareSpecial(other: BigMath<*>): BigCompare = when {
+internal fun BigInt.compareSpecial(other: BigMath<*>): BigCompare = when {
     sigNum.state > other.sigNum.state -> BigCompare.GREATER
     sigNum.state < other.sigNum.state -> BigCompare.LESSER
     sigNum == BigSigned.POSITIVE -> MutableBigInt.compareMagnitude(this, other)
