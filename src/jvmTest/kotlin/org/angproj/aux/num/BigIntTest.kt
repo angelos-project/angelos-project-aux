@@ -170,4 +170,20 @@ class BigIntTest {
             )
         }
     }
+
+    /**
+     * This test recognizes whether large zero unsigned big integer
+     * translates into zero magnitude and sigNum properly.
+     * */
+    @Test
+    fun testUnsignedBigIntOf() {
+        val xBi2 = unsignedBigIntOf(ByteArray(100) { 0 })
+        val yBi2 = unsignedBigIntOf((ByteArray(100) { 0 }).also { it[5] = 1 })
+
+        assertTrue(xBi2.sigNum.isZero())
+        assertTrue(xBi2.mag.isEmpty())
+
+        assertTrue(yBi2.sigNum.isNonZero())
+        assertTrue(yBi2.mag.isNotEmpty())
+    }
 }

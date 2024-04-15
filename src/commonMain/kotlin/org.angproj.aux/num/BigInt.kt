@@ -14,7 +14,9 @@
  */
 package org.angproj.aux.num
 
+import org.angproj.aux.util.BinHex
 import org.angproj.aux.util.NullObject
+import org.angproj.aux.util.floorMod
 
 public class BigInt(
     override val mag: List<Int>,
@@ -64,5 +66,13 @@ public fun bigIntOf(value: ByteArray): BigInt = BigMath.fromByteArray(value) { m
 
 public fun bigIntOf(value: Long): BigInt = BigMath.fromLong(value) { m, s -> BigInt(m.toList(), s ) }
 
-public fun unsignedBigIntOf(value: ByteArray): BigInt =
-    BigInt(BigMath.stripLeadingZeros(value).toList(), BigSigned.POSITIVE)
+public fun unsignedBigIntOf(value: ByteArray): BigInt {
+    val sanitized = BigMath.stripLeadingZeros(value)
+    return BigInt(sanitized.toList(), BigMath.sigNumZeroAdjust(sanitized, BigSigned.POSITIVE))
+}
+
+public fun unsignedBigIntOf(value: String): BigInt {
+    val bytes = BinHex.decodeToBin(if(value.length.floorMod(2) == 1) "0$value" else value)
+    val sanitized = BigMath.stripLeadingZeros(bytes)
+    return BigInt(sanitized.toList(), BigMath.sigNumZeroAdjust(sanitized, BigSigned.POSITIVE))
+}
