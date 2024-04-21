@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -12,12 +12,11 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux
 
-import java.nio.ByteOrder
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+internal expect object Native {
+    internal fun allocateChunk(size: Int): Chunk
 
-internal actual fun getCurrentEndian(): Endian = when(ByteOrder.nativeOrder()) {
-    ByteOrder.LITTLE_ENDIAN -> Endian.LITTLE
-    ByteOrder.BIG_ENDIAN -> Endian.BIG
-    else -> Endian.UNKNOWN
+    internal fun freeChunk(chunk: Chunk)
 }
