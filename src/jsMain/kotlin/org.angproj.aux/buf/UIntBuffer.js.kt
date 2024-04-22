@@ -12,15 +12,16 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux
+package org.angproj.aux.buf
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-internal actual object Native {
-    internal actual fun allocateChunk(size: Int): Chunk {
-        throw UnsupportedOperationException("Forbidden access!")
+public actual class UIntBuffer actual constructor(size: Int) : AbstractBufferType<UInt>(size) {
+    actual override fun get(index: Int): UInt {
+        TODO("Not yet implemented")
     }
 
-    internal actual fun freeChunk(chunk: Chunk) {
-        throw UnsupportedOperationException("Forbidden access!")
+    actual override fun set(index: Int, value: UInt) {
     }
+
+    override fun close() {}
 }

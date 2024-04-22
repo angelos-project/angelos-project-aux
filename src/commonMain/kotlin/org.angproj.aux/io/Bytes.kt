@@ -61,4 +61,7 @@ public open class Bytes(final override val size: Int): Segment {
     private fun ByteArray.revGetLong(index: Int): Long = (
             (this.revGetInt(index).toLong() shl 32 and 0xffffffff00000000u.toLong()) or
                     (this.revGetInt(index + 4).toLong() and 0xffffffff))
+
+    override fun close() {}
+
 }

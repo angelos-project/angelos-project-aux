@@ -40,4 +40,14 @@ class MutableMemoryTest: AbstractMutableSegmentValidator() {
 
     @Test
     fun testLongWriteAsync() = longWriteAsync(createNew)
+
+    //@Test
+    fun testGC() {
+        repeat(10_000) {
+            repeat(1) {
+                val mem = MutableMemory(1_000_000)
+                mem.setLong(0, -1L)
+            }
+        }
+    }
 }

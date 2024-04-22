@@ -22,21 +22,21 @@ public actual class MutableMemory actual constructor(size: Int) : Memory(size), 
 
     actual override fun setByte(index: Int, value: Byte) {
         if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index).toCPointer<ByteVar>()!!.pointed.value = value
+        (ptr + index)!!.reinterpret<ByteVar>().pointed.value = value
     }
 
     actual override fun setShort(index: Int, value: Short) {
         if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index).toCPointer<ShortVar>()!!.pointed.value = value
+        (ptr + index)!!.reinterpret<ShortVar>().pointed.value = value
     }
 
     actual override fun setInt(index: Int, value: Int) {
         if(index !in 0..<(size-3)) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index).toCPointer<IntVar>()!!.pointed.value = value
+        (ptr + index)!!.reinterpret<IntVar>().pointed.value = value
     }
 
     actual override fun setLong(index: Int, value: Long) {
         if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index).toCPointer<LongVar>()!!.pointed.value = value
+        (ptr + index)!!.reinterpret<LongVar>().pointed.value = value
     }
 }

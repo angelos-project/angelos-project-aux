@@ -14,14 +14,14 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.Chunk
-import org.angproj.aux.Native
+import org.angproj.aux.res.allocateMemory
+import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual open class Memory actual constructor(size: Int) : Segment {
 
     actual final override val size: Int = size
-    protected actual val data: Chunk = Native.allocateChunk(size)
+    protected actual val data: Chunk = allocateMemory(size)
 
     actual override fun getByte(index: Int): Byte {
         throw UnsupportedOperationException("No access to native memory.")
@@ -38,5 +38,7 @@ public actual open class Memory actual constructor(size: Int) : Segment {
     actual override fun getLong(index: Int): Long {
         throw UnsupportedOperationException("No access to native memory.")
     }
+
+    override fun close() {}
 
 }

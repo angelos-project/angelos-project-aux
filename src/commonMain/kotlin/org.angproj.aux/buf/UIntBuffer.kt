@@ -12,18 +12,10 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux
+package org.angproj.aux.buf
 
-import kotlin.jvm.JvmInline
-
-public data class Blob<E>(val ptr: Long, val size: Int, internal val unsafe: E) {
-}
-
-@JvmInline
-public value class Chunk(internal val mem: Blob<*>) {
-    internal fun dispose() { Native.freeChunk(this) }
-
-    internal companion object {
-        fun allocate(size: Int): Chunk = Native.allocateChunk(size)
-    }
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+public expect class UIntBuffer(size: Int): AbstractBufferType<UInt> {
+    public override operator fun get(index: Int): UInt
+    public override operator fun set(index: Int, value: UInt)
 }

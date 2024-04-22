@@ -12,10 +12,10 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux
+package org.angproj.aux.buf
 
-import kotlin.jvm.JvmInline
+import org.angproj.aux.io.ByteString
 
-@JvmInline
-public value class Pointer(public val ptr: Long) {
+public abstract class AbstractBufferType<E>(public val size: Int): BufferType<E> {
+    protected fun realSizeCalc(size: Int): Int = (size / ByteString.longSize + if(size % ByteString.longSize != 0) 1 else 0) * ByteString.longSize
 }

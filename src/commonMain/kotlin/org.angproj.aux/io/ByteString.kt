@@ -14,7 +14,8 @@
  */
 package org.angproj.aux.io
 
-public interface ByteString {
+@OptIn(ExperimentalStdlibApi::class)
+public interface ByteString: AutoCloseable {
 
     public val size: Int
 

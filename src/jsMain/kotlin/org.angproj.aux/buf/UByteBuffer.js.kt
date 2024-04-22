@@ -12,21 +12,16 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux
-
-import kotlinx.cinterop.*
-import platform.posix.free
+package org.angproj.aux.buf
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-@OptIn(ExperimentalForeignApi::class)
-internal actual object Native {
-
-    internal actual fun allocateChunk(size: Int): Chunk {
-        val unsafe: CArrayPointer<ByteVar> = memScoped { nativeHeap.allocArray<ByteVar>(size) }
-        return Chunk(Blob(unsafe.pointed.ptr.toLong(), size, unsafe))
+public actual class UByteBuffer actual constructor(size: Int) : AbstractBufferType<UByte>(size) {
+    actual override fun get(index: Int): UByte {
+        TODO("Not yet implemented")
     }
 
-    internal actual fun freeChunk(chunk: Chunk) {
-        memScoped { free(chunk.mem.ptr.toCPointer<ByteVar>()) }
+    actual override fun set(index: Int, value: UByte) {
     }
+
+    override fun close() {}
 }

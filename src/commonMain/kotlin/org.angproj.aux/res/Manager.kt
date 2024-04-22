@@ -12,11 +12,8 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux
+package org.angproj.aux.res
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-internal expect object Native {
-    internal fun allocateChunk(size: Int): Chunk
-
-    internal fun freeChunk(chunk: Chunk)
+internal expect object Manager {
 }

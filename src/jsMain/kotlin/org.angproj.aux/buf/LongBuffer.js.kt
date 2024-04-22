@@ -12,21 +12,16 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
-
-import org.angproj.aux.res.Memory as Chunk
+package org.angproj.aux.buf
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect open class Memory(size: Int): Segment {
+public actual class LongBuffer actual constructor(size: Int) : AbstractBufferType<Long>(size) {
+    actual override fun get(index: Int): Long {
+        TODO("Not yet implemented")
+    }
 
-    final override val size: Int
-    protected val data: Chunk
+    actual override fun set(index: Int, value: Long) {
+    }
 
-    override fun getByte(index: Int): Byte
-
-    override fun getShort(index: Int): Short
-
-    override fun getInt(index: Int): Int
-
-    override fun getLong(index: Int): Long
+    override fun close() {}
 }

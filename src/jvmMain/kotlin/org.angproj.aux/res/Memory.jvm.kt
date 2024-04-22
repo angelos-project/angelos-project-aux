@@ -12,26 +12,27 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux
+package org.angproj.aux.res
 
 import sun.misc.Unsafe
 import java.lang.reflect.Field
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-internal actual object Native {
-    internal val unsafe: Unsafe
+public actual class Memory(public actual val size: Int, public val ptr: Long): Cleanable {
 
-    init {
-        val f: Field = Unsafe::class.java.getDeclaredField("theUnsafe")
-        f.isAccessible = true
-        unsafe = f.get(null) as Unsafe
+    public override fun dispose() {
+        unsafe.freeMemory(ptr)
     }
 
-    internal actual fun allocateChunk(size: Int): Chunk {
-        return Chunk(Blob(unsafe.allocateMemory(size.toLong()), size, unsafe))
-    }
+    internal companion object {
+        internal val unsafe: Unsafe
 
-    internal actual fun freeChunk(chunk: Chunk) {
-        unsafe.freeMemory(chunk.mem.ptr)
+        init {
+            val f: Field = Unsafe::class.java.getDeclaredField("theUnsafe")
+            f.isAccessible = true
+            unsafe = f.get(null) as Unsafe
+        }
     }
 }
+
+public actual fun allocateMemory(size: Int): Memory = Memory(size, Memory.unsafe.allocateMemory(size.toLong()))

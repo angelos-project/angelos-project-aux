@@ -12,21 +12,10 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.buf
 
-import org.angproj.aux.res.Memory as Chunk
-
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect open class Memory(size: Int): Segment {
-
-    final override val size: Int
-    protected val data: Chunk
-
-    override fun getByte(index: Int): Byte
-
-    override fun getShort(index: Int): Short
-
-    override fun getInt(index: Int): Int
-
-    override fun getLong(index: Int): Long
+@OptIn(ExperimentalStdlibApi::class)
+public interface BufferType<E>: AutoCloseable {
+    public operator fun get(index: Int): E
+    public operator fun set(index: Int, value: E)
 }

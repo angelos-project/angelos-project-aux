@@ -12,44 +12,31 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.buf
 
 import kotlinx.cinterop.*
 import org.angproj.aux.res.allocateMemory
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.Cleaner
 import kotlin.native.ref.createCleaner
-import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
-public actual open class Memory actual constructor(size: Int) : Segment {
-
-    actual final override val size: Int = size
-    protected actual val data: Chunk = allocateMemory(size)
-    protected val ptr: CPointer<ByteVarOf<Byte>> = data.ptr
+public actual class ShortBuffer actual constructor(size: Int) : AbstractBufferType<Short>(size) {
+    private val data = allocateMemory(realSizeCalc(size))
+    private val ptr = data.ptr
 
     @OptIn(ExperimentalNativeApi::class)
     private val cleaner: Cleaner = createCleaner(data) { data.dispose() }
     override fun close() { data.dispose() }
 
-    actual override fun getByte(index: Int): Byte {
-        if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index)!!.reinterpret<ByteVar>().pointed.value
-    }
-
-    actual override fun getShort(index: Int): Short {
+    public actual override operator fun get(index: Int): Short {
         if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
         return (ptr + index)!!.reinterpret<ShortVar>().pointed.value
     }
 
-    actual override fun getInt(index: Int): Int {
-        if(index !in 0..<(size-3)) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index)!!.reinterpret<IntVar>().pointed.value
-    }
-
-    actual override fun getLong(index: Int): Long {
-        if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index)!!.reinterpret<LongVar>().pointed.value
+    public actual override operator fun set(index: Int, value: Short) {
+        if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
+        (ptr + index)!!.reinterpret<ShortVar>().pointed.value = value
     }
 }
