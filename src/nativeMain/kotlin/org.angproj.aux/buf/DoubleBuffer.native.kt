@@ -15,28 +15,20 @@
 package org.angproj.aux.buf
 
 import kotlinx.cinterop.*
-import org.angproj.aux.res.allocateMemory
-import kotlin.experimental.ExperimentalNativeApi
-import kotlin.native.ref.Cleaner
-import kotlin.native.ref.createCleaner
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
 public actual class DoubleBuffer actual constructor(size: Int) : AbstractBufferType<Double>(size) {
-    private val data = allocateMemory(realSizeCalc(size))
-    private val ptr = data.ptr
 
-    @OptIn(ExperimentalNativeApi::class)
-    private val cleaner: Cleaner = createCleaner(data) { data.dispose() }
-    override fun close() { data.dispose() }
-
-    public actual override operator fun get(index: Int): Double {
-        if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index)!!.reinterpret<DoubleVar>().pointed.value
+    actual override operator fun get(index: Int): Double {
+        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        //return (ptr + (index + idxOff) * idxSize.size)!!.reinterpret<DoubleVar>().pointed.value
+        return (ptr + index * idxSize.size)!!.reinterpret<DoubleVar>().pointed.value
     }
 
-    public actual override operator fun set(index: Int, value: Double) {
-        if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index)!!.reinterpret<DoubleVar>().pointed.value = value
+    actual override operator fun set(index: Int, value: Double) {
+        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        //(ptr + (index + idxOff) * idxSize.size)!!.reinterpret<DoubleVar>().pointed.value = value
+        (ptr + index * idxSize.size)!!.reinterpret<DoubleVar>().pointed.value = value
     }
 }

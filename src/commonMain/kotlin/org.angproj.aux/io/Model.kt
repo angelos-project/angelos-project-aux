@@ -61,4 +61,6 @@ public open class Model(final override val size: Int): Segment {
      * */
     public fun rightSideGet(offset: Int, size: Int): Long = getLong(
         0).getRightSide(offset, size)
+
+    public override fun close() { }
 }

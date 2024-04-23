@@ -14,29 +14,20 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.res.Memory as Chunk
-import org.angproj.aux.io.ByteString
-import org.angproj.aux.res.Manager
-import org.angproj.aux.res.allocateMemory
 import sun.misc.Unsafe
-import java.lang.ref.Cleaner.Cleanable
+import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class IntBuffer actual constructor(size: Int) : AbstractBufferType<Int>(size) {
-    private val data: Chunk = allocateMemory(realSizeCalc(size) / ByteString.intSize)
-    private val ptr: Long = data.ptr
 
-    private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }
-    override fun close() { cleanable.clean() }
-
-    actual override fun get(index: Int): Int {
-        if(index !in 0..<size-3) throw IllegalArgumentException("Out of bounds.")
-        return unsafe.getInt(ptr + index)
+    actual override operator fun get(index: Int): Int {
+        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        return unsafe.getInt(ptr + (index + idxOff) * idxSize.size)
     }
 
-    actual override fun set(index: Int, value: Int) {
-        if(index !in 0..<size-3) throw IllegalArgumentException("Out of bounds.")
-        unsafe.putInt(ptr + index, value)
+    actual override operator fun set(index: Int, value: Int) {
+        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        unsafe.putInt(ptr + (index + idxOff) * idxSize.size, value)
     }
 
     internal companion object {

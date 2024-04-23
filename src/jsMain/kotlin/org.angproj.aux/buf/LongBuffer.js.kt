@@ -14,14 +14,21 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.TypeSize
+
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class LongBuffer actual constructor(size: Int) : AbstractBufferType<Long>(size) {
-    actual override fun get(index: Int): Long {
-        TODO("Not yet implemented")
+
+    override val idxSize: TypeSize = TypeSize.LONG
+    private val data: LongArray = LongArray(SpeedCopy.addMargin(size, idxSize))
+
+    actual override operator fun get(index: Int): Long {
+        //if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        return data[index]
     }
 
-    actual override fun set(index: Int, value: Long) {
+    actual override operator fun set(index: Int, value: Long) {
+        //if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        data[index] = value
     }
-
-    override fun close() {}
 }

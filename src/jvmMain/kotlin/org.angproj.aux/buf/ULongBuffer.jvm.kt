@@ -14,29 +14,24 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.res.Memory as Chunk
-import org.angproj.aux.io.ByteString
-import org.angproj.aux.res.Manager
-import org.angproj.aux.res.allocateMemory
 import sun.misc.Unsafe
-import java.lang.ref.Cleaner.Cleanable
+import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class ULongBuffer actual constructor(size: Int) : AbstractBufferType<ULong>(size) {
-    private val data: Chunk = allocateMemory(realSizeCalc(size) / ByteString.longSize)
-    private val ptr: Long = data.ptr
 
-    private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }
-    override fun close() { cleanable.clean() }
+    actual override operator fun get(index: Int): ULong {
+        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        //return unsafe.getLong(ptr + (index + idxOff) * idxSize.size).toULong()
+        return unsafe.getLong(ptr + index * idxSize.size).toULong()
 
-    actual override fun get(index: Int): ULong {
-        if(index !in 0..<size-7) throw IllegalArgumentException("Out of bounds.")
-        return unsafe.getLong(ptr + index).toULong()
     }
 
-    actual override fun set(index: Int, value: ULong) {
-        if(index !in 0..<size-7) throw IllegalArgumentException("Out of bounds.")
-        unsafe.putLong(ptr + index, value.toLong())
+    actual override operator fun set(index: Int, value: ULong) {
+        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        //unsafe.putLong(ptr + (index + idxOff) * idxSize.size, value.toLong())
+        unsafe.putLong(ptr + index * idxSize.size, value.toLong())
+
     }
 
     internal companion object {

@@ -12,7 +12,17 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.io
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect abstract class AbstractBufferType<E>(size: Int): AbstractSpeedCopy, BufferType<E>
+public enum class TypeBits(public val bits: Int) {
+    BYTE(Byte.SIZE_BITS),
+    U_BYTE(UByte.SIZE_BITS),
+    SHORT(Short.SIZE_BITS),
+    U_SHORT(UShort.SIZE_BITS),
+    INT(Int.SIZE_BITS),
+    U_INT(UInt.SIZE_BITS),
+    LONG(Long.SIZE_BITS),
+    U_LONG(ULong.SIZE_BITS),
+    FLOAT(Float.SIZE_BITS),
+    DOUBLE(Double.SIZE_BITS)
+}

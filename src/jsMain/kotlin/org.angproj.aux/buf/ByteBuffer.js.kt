@@ -14,14 +14,21 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.TypeSize
+
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class ByteBuffer(size: Int) : AbstractBufferType<Byte>(size) {
-    actual override fun get(index: Int): Byte {
-        TODO("Not yet implemented")
+
+    override val idxSize: TypeSize = TypeSize.BYTE
+    private val data: ByteArray = ByteArray(SpeedCopy.addMargin(size, idxSize))
+
+    actual override operator fun get(index: Int): Byte {
+        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        return data[index + idxOff]
     }
 
-    actual override fun set(index: Int, value: Byte) {
+    actual override operator fun set(index: Int, value: Byte) {
+        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        data[index + idxOff] = value
     }
-
-    override fun close() {}
 }

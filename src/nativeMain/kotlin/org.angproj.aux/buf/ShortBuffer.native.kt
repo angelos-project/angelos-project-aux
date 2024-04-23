@@ -15,28 +15,18 @@
 package org.angproj.aux.buf
 
 import kotlinx.cinterop.*
-import org.angproj.aux.res.allocateMemory
-import kotlin.experimental.ExperimentalNativeApi
-import kotlin.native.ref.Cleaner
-import kotlin.native.ref.createCleaner
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
 public actual class ShortBuffer actual constructor(size: Int) : AbstractBufferType<Short>(size) {
-    private val data = allocateMemory(realSizeCalc(size))
-    private val ptr = data.ptr
 
-    @OptIn(ExperimentalNativeApi::class)
-    private val cleaner: Cleaner = createCleaner(data) { data.dispose() }
-    override fun close() { data.dispose() }
-
-    public actual override operator fun get(index: Int): Short {
-        if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index)!!.reinterpret<ShortVar>().pointed.value
+    actual override operator fun get(index: Int): Short {
+        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        return (ptr + (index + idxOff) * idxSize.size)!!.reinterpret<ShortVar>().pointed.value
     }
 
-    public actual override operator fun set(index: Int, value: Short) {
-        if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index)!!.reinterpret<ShortVar>().pointed.value = value
+    actual override operator fun set(index: Int, value: Short) {
+        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        (ptr + (index + idxOff) * idxSize.size)!!.reinterpret<ShortVar>().pointed.value = value
     }
 }

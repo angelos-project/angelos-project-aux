@@ -61,5 +61,7 @@ public interface ByteString: AutoCloseable {
         public const val shortSize: Int = Short.SIZE_BYTES
         public const val intSize: Int = Int.SIZE_BYTES
         public const val longSize: Int = Long.SIZE_BYTES
+
+        public val typeSizes: Set<Int> = setOf(byteSize, shortSize, intSize, longSize)
     }
 }
