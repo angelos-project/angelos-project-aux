@@ -22,14 +22,13 @@ import kotlin.native.ref.createCleaner
 import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 public actual open class Memory actual constructor(size: Int) : Segment {
 
     actual final override val size: Int = size
     protected actual val data: Chunk = allocateMemory(size)
     protected val ptr: CPointer<ByteVarOf<Byte>> = data.ptr
 
-    @OptIn(ExperimentalNativeApi::class)
     private val cleaner: Cleaner = createCleaner(data) { data.dispose() }
     override fun close() { data.dispose() }
 

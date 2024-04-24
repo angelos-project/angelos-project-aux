@@ -17,10 +17,9 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class ShortBuffer actual constructor(size: Int) : AbstractBufferType<Short>(size) {
+public actual class ShortBuffer actual constructor(size: Int) : AbstractBufferType<Short>(size, typeSize) {
 
-    override val idxSize: TypeSize = TypeSize.SHORT
-    private val data: ShortArray = ShortArray(SpeedCopy.addMargin(size, idxSize))
+    private val data: ShortArray = ShortArray(SpeedCopy.addMarginByIndexType(size, idxSize))
 
     actual override operator fun get(index: Int): Short {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
@@ -30,5 +29,9 @@ public actual class ShortBuffer actual constructor(size: Int) : AbstractBufferTy
     actual override operator fun set(index: Int, value: Short) {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
         data[index + idxOff] = value
+    }
+
+    public actual companion object {
+        public actual val typeSize: TypeSize = TypeSize.SHORT
     }
 }

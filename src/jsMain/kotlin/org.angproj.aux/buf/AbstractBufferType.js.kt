@@ -14,13 +14,16 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.TypeSize
+
 @Suppress(
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
     "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
     "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING"
 )
-public actual abstract class AbstractBufferType<E> actual constructor(size: Int) : AbstractSpeedCopy(size),
-    BufferType<E> {
+public actual abstract class AbstractBufferType<E> actual constructor(
+    size: Int, idxSize: TypeSize
+) : AbstractSpeedCopy(size, idxSize), BufferType<E> {
     override fun speedLongGet(idx: Int): Long {
         throw UnsupportedOperationException()
     }

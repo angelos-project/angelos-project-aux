@@ -26,18 +26,27 @@ public interface SpeedCopy {
     public val size: Int
 
     public companion object {
+        @JvmStatic
+        public fun addMarginInTotalBytes(indexCount: Int, typeSize: TypeSize): Int {
+            require(indexCount >= 0)
+
+            val byteCount = indexCount * typeSize.size
+            val remainder = byteCount % TypeSize.LONG.size
+            return (byteCount + if(remainder == 0) 0 else TypeSize.LONG.size - remainder)
+        }
+
         /**
          * The xCnt variable sets the amount of x indices in an array-like buffer if x is the variable type used.
-         * The xLen2addMargin adds enough of invisible indices to equal a divisible sie of type Long, described in
+         * The xLen2addMargin adds enough of invisible indices to equal a divisible size of type Long, described in
          * type x.
          * */
         @JvmStatic
-        public fun addMargin(count: Int, typeSize: TypeSize): Int {
-            require(count >= 0)
+        public fun addMarginByIndexType(indexCount: Int, typeSize: TypeSize): Int {
+            require(indexCount >= 0)
 
-            val byteCnt = count * typeSize.size
-            val rem = byteCnt % TypeSize.LONG.size
-            return (byteCnt / TypeSize.LONG.size + if(rem == 0) 0 else TypeSize.LONG.size - rem) / typeSize.size
+            val factor = TypeSize.LONG.size / typeSize.size
+            val remainder = indexCount % factor
+            return (indexCount + if(remainder == 0) 0 else factor - remainder)
         }
     }
 }

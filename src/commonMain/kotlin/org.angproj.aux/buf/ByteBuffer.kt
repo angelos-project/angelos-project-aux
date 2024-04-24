@@ -14,8 +14,15 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.TypeSize
+import kotlin.jvm.JvmStatic
+
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class ByteBuffer: AbstractBufferType<Byte> {
+public expect class ByteBuffer(size: Int): AbstractBufferType<Byte> {
     public override operator fun get(index: Int): Byte
     public override operator fun set(index: Int, value: Byte)
+
+    public companion object {
+        public val typeSize: TypeSize
+    }
 }

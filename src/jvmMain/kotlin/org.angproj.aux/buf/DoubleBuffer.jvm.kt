@@ -14,27 +14,27 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.TypeSize
 import sun.misc.Unsafe
 import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class DoubleBuffer actual constructor(size: Int) : AbstractBufferType<Double>(size) {
+public actual class DoubleBuffer actual constructor(size: Int) : AbstractBufferType<Double>(size, typeSize) {
 
     actual override operator fun get(index: Int): Double {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        //return Double.fromBits(unsafe.getLong(ptr + (index + idxOff) * idxSize.size))
-        return Double.fromBits(unsafe.getLong(ptr + index * idxSize.size))
+        return Double.fromBits(unsafe.getLong(ptr + index * TypeSize.double))
 
     }
 
     actual override operator fun set(index: Int, value: Double) {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        //unsafe.putLong(ptr + (index + idxOff) * idxSize.size, value.toBits())
-        unsafe.putLong(ptr + index * idxSize.size, value.toBits())
+        unsafe.putLong(ptr + index * TypeSize.double, value.toBits())
 
     }
 
-    internal companion object {
+    public actual companion object {
         internal val unsafe: Unsafe = Chunk.unsafe
+        public actual val typeSize: TypeSize = TypeSize.DOUBLE
     }
 }

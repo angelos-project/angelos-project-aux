@@ -14,5 +14,7 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.TypeSize
+
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect abstract class AbstractBufferType<E>(size: Int): AbstractSpeedCopy, BufferType<E>
+public expect abstract class AbstractBufferType<E>(size: Int, idxSize: TypeSize): AbstractSpeedCopy, BufferType<E>

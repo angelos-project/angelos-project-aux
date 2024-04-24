@@ -26,12 +26,12 @@ import java.lang.ref.Cleaner.Cleanable
     "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"
 )
-public actual abstract class AbstractBufferType<E> actual constructor(size: Int) : AbstractSpeedCopy(size),
-    BufferType<E> {
+public actual abstract class AbstractBufferType<E> actual constructor(
+    size: Int, idxSize: TypeSize
+) : AbstractSpeedCopy(size, idxSize), BufferType<E> {
 
-    final override val idxSize: TypeSize = TypeSize.BYTE
-    private val data: Memory = allocateMemory(SpeedCopy.addMargin(size, TypeSize.BYTE))
-    protected val ptr: Long = data.ptr
+    private val data: Memory = allocateMemory(SpeedCopy.addMarginInTotalBytes(size, idxSize))
+    protected val ptr: Long = data.ptr + idxOff * idxSize.size
 
     private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }
     override fun close() {

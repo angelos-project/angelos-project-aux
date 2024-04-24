@@ -15,20 +15,23 @@
 package org.angproj.aux.buf
 
 import kotlinx.cinterop.*
+import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
-public actual class ULongBuffer actual constructor(size: Int) : AbstractBufferType<ULong>(size) {
+public actual class ULongBuffer actual constructor(size: Int) : AbstractBufferType<ULong>(size, typeSize) {
 
     actual override operator fun get(index: Int): ULong {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        //return (ptr + (index + idxOff) * idxSize.size)!!.reinterpret<ULongVar>().pointed.value
-        return (ptr + index * idxSize.size)!!.reinterpret<ULongVar>().pointed.value
+        return (ptr + index * TypeSize.uLong)!!.reinterpret<ULongVar>().pointed.value
     }
 
     actual override operator fun set(index: Int, value: ULong) {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        //(ptr + (index + idxOff) * idxSize.size)!!.reinterpret<ULongVar>().pointed.value = value
-        (ptr + index * idxSize.size)!!.reinterpret<ULongVar>().pointed.value = value
+        (ptr + index * TypeSize.uLong)!!.reinterpret<ULongVar>().pointed.value = value
+    }
+
+    public actual companion object {
+        public actual val typeSize: TypeSize = TypeSize.U_LONG
     }
 }

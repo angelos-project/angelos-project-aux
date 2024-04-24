@@ -1,19 +1,31 @@
 package org.angproj.aux.util
 
 import org.angproj.aux.io.MutableMemory
-import platform.posix.sched_yield
 import kotlin.test.Test
+import kotlin.time.measureTime
 
 class MemoryTrialTest {
 
+    @OptIn(ExperimentalStdlibApi::class)
     @Test
     fun testGC() {
-        repeat(10_000) {
-            repeat(1) {
-                val mem = MutableMemory(1_000_000)
-                mem.setLong(0, 23525345)
-                sched_yield()
+        val timeMem = measureTime {
+            repeat(10_000) {
+                val mem = MutableMemory(1_000_000).close()
             }
         }
+        println(timeMem)
+        val timeUse = measureTime {
+            repeat(10_000) {
+                MutableMemory(1_000_000).use {}
+            }
+        }
+        println(timeUse)
+        val timeArr = measureTime {
+            repeat(10_000) {
+                val arr = ByteArray(1_000_000)
+            }
+        }
+        println(timeArr)
     }
 }

@@ -15,18 +15,23 @@
 package org.angproj.aux.buf
 
 import kotlinx.cinterop.*
+import org.angproj.aux.io.TypeSize
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING", "OVERRIDE_BY_INLINE")
 @OptIn(ExperimentalForeignApi::class)
-public actual class UByteBuffer actual constructor(size: Int) : AbstractBufferType<UByte>(size) {
+public actual class UByteBuffer actual constructor(size: Int) : AbstractBufferType<UByte>(size, typeSize) {
 
-    actual override operator fun get(index: Int): UByte {
+    actual override inline operator fun get(index: Int): UByte {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + (index + idxOff) * idxSize.size)!!.reinterpret<UByteVar>().pointed.value
+        return (ptr + index)!!.reinterpret<UByteVar>().pointed.value
     }
 
-    actual override operator fun set(index: Int, value: UByte) {
+    actual override inline operator fun set(index: Int, value: UByte) {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        (ptr + (index + idxOff) * idxSize.size)!!.reinterpret<UByteVar>().pointed.value = value
+        (ptr + index)!!.reinterpret<UByteVar>().pointed.value = value
+    }
+
+    public actual companion object {
+        public actual val typeSize: TypeSize = TypeSize.U_BYTE
     }
 }

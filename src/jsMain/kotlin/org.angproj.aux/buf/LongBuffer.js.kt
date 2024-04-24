@@ -17,10 +17,9 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class LongBuffer actual constructor(size: Int) : AbstractBufferType<Long>(size) {
+public actual class LongBuffer actual constructor(size: Int) : AbstractBufferType<Long>(size, typeSize) {
 
-    override val idxSize: TypeSize = TypeSize.LONG
-    private val data: LongArray = LongArray(SpeedCopy.addMargin(size, idxSize))
+    private val data: LongArray = LongArray(SpeedCopy.addMarginByIndexType(size, idxSize))
 
     actual override operator fun get(index: Int): Long {
         //if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
@@ -30,5 +29,9 @@ public actual class LongBuffer actual constructor(size: Int) : AbstractBufferTyp
     actual override operator fun set(index: Int, value: Long) {
         //if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
         data[index] = value
+    }
+
+    public actual companion object {
+        public actual val typeSize: TypeSize = TypeSize.LONG
     }
 }

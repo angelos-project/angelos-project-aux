@@ -14,25 +14,25 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.TypeSize
 import sun.misc.Unsafe
 import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class LongBuffer actual constructor(size: Int) : AbstractBufferType<Long>(size) {
+public actual class LongBuffer actual constructor(size: Int) : AbstractBufferType<Long>(size, typeSize) {
 
     actual override operator fun get(index: Int): Long {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        //return unsafe.getLong(ptr + (index + idxOff) * idxSize.size)
-        return unsafe.getLong(ptr + index * idxSize.size)
+        return unsafe.getLong(ptr + index * TypeSize.long)
     }
 
     actual override operator fun set(index: Int, value: Long) {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        //unsafe.putLong(ptr + (index + idxOff) * idxSize.size, value)
-        unsafe.putLong(ptr + index * idxSize.size, value)
+        unsafe.putLong(ptr + index * TypeSize.long, value)
     }
 
-    internal companion object {
+    public actual companion object {
         internal val unsafe: Unsafe = Chunk.unsafe
+        public actual val typeSize: TypeSize = TypeSize.LONG
     }
 }

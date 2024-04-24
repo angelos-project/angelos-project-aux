@@ -27,15 +27,15 @@ import kotlin.native.ref.createCleaner
     "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING"
 )
 @OptIn(ExperimentalForeignApi::class)
-public actual abstract class AbstractBufferType<E> actual constructor(size: Int) : AbstractSpeedCopy(size),
-    BufferType<E> {
+public actual abstract class AbstractBufferType<E> actual constructor(
+    size: Int, idxSize: TypeSize
+) : AbstractSpeedCopy(size, idxSize), BufferType<E> {
 
-    final override val idxSize: TypeSize = TypeSize.BYTE
-    private val data = allocateMemory(SpeedCopy.addMargin(size, idxSize))
-    protected val ptr: CPointer<ByteVarOf<Byte>> = data.ptr
+    private val data = allocateMemory(SpeedCopy.addMarginInTotalBytes(size, TypeSize.BYTE))
+    public val ptr: CPointer<ByteVarOf<Byte>> = data.ptr.plus(idxOff * idxSize.size)!!
 
     @OptIn(ExperimentalNativeApi::class)
-    private val cleaner: Cleaner = createCleaner(data) { data.dispose() }
+    private val cleaner: Cleaner = createCleaner(data) { it.dispose() }
     override fun close() {
         data.dispose()
     }

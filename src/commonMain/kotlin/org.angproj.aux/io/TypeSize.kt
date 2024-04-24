@@ -24,5 +24,18 @@ public enum class TypeSize(public val size: Int) {
     LONG(Long.SIZE_BYTES),
     U_LONG(ULong.SIZE_BYTES),
     FLOAT(Float.SIZE_BYTES),
-    DOUBLE(Double.SIZE_BYTES)
+    DOUBLE(Double.SIZE_BYTES);
+
+    public companion object {
+        public const val byte: Int = 1 // Byte.SIZE_BYTES
+        public const val uByte: Int = 1 // UByte.SIZE_BYTES
+        public const val short: Int = 2 // Short.SIZE_BYTES
+        public const val uShort: Int = 2 // UShort.SIZE_BYTES
+        public const val int: Int = 4 // Int.SIZE_BYTES
+        public const val uInt: Int = 4 // UInt.SIZE_BYTES
+        public const val long: Int = 8 // Long.SIZE_BYTES
+        public const val uLong: Int = 8 // ULong.SIZE_BYTES
+        public const val float: Int = 4 // Float.SIZE_BYTES
+        public const val double: Int = 8 // Double.SIZE_BYTES
+    }
 }

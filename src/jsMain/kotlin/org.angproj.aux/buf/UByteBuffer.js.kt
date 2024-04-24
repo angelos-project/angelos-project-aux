@@ -17,10 +17,9 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class UByteBuffer actual constructor(size: Int) : AbstractBufferType<UByte>(size) {
+public actual class UByteBuffer actual constructor(size: Int) : AbstractBufferType<UByte>(size, typeSize) {
 
-    override val idxSize: TypeSize = TypeSize.U_BYTE
-    private val data: ByteArray = ByteArray(SpeedCopy.addMargin(size, idxSize))
+    private val data: ByteArray = ByteArray(SpeedCopy.addMarginByIndexType(size, idxSize))
 
     actual override operator fun get(index: Int): UByte {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
@@ -30,5 +29,9 @@ public actual class UByteBuffer actual constructor(size: Int) : AbstractBufferTy
     actual override operator fun set(index: Int, value: UByte) {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
         data[index + idxOff] = value.toByte()
+    }
+
+    public actual companion object {
+        public actual val typeSize: TypeSize = TypeSize.U_BYTE
     }
 }

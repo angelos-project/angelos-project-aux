@@ -16,14 +16,23 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
 
-public abstract class AbstractSpeedCopy(size: Int): SpeedCopy {
+public abstract class AbstractSpeedCopy(public final override val size: Int, public val idxSize: TypeSize): SpeedCopy {
 
     //public constructor(protected val hiddenSize: Int, from: Int, to: Int) : this(to - from)
 
-    public override val size: Int = 0
-    public abstract val idxSize: TypeSize
-    public val length: Int = size * idxSize.size
+    /**
+     * The size in bytes of the index type.
+     * */
+    //public abstract val idxSize: TypeSize
+
+    /**
+     * The index offset in relationship to the realSize of their own type.
+     * */
     protected val idxOff: Int = 0
+
+    /**
+     * The index end in relationship to the realSize of their own type.
+     * */
     protected val idxEnd: Int = idxOff + size
 
     protected abstract fun speedLongGet(idx: Int): Long

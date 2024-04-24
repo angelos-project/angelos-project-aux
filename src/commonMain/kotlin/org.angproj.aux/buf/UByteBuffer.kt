@@ -14,8 +14,14 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.TypeSize
+
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class UByteBuffer(size: Int): AbstractBufferType<UByte> {
     public override operator fun get(index: Int): UByte
     public override operator fun set(index: Int, value: UByte)
+
+    public companion object {
+        public val typeSize: TypeSize
+    }
 }

@@ -17,10 +17,9 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class DoubleBuffer actual constructor(size: Int) : AbstractBufferType<Double>(size) {
+public actual class DoubleBuffer actual constructor(size: Int) : AbstractBufferType<Double>(size, typeSize) {
 
-    override val idxSize: TypeSize = TypeSize.DOUBLE
-    private val data: DoubleArray = DoubleArray(SpeedCopy.addMargin(size, idxSize))
+    private val data: DoubleArray = DoubleArray(SpeedCopy.addMarginByIndexType(size, idxSize))
 
     actual override operator fun get(index: Int): Double {
         //if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
@@ -30,5 +29,9 @@ public actual class DoubleBuffer actual constructor(size: Int) : AbstractBufferT
     actual override operator fun set(index: Int, value: Double) {
         //if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
         data[index] = value
+    }
+
+    public actual companion object {
+        public actual val typeSize: TypeSize = TypeSize.DOUBLE
     }
 }

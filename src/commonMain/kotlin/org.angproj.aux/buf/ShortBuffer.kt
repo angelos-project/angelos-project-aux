@@ -14,8 +14,14 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.TypeSize
+
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class ShortBuffer(size: Int): AbstractBufferType<Short> {
     public override operator fun get(index: Int): Short
     public override operator fun set(index: Int, value: Short)
+
+    public companion object {
+        public val typeSize: TypeSize
+    }
 }
