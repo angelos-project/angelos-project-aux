@@ -40,4 +40,16 @@ class MutableModelTest: AbstractMutableSegmentValidator() {
 
     @Test
     fun testLongWriteAsync() = longWriteAsync(createNew)
+
+    @Test
+    fun testByteRWOutbound() = byteRWOutbound(createNew)
+
+    @Test
+    fun testShortRWOutbound() = shortRWOutbound(createNew)
+
+    @Test
+    fun testIntRWOutbound() = intRWOutbound(createNew)
+
+    @Test
+    fun testLongRWOutbound() = longRWOutbound(createNew)
 }

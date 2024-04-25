@@ -16,6 +16,8 @@ package org.angproj.aux.io
 
 import kotlin.test.assertEquals
 import org.angproj.aux.util.*
+import kotlin.test.Test
+import kotlin.test.assertFailsWith
 
 abstract class AbstractMutableSegmentValidator {
 
@@ -116,6 +118,105 @@ abstract class AbstractMutableSegmentValidator {
 
             throw e
         }
+    }
 
+    fun <E: MutableSegment>byteRWOutbound(prep: (size: Int) -> E) {
+        val b = BinHex.decodeToBin(testDataAtomic)
+        val m = prep(b.size)
+
+        m.getByte(0)
+        assertFailsWith<IllegalArgumentException> {
+            m.getByte(-1)
+        }
+
+        m.getByte(m.size-TypeSize.byte) // Won't crash
+        assertFailsWith<IllegalArgumentException> {
+            m.getByte(m.size) // Must throw
+        }
+
+        m.setByte(0, 1)
+        assertFailsWith<IllegalArgumentException> {
+            m.setByte(-1, 1)
+        }
+
+        m.setByte(m.size-TypeSize.byte, 0) // Won't crash
+        assertFailsWith<IllegalArgumentException> {
+            m.setByte(m.size, 1) // Must throw
+        }
+    }
+
+    fun <E: MutableSegment>shortRWOutbound(prep: (size: Int) -> E) {
+        val b = BinHex.decodeToBin(testDataAtomic)
+        val m = prep(b.size)
+
+        m.getShort(0)
+        assertFailsWith<IllegalArgumentException> {
+            m.getShort(-1)
+        }
+
+        m.getShort(m.size-TypeSize.short) // Won't crash
+        assertFailsWith<IllegalArgumentException> {
+            m.getShort(m.size-1) // Must throw
+        }
+
+        m.setShort(0, 1)
+        assertFailsWith<IllegalArgumentException> {
+            m.setShort(-1, 1)
+        }
+
+        m.setShort(m.size-TypeSize.short, 0) // Won't crash
+        assertFailsWith<IllegalArgumentException> {
+            m.setShort(m.size-1, 1) // Must throw
+        }
+    }
+
+    fun <E: MutableSegment>intRWOutbound(prep: (size: Int) -> E) {
+        val b = BinHex.decodeToBin(testDataAtomic)
+        val m = prep(b.size)
+
+        m.getInt(0)
+        assertFailsWith<IllegalArgumentException> {
+            m.getInt(-1)
+        }
+
+        m.getInt(m.size-TypeSize.int) // Won't crash
+        assertFailsWith<IllegalArgumentException> {
+            m.getInt(m.size-3) // Must throw
+        }
+
+        m.setInt(0, 1)
+        assertFailsWith<IllegalArgumentException> {
+            m.setInt(-1, 1)
+        }
+
+        m.setInt(m.size-TypeSize.int, 0) // Won't crash
+        assertFailsWith<IllegalArgumentException> {
+            m.setInt(m.size-3, 1) // Must throw
+        }
+    }
+
+    fun <E: MutableSegment>longRWOutbound(prep: (size: Int) -> E) {
+        val b = BinHex.decodeToBin(testDataAtomic)
+        val m = prep(b.size)
+
+        m.getLong(0)
+        assertFailsWith<IllegalArgumentException> {
+            m.getLong(-1)
+        }
+
+        m.getLong(m.size-TypeSize.long) // Won't crash
+        assertFailsWith<IllegalArgumentException> {
+            m.getLong(m.size-7) // Must throw
+        }
+
+        m.setLong(0, 1)
+        assertFailsWith<IllegalArgumentException> {
+            m.setLong(-1, 1)
+        }
+
+        m.setLong(m.size-TypeSize.long, 0) // Won't crash
+        assertFailsWith<IllegalArgumentException> {
+            m.setLong(m.size-7, 1) // Must throw
+        }
     }
 }

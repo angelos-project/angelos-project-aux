@@ -22,9 +22,9 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.time.measureTime
 
-class DoubleBufferTest {
+class DoubleBufferTest: AbstractBufferTypeTest() {
 
-    @Test
+    //@Test
     fun measureReadWriteSpeed() {
         val size = DataSize._16M.size / TypeSize.DOUBLE.size + if(Random.nextBits(1) == 0) TypeSize.long else 0
         var testVal = Random.nextDouble()
@@ -70,4 +70,12 @@ class DoubleBufferTest {
         println("Array: $writeTimeArray")
         println("Buffer: $writeTimeBuffer")
     }
+
+    private val createNew: (size: Int) -> DoubleBuffer = { DoubleBuffer(it) }
+
+    @Test
+    fun testBufferRWOutbound() = bufferRWOutbound(testLong.toDouble(), createNew)
+
+    @Test
+    fun testBufferReadWrite() = bufferReadWrite(testLong.toDouble(), createNew)
 }

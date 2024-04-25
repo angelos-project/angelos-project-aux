@@ -23,16 +23,12 @@ public actual class ByteBuffer actual constructor(size: Int) : AbstractBufferTyp
 
     actual override operator fun get(index: Int): Byte {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        //return unsafe.getByte(ptr + (index + idxOff) * idxSize.size)
-        //return unsafe.getByte(ptr + (index) * idxSize.size)
         return unsafe.getByte(ptr + index)
 
     }
 
     actual override operator fun set(index: Int, value: Byte) {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        //unsafe.putByte(ptr + (index + idxOff) * idxSize.size, value)
-        //unsafe.putByte(ptr + (index) * idxSize.size, value)
         unsafe.putByte(ptr + index, value)
 
     }

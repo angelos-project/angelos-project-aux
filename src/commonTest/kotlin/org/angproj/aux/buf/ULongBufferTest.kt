@@ -24,10 +24,10 @@ import kotlin.random.nextULong
 import kotlin.test.Test
 import kotlin.time.measureTime
 
-class ULongBufferTest {
+class ULongBufferTest: AbstractBufferTypeTest() {
 
     @OptIn(ExperimentalUnsignedTypes::class)
-    @Test
+    //@Test
     fun measureReadWriteSpeed() {
         val size = DataSize._16M.size / TypeSize.U_LONG.size + if(Random.nextBits(1) == 0) TypeSize.long else 0
         var testVal = Random.nextULong()
@@ -73,4 +73,12 @@ class ULongBufferTest {
         println("Array: $writeTimeArray")
         println("Buffer: $writeTimeBuffer")
     }
+
+    private val createNew: (size: Int) -> ULongBuffer = { ULongBuffer(it) }
+
+    @Test
+    fun testBufferRWOutbound() = bufferRWOutbound(testLong.toULong(), createNew)
+
+    @Test
+    fun testBufferReadWrite() = bufferReadWrite(testLong.toULong(), createNew)
 }

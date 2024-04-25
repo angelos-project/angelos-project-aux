@@ -22,9 +22,9 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.time.measureTime
 
-class FloatBufferTest {
+class FloatBufferTest: AbstractBufferTypeTest() {
 
-    @Test
+    //@Test
     fun measureReadWriteSpeed() {
         val size = DataSize._16M.size / TypeSize.FLOAT.size + if(Random.nextBits(1) == 0) TypeSize.long else 0
         var testVal = Random.nextFloat()
@@ -70,4 +70,12 @@ class FloatBufferTest {
         println("Array: $writeTimeArray")
         println("Buffer: $writeTimeBuffer")
     }
+
+    private val createNew: (size: Int) -> FloatBuffer = { FloatBuffer(it) }
+
+    @Test
+    fun testBufferRWOutbound() = bufferRWOutbound(testInt.toFloat(), createNew)
+
+    @Test
+    fun testBufferReadWrite() = bufferReadWrite(testInt.toFloat(), createNew)
 }
