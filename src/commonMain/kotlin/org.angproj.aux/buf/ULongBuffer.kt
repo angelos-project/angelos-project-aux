@@ -17,7 +17,11 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class ULongBuffer(size: Int): AbstractBufferType<ULong> {
+public expect class ULongBuffer private constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+): AbstractBufferType<ULong> {
+    public constructor(size: Int)
+
     public override operator fun get(index: Int): ULong
     public override operator fun set(index: Int, value: ULong)
 

@@ -17,7 +17,11 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class FloatBuffer(size: Int): AbstractBufferType<Float> {
+public expect class FloatBuffer private constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+): AbstractBufferType<Float> {
+    public constructor(size: Int)
+
     public override operator fun get(index: Int): Float
     public override operator fun set(index: Int, value: Float)
 

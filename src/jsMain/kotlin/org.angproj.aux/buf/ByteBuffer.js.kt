@@ -17,7 +17,14 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class ByteBuffer actual constructor(size: Int) : AbstractBufferType<Byte>(size, typeSize) {
+public actual class ByteBuffer actual constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+) : AbstractBufferType<Byte>(size, typeSize, idxOff, idxEnd) {
+
+    public actual constructor(size: Int) : this(size, 0, size)
+
+    override fun create(size: Int): ByteBuffer = ByteBuffer(size)
+    override fun copyOf(): ByteBuffer = create(idxEnd).also { data.copyInto(it.data) }
 
     override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
     override val length: Int = marginSize * idxSize.size

@@ -15,9 +15,14 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.NullObject
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class IntBuffer(size: Int): AbstractBufferType<Int> {
+public expect class IntBuffer private constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+): AbstractBufferType<Int> {
+    public constructor(size: Int)
+
     public override operator fun get(index: Int): Int
     public override operator fun set(index: Int, value: Int)
 

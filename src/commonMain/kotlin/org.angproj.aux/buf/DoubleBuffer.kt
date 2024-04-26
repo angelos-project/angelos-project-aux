@@ -17,7 +17,11 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class DoubleBuffer(size: Int): AbstractBufferType<Double> {
+public expect class DoubleBuffer private constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+): AbstractBufferType<Double> {
+    public constructor(size: Int)
+
     public override operator fun get(index: Int): Double
     public override operator fun set(index: Int, value: Double)
 

@@ -17,7 +17,14 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class LongBuffer actual constructor(size: Int) : AbstractBufferType<Long>(size, typeSize) {
+public actual class LongBuffer actual constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+) : AbstractBufferType<Long>(size, typeSize, idxOff, idxEnd) {
+
+    public actual constructor(size: Int) : this(size, 0, size)
+
+    override fun create(size: Int): LongBuffer = LongBuffer(size)
+    override fun copyOf(): LongBuffer = create(idxEnd).also { data.copyInto(it.data) }
 
     override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
     override val length: Int = marginSize * idxSize.size

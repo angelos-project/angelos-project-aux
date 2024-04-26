@@ -17,7 +17,11 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class UByteBuffer(size: Int): AbstractBufferType<UByte> {
+public expect class UByteBuffer private constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+): AbstractBufferType<UByte> {
+    public constructor(size: Int)
+
     public override operator fun get(index: Int): UByte
     public override operator fun set(index: Int, value: UByte)
 

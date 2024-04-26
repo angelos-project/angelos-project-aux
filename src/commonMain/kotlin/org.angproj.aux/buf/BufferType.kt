@@ -18,4 +18,6 @@ package org.angproj.aux.buf
 public interface BufferType<E>: AutoCloseable {
     public operator fun get(index: Int): E
     public operator fun set(index: Int, value: E)
+
+    public override fun close() {}
 }
