@@ -19,7 +19,9 @@ import org.angproj.aux.io.TypeSize
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class LongBuffer actual constructor(size: Int) : AbstractBufferType<Long>(size, typeSize) {
 
-    private val data: LongArray = LongArray(SpeedCopy.addMarginByIndexType(size, idxSize))
+    override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override val length: Int = marginSize * idxSize.size
+    private val data: LongArray = LongArray(marginSize)
 
     actual override operator fun get(index: Int): Long {
         //if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

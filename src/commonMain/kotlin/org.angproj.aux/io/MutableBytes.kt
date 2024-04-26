@@ -16,24 +16,24 @@ package org.angproj.aux.io
 
 public class MutableBytes(size: Int) : Bytes(size), MutableSegment {
 
-    override fun setByte(index: Int, value: Byte) {
+    public override fun setByte(index: Int, value: Byte) {
         if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        data[index] = value
+        data[index + idxOff] = value
     }
 
-    override fun setShort(index: Int, value: Short) {
+    public override fun setShort(index: Int, value: Short) {
         if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
-        data.setShort(index, value)
+        data.setShort(index + idxOff, value)
     }
 
-    override fun setInt(index: Int, value: Int) {
+    public override fun setInt(index: Int, value: Int) {
         if(index !in 0..<(size-3)) throw IllegalArgumentException("Out of bounds.")
-        data.setInt(index, value)
+        data.setInt(index + idxOff, value)
     }
 
-    override fun setLong(index: Int, value: Long) {
+    public override fun setLong(index: Int, value: Long) {
         if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
-        data.setLong(index, value)
+        data.setLong(index + idxOff, value)
     }
 
     private fun ByteArray.setShort(index: Int, value: Short) {

@@ -19,7 +19,9 @@ import org.angproj.aux.io.TypeSize
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class FloatBuffer actual constructor(size: Int) : AbstractBufferType<Float>(size, typeSize) {
 
-    private val data: FloatArray = FloatArray(SpeedCopy.addMarginByIndexType(size, idxSize))
+    override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override val length: Int = marginSize * idxSize.size
+    private val data: FloatArray = FloatArray(marginSize)
 
     actual override operator fun get(index: Int): Float {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

@@ -14,20 +14,29 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.SpeedCopy
 import org.angproj.aux.res.Manager
 import org.angproj.aux.res.allocateMemory
 import org.angproj.aux.res.Memory as Chunk
 
 import sun.misc.Unsafe
 import java.lang.ref.Cleaner.Cleanable
-import java.lang.reflect.Field
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual open class Memory actual constructor(size: Int) : Segment {
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
+    "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
+    "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING"
+)
+public actual open class Memory actual constructor(size: Int) : Segment(size, typeSize) {
 
-    actual final override val size: Int = size
-    protected actual val data: Chunk = allocateMemory(size)
-    protected val ptr: Long = data.ptr
+    init {
+        // Must be BYTE
+        require(typeSize == TypeSize.BYTE)
+    }
+
+    final override val length: Int = SpeedCopy.addMarginInTotalBytes(size, idxSize)
+
+    protected actual val data: Chunk = allocateMemory(length)
+    protected val ptr: Long = data.ptr + idxOff
 
     private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }
     public override fun close() { cleanable.clean() }
@@ -52,7 +61,16 @@ public actual open class Memory actual constructor(size: Int) : Segment {
         return unsafe.getLong(ptr + index)
     }
 
-    internal companion object {
+    override fun speedLongGet(idx: Int): Long {
+        TODO("Not yet implemented")
+    }
+
+    override fun speedLongSet(idx: Int, value: Long) {
+        TODO("Not yet implemented")
+    }
+
+    public actual companion object {
         internal val unsafe: Unsafe = Chunk.unsafe
+        public actual val typeSize: TypeSize = TypeSize.BYTE
     }
 }

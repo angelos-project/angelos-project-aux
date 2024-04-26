@@ -14,7 +14,9 @@
  */
 package org.angproj.aux.io
 
-public interface Segment: ByteString {
+import org.angproj.aux.buf.AbstractSpeedCopy
+
+public abstract class Segment(size: Int, idxSize: TypeSize): AbstractSpeedCopy(size, idxSize),  ByteString {
     public fun Long.getLeftSide(offset: Int, size: Int): Long = (
             this shl ((size - ByteString.longSize - offset) * 8))
 

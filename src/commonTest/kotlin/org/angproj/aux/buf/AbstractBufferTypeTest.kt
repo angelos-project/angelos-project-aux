@@ -27,8 +27,6 @@ abstract class AbstractBufferTypeTest {
     val testInt: Int = 0x11223344
     val testLong: Long = 0x1122334455667711
 
-    private val createNew: (size: Int) -> ByteBuffer = { ByteBuffer(it) }
-
     fun <T, E: AbstractBufferType<T>>bufferRWOutbound(tVal: T, prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)

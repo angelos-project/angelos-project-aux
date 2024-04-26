@@ -16,6 +16,7 @@ package org.angproj.aux.buf
 
 import kotlinx.cinterop.*
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.res.Memory
 import org.angproj.aux.res.allocateMemory
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.Cleaner
@@ -26,19 +27,18 @@ import kotlin.native.ref.createCleaner
     "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING",
     "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING"
 )
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 public actual abstract class AbstractBufferType<E> actual constructor(
     size: Int, idxSize: TypeSize
 ) : AbstractSpeedCopy(size, idxSize), BufferType<E> {
 
-    private val data = allocateMemory(SpeedCopy.addMarginInTotalBytes(size, TypeSize.BYTE))
-    public val ptr: CPointer<ByteVarOf<Byte>> = data.ptr.plus(idxOff * idxSize.size)!!
+    public actual abstract val marginSize: Int
 
-    @OptIn(ExperimentalNativeApi::class)
-    private val cleaner: Cleaner = createCleaner(data) { it.dispose() }
-    override fun close() {
-        data.dispose()
-    }
+    protected val data: Memory = allocateMemory(SpeedCopy.addMarginInTotalBytes(size, idxSize))
+    public val ptr: CPointer<ByteVarOf<Byte>> = (data.ptr + idxOff)!!
+
+    private val cleaner: Cleaner = createCleaner(data) { data.dispose() }
+    override fun close() { data.dispose() }
 
     override fun speedLongGet(idx: Int): Long = (ptr + idx * TypeSize.LONG.size)!!.reinterpret<LongVar>().pointed.value
     override fun speedLongSet(idx: Int, value: Long) {

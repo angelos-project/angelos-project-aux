@@ -14,28 +14,32 @@
  */
 package org.angproj.aux.io
 
-public open class Bytes(final override val size: Int): Segment {
+import org.angproj.aux.buf.SpeedCopy
 
-    protected val data: ByteArray = ByteArray(size)
+public open class Bytes(size: Int): Segment(size, typeSize) {
+
+    final override val length: Int = SpeedCopy.addMarginInTotalBytes(size, typeSize)
+
+    protected val data: ByteArray = ByteArray(length)
 
     override fun getByte(index: Int): Byte {
         if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        return data[index]
+        return data[index + idxOff]
     }
 
     override fun getShort(index: Int): Short {
         if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
-        return data.getShort(index)
+        return data.getShort(index + idxOff)
     }
 
     override fun getInt(index: Int): Int {
         if(index !in 0..<(size-3)) throw IllegalArgumentException("Out of bounds.")
-        return data.getInt(index)
+        return data.getInt(index + idxOff)
     }
 
     override fun getLong(index: Int): Long {
         if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
-        return data.getLong(index)
+        return data.getLong(index + idxOff)
     }
 
     private fun ByteArray.getShort(index: Int): Short = (
@@ -63,5 +67,17 @@ public open class Bytes(final override val size: Int): Segment {
                     (this.revGetInt(index + 4).toLong() and 0xffffffff))
 
     override fun close() {}
+
+    override fun speedLongGet(idx: Int): Long {
+        TODO("Not yet implemented")
+    }
+
+    override fun speedLongSet(idx: Int, value: Long) {
+        TODO("Not yet implemented")
+    }
+
+    public companion object {
+        public val typeSize: TypeSize = TypeSize.BYTE
+    }
 
 }

@@ -19,7 +19,9 @@ import org.angproj.aux.io.TypeSize
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class UIntBuffer actual constructor(size: Int) : AbstractBufferType<UInt>(size, typeSize) {
 
-    private val data: IntArray = IntArray(SpeedCopy.addMarginByIndexType(size, idxSize))
+    override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override val length: Int = marginSize * idxSize.size
+    private val data: IntArray = IntArray(marginSize)
 
     actual override operator fun get(index: Int): UInt {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

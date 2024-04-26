@@ -21,6 +21,9 @@ import org.angproj.aux.res.Memory as Chunk
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class FloatBuffer actual constructor(size: Int) : AbstractBufferType<Float>(size, typeSize) {
 
+    override val length: Int = data.size
+    override val marginSize: Int = length / idxSize.size
+
     actual override operator fun get(index: Int): Float {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
         return Float.fromBits(unsafe.getInt(ptr + index * TypeSize.float))

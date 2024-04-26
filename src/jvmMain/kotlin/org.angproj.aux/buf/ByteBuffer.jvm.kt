@@ -21,6 +21,9 @@ import org.angproj.aux.res.Memory as Chunk
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class ByteBuffer actual constructor(size: Int) : AbstractBufferType<Byte>(size, typeSize) {
 
+    override val length: Int = data.size
+    override val marginSize: Int = length / idxSize.size
+
     actual override operator fun get(index: Int): Byte {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
         return unsafe.getByte(ptr + index)

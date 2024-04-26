@@ -37,12 +37,4 @@ public abstract class AbstractSpeedCopy(public final override val size: Int, pub
 
     protected abstract fun speedLongGet(idx: Int): Long
     protected abstract fun speedLongSet(idx: Int, value: Long)
-
-    public inline fun <reified E: AbstractSpeedCopy>copyOf(): E {
-        TODO("Not yet implemented")
-    }
-
-    public inline fun <reified E: AbstractSpeedCopy> copyOfRange(fromIdx: Int, toIdx: Int): E {
-        TODO("Not yet implemented")
-    }
 }

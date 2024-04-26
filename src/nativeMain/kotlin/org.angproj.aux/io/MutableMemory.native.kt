@@ -22,7 +22,7 @@ public actual class MutableMemory actual constructor(size: Int) : Memory(size), 
 
     actual override fun setByte(index: Int, value: Byte) {
         if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index)!!.reinterpret<ByteVar>().pointed.value = value
+        (ptr + index)!!.pointed.value = value
     }
 
     actual override fun setShort(index: Int, value: Short) {

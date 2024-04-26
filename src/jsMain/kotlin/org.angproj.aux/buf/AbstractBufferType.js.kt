@@ -24,6 +24,9 @@ import org.angproj.aux.io.TypeSize
 public actual abstract class AbstractBufferType<E> actual constructor(
     size: Int, idxSize: TypeSize
 ) : AbstractSpeedCopy(size, idxSize), BufferType<E> {
+
+    public actual abstract val marginSize: Int
+
     override fun speedLongGet(idx: Int): Long {
         throw UnsupportedOperationException()
     }

@@ -19,7 +19,9 @@ import org.angproj.aux.io.TypeSize
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class ByteBuffer actual constructor(size: Int) : AbstractBufferType<Byte>(size, typeSize) {
 
-    private val data: ByteArray = ByteArray(SpeedCopy.addMarginByIndexType(size, idxSize))
+    override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override val length: Int = marginSize * idxSize.size
+    private val data: ByteArray = ByteArray(marginSize)
 
     actual override operator fun get(index: Int): Byte {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

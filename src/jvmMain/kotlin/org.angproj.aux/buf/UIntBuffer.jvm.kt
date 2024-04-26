@@ -21,6 +21,9 @@ import org.angproj.aux.res.Memory as Chunk
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class UIntBuffer actual constructor(size: Int) : AbstractBufferType<UInt>(size, typeSize) {
 
+    override val length: Int = data.size
+    override val marginSize: Int = length / idxSize.size
+
     actual override operator fun get(index: Int): UInt {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
         return unsafe.getInt(ptr + index * TypeSize.uInt).toUInt()

@@ -19,7 +19,6 @@ import org.angproj.aux.res.Memory as Chunk
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect open class Memory(size: Int): Segment {
 
-    final override val size: Int
     protected val data: Chunk
 
     override fun getByte(index: Int): Byte
@@ -29,4 +28,8 @@ public expect open class Memory(size: Int): Segment {
     override fun getInt(index: Int): Int
 
     override fun getLong(index: Int): Long
+
+    public companion object {
+        public val typeSize: TypeSize
+    }
 }

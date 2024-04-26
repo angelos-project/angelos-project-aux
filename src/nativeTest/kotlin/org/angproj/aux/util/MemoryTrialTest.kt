@@ -11,7 +11,7 @@ class MemoryTrialTest {
     fun testGC() {
         val timeMem = measureTime {
             repeat(10_000) {
-                val mem = MutableMemory(1_000_000).close()
+                MutableMemory(1_000_000).close()
             }
         }
         println(timeMem)
@@ -23,7 +23,7 @@ class MemoryTrialTest {
         println(timeUse)
         val timeArr = measureTime {
             repeat(10_000) {
-                val arr = ByteArray(1_000_000)
+                ByteArray(1_000_000)
             }
         }
         println(timeArr)

@@ -24,6 +24,7 @@ import kotlin.jvm.JvmStatic
  * */
 public interface SpeedCopy {
     public val size: Int
+    public val length: Int
 
     public companion object {
         @JvmStatic

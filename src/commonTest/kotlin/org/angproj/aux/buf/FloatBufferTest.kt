@@ -29,10 +29,9 @@ class FloatBufferTest: AbstractBufferTypeTest() {
         val size = DataSize._16M.size / TypeSize.FLOAT.size + if(Random.nextBits(1) == 0) TypeSize.long else 0
         var testVal = Random.nextFloat()
         val array = FloatArray(size)
-        var idx = -1
         val buffer = FloatBuffer(size)
 
-        idx = 0
+        var idx = 0
         val writeTimeArray = measureTime {
             while(idx < size) {
                 array[idx++] = testVal
@@ -71,7 +70,7 @@ class FloatBufferTest: AbstractBufferTypeTest() {
         println("Buffer: $writeTimeBuffer")
     }
 
-    private val createNew: (size: Int) -> FloatBuffer = { FloatBuffer(it) }
+    val createNew: (size: Int) -> FloatBuffer = { FloatBuffer(it) }
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testInt.toFloat(), createNew)

@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.io
 
-public interface MutableSegment: Segment, MutableByteString {
+public interface MutableSegment: MutableByteString {
 
     public fun Long.setLeftSide(offset: Int, size: Int, value: Long): Long {
         val pos = (size - (ByteString.longSize - offset)) * 8

@@ -17,14 +17,16 @@ package org.angproj.aux.io
 public class MutableModel(size: Int) : Model(size), MutableSegment {
     override fun setByte(index: Int, value: Byte) {
         if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        val pos = index / ByteString.longSize
-        data[pos] = data[pos].wholeByte(index % ByteString.longSize, value)
+        val idx = index + idxOff
+        val pos = idx / ByteString.longSize
+        data[pos] = data[pos].wholeByte(idx % ByteString.longSize, value)
     }
 
     override fun setShort(index: Int, value: Short) {
         if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
-        var pos = index / ByteString.longSize
-        when(val offset = index % ByteString.longSize) {
+        val idx = index + idxOff
+        var pos = idx / ByteString.longSize
+        when(val offset = idx % ByteString.longSize) {
             7 -> {
                 data[pos] = data[pos++].sideShortLeft(value)
                 data[pos] = data[pos].sideShortRight(value)
@@ -35,8 +37,9 @@ public class MutableModel(size: Int) : Model(size), MutableSegment {
 
     override fun setInt(index: Int, value: Int) {
         if(index !in 0..<(size-3)) throw IllegalArgumentException("Out of bounds.")
-        var pos = index / ByteString.longSize
-        when(val offset = index % ByteString.longSize) {
+        val idx = index + idxOff
+        var pos = idx / ByteString.longSize
+        when(val offset = idx % ByteString.longSize) {
             in 0..<5 -> data[pos] = data[pos].wholeInt(offset, value)
             else -> {
                 data[pos] = data[pos++].sideIntLeft(offset, value)
@@ -47,8 +50,9 @@ public class MutableModel(size: Int) : Model(size), MutableSegment {
 
     override fun setLong(index: Int, value: Long) {
         if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
-        var pos = index / ByteString.longSize
-        when(val offset = index % ByteString.longSize) {
+        val idx = index + idxOff
+        var pos = idx / ByteString.longSize
+        when(val offset = idx % ByteString.longSize) {
             0 -> data[pos] = value
             else -> {
                 data[pos] = data[pos++].sideLongLeft(offset, value)

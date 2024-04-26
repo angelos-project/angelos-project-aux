@@ -18,9 +18,8 @@ import org.angproj.aux.res.allocateMemory
 import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual open class Memory actual constructor(size: Int) : Segment {
+public actual open class Memory actual constructor(size: Int) : Segment(size, typeSize) {
 
-    actual final override val size: Int = size
     protected actual val data: Chunk = allocateMemory(size)
 
     actual override fun getByte(index: Int): Byte {
@@ -41,4 +40,15 @@ public actual open class Memory actual constructor(size: Int) : Segment {
 
     override fun close() {}
 
+    override fun speedLongGet(idx: Int): Long {
+        TODO("Not yet implemented")
+    }
+
+    override fun speedLongSet(idx: Int, value: Long) {
+        TODO("Not yet implemented")
+    }
+
+    public actual companion object {
+        public actual val typeSize: TypeSize = TypeSize.BYTE
+    }
 }

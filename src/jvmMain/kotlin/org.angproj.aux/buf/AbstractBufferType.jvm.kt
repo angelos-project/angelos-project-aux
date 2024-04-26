@@ -22,15 +22,17 @@ import org.angproj.aux.res.allocateMemory
 import java.lang.ref.Cleaner.Cleanable
 
 @Suppress(
+    "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
     "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING",
-    "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
-    "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"
+    "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING"
 )
 public actual abstract class AbstractBufferType<E> actual constructor(
     size: Int, idxSize: TypeSize
 ) : AbstractSpeedCopy(size, idxSize), BufferType<E> {
 
-    private val data: Memory = allocateMemory(SpeedCopy.addMarginInTotalBytes(size, idxSize))
+    public actual abstract val marginSize: Int
+
+    protected val data: Memory = allocateMemory(SpeedCopy.addMarginInTotalBytes(size, idxSize))
     protected val ptr: Long = data.ptr + idxOff * idxSize.size
 
     private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }

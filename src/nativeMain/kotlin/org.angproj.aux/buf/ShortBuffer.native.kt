@@ -21,6 +21,9 @@ import org.angproj.aux.io.TypeSize
 @OptIn(ExperimentalForeignApi::class)
 public actual class ShortBuffer actual constructor(size: Int) : AbstractBufferType<Short>(size, typeSize) {
 
+    override val length: Int = data.size
+    override val marginSize: Int = length / idxSize.size
+
     actual override operator fun get(index: Int): Short {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
         return (ptr + index * TypeSize.short)!!.reinterpret<ShortVar>().pointed.value

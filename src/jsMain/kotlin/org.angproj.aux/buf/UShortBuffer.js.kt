@@ -19,7 +19,9 @@ import org.angproj.aux.io.TypeSize
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class UShortBuffer actual constructor(size: Int) : AbstractBufferType<UShort>(size, typeSize) {
 
-    private val data: ShortArray = ShortArray(SpeedCopy.addMarginByIndexType(size, idxSize))
+    override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override val length: Int = marginSize * idxSize.size
+    private val data: ShortArray = ShortArray(marginSize)
 
     actual override operator fun get(index: Int): UShort {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

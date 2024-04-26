@@ -30,10 +30,9 @@ class UShortBufferTest: AbstractBufferTypeTest() {
         val size = DataSize._16M.size / TypeSize.U_SHORT.size + Random.nextBits(1)
         var testVal = Random.nextInt().toUShort()
         val array = UShortArray(size)
-        var idx = -1
         val buffer = UShortBuffer(size)
 
-        idx = 0
+        var idx = 0
         val writeTimeArray = measureTime {
             while(idx < size) {
                 array[idx++] = testVal
@@ -72,7 +71,7 @@ class UShortBufferTest: AbstractBufferTypeTest() {
         println("Buffer: $writeTimeBuffer")
     }
 
-    private val createNew: (size: Int) -> UShortBuffer = { UShortBuffer(it) }
+    val createNew: (size: Int) -> UShortBuffer = { UShortBuffer(it) }
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testShort.toUShort(), createNew)
