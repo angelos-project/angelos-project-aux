@@ -14,7 +14,6 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.buf.ByteBuffer.Companion
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
@@ -27,9 +26,16 @@ public actual class UByteBuffer actual constructor(
     override fun create(size: Int): UByteBuffer = UByteBuffer(size)
     override fun copyOf(): UByteBuffer = create(size).also { data.copyInto(it.data) }
 
-    override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
-    override val length: Int = marginSize * idxSize.size
-    private val data: ByteArray = ByteArray(marginSize)
+    public fun copyOfRange(fromIdx: Int, toIdx: Int): UByteBuffer {
+        check(fromIdx in 0..<size && toIdx in 0..<size && fromIdx < toIdx)
+        val from = fromIdx + idxOff
+        val to = toIdx + idxOff
+        return create(to - from).also { data.copyInto(it.data, 0, from, to) }
+    }
+
+    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override val length: Int = marginSized * idxSize.size
+    private val data: ByteArray = ByteArray(marginSized)
 
     actual override operator fun get(index: Int): UByte {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

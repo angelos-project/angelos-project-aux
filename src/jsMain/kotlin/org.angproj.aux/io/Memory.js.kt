@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.AbstractSpeedCopy
 import org.angproj.aux.res.allocateMemory
 import org.angproj.aux.res.Memory as Chunk
 
@@ -40,15 +41,17 @@ public actual open class Memory actual constructor(size: Int) : Segment(size, ty
 
     override fun close() {}
 
-    override fun speedLongGet(idx: Int): Long {
-        TODO("Not yet implemented")
-    }
-
-    override fun speedLongSet(idx: Int, value: Long) {
-        TODO("Not yet implemented")
-    }
-
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.BYTE
     }
+
+    override val marginSized: Int
+        get() = TODO("Not yet implemented")
+
+    override fun create(size: Int): AbstractSpeedCopy {
+        TODO("Not yet implemented")
+    }
+
+    override val length: Int
+        get() = TODO("Not yet implemented")
 }

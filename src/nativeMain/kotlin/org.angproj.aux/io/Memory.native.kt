@@ -15,6 +15,7 @@
 package org.angproj.aux.io
 
 import kotlinx.cinterop.*
+import org.angproj.aux.buf.AbstractSpeedCopy
 import org.angproj.aux.buf.SpeedCopy
 import org.angproj.aux.res.allocateMemory
 import kotlin.experimental.ExperimentalNativeApi
@@ -22,22 +23,33 @@ import kotlin.native.ref.Cleaner
 import kotlin.native.ref.createCleaner
 import org.angproj.aux.res.Memory as Chunk
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
-    "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
-    "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING"
+@Suppress(
+    "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"
 )
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-public actual open class Memory actual constructor(size: Int) : Segment(size, typeSize) {
+public actual open class Memory actual constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+) : Segment(size, typeSize, idxOff, idxEnd) {
+
+    public actual constructor(size: Int) : this(size, 0, size)
+
+    actual override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory = Memory(size, idxOff, idxEnd)
+
+    actual override fun copyOf(): Memory {
+        TODO("Not yet implemented")
+    }
+
+    actual override fun copyOfRange(idxFrom: Int, idxTo: Int): Memory {
+        TODO("Not yet implemented")
+    }
+
+    protected actual val data: Chunk = allocateMemory(length)
+    protected val ptr: CPointer<ByteVarOf<Byte>> = (data.ptr + idxOff)!!
 
     init {
         // Must be BYTE
         require(typeSize == TypeSize.BYTE)
     }
-
-    final override val length: Int = SpeedCopy.addMarginInTotalBytes(size, idxSize)
-
-    protected actual val data: Chunk = allocateMemory(length)
-    protected val ptr: CPointer<ByteVarOf<Byte>> = (data.ptr + idxOff)!!
 
     private val cleaner: Cleaner = createCleaner(data) { data.dispose() }
     override fun close() { data.dispose() }
@@ -60,14 +72,6 @@ public actual open class Memory actual constructor(size: Int) : Segment(size, ty
     actual override fun getLong(index: Int): Long {
         if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
         return (ptr + index)!!.reinterpret<LongVar>().pointed.value
-    }
-
-    override fun speedLongGet(idx: Int): Long {
-        TODO("Not yet implemented")
-    }
-
-    override fun speedLongSet(idx: Int, value: Long) {
-        TODO("Not yet implemented")
     }
 
     public actual companion object {

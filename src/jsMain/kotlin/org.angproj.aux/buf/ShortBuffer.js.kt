@@ -14,7 +14,6 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.buf.ByteBuffer.Companion
 import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
@@ -27,9 +26,16 @@ public actual class ShortBuffer actual constructor(
     override fun create(size: Int): ShortBuffer = ShortBuffer(size)
     override fun copyOf(): ShortBuffer = create(size).also { data.copyInto(it.data) }
 
-    override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
-    override val length: Int = marginSize * idxSize.size
-    private val data: ShortArray = ShortArray(marginSize)
+    public fun copyOfRange(fromIdx: Int, toIdx: Int): ShortBuffer {
+        check(fromIdx in 0..<size && toIdx in 0..<size && fromIdx < toIdx)
+        val from = fromIdx + idxOff
+        val to = toIdx + idxOff
+        return create(to - from).also { data.copyInto(it.data, 0, from, to) }
+    }
+
+    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override val length: Int = marginSized * idxSize.size
+    private val data: ShortArray = ShortArray(marginSized)
 
     actual override operator fun get(index: Int): Short {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

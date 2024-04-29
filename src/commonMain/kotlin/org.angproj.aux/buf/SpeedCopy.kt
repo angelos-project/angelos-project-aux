@@ -25,6 +25,10 @@ import kotlin.jvm.JvmStatic
 public interface SpeedCopy {
     public val size: Int
     public val length: Int
+    public val marginSized: Int
+
+    public fun copyOf(): SpeedCopy
+    public fun copyOfRange(idxFrom: Int, idxTo: Int): SpeedCopy
 
     public companion object {
         @JvmStatic
@@ -50,12 +54,4 @@ public interface SpeedCopy {
             return (indexCount + if(remainder == 0) 0 else factor - remainder)
         }
     }
-}
-
-public inline fun <reified E: SpeedCopy> SpeedCopy.copyOfRange(fromIdx: Int, toIdx: Int): E {
-    TODO("Not yet implemented")
-}
-
-public inline fun <reified E: SpeedCopy> SpeedCopy.copyOf(): E {
-    TODO("Not yet implemented")
 }

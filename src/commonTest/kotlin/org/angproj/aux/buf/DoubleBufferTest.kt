@@ -71,6 +71,8 @@ class DoubleBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> DoubleBuffer = { DoubleBuffer(it) }
+    val createComparison: (size: Int) -> DoubleArray = { DoubleArray(it) { Random.nextDouble() } }
+
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testLong.toDouble(), createNew)

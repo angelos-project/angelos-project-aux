@@ -22,8 +22,12 @@ kotlin {
         }
     }
     js(IR) {
-        browser()
-        nodejs()
+        browser {}
+        nodejs{
+            testTask{
+                useKarma()
+            }
+        }
     }
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")

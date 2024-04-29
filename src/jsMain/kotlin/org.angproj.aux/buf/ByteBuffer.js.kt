@@ -26,9 +26,17 @@ public actual class ByteBuffer actual constructor(
     override fun create(size: Int): ByteBuffer = ByteBuffer(size)
     override fun copyOf(): ByteBuffer = create(idxEnd).also { data.copyInto(it.data) }
 
-    override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
-    override val length: Int = marginSize * idxSize.size
-    private val data: ByteArray = ByteArray(marginSize)
+    public fun copyOfRange(fromIdx: Int, toIdx: Int): ByteBuffer {
+        check(fromIdx in 0..<size && toIdx in 0..<size && fromIdx < toIdx)
+        val from = fromIdx + idxOff
+        val to = toIdx + idxOff
+        return create(to - from).also { data.copyInto(it.data, 0, from, to) }
+    }
+
+    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+
+    override val length: Int = marginSized * idxSize.size
+    private val data: ByteArray = ByteArray(marginSized)
 
     actual override operator fun get(index: Int): Byte {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

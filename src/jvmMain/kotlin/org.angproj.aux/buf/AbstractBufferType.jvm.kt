@@ -14,7 +14,6 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.buf.ByteBuffer.Companion.unsafe
 import org.angproj.aux.io.TypeSize
 import org.angproj.aux.res.Manager
 import org.angproj.aux.res.Memory
@@ -23,25 +22,54 @@ import java.lang.ref.Cleaner.Cleanable
 
 @Suppress(
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
+    "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
     "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING",
-    "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING"
 )
 public actual abstract class AbstractBufferType<E> actual constructor(
-    size: Int, idxSize: TypeSize
-) : AbstractSpeedCopy(size, idxSize), BufferType<E> {
+    size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int
+) : AbstractSpeedCopy(size, idxSize, idxOff, idxEnd), BufferType<E> {
 
-    public actual abstract val marginSize: Int
+    final override val length: Int = SpeedCopy.addMarginInTotalBytes(idxEnd, idxSize)
+    final override val marginSized: Int = SpeedCopy.addMarginByIndexType(idxEnd, idxSize)
 
-    protected val data: Memory = allocateMemory(SpeedCopy.addMarginInTotalBytes(size, idxSize))
+    private val data: Memory = allocateMemory(length)
     protected val ptr: Long = data.ptr + idxOff * idxSize.size
 
-    private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }
-    override fun close() {
-        cleanable.clean()
+    init {
+        require(data.size == length)
+        require(marginSized * idxSize.size == length)
     }
 
-    override fun speedLongGet(idx: Int): Long = unsafe.getLong(ptr + idx * TypeSize.LONG.size)
-    override fun speedLongSet(idx: Int, value: Long) {
-        unsafe.putLong(ptr + idx * TypeSize.LONG.size, value)
+    private val clean: Cleanable = Manager.cleaner.register(data) { data.dispose() }
+    override fun close() {
+        clean.clean()
     }
+
+    protected fun copyOfRange2(idxFrom: Int, idxTo: Int): AbstractBufferType<E> {
+        val factor = TypeSize.long / idxSize.size
+        val newIdxOff = idxFrom % factor
+        val newSize = idxTo - idxFrom
+        val newIdxEnd = newIdxOff + newSize
+        val baseIdx = (idxOff + idxFrom) - newIdxOff
+
+        val copy = create(newSize, newIdxOff, newIdxEnd)
+
+        val unsafe = Memory.unsafe
+        val basePtr = data.ptr + (baseIdx * idxSize.size)
+        val copyPtr = copy.data.ptr
+
+        (0 until copy.length step TypeSize.long).forEach {
+            unsafe.putLong(copyPtr + it, unsafe.getLong(basePtr + it))
+        }
+        return copy
+    }
+
+    actual abstract override fun create(
+        size: Int,
+        idxOff: Int,
+        idxEnd: Int
+    ): AbstractBufferType<E>
+
+    actual abstract override fun copyOf(): AbstractBufferType<E>
+    actual abstract override fun copyOfRange(idxFrom: Int, idxTo: Int): AbstractBufferType<E>
 }

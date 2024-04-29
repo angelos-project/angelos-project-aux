@@ -17,12 +17,22 @@ package org.angproj.aux.buf
 import kotlinx.cinterop.*
 import org.angproj.aux.io.TypeSize
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@Suppress(
+    "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"
+)
 @OptIn(ExperimentalForeignApi::class)
-public actual class UIntBuffer actual constructor(size: Int) : AbstractBufferType<UInt>(size, typeSize) {
+public actual class UIntBuffer actual constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+) : AbstractBufferType<UInt>(size, typeSize, idxOff, idxEnd) {
 
-    override val length: Int = data.size
-    override val marginSize: Int = length / idxSize.size
+    public actual constructor(size: Int) : this(size, 0, size)
+
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): UIntBuffer = UIntBuffer(size, idxOff, idxEnd)
+    override fun copyOf(): AbstractBufferType<UInt> {
+        TODO("Not yet implemented")
+    }
+
+    public override fun copyOfRange(idxFrom: Int, idxTo: Int): UIntBuffer = copyOfRange2(idxFrom, idxTo) as UIntBuffer
 
     actual override operator fun get(index: Int): UInt {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

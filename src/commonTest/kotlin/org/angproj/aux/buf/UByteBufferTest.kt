@@ -22,6 +22,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.time.measureTime
 
+@OptIn(ExperimentalUnsignedTypes::class)
 class UByteBufferTest: AbstractBufferTypeTest() {
 
     @OptIn(ExperimentalUnsignedTypes::class)
@@ -72,6 +73,8 @@ class UByteBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> UByteBuffer = { UByteBuffer(it) }
+    val createComparison: (size: Int) -> UByteArray = { UByteArray(it) { Random.nextInt().toUByte() } }
+
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testByte.toUByte(), createNew)

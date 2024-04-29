@@ -22,6 +22,7 @@ public abstract class AbstractSpeedCopy protected constructor(
     protected val idxOff: Int = 0,
     protected val idxEnd: Int = idxOff + size
 ): SpeedCopy {
-    protected abstract val marginSize: Int
-    protected abstract fun create(size: Int): AbstractSpeedCopy
+    protected abstract fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractSpeedCopy
+    public abstract override fun copyOf(): AbstractSpeedCopy
+    public abstract override fun copyOfRange(idxFrom: Int, idxTo: Int): AbstractSpeedCopy
 }

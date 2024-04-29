@@ -71,6 +71,8 @@ class IntBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> IntBuffer = { IntBuffer(it) }
+    val createComparison: (size: Int) -> IntArray = { IntArray(it) { Random.nextInt() } }
+
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testInt, createNew)

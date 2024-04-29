@@ -19,13 +19,23 @@ import sun.misc.Unsafe
 import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class ShortBuffer actual constructor(size: Int) : AbstractBufferType<Short>(size, typeSize) {
+public actual class ShortBuffer actual constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+) : AbstractBufferType<Short>(size, typeSize, idxOff, idxEnd) {
 
-    override val length: Int = data.size
-    override val marginSize: Int = length / idxSize.size
+    public actual constructor(size: Int) : this(size, 0, size)
+
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): ShortBuffer = ShortBuffer(size, idxOff, idxEnd)
+
+    override fun copyOf(): AbstractBufferType<Short> {
+        TODO("Not yet implemented")
+    }
+
+    public override fun copyOfRange(idxFrom: Int, idxTo: Int): ShortBuffer = copyOfRange2(idxFrom, idxTo) as ShortBuffer
 
     actual override operator fun get(index: Int): Short {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        println("Read: $index, ${index * TypeSize.short}")
         return unsafe.getShort(ptr + index * TypeSize.short)
     }
 

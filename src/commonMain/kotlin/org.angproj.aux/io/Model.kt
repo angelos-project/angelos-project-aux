@@ -14,13 +14,25 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.SpeedCopy
+import org.angproj.aux.buf.AbstractSpeedCopy
 
-public open class Model(size: Int): Segment(size, typeSize) {
+public open class Model private constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+): Segment(size, typeSize, idxOff, idxEnd) {
 
-    final override val length: Int = SpeedCopy.addMarginInTotalBytes(size, typeSize)
+    public constructor(size: Int) : this(size, 0, size)
 
     protected val data: LongArray = LongArray(length / TypeSize.long)
+
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): Model = Model(size, idxOff, idxEnd)
+
+    override fun copyOf(): AbstractSpeedCopy {
+        TODO("Not yet implemented")
+    }
+
+    override fun copyOfRange(idxFrom: Int, idxTo: Int): AbstractSpeedCopy {
+        TODO("Not yet implemented")
+    }
 
     override fun getByte(index: Int): Byte {
         if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
@@ -71,14 +83,6 @@ public open class Model(size: Int): Segment(size, typeSize) {
         0).getRightSide(offset, size)
 
     public override fun close() { }
-
-    override fun speedLongGet(idx: Int): Long {
-        TODO("Not yet implemented")
-    }
-
-    override fun speedLongSet(idx: Int, value: Long) {
-        TODO("Not yet implemented")
-    }
 
     public companion object {
         public val typeSize: TypeSize = TypeSize.LONG

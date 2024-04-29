@@ -71,6 +71,8 @@ class FloatBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> FloatBuffer = { FloatBuffer(it) }
+    val createComparison: (size: Int) -> FloatArray = { FloatArray(it) { Random.nextFloat() } }
+
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testInt.toFloat(), createNew)

@@ -71,11 +71,11 @@ class ByteBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> ByteBuffer = { ByteBuffer(it) }
+    val createComparison: (size: Int) -> ByteArray = { ByteArray(it) { Random.nextInt().toByte() } }
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testByte, createNew)
 
     @Test
     fun testBufferReadWrite() = bufferReadWrite(testByte, createNew)
-
 }

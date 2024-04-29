@@ -26,9 +26,16 @@ public actual class FloatBuffer actual constructor(
     override fun create(size: Int): FloatBuffer = FloatBuffer(size)
     override fun copyOf(): FloatBuffer = create(idxEnd).also { data.copyInto(it.data) }
 
-    override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
-    override val length: Int = marginSize * idxSize.size
-    private val data: FloatArray = FloatArray(marginSize)
+    public fun copyOfRange(fromIdx: Int, toIdx: Int): FloatBuffer {
+        check(fromIdx in 0..<size && toIdx in 0..<size && fromIdx < toIdx)
+        val from = fromIdx + idxOff
+        val to = toIdx + idxOff
+        return create(to - from).also { data.copyInto(it.data, 0, from, to) }
+    }
+
+    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override val length: Int = marginSized * idxSize.size
+    private val data: FloatArray = FloatArray(marginSized)
 
     actual override operator fun get(index: Int): Float {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

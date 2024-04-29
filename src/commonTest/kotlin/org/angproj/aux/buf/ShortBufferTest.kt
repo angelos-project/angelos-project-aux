@@ -71,6 +71,8 @@ class ShortBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> ShortBuffer = { ShortBuffer(it) }
+    val createComparison: (size: Int) -> ShortArray = { ShortArray(it) { Random.nextInt().toShort() } }
+
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testShort, createNew)

@@ -15,15 +15,13 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.util.NullObject
-import kotlin.jvm.JvmStatic
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class ByteBuffer private constructor(
     size: Int, idxOff: Int, idxEnd: Int
 ): AbstractBufferType<Byte> {
     public constructor(size: Int)
-    
+
     public override operator fun get(index: Int): Byte
     public override operator fun set(index: Int, value: Byte)
 

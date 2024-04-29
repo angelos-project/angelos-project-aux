@@ -15,8 +15,15 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.buf.AbstractSpeedCopy
+import org.angproj.aux.buf.SpeedCopy
 
-public abstract class Segment(size: Int, idxSize: TypeSize): AbstractSpeedCopy(size, idxSize),  ByteString {
+public abstract class Segment(
+    size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int
+): AbstractSpeedCopy(size, idxSize, idxOff, idxEnd), ByteString {
+
+    final override val length: Int = SpeedCopy.addMarginInTotalBytes(idxEnd, idxSize)
+    final override val marginSized: Int = SpeedCopy.addMarginByIndexType(idxEnd, idxSize)
+
     public fun Long.getLeftSide(offset: Int, size: Int): Long = (
             this shl ((size - ByteString.longSize - offset) * 8))
 

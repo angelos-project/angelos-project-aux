@@ -24,6 +24,8 @@ public interface ByteString: AutoCloseable {
     public fun getInt(index: Int): Int
     public fun getLong(index: Int): Long
 
+    public override fun close() {}
+
     public operator fun get(index: Int): Byte = getByte(index)
 
     public fun Long.fullByte(offset: Int): Byte = (

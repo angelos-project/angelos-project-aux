@@ -71,6 +71,8 @@ class LongBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> LongBuffer = { LongBuffer(it) }
+    val createComparison: (size: Int) -> LongArray = { LongArray(it) { Random.nextLong() } }
+
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testLong, createNew)

@@ -14,12 +14,23 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.AbstractSpeedCopy
 import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect open class Memory(size: Int): Segment {
+public expect open class Memory private constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+): Segment {
+
+    public constructor(size: Int)
 
     protected val data: Chunk
+
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory
+
+    override fun copyOf(): Memory
+
+    override fun copyOfRange(idxFrom: Int, idxTo: Int): Memory
 
     override fun getByte(index: Int): Byte
 

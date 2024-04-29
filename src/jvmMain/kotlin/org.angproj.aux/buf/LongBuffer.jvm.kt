@@ -19,10 +19,19 @@ import sun.misc.Unsafe
 import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class LongBuffer actual constructor(size: Int) : AbstractBufferType<Long>(size, typeSize) {
+public actual class LongBuffer actual constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+) : AbstractBufferType<Long>(size, typeSize, idxOff, idxEnd) {
 
-    override val length: Int = data.size
-    override val marginSize: Int = length / idxSize.size
+    public actual constructor(size: Int) : this(size, 0, size)
+
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): LongBuffer = LongBuffer(size, idxOff, idxEnd)
+
+    override fun copyOf(): AbstractBufferType<Long> {
+        TODO("Not yet implemented")
+    }
+
+    public override fun copyOfRange(idxFrom: Int, idxTo: Int): LongBuffer = copyOfRange2(idxFrom, idxTo) as LongBuffer
 
     actual override operator fun get(index: Int): Long {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

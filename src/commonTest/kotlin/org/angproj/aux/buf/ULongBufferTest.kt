@@ -24,6 +24,7 @@ import kotlin.random.nextULong
 import kotlin.test.Test
 import kotlin.time.measureTime
 
+@OptIn(ExperimentalUnsignedTypes::class)
 class ULongBufferTest: AbstractBufferTypeTest() {
 
     @OptIn(ExperimentalUnsignedTypes::class)
@@ -74,6 +75,8 @@ class ULongBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> ULongBuffer = { ULongBuffer(it) }
+    val createComparison: (size: Int) -> ULongArray = { ULongArray(it) { Random.nextLong().toULong() } }
+
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testLong.toULong(), createNew)

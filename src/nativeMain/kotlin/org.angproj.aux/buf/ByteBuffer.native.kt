@@ -17,19 +17,30 @@ package org.angproj.aux.buf
 import kotlinx.cinterop.*
 import org.angproj.aux.io.TypeSize
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING", "OVERRIDE_BY_INLINE")
+@Suppress(
+    "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
+)
 @OptIn(ExperimentalForeignApi::class)
-public actual class ByteBuffer actual constructor(size: Int) : AbstractBufferType<Byte>(size, typeSize) {
+public actual class ByteBuffer actual constructor(
+    size: Int, idxOff: Int, idxEnd: Int
+) : AbstractBufferType<Byte>(size, typeSize, idxOff, idxEnd) {
 
-    override val length: Int = data.size
-    override val marginSize: Int = length / idxSize.size
+    public actual constructor(size: Int) : this(size, 0, size)
 
-    actual override inline operator fun get(index: Int): Byte {
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): ByteBuffer = ByteBuffer(size, idxOff, idxEnd)
+
+    override fun copyOf(): AbstractBufferType<Byte> {
+        TODO("Not yet implemented")
+    }
+
+    public override fun copyOfRange(idxFrom: Int, idxTo: Int): ByteBuffer = copyOfRange2(idxFrom, idxTo) as ByteBuffer
+
+    actual override operator fun get(index: Int): Byte {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
         return (ptr + index)!!.reinterpret<ByteVar>().pointed.value
     }
 
-    actual override inline operator fun set(index: Int, value: Byte) {
+    actual override operator fun set(index: Int, value: Byte) {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
         (ptr + index)!!.reinterpret<ByteVar>().pointed.value = value
     }

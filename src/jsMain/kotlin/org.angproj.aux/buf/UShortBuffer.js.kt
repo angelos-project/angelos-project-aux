@@ -26,9 +26,16 @@ public actual class UShortBuffer actual constructor(
     override fun create(size: Int): UShortBuffer = UShortBuffer(size)
     override fun copyOf(): UShortBuffer = create(idxEnd).also { data.copyInto(it.data) }
 
-    override val marginSize: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
-    override val length: Int = marginSize * idxSize.size
-    private val data: ShortArray = ShortArray(marginSize)
+    public fun copyOfRange(fromIdx: Int, toIdx: Int): UShortBuffer {
+        check(fromIdx in 0..<size && toIdx in 0..<size && fromIdx < toIdx)
+        val from = fromIdx + idxOff
+        val to = toIdx + idxOff
+        return create(to - from).also { data.copyInto(it.data, 0, from, to) }
+    }
+
+    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override val length: Int = marginSized * idxSize.size
+    private val data: ShortArray = ShortArray(marginSized)
 
     actual override operator fun get(index: Int): UShort {
         if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")

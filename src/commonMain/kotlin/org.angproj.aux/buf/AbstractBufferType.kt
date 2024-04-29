@@ -20,7 +20,7 @@ import org.angproj.aux.io.TypeSize
 public expect abstract class AbstractBufferType<E>(
     size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int
 ): AbstractSpeedCopy, BufferType<E>{
-    public abstract fun copyOf(): AbstractBufferType<E>
-    abstract override fun create(size: Int): AbstractBufferType<E>
-
+    abstract override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractBufferType<E>
+    public abstract override fun copyOf(): AbstractBufferType<E>
+    public abstract override fun copyOfRange(idxFrom: Int, idxTo: Int): AbstractBufferType<E>
 }

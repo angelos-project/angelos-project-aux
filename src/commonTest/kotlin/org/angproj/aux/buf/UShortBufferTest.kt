@@ -22,6 +22,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.time.measureTime
 
+@OptIn(ExperimentalUnsignedTypes::class)
 class UShortBufferTest: AbstractBufferTypeTest() {
 
     @OptIn(ExperimentalUnsignedTypes::class)
@@ -72,6 +73,7 @@ class UShortBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> UShortBuffer = { UShortBuffer(it) }
+    val createComparison: (size: Int) -> UShortArray = { UShortArray(it) { Random.nextInt().toUShort() } }
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testShort.toUShort(), createNew)
