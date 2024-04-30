@@ -14,12 +14,18 @@
  */
 package org.angproj.aux.res
 
+import org.angproj.aux.buf.Reifiable
+
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class Memory: Cleanable {
     public actual val size: Int
         get() = throw UnsupportedOperationException()
+    public actual val ptr: Long
+        get() = TODO("Not yet implemented")
 
     override fun dispose() { throw UnsupportedOperationException() }
 }
 
 public actual fun allocateMemory(size: Int): Memory = throw UnsupportedOperationException()
+internal actual inline fun <reified T: Reifiable> Memory.speedLongGet(index: Int): Long = throw UnsupportedOperationException()
+internal actual inline fun <reified T: Reifiable> Memory.speedLongSet(index: Int, value: Long): Unit = throw UnsupportedOperationException()

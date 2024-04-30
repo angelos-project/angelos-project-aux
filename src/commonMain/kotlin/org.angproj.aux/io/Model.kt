@@ -14,59 +14,80 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.AbstractSpeedCopy
+import org.angproj.aux.buf.Reify
 
-public open class Model private constructor(
+public open class Model protected constructor(
     size: Int, idxOff: Int, idxEnd: Int
 ): Segment(size, typeSize, idxOff, idxEnd) {
 
     public constructor(size: Int) : this(size, 0, size)
 
+    init {
+        // Must be BYTE
+        require(typeSize == TypeSize.BYTE)
+    }
+
     protected val data: LongArray = LongArray(length / TypeSize.long)
 
     override fun create(size: Int, idxOff: Int, idxEnd: Int): Model = Model(size, idxOff, idxEnd)
 
-    override fun copyOf(): AbstractSpeedCopy {
+    override fun copyOf(): Model {
         TODO("Not yet implemented")
     }
 
-    override fun copyOfRange(idxFrom: Int, idxTo: Int): AbstractSpeedCopy {
-        TODO("Not yet implemented")
+    override fun copyOfRange(idxFrom: Int, idxTo: Int): Model = copyOfRange2(idxFrom, idxTo)
+
+    protected fun copyOfRange2(idxFrom: Int, idxTo: Int): Model {
+        val factor = TypeSize.long / idxSize.size
+        val newIdxOff = (idxOff + idxFrom) % factor
+        val newSize = idxTo - idxFrom
+        val newIdxEnd = newIdxOff + newSize
+        val baseIdx = (idxOff + idxFrom) - newIdxOff
+
+        val copy = create(newSize, newIdxOff, newIdxEnd)
+
+        val basePtr = baseIdx / TypeSize.long
+        val copyPtr = 0
+
+        (0 until copy.length / TypeSize.long).forEach {
+            copy.data[copyPtr + it] = data[basePtr + it]
+        }
+        return copy
     }
 
     override fun getByte(index: Int): Byte {
-        if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeByte<Reify>()
         val idx = index + idxOff
-        return data[idx / ByteString.longSize].fullByte(idx % ByteString.longSize)
+        return data[idx / ByteString.longSize].fullByte<Reify>(idx % ByteString.longSize)
     }
 
     override fun getShort(index: Int): Short {
-        if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeShort<Reify>()
         val idx = index + idxOff
         val pos = idx / ByteString.longSize
         return when(val offset = idx % ByteString.longSize) {
-            7 -> data[pos].joinShort(data[pos+1])
-            else -> data[pos].fullShort(offset)
+            7 -> data[pos].joinShort<Reify>(data[pos+1])
+            else -> data[pos].fullShort<Reify>(offset)
         }
     }
 
     override fun getInt(index: Int): Int {
-        if(index !in 0..<(size-3)) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeInt<Reify>()
         val idx = index + idxOff
         val pos = idx / ByteString.longSize
         return when(val offset = idx % ByteString.longSize) {
-            in 0..<5 -> data[pos].fullInt(offset)
-            else -> data[pos].joinInt(offset, data[pos+1])
+            in 0..<5 -> data[pos].fullInt<Reify>(offset)
+            else -> data[pos].joinInt<Reify>(offset, data[pos+1])
         }
     }
 
     override fun getLong(index: Int): Long {
-        if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeLong<Reify>()
         val idx = index + idxOff
         val pos = idx / ByteString.longSize
         return when(val offset = idx % ByteString.longSize) {
             0 -> data[pos]
-            else -> data[pos].joinLong(offset, data[pos+1])
+            else -> data[pos].joinLong<Reify>(offset, data[pos+1])
         }
     }
 
@@ -85,6 +106,6 @@ public open class Model private constructor(
     public override fun close() { }
 
     public companion object {
-        public val typeSize: TypeSize = TypeSize.LONG
+        public val typeSize: TypeSize = TypeSize.BYTE
     }
 }

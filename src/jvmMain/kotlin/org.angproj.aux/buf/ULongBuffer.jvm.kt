@@ -34,15 +34,13 @@ public actual class ULongBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): ULongBuffer = copyOfRange2(idxFrom, idxTo) as ULongBuffer
 
     actual override operator fun get(index: Int): ULong {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         return unsafe.getLong(ptr + index * TypeSize.uLong).toULong()
-
     }
 
     actual override operator fun set(index: Int, value: ULong) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         unsafe.putLong(ptr + index * TypeSize.uLong, value.toLong())
-
     }
 
     public actual companion object {

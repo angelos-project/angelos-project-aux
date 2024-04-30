@@ -16,7 +16,7 @@ package org.angproj.aux.io
 
 import kotlin.test.assertEquals
 import org.angproj.aux.util.*
-import kotlin.test.Test
+import kotlin.random.Random
 import kotlin.test.assertFailsWith
 
 abstract class AbstractMutableSegmentValidator {
@@ -217,6 +217,41 @@ abstract class AbstractMutableSegmentValidator {
         m.setLong(m.size-TypeSize.long, 0) // Won't crash
         assertFailsWith<IllegalArgumentException> {
             m.setLong(m.size-7, 1) // Must throw
+        }
+    }
+
+    fun <E: MutableSegment>tryCopyOfRange(prep: (size: Int) -> E) {
+        val a = ByteArray(16)
+        val m = prep(16)
+        Random.nextBytes(a)
+
+        (0 until m.size).forEach { m[it] = a[it] }
+        (0 until m.size).forEach { assertEquals(m[it], a[it]) }
+
+        (0 until 8).forEach { from ->
+            val c = m.copyOfRange(from, 16)
+            (0 until c.size).forEach {
+                assertEquals(c[it], m[from + it]) }
+        }
+        (8 until 16).forEach { from ->
+            val c = m.copyOfRange(0, from)
+            (0 until c.size).forEach { assertEquals(c[it], m[it]) }
+        }
+        (0 until 8).forEach { from ->
+            val c = m.copyOfRange(from, from + 8)
+            (0 until c.size).forEach { assertEquals(c[it], m[from + it]) }
+        }
+
+        val c0 = m.copyOfRange(1, m.size-1)
+
+        (0 until c0.size).forEach {
+            assertEquals(c0[it], m[1 + it])
+        }
+
+        val c1 = c0.copyOfRange(1, c0.size-1)
+
+        (0 until c1.size).forEach {
+            assertEquals(c1[it], c0[1 + it])
         }
     }
 }

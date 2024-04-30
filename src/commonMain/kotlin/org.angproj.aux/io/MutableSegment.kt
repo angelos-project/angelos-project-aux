@@ -14,7 +14,12 @@
  */
 package org.angproj.aux.io
 
-public interface MutableSegment: MutableByteString {
+import org.angproj.aux.buf.SpeedCopy
+
+public interface MutableSegment: MutableByteString, SpeedCopy {
+
+    public override fun copyOf(): MutableSegment
+    public override fun copyOfRange(idxFrom: Int, idxTo: Int): MutableSegment
 
     public fun Long.setLeftSide(offset: Int, size: Int, value: Long): Long {
         val pos = (size - (ByteString.longSize - offset)) * 8

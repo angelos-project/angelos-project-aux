@@ -52,4 +52,7 @@ class MutableMemoryTest: AbstractMutableSegmentValidator() {
 
     @Test
     fun testLongRWOutbound() = longRWOutbound(createNew)
+
+    @Test
+    fun testTryCopyOfRange() = tryCopyOfRange(createNew)
 }

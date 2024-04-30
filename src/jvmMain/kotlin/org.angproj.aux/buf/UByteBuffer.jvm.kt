@@ -34,12 +34,12 @@ public actual class UByteBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): UByteBuffer = copyOfRange2(idxFrom, idxTo) as UByteBuffer
 
     actual override operator fun get(index: Int): UByte {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         return unsafe.getByte(ptr + index).toUByte()
     }
 
     actual override operator fun set(index: Int, value: UByte) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         unsafe.putByte(ptr + index, value.toByte())
     }
 

@@ -15,10 +15,8 @@ class ByteBuffer3Test {
         (0 until m.size).forEach { assertEquals(m[it], a[it]) }
 
         (0 until 8).forEach { from ->
-            println("========================================")
             val c: ByteBuffer = m.copyOfRange(from, 16)
             (0 until c.size).forEach {
-                println("Compare: $it ====")
                 assertEquals(c[it], m[from + it]) }
         }
         (8 until 16).forEach { from ->
@@ -40,10 +38,8 @@ class ByteBuffer3Test {
         (0 until m.size).forEach { assertEquals(m[it], a[it]) }
 
         (0 until 8).forEach { from ->
-            println("========================================")
             val c: DoubleBuffer = m.copyOfRange(from, 16)
             (0 until c.size).forEach {
-                println("Compare: $it ====")
                 assertEquals(c[it], m[from + it]) }
         }
         (8 until 16).forEach { from ->
@@ -65,10 +61,8 @@ class ByteBuffer3Test {
         (0 until m.size).forEach { assertEquals(m[it], a[it]) }
 
         (0 until 8).forEach { from ->
-            println("========================================")
             val c: FloatBuffer = m.copyOfRange(from, 16)
             (0 until c.size).forEach {
-                println("Compare: $it ====")
                 assertEquals(c[it], m[from + it]) }
         }
         (8 until 16).forEach { from ->
@@ -103,19 +97,15 @@ class ByteBuffer3Test {
             (0 until c.size).forEach { assertEquals(c[it], m[from + it]) }
         }
 
-        println("========================================")
         val c0 = m.copyOfRange(1, m.size-1)
 
         (0 until c0.size).forEach {
-            println("Compare: $it ====")
             assertEquals(c0[it], m[1 + it])
         }
 
-        println("========================================")
         val c1 = c0.copyOfRange(1, c0.size-1)
 
         (0 until c1.size).forEach {
-            println("Compare: $it ====")
             assertEquals(c1[it], c0[1 + it])
         }
     }
@@ -129,10 +119,8 @@ class ByteBuffer3Test {
         (0 until m.size).forEach { assertEquals(m[it], a[it]) }
 
         (0 until 8).forEach { from ->
-            println("========================================")
             val c: LongBuffer = m.copyOfRange(from, 16)
             (0 until c.size).forEach {
-                println("Compare: $it ====")
                 assertEquals(c[it], m[from + it]) }
         }
         (8 until 16).forEach { from ->
@@ -155,10 +143,8 @@ class ByteBuffer3Test {
         (0 until m.size).forEach { assertEquals(m[it], a[it]) }
 
         (0 until 8).forEach { from ->
-            println("========================================")
             val c: UByteBuffer = m.copyOfRange(from, 16)
             (0 until c.size).forEach {
-                println("Compare: $it ====")
                 assertEquals(c[it], m[from + it]) }
         }
         (8 until 16).forEach { from ->
@@ -181,10 +167,8 @@ class ByteBuffer3Test {
         (0 until m.size).forEach { assertEquals(m[it], a[it]) }
 
         (0 until 8).forEach { from ->
-            println("========================================")
             val c: UIntBuffer = m.copyOfRange(from, 16)
             (0 until c.size).forEach {
-                println("Compare: $it ====")
                 assertEquals(c[it], m[from + it]) }
         }
         (8 until 16).forEach { from ->
@@ -207,10 +191,8 @@ class ByteBuffer3Test {
         (0 until m.size).forEach { assertEquals(m[it], a[it]) }
 
         (0 until 8).forEach { from ->
-            println("========================================")
             val c: ULongBuffer = m.copyOfRange(from, 16)
             (0 until c.size).forEach {
-                println("Compare: $it ====")
                 assertEquals(c[it], m[from + it]) }
         }
         (8 until 16).forEach { from ->
@@ -233,10 +215,8 @@ class ByteBuffer3Test {
         (0 until m.size).forEach { assertEquals(m[it], a[it]) }
 
         (0 until 8).forEach { from ->
-            println("========================================")
             val c: UShortBuffer = m.copyOfRange(from, 16)
             (0 until c.size).forEach {
-                println("Compare: $it ====")
                 assertEquals(c[it], m[from + it]) }
         }
         (8 until 16).forEach { from ->

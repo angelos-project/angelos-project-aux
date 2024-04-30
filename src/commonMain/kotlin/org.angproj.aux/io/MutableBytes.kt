@@ -14,41 +14,56 @@
  */
 package org.angproj.aux.io
 
-public class MutableBytes(size: Int) : Bytes(size), MutableSegment {
+import org.angproj.aux.buf.Reifiable
+import org.angproj.aux.buf.Reify
+
+public class MutableBytes(
+    size: Int, idxOff: Int, idxEnd: Int
+) : Bytes(size, idxOff, idxEnd), MutableSegment {
+
+    public constructor(size: Int) : this(size, 0, size)
+
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): MutableBytes = MutableBytes(size, idxOff, idxEnd)
+
+    override fun copyOf(): MutableBytes {
+        TODO("Not yet implemented")
+    }
+
+    override fun copyOfRange(idxFrom: Int, idxTo: Int): MutableBytes = copyOfRange2(idxFrom, idxTo) as MutableBytes
 
     public override fun setByte(index: Int, value: Byte) {
-        if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeByte<Reify>()
         data[index + idxOff] = value
     }
 
     public override fun setShort(index: Int, value: Short) {
-        if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
-        data.setShort(index + idxOff, value)
+        index.checkRangeShort<Reify>()
+        data.setShort<Reify>(index + idxOff, value)
     }
 
     public override fun setInt(index: Int, value: Int) {
-        if(index !in 0..<(size-3)) throw IllegalArgumentException("Out of bounds.")
-        data.setInt(index + idxOff, value)
+        index.checkRangeInt<Reify>()
+        data.setInt<Reify>(index + idxOff, value)
     }
 
     public override fun setLong(index: Int, value: Long) {
-        if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
-        data.setLong(index + idxOff, value)
+        index.checkRangeLong<Reify>()
+        data.setLong<Reify>(index + idxOff, value)
     }
 
-    private fun ByteArray.setShort(index: Int, value: Short) {
+    internal inline fun <reified T: Reifiable> ByteArray.setShort(index: Int, value: Short) {
         this[index + 1] = (value.toInt() ushr 8).toByte()
         this[index] = value.toByte()
     }
 
-    private fun ByteArray.setInt(index: Int, value: Int) {
-        this.setShort(index + 2, (value ushr 16).toShort())
-        this.setShort(index, value.toShort())
+    internal inline fun <reified T: Reifiable> ByteArray.setInt(index: Int, value: Int) {
+        this.setShort<Reify>(index + 2, (value ushr 16).toShort())
+        this.setShort<Reify>(index, value.toShort())
     }
 
-    private fun ByteArray.setLong(index: Int, value: Long)  {
-        this.setInt(index + 4, (value ushr 32).toInt())
-        this.setInt(index, value.toInt())
+    internal inline fun <reified T: Reifiable> ByteArray.setLong(index: Int, value: Long)  {
+        this.setInt<Reify>(index + 4, (value ushr 32).toInt())
+        this.setInt<Reify>(index, value.toInt())
     }
 
     private fun ByteArray.revSetShort(index: Int, value: Short) {

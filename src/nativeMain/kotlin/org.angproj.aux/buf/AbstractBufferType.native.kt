@@ -26,6 +26,7 @@ import kotlin.native.ref.createCleaner
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
     "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
     "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING",
+    "UNCHECKED_CAST",
 )
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 public actual abstract class AbstractBufferType<E> actual constructor(
@@ -36,7 +37,7 @@ public actual abstract class AbstractBufferType<E> actual constructor(
     final override val marginSized: Int = SpeedCopy.addMarginByIndexType(idxEnd, idxSize)
 
     private val data: Memory = allocateMemory(length)
-    protected val ptr: CPointer<ByteVarOf<Byte>> = (data.ptr + idxOff * idxSize.size)!!
+    protected val ptr: Long = data.ptr + idxOff * idxSize.size
 
     init {
         require(data.size == length)
@@ -48,24 +49,13 @@ public actual abstract class AbstractBufferType<E> actual constructor(
         data.dispose()
     }
 
-    protected fun copyOfRange2(idxFrom: Int, idxTo: Int): AbstractBufferType<E> {
-        val factor = TypeSize.long / idxSize.size
-        val newIdxOff = idxFrom % factor
-        val newSize = idxTo - idxFrom
-        val newIdxEnd = newIdxOff + newSize
-        val baseIdx = (idxOff + idxFrom) - newIdxOff
+    protected fun copyOfRange2(idxFrom: Int, idxTo: Int): AbstractBufferType<E> = innerCopyOfRange(idxFrom, idxTo
+    ) { basePtr, copyPtr, offset ->
+        (copyPtr + offset).toCPointer<LongVar>()!!.pointed.value = (
+                basePtr + offset).toCPointer<LongVar>()!!.pointed.value
+    } as AbstractBufferType<E>
 
-        val copy = create(newSize, newIdxOff, newIdxEnd)
-
-        val basePtr = data.ptr + (baseIdx * idxSize.size)
-        val copyPtr = copy.data.ptr
-
-        (0 until copy.length step TypeSize.long).forEach {
-            (copyPtr + it)!!.reinterpret<LongVar>().pointed.value = (
-                    basePtr + it)!!.reinterpret<LongVar>().pointed.value
-        }
-        return copy
-    }
+    override fun getPointer(): Long = data.ptr.toLong()
 
     actual abstract override fun create(
         size: Int,

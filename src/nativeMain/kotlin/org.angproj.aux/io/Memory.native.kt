@@ -15,8 +15,7 @@
 package org.angproj.aux.io
 
 import kotlinx.cinterop.*
-import org.angproj.aux.buf.AbstractSpeedCopy
-import org.angproj.aux.buf.SpeedCopy
+import org.angproj.aux.buf.Reify
 import org.angproj.aux.res.allocateMemory
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.Cleaner
@@ -33,18 +32,8 @@ public actual open class Memory actual constructor(
 
     public actual constructor(size: Int) : this(size, 0, size)
 
-    actual override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory = Memory(size, idxOff, idxEnd)
-
-    actual override fun copyOf(): Memory {
-        TODO("Not yet implemented")
-    }
-
-    actual override fun copyOfRange(idxFrom: Int, idxTo: Int): Memory {
-        TODO("Not yet implemented")
-    }
-
     protected actual val data: Chunk = allocateMemory(length)
-    protected val ptr: CPointer<ByteVarOf<Byte>> = (data.ptr + idxOff)!!
+    protected val ptr: Long = data.ptr + idxOff
 
     init {
         // Must be BYTE
@@ -55,23 +44,37 @@ public actual open class Memory actual constructor(
     override fun close() { data.dispose() }
 
     actual override fun getByte(index: Int): Byte {
-        if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index)!!.pointed.value
+        index.checkRangeByte<Reify>()
+        return (ptr + index).toCPointer<ByteVar>()!!.pointed.value
     }
 
     actual override fun getShort(index: Int): Short {
-        if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index)!!.reinterpret<ShortVar>().pointed.value
+        index.checkRangeShort<Reify>()
+        return (ptr + index).toCPointer<ShortVar>()!!.pointed.value
     }
 
     actual override fun getInt(index: Int): Int {
-        if(index !in 0..<(size-3)) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index)!!.reinterpret<IntVar>().pointed.value
+        index.checkRangeInt<Reify>()
+        return (ptr + index).toCPointer<IntVar>()!!.pointed.value
     }
 
     actual override fun getLong(index: Int): Long {
-        if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index)!!.reinterpret<LongVar>().pointed.value
+        index.checkRangeLong<Reify>()
+        return (ptr + index).toCPointer<LongVar>()!!.pointed.value
+    }
+
+    actual override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory = Memory(size, idxOff, idxEnd)
+
+    public actual override fun copyOfRange(idxFrom: Int, idxTo: Int): Memory = innerCopyOfRange(idxFrom, idxTo
+    ) { basePtr, copyPtr, offset ->
+        (copyPtr + offset).toCPointer<LongVar>()!!.pointed.value = (
+                basePtr + offset).toCPointer<LongVar>()!!.pointed.value
+    } as Memory
+
+    override fun getPointer(): Long = data.ptr.toLong()
+
+    actual override fun copyOf(): Memory {
+        TODO("Not yet implemented")
     }
 
     public actual companion object {

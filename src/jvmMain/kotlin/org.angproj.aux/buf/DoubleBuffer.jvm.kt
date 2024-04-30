@@ -34,15 +34,13 @@ public actual class DoubleBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): DoubleBuffer = copyOfRange2(idxFrom, idxTo) as DoubleBuffer
 
     actual override operator fun get(index: Int): Double {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         return Double.fromBits(unsafe.getLong(ptr + index * TypeSize.double))
-
     }
 
     actual override operator fun set(index: Int, value: Double) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         unsafe.putLong(ptr + index * TypeSize.double, value.toBits())
-
     }
 
     public actual companion object {

@@ -34,12 +34,12 @@ public actual class FloatBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): FloatBuffer = copyOfRange2(idxFrom, idxTo) as FloatBuffer
 
     actual override operator fun get(index: Int): Float {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         return Float.fromBits(unsafe.getInt(ptr + index * TypeSize.float))
     }
 
     actual override operator fun set(index: Int, value: Float) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         unsafe.putInt(ptr + index * TypeSize.float, value.toBits())
     }
 

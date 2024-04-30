@@ -35,13 +35,13 @@ public actual class DoubleBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): DoubleBuffer = copyOfRange2(idxFrom, idxTo) as DoubleBuffer
 
     actual override operator fun get(index: Int): Double {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index * TypeSize.double)!!.reinterpret<DoubleVar>().pointed.value
+        index.checkRange<Reify>()
+        return (ptr + index * TypeSize.double).toCPointer<DoubleVar>()!!.pointed.value
     }
 
     actual override operator fun set(index: Int, value: Double) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index * TypeSize.double)!!.reinterpret<DoubleVar>().pointed.value = value
+        index.checkRange<Reify>()
+        (ptr + index * TypeSize.double).toCPointer<DoubleVar>()!!.pointed.value = value
     }
 
     public actual companion object {

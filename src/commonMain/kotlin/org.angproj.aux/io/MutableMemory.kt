@@ -15,7 +15,17 @@
 package org.angproj.aux.io
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class MutableMemory(size: Int) : Memory, MutableSegment {
+public expect class MutableMemory(
+    size: Int, idxOff: Int, idxEnd: Int
+) : Memory, MutableSegment {
+
+    public constructor(size: Int)
+
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): MutableMemory
+
+    override fun copyOf(): MutableMemory
+
+    override fun copyOfRange(idxFrom: Int, idxTo: Int): MutableMemory
 
     override fun setByte(index: Int, value: Byte)
 

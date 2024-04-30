@@ -14,9 +14,16 @@
  */
 package org.angproj.aux.res
 
+import org.angproj.aux.buf.Reifiable
+
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class Memory: Cleanable {
     public val size: Int
+    public val ptr: Long
 }
 
 public expect fun allocateMemory(size: Int): Memory
+
+internal expect inline fun <reified T: Reifiable> Memory.speedLongGet(index: Int): Long
+
+internal expect inline fun <reified T: Reifiable> Memory.speedLongSet(index: Int, value: Long)

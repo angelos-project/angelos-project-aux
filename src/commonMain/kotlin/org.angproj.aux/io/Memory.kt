@@ -14,11 +14,10 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.AbstractSpeedCopy
 import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect open class Memory private constructor(
+public expect open class Memory protected constructor(
     size: Int, idxOff: Int, idxEnd: Int
 ): Segment {
 

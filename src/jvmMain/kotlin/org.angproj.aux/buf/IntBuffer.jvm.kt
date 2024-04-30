@@ -34,12 +34,12 @@ public actual class IntBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): IntBuffer = copyOfRange2(idxFrom, idxTo) as IntBuffer
 
     actual override operator fun get(index: Int): Int {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         return unsafe.getInt(ptr + index * TypeSize.int)
     }
 
     actual override operator fun set(index: Int, value: Int) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         unsafe.putInt(ptr + index * TypeSize.int, value)
     }
 

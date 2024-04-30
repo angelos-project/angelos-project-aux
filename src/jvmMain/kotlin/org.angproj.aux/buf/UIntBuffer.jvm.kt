@@ -34,12 +34,12 @@ public actual class UIntBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): UIntBuffer = copyOfRange2(idxFrom, idxTo) as UIntBuffer
 
     actual override operator fun get(index: Int): UInt {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         return unsafe.getInt(ptr + index * TypeSize.uInt).toUInt()
     }
 
     actual override operator fun set(index: Int, value: UInt) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         unsafe.putInt(ptr + index * TypeSize.uInt, value.toInt())
     }
 

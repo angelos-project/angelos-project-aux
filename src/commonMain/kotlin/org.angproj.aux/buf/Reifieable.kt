@@ -12,14 +12,6 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.buf
 
-public interface MutableByteString : ByteString {
-
-    public fun setByte(index: Int, value: Byte): Unit
-    public fun setShort(index: Int, value: Short): Unit
-    public fun setInt(index: Int, value: Int): Unit
-    public fun setLong(index: Int, value: Long): Unit
-
-    public operator fun set(index: Int, value: Byte): Unit = setByte(index, value)
-}
+internal interface Reifiable

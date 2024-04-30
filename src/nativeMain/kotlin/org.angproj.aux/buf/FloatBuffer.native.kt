@@ -35,14 +35,14 @@ public actual class FloatBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): FloatBuffer = copyOfRange2(idxFrom, idxTo) as FloatBuffer
 
     actual override operator fun get(index: Int): Float {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index * TypeSize.float)!!.reinterpret<FloatVar>().pointed.value
+        index.checkRange<Reify>()
+        return (ptr + index * TypeSize.float).toCPointer<FloatVar>()!!.pointed.value
 
     }
 
     actual override operator fun set(index: Int, value: Float) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index * TypeSize.float)!!.reinterpret<FloatVar>().pointed.value = value
+        index.checkRange<Reify>()
+        (ptr + index * TypeSize.float).toCPointer<FloatVar>()!!.pointed.value = value
     }
 
     public actual companion object {

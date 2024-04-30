@@ -16,6 +16,8 @@ package org.angproj.aux.buf
 
 @OptIn(ExperimentalStdlibApi::class)
 public interface BufferType<E>: AutoCloseable {
+    public val size: Int
+
     public operator fun get(index: Int): E
     public operator fun set(index: Int, value: E)
 

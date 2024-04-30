@@ -14,49 +14,64 @@
  */
 package org.angproj.aux.io
 
-public class MutableModel(size: Int) : Model(size), MutableSegment {
+import org.angproj.aux.buf.Reify
+
+public class MutableModel(
+    size: Int, idxOff: Int, idxEnd: Int
+) : Model(size, idxOff, idxEnd), MutableSegment {
+
+    public constructor(size: Int) : this(size, 0, size)
+
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): MutableModel = MutableModel(size, idxOff, idxEnd)
+
+    override fun copyOf(): MutableModel {
+        TODO("Not yet implemented")
+    }
+
+    override fun copyOfRange(idxFrom: Int, idxTo: Int): MutableModel = copyOfRange2(idxFrom, idxTo) as MutableModel
+
     override fun setByte(index: Int, value: Byte) {
-        if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeByte<Reify>()
         val idx = index + idxOff
         val pos = idx / ByteString.longSize
-        data[pos] = data[pos].wholeByte(idx % ByteString.longSize, value)
+        data[pos] = data[pos].wholeByte<Reify>(idx % ByteString.longSize, value)
     }
 
     override fun setShort(index: Int, value: Short) {
-        if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeShort<Reify>()
         val idx = index + idxOff
         var pos = idx / ByteString.longSize
         when(val offset = idx % ByteString.longSize) {
             7 -> {
-                data[pos] = data[pos++].sideShortLeft(value)
-                data[pos] = data[pos].sideShortRight(value)
+                data[pos] = data[pos++].sideShortLeft<Reify>(value)
+                data[pos] = data[pos].sideShortRight<Reify>(value)
             }
-            else -> data[pos] = data[pos].wholeShort(offset, value)
+            else -> data[pos] = data[pos].wholeShort<Reify>(offset, value)
         }
     }
 
     override fun setInt(index: Int, value: Int) {
-        if(index !in 0..<(size-3)) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeInt<Reify>()
         val idx = index + idxOff
         var pos = idx / ByteString.longSize
         when(val offset = idx % ByteString.longSize) {
-            in 0..<5 -> data[pos] = data[pos].wholeInt(offset, value)
+            in 0..<5 -> data[pos] = data[pos].wholeInt<Reify>(offset, value)
             else -> {
-                data[pos] = data[pos++].sideIntLeft(offset, value)
-                data[pos] = data[pos].sideIntRight(offset, value)
+                data[pos] = data[pos++].sideIntLeft<Reify>(offset, value)
+                data[pos] = data[pos].sideIntRight<Reify>(offset, value)
             }
         }
     }
 
     override fun setLong(index: Int, value: Long) {
-        if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeLong<Reify>()
         val idx = index + idxOff
         var pos = idx / ByteString.longSize
         when(val offset = idx % ByteString.longSize) {
             0 -> data[pos] = value
             else -> {
-                data[pos] = data[pos++].sideLongLeft(offset, value)
-                data[pos] = data[pos].sideLongRight(offset, value)
+                data[pos] = data[pos++].sideLongLeft<Reify>(offset, value)
+                data[pos] = data[pos].sideLongRight<Reify>(offset, value)
             }
         }
     }

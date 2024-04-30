@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.AbstractSpeedCopy
+import org.angproj.aux.buf.Reify
 import org.angproj.aux.res.Manager
 import org.angproj.aux.res.allocateMemory
 import org.angproj.aux.res.Memory as Chunk
@@ -31,16 +31,6 @@ public actual open class Memory actual constructor(
 
     public actual constructor(size: Int) : this(size, 0, size)
 
-    actual override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory = Memory(size, idxOff, idxEnd)
-
-    actual override fun copyOf(): Memory {
-        TODO("Not yet implemented")
-    }
-
-    actual override fun copyOfRange(idxFrom: Int, idxTo: Int): Memory {
-        TODO("Not yet implemented")
-    }
-
     init {
         // Must be BYTE
         require(typeSize == TypeSize.BYTE)
@@ -53,23 +43,36 @@ public actual open class Memory actual constructor(
     public override fun close() { cleanable.clean() }
 
     actual override fun getByte(index: Int): Byte {
-        if(index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeByte<Reify>()
         return unsafe.getByte(ptr + index)
     }
 
     actual override fun getShort(index: Int): Short {
-        if(index !in 0..<(size-1)) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeShort<Reify>()
         return unsafe.getShort(ptr + index)
     }
 
     actual override fun getInt(index: Int): Int {
-        if(index !in 0..<(size-3)) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeInt<Reify>()
         return unsafe.getInt(ptr + index)
     }
 
     actual override fun getLong(index: Int): Long {
-        if(index !in 0..<(size-7)) throw IllegalArgumentException("Out of bounds.")
+        index.checkRangeLong<Reify>()
         return unsafe.getLong(ptr + index)
+    }
+
+    actual override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory = Memory(size, idxOff, idxEnd)
+
+    public actual override fun copyOfRange(idxFrom: Int, idxTo: Int): Memory = innerCopyOfRange(idxFrom, idxTo
+    ) { basePtr, copyPtr, offset ->
+        unsafe.putLong(copyPtr + offset, unsafe.getLong(basePtr + offset))
+    } as Memory
+
+    override fun getPointer(): Long = data.ptr
+
+    actual override fun copyOf(): Memory {
+        TODO("Not yet implemented")
     }
 
     public actual companion object {

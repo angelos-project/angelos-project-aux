@@ -34,12 +34,12 @@ public actual class UShortBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): UShortBuffer = copyOfRange2(idxFrom, idxTo) as UShortBuffer
 
     actual override operator fun get(index: Int): UShort {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         return unsafe.getShort(ptr + index * TypeSize.uShort).toUShort()
     }
 
     actual override operator fun set(index: Int, value: UShort) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
+        index.checkRange<Reify>()
         unsafe.putShort(ptr + index * TypeSize.uShort, value.toShort())
     }
 

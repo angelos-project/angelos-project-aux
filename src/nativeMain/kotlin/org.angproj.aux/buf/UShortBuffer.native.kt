@@ -35,13 +35,13 @@ public actual class UShortBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): UShortBuffer = copyOfRange2(idxFrom, idxTo) as UShortBuffer
 
     actual override operator fun get(index: Int): UShort {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index * TypeSize.uShort)!!.reinterpret<UShortVar>().pointed.value
+        index.checkRange<Reify>()
+        return (ptr + index * TypeSize.uShort).toCPointer<UShortVar>()!!.pointed.value
     }
 
     actual override operator fun set(index: Int, value: UShort) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index * TypeSize.uShort)!!.reinterpret<UShortVar>().pointed.value = value
+        index.checkRange<Reify>()
+        (ptr + index * TypeSize.uShort).toCPointer<UShortVar>()!!.pointed.value = value
     }
 
     public actual companion object {

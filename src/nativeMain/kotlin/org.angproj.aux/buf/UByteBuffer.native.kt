@@ -35,13 +35,13 @@ public actual class UByteBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): UByteBuffer = copyOfRange2(idxFrom, idxTo) as UByteBuffer
 
     actual override operator fun get(index: Int): UByte {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index)!!.reinterpret<UByteVar>().pointed.value
+        index.checkRange<Reify>()
+        return (ptr + index).toCPointer<UByteVar>()!!.pointed.value
     }
 
     actual override operator fun set(index: Int, value: UByte) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index)!!.reinterpret<UByteVar>().pointed.value = value
+        index.checkRange<Reify>()
+        (ptr + index).toCPointer<UByteVar>()!!.pointed.value = value
     }
 
     public actual companion object {

@@ -14,11 +14,12 @@
  */
 package org.angproj.aux.res
 
+import org.angproj.aux.buf.Reifiable
 import sun.misc.Unsafe
 import java.lang.reflect.Field
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class Memory(public actual val size: Int, public val ptr: Long): Cleanable {
+public actual class Memory(public actual val size: Int, public actual val ptr: Long): Cleanable {
 
     public override fun dispose() {
         unsafe.freeMemory(ptr)
@@ -36,3 +37,5 @@ public actual class Memory(public actual val size: Int, public val ptr: Long): C
 }
 
 public actual fun allocateMemory(size: Int): Memory = Memory(size, Memory.unsafe.allocateMemory(size.toLong()))
+internal actual inline fun <reified T: Reifiable> Memory.speedLongGet(index: Int): Long = Memory.unsafe.getLong(ptr + index)
+internal actual inline fun <reified T: Reifiable> Memory.speedLongSet(index: Int, value: Long): Unit = Memory.unsafe.putLong(ptr + index, value)

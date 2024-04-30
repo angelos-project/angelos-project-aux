@@ -15,10 +15,11 @@
 package org.angproj.aux.res
 
 import kotlinx.cinterop.*
+import org.angproj.aux.buf.Reifiable
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
-public actual class Memory(public actual val size: Int, public val ptr: CPointer<ByteVarOf<Byte>>): Cleanable {
+public actual class Memory(public actual val size: Int, public actual val ptr: Long): Cleanable {
 
     /*
     * How to get:
@@ -29,9 +30,13 @@ public actual class Memory(public actual val size: Int, public val ptr: CPointer
     * */
 
     public override fun dispose() {
-        nativeHeap.free(ptr)
+        nativeHeap.free(ptr.toCPointer<ByteVar>()!!)
     }
 }
 
 @OptIn(ExperimentalForeignApi::class)
-public actual fun allocateMemory(size: Int): Memory = Memory(size, nativeHeap.allocArray<ByteVar>(size))
+public actual fun allocateMemory(size: Int): Memory = Memory(size, nativeHeap.allocArray<ByteVar>(size).toLong())
+@OptIn(ExperimentalForeignApi::class)
+internal actual inline fun <reified T: Reifiable> Memory.speedLongGet(index: Int): Long = (ptr + index).toCPointer<LongVar>()!!.pointed.value
+@OptIn(ExperimentalForeignApi::class)
+internal actual inline fun <reified T: Reifiable> Memory.speedLongSet(index: Int, value: Long) { (ptr + index).toCPointer<LongVar>()!!.pointed.value = value }

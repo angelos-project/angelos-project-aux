@@ -36,13 +36,13 @@ public actual class ByteBuffer actual constructor(
     public override fun copyOfRange(idxFrom: Int, idxTo: Int): ByteBuffer = copyOfRange2(idxFrom, idxTo) as ByteBuffer
 
     actual override operator fun get(index: Int): Byte {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        return (ptr + index)!!.reinterpret<ByteVar>().pointed.value
+        index.checkRange<Reify>()
+        return (ptr + index).toCPointer<ByteVar>()!!.pointed.value
     }
 
     actual override operator fun set(index: Int, value: Byte) {
-        if (index !in 0..<size) throw IllegalArgumentException("Out of bounds.")
-        (ptr + index)!!.reinterpret<ByteVar>().pointed.value = value
+        index.checkRange<Reify>()
+        (ptr + index).toCPointer<ByteVar>()!!.pointed.value = value
     }
 
     public actual companion object {

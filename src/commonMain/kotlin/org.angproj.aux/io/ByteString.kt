@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.Reifiable
+
 @OptIn(ExperimentalStdlibApi::class)
 public interface ByteString: AutoCloseable {
 
@@ -27,36 +29,6 @@ public interface ByteString: AutoCloseable {
     public override fun close() {}
 
     public operator fun get(index: Int): Byte = getByte(index)
-
-    public fun Long.fullByte(offset: Int): Byte = (
-            this ushr (offset * 8)).toByte()
-
-    public fun Long.fullShort(offset: Int): Short = (
-            this shr (offset * 8)).toShort()
-
-    public fun Long.fullInt(offset: Int): Int = (
-            this ushr (offset * 8)).toInt()
-
-    public fun Long.joinShort(other: Long): Short = ((this ushr 56) or (other shl 8)).toShort()
-
-    public fun Long.joinInt(offset: Int, other: Long): Int = ((
-            this ushr (offset * 8)) or ((other and (-1L shl ((
-            offset - intSize) * 8)).inv()) shl ((longSize - offset) * 8))).toInt()
-
-    public fun Long.joinLong(offset: Int, other: Long): Long = ((
-            this ushr (offset * 8)) or ((other and (-1L shl ((
-            offset - longSize) * 8)).inv()) shl ((8 - offset) * 8)))
-
-    public fun Long.reverse(): Long = (
-            this.toInt().reverse().toLong() shl 32) or (
-            this ushr 32).toInt().reverse().toLong()
-
-    public fun Int.reverse(): Int = (
-            this.toShort().reverse().toInt() shl 16) or (
-            this ushr 16).toShort().reverse().toInt()
-
-    public fun Short.reverse(): Short = (
-            (this.toInt() shl 16) or (this.toInt() ushr 16)).toShort()
 
     public companion object {
         public const val byteSize: Int = Byte.SIZE_BYTES
