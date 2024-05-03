@@ -29,3 +29,6 @@ public expect class ByteBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
+
+public fun ByteBuffer.copyOf(): ByteBuffer = innerCopyOfRange(0, size)
+public fun ByteBuffer.copyOfRange(idxFrom: Int, idxTo: Int): ByteBuffer = innerCopyOfRange(idxFrom, idxTo)

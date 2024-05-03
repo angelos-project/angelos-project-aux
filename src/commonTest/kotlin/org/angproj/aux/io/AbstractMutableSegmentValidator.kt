@@ -225,24 +225,20 @@ abstract class AbstractMutableSegmentValidator {
         val m = prep(16)
         Random.nextBytes(a)
 
-        println("TEST 1")
         (0 until m.size).forEach { m[it] = a[it] }
         (0 until m.size).forEach { assertEquals(m[it], a[it]) }
 
-        println("TEST 2")
         (0 until 8).forEach { from ->
             val c = m.copyOfRange(from, 16)
             (0 until c.size).forEach {
                 assertEquals(c[it], m[from + it]) }
         }
 
-        println("TEST 3")
         (8 until 16).forEach { from ->
             val c = m.copyOfRange(0, from)
             (0 until c.size).forEach { assertEquals(c[it], m[it]) }
         }
 
-        println("TEST 4")
         (0 until 8).forEach { from ->
             val c = m.copyOfRange(from, from + 8)
             (0 until c.size).forEach { assertEquals(c[it], m[from + it]) }
@@ -250,14 +246,12 @@ abstract class AbstractMutableSegmentValidator {
 
         val c0 = m.copyOfRange(1, m.size-1)
 
-        println("TEST 5")
         (0 until c0.size).forEach {
             assertEquals(c0[it], m[1 + it])
         }
 
         val c1 = c0.copyOfRange(1, c0.size-1)
 
-        println("TEST 6")
         (0 until c1.size).forEach {
             assertEquals(c1[it], c0[1 + it])
         }
