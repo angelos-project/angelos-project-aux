@@ -16,8 +16,6 @@ package org.angproj.aux.io
 
 import org.angproj.aux.buf.*
 import org.angproj.aux.buf.Reifiable
-import org.angproj.aux.io.ByteString.Companion.intSize
-import org.angproj.aux.io.ByteString.Companion.longSize
 
 public abstract class Segment(
     size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int
@@ -27,10 +25,22 @@ public abstract class Segment(
     final override val marginSized: Int = SpeedCopy.addMarginByIndexType(idxEnd, idxSize)
 
     public fun Long.getLeftSide(offset: Int, size: Int): Long = (
-            this shl ((size - longSize - offset) * 8))
+            this shl ((size - TypeSize.long - offset) * 8))
 
     public fun Long.getRightSide(offset: Int, size: Int): Long = (
-            this ushr ((longSize - size - longSize - offset) * 8))
+            this ushr ((TypeSize.long - size - TypeSize.long - offset) * 8))
+
+    public fun Long.setLeftSide(offset: Int, size: Int, value: Long): Long {
+        val pos = (size - (TypeSize.long - offset)) * 8
+        val mask = 0xffffffffffffffffuL.toLong() ushr ((TypeSize.long - size) * 8)
+        return ((mask ushr pos).inv() and this) or (value ushr pos)
+    }
+
+    public fun Long.setRightSide(offset: Int, size: Int, value: Long): Long {
+        val pos = (TypeSize.long - size - offset) * 8
+        val mask = 0xffffffffffffffffuL.toLong() ushr ((TypeSize.long - size) * 8)
+        return ((mask shl pos).inv() and this) or (value shl pos)
+    }
 
     public inline fun <reified T: Reifiable>Long.fullByte(offset: Int): Byte = (
             this ushr (offset * 8)).toByte()
@@ -45,11 +55,11 @@ public abstract class Segment(
 
     public inline fun <reified T: Reifiable> Long.joinInt(offset: Int, other: Long): Int = ((
             this ushr (offset * 8)) or ((other and (-1L shl ((
-            offset - intSize) * 8)).inv()) shl ((longSize - offset) * 8))).toInt()
+            offset - TypeSize.int) * 8)).inv()) shl ((TypeSize.long - offset) * 8))).toInt()
 
     public inline fun <reified T: Reifiable> Long.joinLong(offset: Int, other: Long): Long = ((
             this ushr (offset * 8)) or ((other and (-1L shl ((
-            offset - longSize) * 8)).inv()) shl ((8 - offset) * 8)))
+            offset - TypeSize.long) * 8)).inv()) shl ((8 - offset) * 8)))
 
     public inline fun <reified T: Reifiable> Long.wholeByte(offset: Int, value: Byte): Long {
         val pos = offset * 8
@@ -77,8 +87,8 @@ public abstract class Segment(
     }
 
     public inline fun <reified T: Reifiable> Long.sideIntRight(offset: Int, value: Int): Long = ((
-            this and (-1L shl ((offset - intSize) * 8))) or
-            (value.toLong() ushr ((longSize - offset) * 8)))
+            this and (-1L shl ((offset - TypeSize.int) * 8))) or
+            (value.toLong() ushr ((TypeSize.long - offset) * 8)))
 
     public inline fun <reified T: Reifiable> Long.sideLongLeft(offset: Int, value: Long): Long {
         val pos = offset * 8
@@ -86,8 +96,8 @@ public abstract class Segment(
     }
 
     public inline fun <reified T: Reifiable> Long.sideLongRight(offset: Int, value: Long): Long = ((
-            this and (-1L shl ((offset - longSize) * 8))) or
-            (value ushr ((longSize - offset) * 8)))
+            this and (-1L shl ((offset - TypeSize.long) * 8))) or
+            (value ushr ((TypeSize.long - offset) * 8)))
 
     public inline fun <reified T: Reifiable> Long.reverse(): Long = (
             this.toInt().reverse<Reify>().toLong() shl 32) or (
@@ -100,3 +110,6 @@ public abstract class Segment(
     public inline fun <reified T: Reifiable> Short.reverse(): Short = (
             (this.toInt() shl 16) or (this.toInt() ushr 16)).toShort()
 }
+
+@PublishedApi
+internal inline fun <reified S: Segment> S.copyOfRange(idxFrom: Int, idxTo: Int): S = innerCopyOfRange(idxFrom, idxTo)

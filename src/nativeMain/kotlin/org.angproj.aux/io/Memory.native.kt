@@ -58,6 +58,26 @@ public actual open class Memory actual constructor(
         return (ptr + index).toCPointer<LongVar>()!!.pointed.value
     }
 
+    actual override fun setByte(index: Int, value: Byte) {
+        index.checkRangeByte<Reify>()
+        (ptr + index).toCPointer<ByteVar>()!!.pointed.value = value
+    }
+
+    actual override fun setShort(index: Int, value: Short) {
+        index.checkRangeShort<Reify>()
+        (ptr + index).toCPointer<ShortVar>()!!.pointed.value = value
+    }
+
+    actual override fun setInt(index: Int, value: Int) {
+        index.checkRangeInt<Reify>()
+        (ptr + index).toCPointer<IntVar>()!!.pointed.value = value
+    }
+
+    actual override fun setLong(index: Int, value: Long) {
+        index.checkRangeLong<Reify>()
+        (ptr + index).toCPointer<LongVar>()!!.pointed.value = value
+    }
+
     actual override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory = Memory(size, idxOff, idxEnd)
 
     override fun getPointer(): Long = data.ptr

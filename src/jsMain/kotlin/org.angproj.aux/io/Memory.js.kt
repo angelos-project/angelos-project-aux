@@ -39,6 +39,22 @@ public actual open class Memory actual constructor(size: Int) : Segment(size, ty
         throw UnsupportedOperationException("No access to native memory.")
     }
 
+    actual override fun setByte(index: Int, value: Byte) {
+        throw UnsupportedOperationException("No access to native memory.")
+    }
+
+    actual override fun setShort(index: Int, value: Short) {
+        throw UnsupportedOperationException("No access to native memory.")
+    }
+
+    actual override fun setInt(index: Int, value: Int) {
+        throw UnsupportedOperationException("No access to native memory.")
+    }
+
+    actual override fun setLong(index: Int, value: Long) {
+        throw UnsupportedOperationException("No access to native memory.")
+    }
+
     override fun close() {}
 
     public actual companion object {

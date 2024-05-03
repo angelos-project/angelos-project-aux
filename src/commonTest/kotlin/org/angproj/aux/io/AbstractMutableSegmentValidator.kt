@@ -28,7 +28,7 @@ abstract class AbstractMutableSegmentValidator {
     val testInt: Int = 0x11223344
     val testLong: Long = 0x1122334455667711
 
-    fun <E: MutableSegment>byteWriteReadSync(prep: (size: Int) -> E) {
+    fun <E: Segment>byteWriteReadSync(prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)
 
@@ -36,7 +36,7 @@ abstract class AbstractMutableSegmentValidator {
         b.forEachIndexed { index, byte -> assertEquals(m.getByte(index), byte) }
     }
 
-    fun <E: MutableSegment>shortReadAsync(prep: (size: Int) -> E) {
+    fun <E: Segment>shortReadAsync(prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)
 
@@ -44,7 +44,7 @@ abstract class AbstractMutableSegmentValidator {
         (0 until b.size-1).forEach { index-> assertEquals(m.getShort(index), b.readShortAt(index)) }
     }
 
-    fun <E: MutableSegment>shortWriteAsync(prep: (size: Int) -> E) {
+    fun <E: Segment>shortWriteAsync(prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)
 
@@ -58,7 +58,7 @@ abstract class AbstractMutableSegmentValidator {
         }
     }
 
-    fun <E: MutableSegment>intReadAsync(prep: (size: Int) -> E) {
+    fun <E: Segment>intReadAsync(prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)
 
@@ -66,7 +66,7 @@ abstract class AbstractMutableSegmentValidator {
         (0 until b.size-3).forEach{ index-> assertEquals(m.getInt(index), b.readIntAt(index)) }
     }
 
-    fun <E: MutableSegment>intWriteAsync(prep: (size: Int) -> E) {
+    fun <E: Segment>intWriteAsync(prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)
 
@@ -80,7 +80,7 @@ abstract class AbstractMutableSegmentValidator {
         }
     }
 
-    fun <E: MutableSegment>longReadAsync(prep: (size: Int) -> E) {
+    fun <E: Segment>longReadAsync(prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)
 
@@ -88,7 +88,7 @@ abstract class AbstractMutableSegmentValidator {
         (0 until b.size-7).forEach{ index-> assertEquals(m.getLong(index), b.readLongAt(index)) }
     }
 
-    fun <E: MutableSegment>longWriteAsync(prep: (size: Int) -> E) {
+    fun <E: Segment>longWriteAsync(prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)
 
@@ -102,7 +102,7 @@ abstract class AbstractMutableSegmentValidator {
         }
     }
 
-    fun debug(b: ByteArray, c: ByteArray, m: MutableSegment, block: () -> Unit) {
+    fun debug(b: ByteArray, c: ByteArray, m: Segment, block: () -> Unit) {
         try {
             block()
         } catch (e: AssertionError) {
@@ -120,7 +120,7 @@ abstract class AbstractMutableSegmentValidator {
         }
     }
 
-    fun <E: MutableSegment>byteRWOutbound(prep: (size: Int) -> E) {
+    fun <E: Segment>byteRWOutbound(prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)
 
@@ -145,7 +145,7 @@ abstract class AbstractMutableSegmentValidator {
         }
     }
 
-    fun <E: MutableSegment>shortRWOutbound(prep: (size: Int) -> E) {
+    fun <E: Segment>shortRWOutbound(prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)
 
@@ -170,7 +170,7 @@ abstract class AbstractMutableSegmentValidator {
         }
     }
 
-    fun <E: MutableSegment>intRWOutbound(prep: (size: Int) -> E) {
+    fun <E: Segment>intRWOutbound(prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)
 
@@ -195,7 +195,7 @@ abstract class AbstractMutableSegmentValidator {
         }
     }
 
-    fun <E: MutableSegment>longRWOutbound(prep: (size: Int) -> E) {
+    fun <E: Segment>longRWOutbound(prep: (size: Int) -> E) {
         val b = BinHex.decodeToBin(testDataAtomic)
         val m = prep(b.size)
 
@@ -220,23 +220,29 @@ abstract class AbstractMutableSegmentValidator {
         }
     }
 
-    fun <E: MutableSegment>tryCopyOfRange(prep: (size: Int) -> E) {
+    inline fun <reified E: Segment>tryCopyOfRange(prep: (size: Int) -> E) {
         val a = ByteArray(16)
         val m = prep(16)
         Random.nextBytes(a)
 
+        println("TEST 1")
         (0 until m.size).forEach { m[it] = a[it] }
         (0 until m.size).forEach { assertEquals(m[it], a[it]) }
 
+        println("TEST 2")
         (0 until 8).forEach { from ->
             val c = m.copyOfRange(from, 16)
             (0 until c.size).forEach {
                 assertEquals(c[it], m[from + it]) }
         }
+
+        println("TEST 3")
         (8 until 16).forEach { from ->
             val c = m.copyOfRange(0, from)
             (0 until c.size).forEach { assertEquals(c[it], m[it]) }
         }
+
+        println("TEST 4")
         (0 until 8).forEach { from ->
             val c = m.copyOfRange(from, from + 8)
             (0 until c.size).forEach { assertEquals(c[it], m[from + it]) }
@@ -244,12 +250,14 @@ abstract class AbstractMutableSegmentValidator {
 
         val c0 = m.copyOfRange(1, m.size-1)
 
+        println("TEST 5")
         (0 until c0.size).forEach {
             assertEquals(c0[it], m[1 + it])
         }
 
         val c1 = c0.copyOfRange(1, c0.size-1)
 
+        println("TEST 6")
         (0 until c1.size).forEach {
             assertEquals(c1[it], c0[1 + it])
         }

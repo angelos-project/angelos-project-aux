@@ -71,7 +71,7 @@ class FloatBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> FloatBuffer = { FloatBuffer(it) }
-    val createComparison: (size: Int) -> FloatArray = { FloatArray(it) { Random.nextFloat() } }
+    val createComparison: (size: Int) -> List<Float> = { FloatArray(it) { Random.nextFloat() }.toList() }
 
 
     @Test
@@ -79,4 +79,7 @@ class FloatBufferTest: AbstractBufferTypeTest() {
 
     @Test
     fun testBufferReadWrite() = bufferReadWrite(testInt.toFloat(), createNew)
+
+    @Test
+    fun testTryCopyOfRange() = tryCopyOfRange(createNew, createComparison)
 }

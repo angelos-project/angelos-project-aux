@@ -73,7 +73,7 @@ class UByteBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> UByteBuffer = { UByteBuffer(it) }
-    val createComparison: (size: Int) -> UByteArray = { UByteArray(it) { Random.nextInt().toUByte() } }
+    val createComparison: (size: Int) -> List<UByte> = { UByteArray(it) { Random.nextInt().toUByte() }.toList() }
 
 
     @Test
@@ -81,4 +81,7 @@ class UByteBufferTest: AbstractBufferTypeTest() {
 
     @Test
     fun testBufferReadWrite() = bufferReadWrite(testByte.toUByte(), createNew)
+
+    @Test
+    fun testTryCopyOfRange() = tryCopyOfRange(createNew, createComparison)
 }

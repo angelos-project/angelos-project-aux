@@ -57,6 +57,26 @@ public actual open class Memory actual constructor(
         return unsafe.getLong(ptr + index)
     }
 
+    actual override fun setByte(index: Int, value: Byte) {
+        index.checkRangeByte<Reify>()
+        unsafe.putByte(ptr + index, value)
+    }
+
+    actual override fun setShort(index: Int, value: Short) {
+        index.checkRangeShort<Reify>()
+        unsafe.putShort(ptr + index, value)
+    }
+
+    actual override fun setInt(index: Int, value: Int) {
+        index.checkRangeInt<Reify>()
+        unsafe.putInt(ptr + index, value)
+    }
+
+    actual override fun setLong(index: Int, value: Long) {
+        index.checkRangeLong<Reify>()
+        unsafe.putLong(ptr + index, value)
+    }
+
     actual override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory = Memory(size, idxOff, idxEnd)
 
     override fun getPointer(): Long = data.ptr

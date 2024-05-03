@@ -35,6 +35,14 @@ public expect open class Memory protected constructor(
     override fun getInt(index: Int): Int
 
     override fun getLong(index: Int): Long
+
+    override fun setByte(index: Int, value: Byte)
+
+    override fun setShort(index: Int, value: Short)
+
+    override fun setInt(index: Int, value: Int)
+
+    override fun setLong(index: Int, value: Long)
 }
 
 public fun Memory.copyOf(): Memory = innerCopyOfRange(0, size)

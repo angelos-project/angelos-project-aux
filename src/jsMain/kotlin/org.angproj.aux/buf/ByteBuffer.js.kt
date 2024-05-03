@@ -45,14 +45,3 @@ public actual class ByteBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.BYTE
     }
 }
-
-public actual fun ByteBuffer.copyOfRange(
-    idxFrom: Int,
-    idxTo: Int
-): ByteBuffer {
-    TODO("Not yet implemented")
-}
-
-public actual fun ByteBuffer.copyOf(): ByteBuffer {
-    TODO("Not yet implemented")
-}

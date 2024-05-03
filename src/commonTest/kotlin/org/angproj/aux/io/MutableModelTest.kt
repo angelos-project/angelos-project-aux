@@ -18,7 +18,7 @@ import kotlin.test.Test
 
 class MutableModelTest: AbstractMutableSegmentValidator() {
 
-    private val createNew: (size: Int) -> MutableSegment = { MutableModel(it) }
+    private val createNew: (size: Int) -> Segment = { Model(it) }
 
     @Test
     fun testByteWriteReadSync() = byteWriteReadSync(createNew)

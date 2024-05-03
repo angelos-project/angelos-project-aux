@@ -30,6 +30,5 @@ public expect class UIntBuffer private constructor(
     }
 }
 
-public expect fun UIntBuffer.copyOf(): UIntBuffer
-
-public expect fun UIntBuffer.copyOfRange(idxFrom: Int, idxTo: Int): UIntBuffer
+public fun UIntBuffer.copyOf(): UIntBuffer = innerCopyOfRange(0, size)
+public fun UIntBuffer.copyOfRange(idxFrom: Int, idxTo: Int): UIntBuffer = innerCopyOfRange(idxFrom, idxTo)

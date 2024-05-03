@@ -15,9 +15,9 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.res.*
 import org.angproj.aux.res.Manager
-import org.angproj.aux.res.Memory
-import org.angproj.aux.res.allocateMemory
+import org.angproj.aux.res.speedLongSet
 import sun.misc.Unsafe
 import java.lang.ref.Cleaner.Cleanable
 
@@ -56,11 +56,13 @@ public actual abstract class AbstractBufferType<E> actual constructor(
 
     override fun speedCopy(ctx: Context): AbstractSpeedCopy {
         val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
-        val basePtr = getBasePtr(ctx.baseIdx)
-        val copyPtr = copy.getPointer()
+        val baseOffset = (ctx.baseIdx * idxSize.size)
 
         (0 until copy.length step TypeSize.long).forEach {
-            unsafe.putLong(copyPtr + it, unsafe.getLong(basePtr + it)) }
+            data.speedLongSet<Reify>(it.toLong(),
+                copy.data.speedLongGet<Reify>(baseOffset + it.toLong()))
+        }
+
         return copy
     }
 

@@ -14,7 +14,6 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.Reify
 import org.angproj.aux.buf.innerCopyOfRange
 
 public class Model private constructor(
@@ -24,26 +23,6 @@ public class Model private constructor(
     public constructor(size: Int) : this(size, 0, size)
 
     override fun create(size: Int, idxOff: Int, idxEnd: Int): Model = Model(size, idxOff, idxEnd)
-
-    /*protected fun copyOfRange2(idxFrom: Int, idxTo: Int): Model {
-        val factor = TypeSize.long / idxSize.size
-        val newIdxOff = (idxOff + idxFrom) % factor
-        val newSize = idxTo - idxFrom
-        val newIdxEnd = newIdxOff + newSize
-        val baseIdx = (idxOff + idxFrom) - newIdxOff
-
-        val copy = create(newSize, newIdxOff, newIdxEnd)
-
-        val basePtr = baseIdx / TypeSize.long
-        val copyPtr = 0
-
-        (0 until copy.length / TypeSize.long).forEach {
-            copy.data[copyPtr + it] = data[basePtr + it]
-        }
-        return copy
-    }*/
-
-    public override fun close() { }
 
     public companion object {
         public val typeSize: TypeSize = TypeSize.BYTE

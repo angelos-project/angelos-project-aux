@@ -23,23 +23,6 @@ public class Bytes private constructor(
     public constructor(size: Int) : this(size, 0, size)
 
     override fun create(size: Int, idxOff: Int, idxEnd: Int): Bytes = Bytes(size, idxOff, idxEnd)
-
-    /*protected fun copyOfRange2(idxFrom: Int, idxTo: Int): Bytes {
-        val factor = TypeSize.long / idxSize.size
-        //val newIdxOff = idxFrom % factor
-        val newIdxOff = (idxOff + idxFrom) % factor
-        val newSize = idxTo - idxFrom
-        val newIdxEnd = newIdxOff + newSize
-        val baseIdx = (idxOff + idxFrom) - newIdxOff
-
-        val copy = create(newSize, newIdxOff, newIdxEnd)
-
-        val basePtr = (baseIdx * idxSize.size) + newIdxOff
-        val copyPtr = newIdxOff
-
-        data.copyInto(copy.data, copyPtr, basePtr, basePtr + newSize)
-        return copy
-    }*/
 }
 
 public fun Bytes.copyOfRange(

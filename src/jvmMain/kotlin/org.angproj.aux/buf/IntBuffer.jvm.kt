@@ -15,7 +15,6 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.io.innerMemCopyOfRange
 import sun.misc.Unsafe
 import org.angproj.aux.res.Memory as Chunk
 
@@ -43,10 +42,3 @@ public actual class IntBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.INT
     }
 }
-
-public actual fun IntBuffer.copyOfRange(
-    idxFrom: Int,
-    idxTo: Int
-): IntBuffer = innerCopyOfRange(idxFrom, idxTo)
-
-public actual fun IntBuffer.copyOf(): IntBuffer = innerCopyOfRange(0, size)

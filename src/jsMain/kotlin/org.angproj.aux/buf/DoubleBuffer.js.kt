@@ -45,14 +45,3 @@ public actual class DoubleBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.DOUBLE
     }
 }
-
-public actual fun DoubleBuffer.copyOfRange(
-    idxFrom: Int,
-    idxTo: Int
-): DoubleBuffer {
-    TODO("Not yet implemented")
-}
-
-public actual fun DoubleBuffer.copyOf(): DoubleBuffer {
-    TODO("Not yet implemented")
-}

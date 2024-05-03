@@ -16,7 +16,6 @@ package org.angproj.aux.buf
 
 import kotlinx.cinterop.*
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.io.innerMemCopyOfRange
 
 @Suppress(
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"
@@ -33,7 +32,6 @@ public actual class FloatBuffer actual constructor(
     actual override operator fun get(index: Int): Float {
         index.checkRange<Reify>()
         return (ptr + index * TypeSize.float).toCPointer<FloatVar>()!!.pointed.value
-
     }
 
     actual override operator fun set(index: Int, value: Float) {
@@ -45,10 +43,3 @@ public actual class FloatBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.FLOAT
     }
 }
-
-public actual fun FloatBuffer.copyOfRange(
-    idxFrom: Int,
-    idxTo: Int
-): FloatBuffer = innerCopyOfRange(idxFrom, idxTo)
-
-public actual fun FloatBuffer.copyOf(): FloatBuffer = innerCopyOfRange(0, size)

@@ -14,8 +14,6 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.Reifiable
-
 @OptIn(ExperimentalStdlibApi::class)
 public interface ByteString: AutoCloseable {
 
@@ -26,16 +24,19 @@ public interface ByteString: AutoCloseable {
     public fun getInt(index: Int): Int
     public fun getLong(index: Int): Long
 
-    public override fun close() {}
-
     public operator fun get(index: Int): Byte = getByte(index)
 
-    public companion object {
-        public const val byteSize: Int = Byte.SIZE_BYTES
-        public const val shortSize: Int = Short.SIZE_BYTES
-        public const val intSize: Int = Int.SIZE_BYTES
-        public const val longSize: Int = Long.SIZE_BYTES
+    public fun setByte(index: Int, value: Byte): Unit
+    public fun setShort(index: Int, value: Short): Unit
+    public fun setInt(index: Int, value: Int): Unit
+    public fun setLong(index: Int, value: Long): Unit
 
-        public val typeSizes: Set<Int> = setOf(byteSize, shortSize, intSize, longSize)
+    public operator fun set(index: Int, value: Byte): Unit = setByte(index, value)
+
+    public override fun close() {}
+
+    public companion object {
+
+        public val typeSizes: Set<Int> = setOf(TypeSize.byte, TypeSize.short, TypeSize.int, TypeSize.long)
     }
 }

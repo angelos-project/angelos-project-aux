@@ -71,7 +71,7 @@ class IntBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> IntBuffer = { IntBuffer(it) }
-    val createComparison: (size: Int) -> IntArray = { IntArray(it) { Random.nextInt() } }
+    val createComparison: (size: Int) -> List<Int> = { IntArray(it) { Random.nextInt() }.toList() }
 
 
     @Test
@@ -79,4 +79,7 @@ class IntBufferTest: AbstractBufferTypeTest() {
 
     @Test
     fun testBufferReadWrite() = bufferReadWrite(testInt, createNew)
+
+    @Test
+    fun testTryCopyOfRange() = tryCopyOfRange(createNew, createComparison)
 }

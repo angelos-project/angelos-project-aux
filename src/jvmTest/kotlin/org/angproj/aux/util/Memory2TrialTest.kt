@@ -1,6 +1,6 @@
 package org.angproj.aux.util
 
-import org.angproj.aux.io.MutableMemory
+import org.angproj.aux.io.Memory
 import kotlin.test.Test
 import kotlin.time.measureTime
 
@@ -10,13 +10,13 @@ class Memory2TrialTest {
     fun testGC() {
         val timeMem = measureTime {
             repeat(10_000) {
-                MutableMemory(1_000_000).close()
+                Memory(1_000_000).close()
             }
         }
         println(timeMem)
         val timeUse = measureTime {
             repeat(10_000) {
-                MutableMemory(1_000_000)
+                Memory(1_000_000)
             }
         }
         println(timeUse)

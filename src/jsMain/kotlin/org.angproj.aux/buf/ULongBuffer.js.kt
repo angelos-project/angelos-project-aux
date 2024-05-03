@@ -45,14 +45,3 @@ public actual class ULongBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.U_LONG
     }
 }
-
-public actual fun ULongBuffer.copyOfRange(
-    idxFrom: Int,
-    idxTo: Int
-): ULongBuffer {
-    TODO("Not yet implemented")
-}
-
-public actual fun ULongBuffer.copyOf(): ULongBuffer {
-    TODO("Not yet implemented")
-}

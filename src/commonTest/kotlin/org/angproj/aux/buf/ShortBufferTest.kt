@@ -71,7 +71,7 @@ class ShortBufferTest: AbstractBufferTypeTest() {
     }
 
     val createNew: (size: Int) -> ShortBuffer = { ShortBuffer(it) }
-    val createComparison: (size: Int) -> ShortArray = { ShortArray(it) { Random.nextInt().toShort() } }
+    val createComparison: (size: Int) -> List<Short> = { ShortArray(it) { Random.nextInt().toShort() }.toList() }
 
 
     @Test
@@ -79,4 +79,7 @@ class ShortBufferTest: AbstractBufferTypeTest() {
 
     @Test
     fun testBufferReadWrite() = bufferReadWrite(testShort, createNew)
+
+    @Test
+    fun testTryCopyOfRange() = tryCopyOfRange(createNew, createComparison)
 }

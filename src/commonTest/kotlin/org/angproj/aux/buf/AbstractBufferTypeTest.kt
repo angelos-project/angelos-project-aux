@@ -14,9 +14,7 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.MutableSegment
 import org.angproj.aux.util.BinHex
-import kotlin.random.Random
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
@@ -61,22 +59,28 @@ abstract class AbstractBufferTypeTest {
         (0 until m.size).forEach { assertEquals(m[it], tVal) }
     }
 
-    fun <T: Number, C: MutableList<T>, E: AbstractBufferType<T>>tryCopyOfRange(prep: (size: Int) -> E, comp: (size: Int) -> C) {
+    inline fun <T, C: List<T>, reified E: AbstractBufferType<T>>tryCopyOfRange(prep: (size: Int) -> E, comp: (size: Int) -> C) {
         val a = comp(16)
-        val m = prep(16) as E
+        val m = prep(16)
+
 
         (0 until m.size).forEach { m[it] = a[it] }
         (0 until m.size).forEach { assertEquals(m[it], a[it]) }
+
 
         (0 until 8).forEach { from ->
             val c = m.copyOfRange(from, 16)
             (0 until c.size).forEach {
                 assertEquals(c[it], m[from + it]) }
         }
+
+
         (8 until 16).forEach { from ->
             val c = m.copyOfRange(0, from)
             (0 until c.size).forEach { assertEquals(c[it], m[it]) }
         }
+
+
         (0 until 8).forEach { from ->
             val c = m.copyOfRange(from, from + 8)
             (0 until c.size).forEach { assertEquals(c[it], m[from + it]) }
@@ -84,9 +88,11 @@ abstract class AbstractBufferTypeTest {
 
         val c0 = m.copyOfRange(1, m.size-1)
 
+
         (0 until c0.size).forEach {
             assertEquals(c0[it], m[1 + it])
         }
+
 
         val c1 = c0.copyOfRange(1, c0.size-1)
 

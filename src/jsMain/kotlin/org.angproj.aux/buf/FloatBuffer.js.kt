@@ -45,14 +45,3 @@ public actual class FloatBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.FLOAT
     }
 }
-
-public actual fun FloatBuffer.copyOfRange(
-    idxFrom: Int,
-    idxTo: Int
-): FloatBuffer {
-    TODO("Not yet implemented")
-}
-
-public actual fun FloatBuffer.copyOf(): FloatBuffer {
-    TODO("Not yet implemented")
-}

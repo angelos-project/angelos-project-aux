@@ -29,7 +29,3 @@ public expect class ByteBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
-
-public expect fun ByteBuffer.copyOf(): ByteBuffer
-
-public expect fun ByteBuffer.copyOfRange(idxFrom: Int, idxTo: Int): ByteBuffer

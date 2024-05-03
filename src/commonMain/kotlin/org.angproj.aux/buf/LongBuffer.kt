@@ -30,6 +30,5 @@ public expect class LongBuffer private constructor(
     }
 }
 
-public expect fun LongBuffer.copyOf(): LongBuffer
-
-public expect fun LongBuffer.copyOfRange(idxFrom: Int, idxTo: Int): LongBuffer
+public fun LongBuffer.copyOf(): LongBuffer = innerCopyOfRange(0, size)
+public fun LongBuffer.copyOfRange(idxFrom: Int, idxTo: Int): LongBuffer = innerCopyOfRange(idxFrom, idxTo)

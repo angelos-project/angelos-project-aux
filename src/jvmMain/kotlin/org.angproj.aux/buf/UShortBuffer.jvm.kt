@@ -42,10 +42,3 @@ public actual class UShortBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.U_SHORT
     }
 }
-
-public actual fun UShortBuffer.copyOfRange(
-    idxFrom: Int,
-    idxTo: Int
-): UShortBuffer = innerCopyOfRange(idxFrom, idxTo)
-
-public actual fun UShortBuffer.copyOf(): UShortBuffer = innerCopyOfRange(0, size)

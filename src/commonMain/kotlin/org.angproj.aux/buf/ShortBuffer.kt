@@ -30,6 +30,5 @@ public expect class ShortBuffer private constructor(
     }
 }
 
-public expect fun ShortBuffer.copyOf(): ShortBuffer
-
-public expect fun ShortBuffer.copyOfRange(idxFrom: Int, idxTo: Int): ShortBuffer
+public fun ShortBuffer.copyOf(): ShortBuffer = innerCopyOfRange(0, size)
+public fun ShortBuffer.copyOfRange(idxFrom: Int, idxTo: Int): ShortBuffer = innerCopyOfRange(idxFrom, idxTo)

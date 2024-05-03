@@ -45,14 +45,3 @@ public actual class IntBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.INT
     }
 }
-
-public actual fun IntBuffer.copyOfRange(
-    idxFrom: Int,
-    idxTo: Int
-): IntBuffer {
-    TODO("Not yet implemented")
-}
-
-public actual fun IntBuffer.copyOf(): IntBuffer {
-    TODO("Not yet implemented")
-}

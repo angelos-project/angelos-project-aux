@@ -30,6 +30,5 @@ public expect class DoubleBuffer private constructor(
     }
 }
 
-public expect fun DoubleBuffer.copyOf(): DoubleBuffer
-
-public expect fun DoubleBuffer.copyOfRange(idxFrom: Int, idxTo: Int): DoubleBuffer
+public fun DoubleBuffer.copyOf(): DoubleBuffer = innerCopyOfRange(0, size)
+public fun DoubleBuffer.copyOfRange(idxFrom: Int, idxTo: Int): DoubleBuffer = innerCopyOfRange(idxFrom, idxTo)

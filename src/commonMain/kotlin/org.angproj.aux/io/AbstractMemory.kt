@@ -35,13 +35,13 @@ public abstract class AbstractMemory protected constructor(
 
     override fun speedCopy(ctx: Context): AbstractSpeedCopy {
         val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
-        val basePtr = getBasePtr(ctx.baseIdx)
-        val copyPtr = copy.getPointer()
+        val baseOffset = (ctx.baseIdx * idxSize.size)
 
         (0 until copy.length step TypeSize.long).forEach {
-            data.speedLongSet<Reify>(copyPtr + it.toLong(),
-                copy.data.speedLongGet<Reify>(basePtr + it.toLong()))
+            data.speedLongSet<Reify>(it.toLong(),
+                copy.data.speedLongGet<Reify>(baseOffset + it.toLong()))
         }
+
         return copy
     }
 
@@ -52,6 +52,14 @@ public abstract class AbstractMemory protected constructor(
     abstract override fun getInt(index: Int): Int
 
     abstract override fun getLong(index: Int): Long
+
+    abstract override fun setByte(index: Int, value: Byte)
+
+    abstract override fun setShort(index: Int, value: Short)
+
+    abstract override fun setInt(index: Int, value: Int)
+
+    abstract override fun setLong(index: Int, value: Long)
 
     public companion object {
         public val typeSize: TypeSize = TypeSize.BYTE

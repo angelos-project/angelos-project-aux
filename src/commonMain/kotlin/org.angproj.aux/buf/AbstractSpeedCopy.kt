@@ -23,6 +23,9 @@ public abstract class AbstractSpeedCopy internal constructor(
     @PublishedApi internal val idxEnd: Int = idxOff + size
 ): SpeedCopy {
 
+    public inline val lastIndex: Int
+        get() = size-1
+
     public inline fun <reified T: Reifiable> Int.checkRange(): Unit = checkRangeByte<Reify>()
 
     public inline fun <reified T: Reifiable> Int.checkRangeByte(): Unit = when(this) {
@@ -71,24 +74,16 @@ public abstract class AbstractSpeedCopy internal constructor(
         return copy
     }
 
-
     internal open fun getPointer(): Long = -1
 
     internal open fun getBasePtr(baseIdx: Int): Long = getPointer() + (baseIdx * idxSize.size)
 
-    /*protected fun copyOfRange4(idxFrom: Int, idxTo: Int): Model {
-        val basePtr = baseIdx / TypeSize.long
-        val copyPtr = 0
-
-        (0 until copy.length / TypeSize.long).forEach {
-            copy.data[copyPtr + it] = data[basePtr + it]
-        }
-        return copy
-    }*/
+    @PublishedApi
     internal abstract fun speedCopy(ctx: Context): AbstractSpeedCopy
 
-    internal inline fun calculateContext(idxFrom: Int, idxTo: Int): Context {
-        if(idxFrom !in 0..< size || idxTo !in 0..< size) throw IllegalArgumentException("Illegal range.")
+    @PublishedApi
+    internal fun calculateContext(idxFrom: Int, idxTo: Int): Context {
+        if(idxFrom !in 0.. size || idxTo !in 0.. size) throw IllegalArgumentException("Illegal range.")
         if(idxFrom > idxTo) throw IllegalStateException("Wrong sizes")
 
         val factor = TypeSize.long / idxSize.size
@@ -105,12 +100,14 @@ public abstract class AbstractSpeedCopy internal constructor(
         val newSize: Int,
         val newIdxEnd: Int,
         val baseIdx: Int
-    )
+    ) {
+        override fun toString(): String = "$factor, $newIdxOff, $newSize, $newIdxEnd, $baseIdx"
+    }
 }
 
+@PublishedApi
 internal inline fun<reified T: AbstractSpeedCopy> T.innerCopyOfRange(idxFrom: Int, idxTo: Int): T {
     val ctx = calculateContext(idxFrom, idxTo)
-    //val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd) as T
     return speedCopy(ctx) as T
 }
 

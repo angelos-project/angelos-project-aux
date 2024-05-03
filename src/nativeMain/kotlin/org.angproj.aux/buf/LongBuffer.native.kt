@@ -16,7 +16,6 @@ package org.angproj.aux.buf
 
 import kotlinx.cinterop.*
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.io.innerMemCopyOfRange
 
 @Suppress(
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"
@@ -44,10 +43,3 @@ public actual class LongBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.LONG
     }
 }
-
-public actual fun LongBuffer.copyOfRange(
-    idxFrom: Int,
-    idxTo: Int
-): LongBuffer = innerCopyOfRange(idxFrom, idxTo)
-
-public actual fun LongBuffer.copyOf(): LongBuffer = innerCopyOfRange(0, size)

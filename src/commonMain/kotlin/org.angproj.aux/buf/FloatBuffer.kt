@@ -30,6 +30,5 @@ public expect class FloatBuffer private constructor(
     }
 }
 
-public expect fun FloatBuffer.copyOf(): FloatBuffer
-
-public expect fun FloatBuffer.copyOfRange(idxFrom: Int, idxTo: Int): FloatBuffer
+public fun FloatBuffer.copyOf(): FloatBuffer = innerCopyOfRange(0, size)
+public fun FloatBuffer.copyOfRange(idxFrom: Int, idxTo: Int): FloatBuffer = innerCopyOfRange(idxFrom, idxTo)

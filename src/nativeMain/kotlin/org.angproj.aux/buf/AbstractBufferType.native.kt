@@ -18,6 +18,8 @@ import kotlinx.cinterop.*
 import org.angproj.aux.io.TypeSize
 import org.angproj.aux.res.Memory
 import org.angproj.aux.res.allocateMemory
+import org.angproj.aux.res.speedLongGet
+import org.angproj.aux.res.speedLongSet
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.Cleaner
 import kotlin.native.ref.createCleaner
@@ -27,7 +29,7 @@ import kotlin.native.ref.createCleaner
     "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
     "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING",
 )
-@OptIn(ExperimentalNativeApi::class, ExperimentalForeignApi::class)
+@OptIn(ExperimentalNativeApi::class)
 public actual abstract class AbstractBufferType<E> actual constructor(
     size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int
 ) : AbstractSpeedCopy(size, idxSize, idxOff, idxEnd), BufferType<E> {
@@ -58,13 +60,13 @@ public actual abstract class AbstractBufferType<E> actual constructor(
 
     override fun speedCopy(ctx: Context): AbstractSpeedCopy {
         val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
-        val basePtr = getBasePtr(ctx.baseIdx)
-        val copyPtr = copy.getPointer()
+        val baseOffset = (ctx.baseIdx * idxSize.size)
 
         (0 until copy.length step TypeSize.long).forEach {
-            (copyPtr + it).toCPointer<LongVar>()!!.pointed.value = (
-                    basePtr + it).toCPointer<LongVar>()!!.pointed.value
+            data.speedLongSet<Reify>(it.toLong(),
+                copy.data.speedLongGet<Reify>(baseOffset + it.toLong()))
         }
+
         return copy
     }
 }

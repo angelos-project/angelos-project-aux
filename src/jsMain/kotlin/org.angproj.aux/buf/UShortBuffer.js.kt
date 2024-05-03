@@ -45,14 +45,3 @@ public actual class UShortBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.U_SHORT
     }
 }
-
-public actual fun UShortBuffer.copyOfRange(
-    idxFrom: Int,
-    idxTo: Int
-): UShortBuffer {
-    TODO("Not yet implemented")
-}
-
-public actual fun UShortBuffer.copyOf(): UShortBuffer {
-    TODO("Not yet implemented")
-}

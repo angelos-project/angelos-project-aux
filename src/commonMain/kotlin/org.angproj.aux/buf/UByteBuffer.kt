@@ -30,6 +30,5 @@ public expect class UByteBuffer private constructor(
     }
 }
 
-public expect fun UByteBuffer.copyOf(): UByteBuffer
-
-public expect fun UByteBuffer.copyOfRange(idxFrom: Int, idxTo: Int): UByteBuffer
+public fun UByteBuffer.copyOf(): UByteBuffer = innerCopyOfRange(0, size)
+public fun UByteBuffer.copyOfRange(idxFrom: Int, idxTo: Int): UByteBuffer = innerCopyOfRange(idxFrom, idxTo)

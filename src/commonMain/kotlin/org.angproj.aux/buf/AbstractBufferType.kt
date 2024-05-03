@@ -25,3 +25,6 @@ public expect abstract class AbstractBufferType<E>(
     public abstract override operator fun get(index: Int): E
     public abstract override operator fun set(index: Int, value: E)
 }
+
+@PublishedApi
+internal inline fun <E, reified S: AbstractBufferType<E>> S.copyOfRange(idxFrom: Int, idxTo: Int): S = innerCopyOfRange(idxFrom, idxTo)
