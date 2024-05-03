@@ -23,17 +23,11 @@ public actual class IntBuffer actual constructor(
 
     public actual constructor(size: Int) : this(size, 0, size)
 
-    override fun create(size: Int): IntBuffer = IntBuffer(size)
-    override fun copyOf(): IntBuffer = create(idxEnd).also { data.copyInto(it.data) }
-
-    public fun copyOfRange(fromIdx: Int, toIdx: Int): IntBuffer {
-        check(fromIdx in 0..<size && toIdx in 0..<size && fromIdx < toIdx)
-        val from = fromIdx + idxOff
-        val to = toIdx + idxOff
-        return create(to - from).also { data.copyInto(it.data, 0, from, to) }
+    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractBufferType<Int> {
+        TODO("Not yet implemented")
     }
 
-    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
     override val length: Int = marginSized * idxSize.size
     private val data: IntArray = IntArray(marginSized)
 
@@ -50,4 +44,15 @@ public actual class IntBuffer actual constructor(
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.INT
     }
+}
+
+public actual fun IntBuffer.copyOfRange(
+    idxFrom: Int,
+    idxTo: Int
+): IntBuffer {
+    TODO("Not yet implemented")
+}
+
+public actual fun IntBuffer.copyOf(): IntBuffer {
+    TODO("Not yet implemented")
 }

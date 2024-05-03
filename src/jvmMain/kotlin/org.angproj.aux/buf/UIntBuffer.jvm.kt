@@ -15,6 +15,7 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.innerMemCopyOfRange
 import sun.misc.Unsafe
 import org.angproj.aux.res.Memory as Chunk
 
@@ -26,12 +27,6 @@ public actual class UIntBuffer actual constructor(
     public actual constructor(size: Int) : this(size, 0, size)
 
     override fun create(size: Int, idxOff: Int, idxEnd: Int): UIntBuffer = UIntBuffer(size, idxOff, idxEnd)
-
-    override fun copyOf(): AbstractBufferType<UInt> {
-        TODO("Not yet implemented")
-    }
-
-    public override fun copyOfRange(idxFrom: Int, idxTo: Int): UIntBuffer = copyOfRange2(idxFrom, idxTo) as UIntBuffer
 
     actual override operator fun get(index: Int): UInt {
         index.checkRange<Reify>()
@@ -48,3 +43,10 @@ public actual class UIntBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.U_INT
     }
 }
+
+public actual fun UIntBuffer.copyOfRange(
+    idxFrom: Int,
+    idxTo: Int
+): UIntBuffer = innerCopyOfRange(idxFrom, idxTo)
+
+public actual fun UIntBuffer.copyOf(): UIntBuffer = innerCopyOfRange(0, size)

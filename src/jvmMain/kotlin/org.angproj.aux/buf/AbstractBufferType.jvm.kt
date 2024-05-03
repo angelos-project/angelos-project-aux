@@ -23,9 +23,8 @@ import java.lang.ref.Cleaner.Cleanable
 
 @Suppress(
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
-    "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
     "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING",
-    "UNCHECKED_CAST",
+    "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
 )
 public actual abstract class AbstractBufferType<E> actual constructor(
     size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int
@@ -47,11 +46,6 @@ public actual abstract class AbstractBufferType<E> actual constructor(
         clean.clean()
     }
 
-    protected fun copyOfRange2(idxFrom: Int, idxTo: Int): AbstractBufferType<E> = innerCopyOfRange(idxFrom, idxTo
-    ) { basePtr, copyPtr, offset ->
-        unsafe.putLong(copyPtr + offset, unsafe.getLong(basePtr + offset))
-    } as AbstractBufferType<E>
-
     override fun getPointer(): Long = data.ptr
 
     actual abstract override fun create(
@@ -60,8 +54,15 @@ public actual abstract class AbstractBufferType<E> actual constructor(
         idxEnd: Int
     ): AbstractBufferType<E>
 
-    actual abstract override fun copyOf(): AbstractBufferType<E>
-    actual abstract override fun copyOfRange(idxFrom: Int, idxTo: Int): AbstractBufferType<E>
+    override fun speedCopy(ctx: Context): AbstractSpeedCopy {
+        val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
+        val basePtr = getBasePtr(ctx.baseIdx)
+        val copyPtr = copy.getPointer()
+
+        (0 until copy.length step TypeSize.long).forEach {
+            unsafe.putLong(copyPtr + it, unsafe.getLong(basePtr + it)) }
+        return copy
+    }
 
     public companion object {
         internal val unsafe: Unsafe = Memory.unsafe

@@ -27,9 +27,6 @@ public interface SpeedCopy {
     public val length: Int
     public val marginSized: Int
 
-    public fun copyOf(): SpeedCopy
-    public fun copyOfRange(idxFrom: Int, idxTo: Int): SpeedCopy
-
     public companion object {
         @JvmStatic
         public fun addMarginInTotalBytes(indexCount: Int, typeSize: TypeSize): Int {

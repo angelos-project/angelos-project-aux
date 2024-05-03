@@ -15,6 +15,7 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.innerMemCopyOfRange
 import sun.misc.Unsafe
 import org.angproj.aux.res.Memory as Chunk
 
@@ -26,12 +27,6 @@ public actual class FloatBuffer actual constructor(
     public actual constructor(size: Int) : this(size, 0, size)
 
     override fun create(size: Int, idxOff: Int, idxEnd: Int): FloatBuffer = FloatBuffer(size, idxOff, idxEnd)
-
-    override fun copyOf(): AbstractBufferType<Float> {
-        TODO("Not yet implemented")
-    }
-
-    public override fun copyOfRange(idxFrom: Int, idxTo: Int): FloatBuffer = copyOfRange2(idxFrom, idxTo) as FloatBuffer
 
     actual override operator fun get(index: Int): Float {
         index.checkRange<Reify>()
@@ -48,3 +43,10 @@ public actual class FloatBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.FLOAT
     }
 }
+
+public actual fun FloatBuffer.copyOfRange(
+    idxFrom: Int,
+    idxTo: Int
+): FloatBuffer = innerCopyOfRange(idxFrom, idxTo)
+
+public actual fun FloatBuffer.copyOf(): FloatBuffer = innerCopyOfRange(0, size)

@@ -21,14 +21,6 @@ import org.angproj.aux.buf.Reifiable
 @OptIn(ExperimentalForeignApi::class)
 public actual class Memory(public actual val size: Int, public actual val ptr: Long): Cleanable {
 
-    /*
-    * How to get:
-    * (ptr + index)!!.reinterpret<ShortVar>().pointed.value
-    *
-    * How to set:
-    * (ptr + index)!!.reinterpret<ShortVar>().pointed.value = value
-    * */
-
     public override fun dispose() {
         nativeHeap.free(ptr.toCPointer<ByteVar>()!!)
     }
@@ -37,6 +29,6 @@ public actual class Memory(public actual val size: Int, public actual val ptr: L
 @OptIn(ExperimentalForeignApi::class)
 public actual fun allocateMemory(size: Int): Memory = Memory(size, nativeHeap.allocArray<ByteVar>(size).toLong())
 @OptIn(ExperimentalForeignApi::class)
-internal actual inline fun <reified T: Reifiable> Memory.speedLongGet(index: Int): Long = (ptr + index).toCPointer<LongVar>()!!.pointed.value
+internal actual inline fun <reified T: Reifiable> Memory.speedLongGet(index: Long): Long = (ptr + index).toCPointer<LongVar>()!!.pointed.value
 @OptIn(ExperimentalForeignApi::class)
-internal actual inline fun <reified T: Reifiable> Memory.speedLongSet(index: Int, value: Long) { (ptr + index).toCPointer<LongVar>()!!.pointed.value = value }
+internal actual inline fun <reified T: Reifiable> Memory.speedLongSet(index: Long, value: Long) { (ptr + index).toCPointer<LongVar>()!!.pointed.value = value }

@@ -29,3 +29,7 @@ public expect class UIntBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
+
+public expect fun UIntBuffer.copyOf(): UIntBuffer
+
+public expect fun UIntBuffer.copyOfRange(idxFrom: Int, idxTo: Int): UIntBuffer

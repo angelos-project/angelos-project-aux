@@ -24,6 +24,6 @@ public expect class Memory: Cleanable {
 
 public expect fun allocateMemory(size: Int): Memory
 
-internal expect inline fun <reified T: Reifiable> Memory.speedLongGet(index: Int): Long
+internal expect inline fun <reified T: Reifiable> Memory.speedLongGet(index: Long): Long
 
-internal expect inline fun <reified T: Reifiable> Memory.speedLongSet(index: Int, value: Long)
+internal expect inline fun <reified T: Reifiable> Memory.speedLongSet(index: Long, value: Long)

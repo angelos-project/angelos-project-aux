@@ -55,3 +55,11 @@ public actual open class Memory actual constructor(size: Int) : Segment(size, ty
     override val length: Int
         get() = TODO("Not yet implemented")
 }
+
+internal actual inline fun <reified T : Memory> T.longCopy(
+    basePtr: Long,
+    copyPtr: Long,
+    offset: Int
+) {
+    throw UnsupportedOperationException()
+}

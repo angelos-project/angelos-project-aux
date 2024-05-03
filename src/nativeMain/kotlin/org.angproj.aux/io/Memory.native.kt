@@ -28,17 +28,12 @@ import org.angproj.aux.res.Memory as Chunk
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 public actual open class Memory actual constructor(
     size: Int, idxOff: Int, idxEnd: Int
-) : Segment(size, typeSize, idxOff, idxEnd) {
+) : AbstractMemory(size, idxOff, idxEnd) {
 
     public actual constructor(size: Int) : this(size, 0, size)
 
-    protected actual val data: Chunk = allocateMemory(length)
+    actual final override val data: Chunk = allocateMemory(length)
     protected val ptr: Long = data.ptr + idxOff
-
-    init {
-        // Must be BYTE
-        require(typeSize == TypeSize.BYTE)
-    }
 
     private val cleaner: Cleaner = createCleaner(data) { data.dispose() }
     override fun close() { data.dispose() }
@@ -65,19 +60,6 @@ public actual open class Memory actual constructor(
 
     actual override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory = Memory(size, idxOff, idxEnd)
 
-    public actual override fun copyOfRange(idxFrom: Int, idxTo: Int): Memory = innerCopyOfRange(idxFrom, idxTo
-    ) { basePtr, copyPtr, offset ->
-        (copyPtr + offset).toCPointer<LongVar>()!!.pointed.value = (
-                basePtr + offset).toCPointer<LongVar>()!!.pointed.value
-    } as Memory
-
-    override fun getPointer(): Long = data.ptr.toLong()
-
-    actual override fun copyOf(): Memory {
-        TODO("Not yet implemented")
-    }
-
-    public actual companion object {
-        public actual val typeSize: TypeSize = TypeSize.BYTE
-    }
+    override fun getPointer(): Long = data.ptr
 }
+

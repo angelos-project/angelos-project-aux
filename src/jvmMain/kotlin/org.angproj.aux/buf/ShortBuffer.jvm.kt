@@ -15,6 +15,7 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.innerMemCopyOfRange
 import sun.misc.Unsafe
 import org.angproj.aux.res.Memory as Chunk
 
@@ -26,12 +27,6 @@ public actual class ShortBuffer actual constructor(
     public actual constructor(size: Int) : this(size, 0, size)
 
     override fun create(size: Int, idxOff: Int, idxEnd: Int): ShortBuffer = ShortBuffer(size, idxOff, idxEnd)
-
-    override fun copyOf(): AbstractBufferType<Short> {
-        TODO("Not yet implemented")
-    }
-
-    public override fun copyOfRange(idxFrom: Int, idxTo: Int): ShortBuffer = copyOfRange2(idxFrom, idxTo) as ShortBuffer
 
     actual override operator fun get(index: Int): Short {
         index.checkRange<Reify>()
@@ -48,3 +43,10 @@ public actual class ShortBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.SHORT
     }
 }
+
+public actual fun ShortBuffer.copyOfRange(
+    idxFrom: Int,
+    idxTo: Int
+): ShortBuffer = innerCopyOfRange(idxFrom, idxTo)
+
+public actual fun ShortBuffer.copyOf(): ShortBuffer = innerCopyOfRange(0, size)

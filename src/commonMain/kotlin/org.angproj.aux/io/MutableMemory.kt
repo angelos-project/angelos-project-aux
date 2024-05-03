@@ -14,18 +14,27 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.innerCopyOfRange
+import org.angproj.aux.res.Memory
+
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class MutableMemory(
     size: Int, idxOff: Int, idxEnd: Int
-) : Memory, MutableSegment {
+) : AbstractMemory, MutableSegment {
 
     public constructor(size: Int)
 
+    final override val data: Memory
+
     override fun create(size: Int, idxOff: Int, idxEnd: Int): MutableMemory
 
-    override fun copyOf(): MutableMemory
+    override fun getByte(index: Int): Byte
 
-    override fun copyOfRange(idxFrom: Int, idxTo: Int): MutableMemory
+    override fun getShort(index: Int): Short
+
+    override fun getInt(index: Int): Int
+
+    override fun getLong(index: Int): Long
 
     override fun setByte(index: Int, value: Byte)
 
@@ -35,3 +44,7 @@ public expect class MutableMemory(
 
     override fun setLong(index: Int, value: Long)
 }
+
+public fun MutableMemory.copyOf(): MutableMemory = innerCopyOfRange(0, size)
+
+public fun MutableMemory.copyOfRange(idxFrom: Int, idxTo: Int): MutableMemory = innerCopyOfRange(idxFrom, idxTo)

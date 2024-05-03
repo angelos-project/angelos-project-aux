@@ -16,20 +16,15 @@ package org.angproj.aux.io
 
 import org.angproj.aux.buf.Reifiable
 import org.angproj.aux.buf.Reify
+import org.angproj.aux.buf.innerCopyOfRange
 
-public class MutableBytes(
+public class MutableBytes private constructor(
     size: Int, idxOff: Int, idxEnd: Int
-) : Bytes(size, idxOff, idxEnd), MutableSegment {
+) : AbstractBytes(size, idxOff, idxEnd), MutableSegment {
 
     public constructor(size: Int) : this(size, 0, size)
 
     override fun create(size: Int, idxOff: Int, idxEnd: Int): MutableBytes = MutableBytes(size, idxOff, idxEnd)
-
-    override fun copyOf(): MutableBytes {
-        TODO("Not yet implemented")
-    }
-
-    override fun copyOfRange(idxFrom: Int, idxTo: Int): MutableBytes = copyOfRange2(idxFrom, idxTo) as MutableBytes
 
     public override fun setByte(index: Int, value: Byte) {
         index.checkRangeByte<Reify>()
@@ -81,3 +76,10 @@ public class MutableBytes(
         this.revSetInt(index + 4, value.toInt())
     }
 }
+
+public fun MutableBytes.copyOfRange(
+    idxFrom: Int,
+    idxTo: Int
+): MutableBytes = innerCopyOfRange(idxFrom, idxTo)
+
+public fun MutableBytes.copyOf(): MutableBytes = innerCopyOfRange(0, size)

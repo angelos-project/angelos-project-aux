@@ -29,3 +29,7 @@ public expect class UByteBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
+
+public expect fun UByteBuffer.copyOf(): UByteBuffer
+
+public expect fun UByteBuffer.copyOfRange(idxFrom: Int, idxTo: Int): UByteBuffer

@@ -29,3 +29,7 @@ public expect class ShortBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
+
+public expect fun ShortBuffer.copyOf(): ShortBuffer
+
+public expect fun ShortBuffer.copyOfRange(idxFrom: Int, idxTo: Int): ShortBuffer

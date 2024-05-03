@@ -37,5 +37,5 @@ public actual class Memory(public actual val size: Int, public actual val ptr: L
 }
 
 public actual fun allocateMemory(size: Int): Memory = Memory(size, Memory.unsafe.allocateMemory(size.toLong()))
-internal actual inline fun <reified T: Reifiable> Memory.speedLongGet(index: Int): Long = Memory.unsafe.getLong(ptr + index)
-internal actual inline fun <reified T: Reifiable> Memory.speedLongSet(index: Int, value: Long): Unit = Memory.unsafe.putLong(ptr + index, value)
+internal actual inline fun <reified T: Reifiable> Memory.speedLongGet(index: Long): Long = Memory.unsafe.getLong(ptr + index)
+internal actual inline fun <reified T: Reifiable> Memory.speedLongSet(index: Long, value: Long): Unit = Memory.unsafe.putLong(ptr + index, value)

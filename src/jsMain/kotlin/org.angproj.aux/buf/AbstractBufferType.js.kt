@@ -22,7 +22,9 @@ import org.angproj.aux.io.TypeSize
 public actual abstract class AbstractBufferType<E> actual constructor(
    size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int
 ) : AbstractSpeedCopy(size, idxSize, idxOff, idxEnd), BufferType<E> {
-    actual abstract override fun create(size: Int): AbstractBufferType<E>
-
-    public actual abstract fun copyOf(): AbstractBufferType<E>
+    actual abstract override fun create(
+        size: Int,
+        idxOff: Int,
+        idxEnd: Int
+    ): AbstractBufferType<E>
 }

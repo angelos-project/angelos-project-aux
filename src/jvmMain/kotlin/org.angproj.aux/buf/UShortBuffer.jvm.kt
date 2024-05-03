@@ -27,12 +27,6 @@ public actual class UShortBuffer actual constructor(
 
     override fun create(size: Int, idxOff: Int, idxEnd: Int): UShortBuffer = UShortBuffer(size, idxOff, idxEnd)
 
-    override fun copyOf(): AbstractBufferType<UShort> {
-        TODO("Not yet implemented")
-    }
-
-    public override fun copyOfRange(idxFrom: Int, idxTo: Int): UShortBuffer = copyOfRange2(idxFrom, idxTo) as UShortBuffer
-
     actual override operator fun get(index: Int): UShort {
         index.checkRange<Reify>()
         return unsafe.getShort(ptr + index * TypeSize.uShort).toUShort()
@@ -48,3 +42,10 @@ public actual class UShortBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.U_SHORT
     }
 }
+
+public actual fun UShortBuffer.copyOfRange(
+    idxFrom: Int,
+    idxTo: Int
+): UShortBuffer = innerCopyOfRange(idxFrom, idxTo)
+
+public actual fun UShortBuffer.copyOf(): UShortBuffer = innerCopyOfRange(0, size)

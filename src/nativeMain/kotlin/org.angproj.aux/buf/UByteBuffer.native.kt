@@ -16,6 +16,7 @@ package org.angproj.aux.buf
 
 import kotlinx.cinterop.*
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.innerMemCopyOfRange
 
 @Suppress(
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
@@ -28,11 +29,6 @@ public actual class UByteBuffer actual constructor(
     public actual constructor(size: Int) : this(size, 0, size)
 
     override fun create(size: Int, idxOff: Int, idxEnd: Int): UByteBuffer = UByteBuffer(size, idxOff, idxEnd)
-    override fun copyOf(): AbstractBufferType<UByte> {
-        TODO("Not yet implemented")
-    }
-
-    public override fun copyOfRange(idxFrom: Int, idxTo: Int): UByteBuffer = copyOfRange2(idxFrom, idxTo) as UByteBuffer
 
     actual override operator fun get(index: Int): UByte {
         index.checkRange<Reify>()
@@ -48,3 +44,10 @@ public actual class UByteBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.U_BYTE
     }
 }
+
+public actual fun UByteBuffer.copyOfRange(
+    idxFrom: Int,
+    idxTo: Int
+): UByteBuffer = innerCopyOfRange(idxFrom, idxTo)
+
+public actual fun UByteBuffer.copyOf(): UByteBuffer = innerCopyOfRange(0, size)

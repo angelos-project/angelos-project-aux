@@ -16,11 +16,11 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
 
-public abstract class AbstractSpeedCopy protected constructor(
+public abstract class AbstractSpeedCopy internal constructor(
     public final override val size: Int,
     public val idxSize: TypeSize,
-    protected val idxOff: Int = 0,
-    protected val idxEnd: Int = idxOff + size
+    @PublishedApi internal val idxOff: Int = 0,
+    @PublishedApi internal val idxEnd: Int = idxOff + size
 ): SpeedCopy {
 
     public inline fun <reified T: Reifiable> Int.checkRange(): Unit = checkRangeByte<Reify>()
@@ -45,9 +45,7 @@ public abstract class AbstractSpeedCopy protected constructor(
         else -> Unit
     }
 
-    protected abstract fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractSpeedCopy
-    public abstract override fun copyOf(): AbstractSpeedCopy
-    public abstract override fun copyOfRange(idxFrom: Int, idxTo: Int): AbstractSpeedCopy
+    internal abstract fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractSpeedCopy
 
     protected fun innerCopyOfRange(
         idxFrom: Int,
@@ -59,7 +57,6 @@ public abstract class AbstractSpeedCopy protected constructor(
                 ) -> Unit
     ): AbstractSpeedCopy {
         val factor = TypeSize.long / idxSize.size
-
         val newIdxOff = (idxOff + idxFrom) % factor
         val newSize = idxTo - idxFrom
         val newIdxEnd = newIdxOff + newSize
@@ -74,9 +71,10 @@ public abstract class AbstractSpeedCopy protected constructor(
         return copy
     }
 
-    protected open fun getPointer(): Long = -1
 
-    protected open fun getBasePtr(baseIdx: Int): Long = getPointer() + (baseIdx * idxSize.size)
+    internal open fun getPointer(): Long = -1
+
+    internal open fun getBasePtr(baseIdx: Int): Long = getPointer() + (baseIdx * idxSize.size)
 
     /*protected fun copyOfRange4(idxFrom: Int, idxTo: Int): Model {
         val basePtr = baseIdx / TypeSize.long
@@ -87,4 +85,32 @@ public abstract class AbstractSpeedCopy protected constructor(
         }
         return copy
     }*/
+    internal abstract fun speedCopy(ctx: Context): AbstractSpeedCopy
+
+    internal inline fun calculateContext(idxFrom: Int, idxTo: Int): Context {
+        if(idxFrom !in 0..< size || idxTo !in 0..< size) throw IllegalArgumentException("Illegal range.")
+        if(idxFrom > idxTo) throw IllegalStateException("Wrong sizes")
+
+        val factor = TypeSize.long / idxSize.size
+        val newIdxOff = (idxOff + idxFrom) % factor
+        val newSize = idxTo - idxFrom
+        val newIdxEnd = newIdxOff + newSize
+        val baseIdx = (idxOff + idxFrom) - newIdxOff
+        return Context(factor, newIdxOff, newSize, newIdxEnd, baseIdx)
+    }
+
+    internal data class Context(
+        val factor: Int,
+        val newIdxOff: Int,
+        val newSize: Int,
+        val newIdxEnd: Int,
+        val baseIdx: Int
+    )
 }
+
+internal inline fun<reified T: AbstractSpeedCopy> T.innerCopyOfRange(idxFrom: Int, idxTo: Int): T {
+    val ctx = calculateContext(idxFrom, idxTo)
+    //val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd) as T
+    return speedCopy(ctx) as T
+}
+

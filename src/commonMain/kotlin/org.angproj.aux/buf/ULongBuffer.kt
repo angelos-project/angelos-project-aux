@@ -29,3 +29,7 @@ public expect class ULongBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
+
+public expect fun ULongBuffer.copyOf(): ULongBuffer
+
+public expect fun ULongBuffer.copyOfRange(idxFrom: Int, idxTo: Int): ULongBuffer

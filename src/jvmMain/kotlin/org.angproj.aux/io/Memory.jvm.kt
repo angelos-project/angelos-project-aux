@@ -27,16 +27,11 @@ import java.lang.ref.Cleaner.Cleanable
 )
 public actual open class Memory actual constructor(
     size: Int, idxOff: Int, idxEnd: Int
-) : Segment(size, typeSize, idxOff, idxEnd) {
+) : AbstractMemory(size, idxOff, idxEnd) {
 
     public actual constructor(size: Int) : this(size, 0, size)
 
-    init {
-        // Must be BYTE
-        require(typeSize == TypeSize.BYTE)
-    }
-
-    protected actual val data: Chunk = allocateMemory(length)
+    actual final override val data: Chunk = allocateMemory(length)
     protected val ptr: Long = data.ptr + idxOff
 
     private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }
@@ -64,19 +59,9 @@ public actual open class Memory actual constructor(
 
     actual override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory = Memory(size, idxOff, idxEnd)
 
-    public actual override fun copyOfRange(idxFrom: Int, idxTo: Int): Memory = innerCopyOfRange(idxFrom, idxTo
-    ) { basePtr, copyPtr, offset ->
-        unsafe.putLong(copyPtr + offset, unsafe.getLong(basePtr + offset))
-    } as Memory
-
     override fun getPointer(): Long = data.ptr
 
-    actual override fun copyOf(): Memory {
-        TODO("Not yet implemented")
-    }
-
-    public actual companion object {
+    public companion object {
         internal val unsafe: Unsafe = Chunk.unsafe
-        public actual val typeSize: TypeSize = TypeSize.BYTE
     }
 }

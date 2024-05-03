@@ -23,17 +23,11 @@ public actual class LongBuffer actual constructor(
 
     public actual constructor(size: Int) : this(size, 0, size)
 
-    override fun create(size: Int): LongBuffer = LongBuffer(size)
-    override fun copyOf(): LongBuffer = create(idxEnd).also { data.copyInto(it.data) }
-
-    public fun copyOfRange(fromIdx: Int, toIdx: Int): LongBuffer {
-        check(fromIdx in 0..<size && toIdx in 0..<size && fromIdx < toIdx)
-        val from = fromIdx + idxOff
-        val to = toIdx + idxOff
-        return create(to - from).also { data.copyInto(it.data, 0, from, to) }
+    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractBufferType<Long> {
+        TODO("Not yet implemented")
     }
 
-    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
     override val length: Int = marginSized * idxSize.size
     private val data: LongArray = LongArray(marginSized)
 
@@ -50,4 +44,15 @@ public actual class LongBuffer actual constructor(
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.LONG
     }
+}
+
+public actual fun LongBuffer.copyOfRange(
+    idxFrom: Int,
+    idxTo: Int
+): LongBuffer {
+    TODO("Not yet implemented")
+}
+
+public actual fun LongBuffer.copyOf(): LongBuffer {
+    TODO("Not yet implemented")
 }

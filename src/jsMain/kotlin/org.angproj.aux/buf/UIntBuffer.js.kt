@@ -23,17 +23,11 @@ public actual class UIntBuffer actual constructor(
 
     public actual constructor(size: Int) : this(size, 0, size)
 
-    override fun create(size: Int): UIntBuffer = UIntBuffer(size)
-    override fun copyOf(): UIntBuffer = create(idxEnd).also { data.copyInto(it.data) }
-
-    public fun copyOfRange(fromIdx: Int, toIdx: Int): UIntBuffer {
-        check(fromIdx in 0..<size && toIdx in 0..<size && fromIdx < toIdx)
-        val from = fromIdx + idxOff
-        val to = toIdx + idxOff
-        return create(to - from).also { data.copyInto(it.data, 0, from, to) }
+    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractBufferType<UInt> {
+        TODO("Not yet implemented")
     }
 
-    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
     override val length: Int = marginSized * idxSize.size
     private val data: IntArray = IntArray(marginSized)
 
@@ -50,4 +44,15 @@ public actual class UIntBuffer actual constructor(
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.U_INT
     }
+}
+
+public actual fun UIntBuffer.copyOfRange(
+    idxFrom: Int,
+    idxTo: Int
+): UIntBuffer {
+    TODO("Not yet implemented")
+}
+
+public actual fun UIntBuffer.copyOf(): UIntBuffer {
+    TODO("Not yet implemented")
 }

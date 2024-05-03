@@ -23,17 +23,11 @@ public actual class UByteBuffer actual constructor(
 
     public actual constructor(size: Int) : this(size, 0, size)
 
-    override fun create(size: Int): UByteBuffer = UByteBuffer(size)
-    override fun copyOf(): UByteBuffer = create(size).also { data.copyInto(it.data) }
-
-    public fun copyOfRange(fromIdx: Int, toIdx: Int): UByteBuffer {
-        check(fromIdx in 0..<size && toIdx in 0..<size && fromIdx < toIdx)
-        val from = fromIdx + idxOff
-        val to = toIdx + idxOff
-        return create(to - from).also { data.copyInto(it.data, 0, from, to) }
+    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
+    override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractBufferType<UByte> {
+        TODO("Not yet implemented")
     }
 
-    override val marginSized: Int = SpeedCopy.addMarginByIndexType(size, idxSize)
     override val length: Int = marginSized * idxSize.size
     private val data: ByteArray = ByteArray(marginSized)
 
@@ -50,4 +44,15 @@ public actual class UByteBuffer actual constructor(
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.U_BYTE
     }
+}
+
+public actual fun UByteBuffer.copyOfRange(
+    idxFrom: Int,
+    idxTo: Int
+): UByteBuffer {
+    TODO("Not yet implemented")
+}
+
+public actual fun UByteBuffer.copyOf(): UByteBuffer {
+    TODO("Not yet implemented")
 }

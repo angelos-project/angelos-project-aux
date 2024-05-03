@@ -15,13 +15,44 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.buf.Reify
+import org.angproj.aux.res.Manager
+import org.angproj.aux.res.Memory
+import org.angproj.aux.res.allocateMemory
+import sun.misc.Unsafe
+import java.lang.ref.Cleaner.Cleanable
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class MutableMemory actual constructor(
     size: Int, idxOff: Int, idxEnd: Int
-) : Memory(size, idxOff, idxEnd), MutableSegment {
+) : AbstractMemory(size, idxOff, idxEnd), MutableSegment {
 
     public actual constructor(size: Int) : this(size, 0, size)
+
+    actual override val data: Memory = allocateMemory(length)
+    private val ptr: Long = data.ptr + idxOff
+
+    private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }
+    public override fun close() { cleanable.clean() }
+
+    actual override fun getByte(index: Int): Byte {
+        index.checkRangeByte<Reify>()
+        return unsafe.getByte(ptr + index)
+    }
+
+    actual override fun getShort(index: Int): Short {
+        index.checkRangeShort<Reify>()
+        return unsafe.getShort(ptr + index)
+    }
+
+    actual override fun getInt(index: Int): Int {
+        index.checkRangeInt<Reify>()
+        return unsafe.getInt(ptr + index)
+    }
+
+    actual override fun getLong(index: Int): Long {
+        index.checkRangeLong<Reify>()
+        return unsafe.getLong(ptr + index)
+    }
 
     actual override fun setByte(index: Int, value: Byte) {
         index.checkRangeByte<Reify>()
@@ -45,14 +76,7 @@ public actual class MutableMemory actual constructor(
 
     actual override fun create(size: Int, idxOff: Int, idxEnd: Int): MutableMemory = MutableMemory(size, idxOff, idxEnd)
 
-    public actual override fun copyOfRange(idxFrom: Int, idxTo: Int): MutableMemory = innerCopyOfRange(idxFrom, idxTo
-    ) { basePtr, copyPtr, offset ->
-        unsafe.putLong(copyPtr + offset, unsafe.getLong(basePtr + offset))
-    } as MutableMemory
-
-    actual override fun copyOf(): MutableMemory {
-        TODO("Not yet implemented")
+    public companion object {
+        internal val unsafe: Unsafe = Memory.unsafe
     }
 }
-
-//public inline fun <reified > MutableMemory.copyOfRange(idxFrom: Int, idxTo: Int): MutableMemory = copyOfRange(idxFrom, idxTo)

@@ -15,20 +15,15 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.buf.Reify
+import org.angproj.aux.buf.innerCopyOfRange
 
 public class MutableModel(
     size: Int, idxOff: Int, idxEnd: Int
-) : Model(size, idxOff, idxEnd), MutableSegment {
+) : AbstractModel(size, idxOff, idxEnd), MutableSegment {
 
     public constructor(size: Int) : this(size, 0, size)
 
     override fun create(size: Int, idxOff: Int, idxEnd: Int): MutableModel = MutableModel(size, idxOff, idxEnd)
-
-    override fun copyOf(): MutableModel {
-        TODO("Not yet implemented")
-    }
-
-    override fun copyOfRange(idxFrom: Int, idxTo: Int): MutableModel = copyOfRange2(idxFrom, idxTo) as MutableModel
 
     override fun setByte(index: Int, value: Byte) {
         index.checkRangeByte<Reify>()
@@ -92,3 +87,7 @@ public class MutableModel(
         setLong(index, getLong(index).setRightSide(offset, size, value))
     }
 }
+
+public fun MutableModel.copyOf(): MutableModel = innerCopyOfRange(0, size)
+
+public fun MutableModel.copyOfRange(idxFrom: Int, idxTo: Int): MutableModel = innerCopyOfRange(idxFrom, idxTo)

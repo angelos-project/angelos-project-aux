@@ -26,9 +26,8 @@ import kotlin.native.ref.createCleaner
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
     "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
     "ACTUAL_CLASSIFIER_MUST_HAVE_THE_SAME_MEMBERS_AS_NON_FINAL_EXPECT_CLASSIFIER_WARNING",
-    "UNCHECKED_CAST",
 )
-@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@OptIn(ExperimentalNativeApi::class, ExperimentalForeignApi::class)
 public actual abstract class AbstractBufferType<E> actual constructor(
     size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int
 ) : AbstractSpeedCopy(size, idxSize, idxOff, idxEnd), BufferType<E> {
@@ -49,13 +48,7 @@ public actual abstract class AbstractBufferType<E> actual constructor(
         data.dispose()
     }
 
-    protected fun copyOfRange2(idxFrom: Int, idxTo: Int): AbstractBufferType<E> = innerCopyOfRange(idxFrom, idxTo
-    ) { basePtr, copyPtr, offset ->
-        (copyPtr + offset).toCPointer<LongVar>()!!.pointed.value = (
-                basePtr + offset).toCPointer<LongVar>()!!.pointed.value
-    } as AbstractBufferType<E>
-
-    override fun getPointer(): Long = data.ptr.toLong()
+    override fun getPointer(): Long = data.ptr
 
     actual abstract override fun create(
         size: Int,
@@ -63,6 +56,15 @@ public actual abstract class AbstractBufferType<E> actual constructor(
         idxEnd: Int
     ): AbstractBufferType<E>
 
-    actual abstract override fun copyOf(): AbstractBufferType<E>
-    actual abstract override fun copyOfRange(idxFrom: Int, idxTo: Int): AbstractBufferType<E>
+    override fun speedCopy(ctx: Context): AbstractSpeedCopy {
+        val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
+        val basePtr = getBasePtr(ctx.baseIdx)
+        val copyPtr = copy.getPointer()
+
+        (0 until copy.length step TypeSize.long).forEach {
+            (copyPtr + it).toCPointer<LongVar>()!!.pointed.value = (
+                    basePtr + it).toCPointer<LongVar>()!!.pointed.value
+        }
+        return copy
+    }
 }

@@ -18,9 +18,6 @@ import org.angproj.aux.buf.SpeedCopy
 
 public interface MutableSegment: MutableByteString, SpeedCopy {
 
-    public override fun copyOf(): MutableSegment
-    public override fun copyOfRange(idxFrom: Int, idxTo: Int): MutableSegment
-
     public fun Long.setLeftSide(offset: Int, size: Int, value: Long): Long {
         val pos = (size - (ByteString.longSize - offset)) * 8
         val mask = 0xffffffffffffffffuL.toLong() ushr ((ByteString.longSize - size) * 8)
@@ -33,3 +30,6 @@ public interface MutableSegment: MutableByteString, SpeedCopy {
         return ((mask shl pos).inv() and this) or (value shl pos)
     }
 }
+
+public fun <T: MutableSegment> T.copyOf(): T = throw UnsupportedOperationException()
+public fun <T: MutableSegment> T.copyOfRange(idxFrom: Int, idxTo: Int): T = throw UnsupportedOperationException()
