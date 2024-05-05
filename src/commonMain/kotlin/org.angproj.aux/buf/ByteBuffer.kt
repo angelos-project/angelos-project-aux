@@ -32,3 +32,4 @@ public expect class ByteBuffer private constructor(
 
 public fun ByteBuffer.copyOf(): ByteBuffer = innerCopyOfRange(0, size)
 public fun ByteBuffer.copyOfRange(idxFrom: Int, idxTo: Int): ByteBuffer = innerCopyOfRange(idxFrom, idxTo)
+public fun ByteBuffer.copyInto(dest: ByteBuffer, destOff: Int = 0, idxFrom: Int = 0, idxTo: Int = size): Unit = innerCopyInto()

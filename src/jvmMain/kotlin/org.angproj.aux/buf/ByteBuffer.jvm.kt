@@ -15,6 +15,7 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.Reify
 import sun.misc.Unsafe
 import org.angproj.aux.res.Memory as Chunk
 

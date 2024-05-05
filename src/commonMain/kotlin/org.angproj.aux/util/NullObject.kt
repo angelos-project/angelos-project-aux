@@ -15,6 +15,7 @@
 package org.angproj.aux.util
 
 import kotlin.jvm.JvmStatic
+import kotlin.reflect.KProperty
 
 /**
  * The goal is to avoid all type of NULL pointer exceptions, therefore it is necessary to provide a
@@ -43,6 +44,9 @@ public object NullObject {
 
     @JvmStatic
     public val doubleArray: DoubleArray = doubleArrayOf()
+
+    @JvmStatic
+    public val any: Any = object { val test: String =  "null" }
 }
 
 public fun String.isNull(): Boolean = this.isEmpty()
@@ -58,3 +62,5 @@ public fun LongArray.isNull(): Boolean = NullObject.longArray === this
 public fun FloatArray.isNull(): Boolean = NullObject.floatArray === this
 
 public fun DoubleArray.isNull(): Boolean = NullObject.doubleArray === this
+
+public fun Any.isNull(): Boolean = NullObject.any === this

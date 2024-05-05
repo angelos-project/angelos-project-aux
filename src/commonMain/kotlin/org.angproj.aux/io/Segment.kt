@@ -15,7 +15,8 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.buf.*
-import org.angproj.aux.buf.Reifiable
+import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.Reify
 
 public abstract class Segment(
     size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int

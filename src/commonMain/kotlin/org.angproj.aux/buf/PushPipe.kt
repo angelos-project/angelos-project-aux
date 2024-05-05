@@ -14,4 +14,14 @@
  */
 package org.angproj.aux.buf
 
-internal interface Reifiable
+import org.angproj.aux.io.DataSize
+
+public class PushPipe<T: PipeType>(
+    sink: AbstractSink<T>,
+    bufferSize: DataSize = DataSize._4K
+): AbstractPipe<PipeMode.PUSH, T>(
+    Pipe.combineWithSource(sink),
+    sink,
+    bufferSize
+) {
+}

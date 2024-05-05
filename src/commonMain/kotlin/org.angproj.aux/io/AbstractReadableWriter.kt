@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.ByteBuffer
+
 /**
  * Endpoint from where structured data be read and to write streamed data unto.
  * */
@@ -62,7 +64,7 @@ public abstract class AbstractReadableWriter: Readable, Writer, Sizeable {
         TODO("Not yet implemented")
     }
 
-    override fun write(data: ByteArray): Int {
+    override fun write(data: ByteBuffer): Int {
         TODO("Not yet implemented")
     }
 }

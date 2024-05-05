@@ -16,6 +16,7 @@ package org.angproj.aux.buf
 
 import kotlinx.cinterop.*
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.Reify
 
 @Suppress(
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"

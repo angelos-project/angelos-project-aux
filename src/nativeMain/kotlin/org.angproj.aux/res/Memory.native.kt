@@ -15,7 +15,7 @@
 package org.angproj.aux.res
 
 import kotlinx.cinterop.*
-import org.angproj.aux.buf.Reifiable
+import org.angproj.aux.util.Reifiable
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)

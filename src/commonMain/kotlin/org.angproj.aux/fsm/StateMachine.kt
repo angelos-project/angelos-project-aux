@@ -16,29 +16,32 @@ package org.angproj.aux.fsm
 
 public class StateMachine<E>(
     public val transitionPaths: Map<E, List<E>>,
-    private var current: E,
+    private var _current: E,
     private val end: E,
     config: StateMachine<E>.() -> Unit
 ) {
 
     init {
-        require(transitionPaths.containsKey(current))
+        require(transitionPaths.containsKey(_current))
         require(transitionPaths.containsKey(end))
         require(transitionPaths[end]!!.isEmpty())
 
         config()
     }
 
+    public val current: E
+        get() = _current
+
     public var state: E
-        get() = current
+        get() = _current
         set(value) {
-            require(transitionPaths.containsKey(current)) { "Valid state '$value' not configured in state paths." }
-            check(transitionPaths[current]!!.contains(value)) {
-                "Attempted invalid transition from state '$current' to '$value'."
+            require(transitionPaths.containsKey(_current)) { "Valid state '$value' not configured in state paths." }
+            check(transitionPaths[_current]!!.contains(value)) {
+                "Attempted invalid transition from state '$_current' to '$value'."
             }
-            current = value
+            _current = value
         }
 
     public val done: Boolean
-        get() = current == end
+        get() = _current == end
 }

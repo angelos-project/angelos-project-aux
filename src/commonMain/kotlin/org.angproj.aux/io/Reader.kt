@@ -14,9 +14,11 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.ByteBuffer
+
 public interface Reader {
 
-    public fun read(data: ByteArray): Int
+    public fun read(data: ByteBuffer): Int
 
-    public fun read(length: Int): ByteArray // What to do
+    public fun read(length: Int): ByteBuffer // What to do
 }

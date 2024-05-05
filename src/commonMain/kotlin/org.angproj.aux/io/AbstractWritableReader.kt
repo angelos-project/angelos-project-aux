@@ -14,15 +14,17 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.ByteBuffer
+
 /**
  * Entrypoint where structured data can be written and streamed data be read from.
  * */
 public abstract class AbstractWritableReader: Writable, Reader, Sizeable {
-    override fun read(data: ByteArray): Int {
+    override fun read(data: ByteBuffer): Int {
         TODO("Not yet implemented")
     }
 
-    override fun read(length: Int): ByteArray {
+    override fun read(length: Int): ByteBuffer {
         TODO("Not yet implemented")
     }
 

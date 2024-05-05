@@ -15,6 +15,8 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.Reify
 
 public abstract class AbstractSpeedCopy internal constructor(
     public final override val size: Int,

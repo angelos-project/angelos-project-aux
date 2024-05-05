@@ -49,7 +49,11 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
-        val jvmMain by getting
+        val jvmMain by getting {
+            dependencies {
+                implementation("net.java.dev.jna:jna:5.14.0")
+            }
+        }
         val jvmTest by getting
         val jsMain by getting
         val jsTest by getting

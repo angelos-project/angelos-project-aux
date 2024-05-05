@@ -15,7 +15,7 @@
 package org.angproj.aux.io
 
 import kotlinx.cinterop.*
-import org.angproj.aux.buf.Reify
+import org.angproj.aux.util.Reify
 import org.angproj.aux.res.allocateMemory
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.Cleaner

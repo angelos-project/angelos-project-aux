@@ -14,8 +14,8 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.Reifiable
-import org.angproj.aux.buf.Reify
+import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.Reify
 
 public abstract class AbstractModel protected constructor(
     size: Int, idxOff: Int, idxEnd: Int

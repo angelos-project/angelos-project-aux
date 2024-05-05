@@ -15,7 +15,7 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.buf.AbstractSpeedCopy
-import org.angproj.aux.buf.Reify
+import org.angproj.aux.util.Reify
 import org.angproj.aux.res.speedLongGet
 import org.angproj.aux.res.speedLongSet
 import org.angproj.aux.res.Memory as Chunk

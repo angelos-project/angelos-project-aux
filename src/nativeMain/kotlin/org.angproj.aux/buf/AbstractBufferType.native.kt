@@ -14,12 +14,12 @@
  */
 package org.angproj.aux.buf
 
-import kotlinx.cinterop.*
 import org.angproj.aux.io.TypeSize
 import org.angproj.aux.res.Memory
 import org.angproj.aux.res.allocateMemory
 import org.angproj.aux.res.speedLongGet
 import org.angproj.aux.res.speedLongSet
+import org.angproj.aux.util.Reify
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.Cleaner
 import kotlin.native.ref.createCleaner

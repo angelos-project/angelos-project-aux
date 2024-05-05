@@ -18,6 +18,7 @@ import org.angproj.aux.io.TypeSize
 import org.angproj.aux.res.*
 import org.angproj.aux.res.Manager
 import org.angproj.aux.res.speedLongSet
+import org.angproj.aux.util.Reify
 import sun.misc.Unsafe
 import java.lang.ref.Cleaner.Cleanable
 

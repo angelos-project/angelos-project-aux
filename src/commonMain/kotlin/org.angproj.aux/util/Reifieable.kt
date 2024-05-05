@@ -12,8 +12,6 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.util
 
-public object Reify : Reifiable {
-    public const val void: Long = -1
-}
+public interface Reifiable

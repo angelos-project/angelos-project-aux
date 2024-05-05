@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.res
 
-import org.angproj.aux.buf.Reifiable
+import org.angproj.aux.util.Reifiable
 import sun.misc.Unsafe
 import java.lang.reflect.Field
 
