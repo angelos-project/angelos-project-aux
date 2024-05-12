@@ -33,7 +33,7 @@ public abstract class AbstractMemory protected constructor(
 
     abstract override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractMemory
 
-    override fun speedCopy(ctx: Context): AbstractSpeedCopy {
+    override fun speedCopy(ctx: CopyRangeContext): AbstractSpeedCopy {
         val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
         val baseOffset = (ctx.baseIdx * idxSize.size)
 

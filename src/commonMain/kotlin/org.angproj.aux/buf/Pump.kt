@@ -16,7 +16,6 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.Reader
 import org.angproj.aux.io.Writer
-import org.angproj.aux.sec.SecureFeed
 
 public object Pump: Reader, Writer {
     override fun read(data: ByteBuffer): Int {

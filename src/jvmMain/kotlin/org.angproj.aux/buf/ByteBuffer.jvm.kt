@@ -38,8 +38,55 @@ public actual class ByteBuffer actual constructor(
         unsafe.putByte(ptr + index, value)
     }
 
+    @PublishedApi
+    internal fun speedCopyPrecision(ctx: CopyIntoContext): ByteBuffer {
+        TODO("TO BE IMPLEMENTED")
+    }
+
+    @PublishedApi
+    internal fun calculateIntoContext(dest: ByteBuffer, destOff: Int, idxFrom: Int, idxTo: Int): CopyIntoContext {
+        if(dest.idxSize != this.idxSize) throw IllegalArgumentException("Not of same TypeSize.")
+        if(destOff !in 0..size || idxTo !in 0..size) throw IllegalArgumentException("Illegal range.")
+        if((idxTo - idxFrom) + destOff !in 0..size) throw IllegalArgumentException("Illegal range.")
+        if(idxFrom > idxTo) throw IllegalStateException("Wrong sizes")
+
+        val factor = TypeSize.long / idxSize.size
+
+        val srcIdxOff = (idxOff + idxFrom) % factor
+        val dstIdxOff = (dest.idxOff + destOff) % factor
+        dest.idxOff
+
+        val newIdxOff = (idxOff + idxFrom) % factor
+        val newSize = idxTo - idxFrom
+        val newIdxEnd = newIdxOff + newSize
+        val baseIdx = (idxOff + idxFrom) - newIdxOff
+        val leftIdxMargin = 0
+        val rightIdxMargin = 0
+        return CopyIntoContext(factor, newIdxOff, newSize, newIdxEnd, baseIdx)
+    }
+
+    internal data class CopyIntoContext(
+        val factor: Int,
+        val newIdxOff: Int,
+        val newSize: Int,
+        val newIdxEnd: Int,
+        val baseIdx: Int
+    ) {
+        override fun toString(): String = "$factor, $newIdxOff, $newSize, $newIdxEnd, $baseIdx"
+    }
+
     public actual companion object {
         internal val unsafe: Unsafe = Chunk.unsafe
         public actual val typeSize: TypeSize = TypeSize.BYTE
     }
+}
+
+@PublishedApi
+internal fun ByteBuffer.innerCopyInto(dest: ByteBuffer, destOff: Int = 0, idxFrom: Int, idxTo: Int) {
+    val ctx = calculateIntoContext(dest, destOff, idxFrom, idxTo)
+    speedCopyPrecision(ctx)
+}
+
+public fun ByteBuffer.copyInto(dest: ByteBuffer, destOff: Int = 0, idxFrom: Int = 0, idxTo: Int = size) {
+    innerCopyInto(dest, destOff, idxFrom, idxTo)
 }

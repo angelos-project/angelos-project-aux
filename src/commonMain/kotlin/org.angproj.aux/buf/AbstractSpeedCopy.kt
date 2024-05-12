@@ -81,10 +81,10 @@ public abstract class AbstractSpeedCopy internal constructor(
     internal open fun getBasePtr(baseIdx: Int): Long = getPointer() + (baseIdx * idxSize.size)
 
     @PublishedApi
-    internal abstract fun speedCopy(ctx: Context): AbstractSpeedCopy
+    internal abstract fun speedCopy(ctx: CopyRangeContext): AbstractSpeedCopy
 
     @PublishedApi
-    internal fun calculateContext(idxFrom: Int, idxTo: Int): Context {
+    internal fun calculateRangeContext(idxFrom: Int, idxTo: Int): CopyRangeContext {
         if(idxFrom !in 0.. size || idxTo !in 0.. size) throw IllegalArgumentException("Illegal range.")
         if(idxFrom > idxTo) throw IllegalStateException("Wrong sizes")
 
@@ -93,10 +93,10 @@ public abstract class AbstractSpeedCopy internal constructor(
         val newSize = idxTo - idxFrom
         val newIdxEnd = newIdxOff + newSize
         val baseIdx = (idxOff + idxFrom) - newIdxOff
-        return Context(factor, newIdxOff, newSize, newIdxEnd, baseIdx)
+        return CopyRangeContext(factor, newIdxOff, newSize, newIdxEnd, baseIdx)
     }
 
-    internal data class Context(
+    internal data class CopyRangeContext(
         val factor: Int,
         val newIdxOff: Int,
         val newSize: Int,
@@ -105,11 +105,40 @@ public abstract class AbstractSpeedCopy internal constructor(
     ) {
         override fun toString(): String = "$factor, $newIdxOff, $newSize, $newIdxEnd, $baseIdx"
     }
+
+    /*@PublishedApi
+    internal abstract fun speedCopyPrecision(ctx: CopyIntoContext): AbstractSpeedCopy
+
+    @PublishedApi
+    internal fun calculateIntoContext(dest: ByteBuffer, destOff: Int, idxFrom: Int, idxTo: Int): CopyIntoContext {
+        if(dest.idxSize != this.idxSize) throw IllegalArgumentException("Not of same TypeSize.")
+        if(idxFrom !in 0..size || idxTo !in 0..size) throw IllegalArgumentException("Illegal range.")
+        if(idxFrom > idxTo) throw IllegalStateException("Wrong sizes")
+
+        val factor = TypeSize.long / idxSize.size
+        val newIdxOff = (idxOff + idxFrom) % factor
+        val newSize = idxTo - idxFrom
+        val newIdxEnd = newIdxOff + newSize
+        val baseIdx = (idxOff + idxFrom) - newIdxOff
+        val leftIdxMargin = 0
+        val rightIdxMargin = 0
+        return CopyIntoContext(factor, newIdxOff, newSize, newIdxEnd, baseIdx)
+    }
+
+    internal data class CopyIntoContext(
+        val factor: Int,
+        val newIdxOff: Int,
+        val newSize: Int,
+        val newIdxEnd: Int,
+        val baseIdx: Int
+    ) {
+        override fun toString(): String = "$factor, $newIdxOff, $newSize, $newIdxEnd, $baseIdx"
+    }*/
 }
 
 @PublishedApi
 internal inline fun<reified T: AbstractSpeedCopy> T.innerCopyOfRange(idxFrom: Int, idxTo: Int): T {
-    val ctx = calculateContext(idxFrom, idxTo)
+    val ctx = calculateRangeContext(idxFrom, idxTo)
     return speedCopy(ctx) as T
 }
 

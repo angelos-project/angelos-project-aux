@@ -58,7 +58,7 @@ public actual abstract class AbstractBufferType<E> actual constructor(
         idxEnd: Int
     ): AbstractBufferType<E>
 
-    override fun speedCopy(ctx: Context): AbstractSpeedCopy {
+    override fun speedCopy(ctx: CopyRangeContext): AbstractSpeedCopy {
         val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
         val baseOffset = (ctx.baseIdx * idxSize.size)
 

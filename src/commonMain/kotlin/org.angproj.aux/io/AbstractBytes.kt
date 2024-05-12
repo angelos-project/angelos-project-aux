@@ -30,7 +30,7 @@ public abstract class AbstractBytes protected constructor(
 
     abstract override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractBytes
 
-    override fun speedCopy(ctx: Context): AbstractBytes {
+    override fun speedCopy(ctx: CopyRangeContext): AbstractBytes {
         val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
 
         val baseOffset = (ctx.baseIdx * idxSize.size) + ctx.newIdxOff

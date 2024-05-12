@@ -30,7 +30,7 @@ public abstract class AbstractModel protected constructor(
 
     abstract override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractModel
 
-    override fun speedCopy(ctx: Context): AbstractModel {
+    override fun speedCopy(ctx: CopyRangeContext): AbstractModel {
         val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
 
         val baseOffset = ctx.baseIdx / TypeSize.long
