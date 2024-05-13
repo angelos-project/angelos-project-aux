@@ -21,8 +21,7 @@ import org.angproj.aux.util.Reify
 public abstract class AbstractSpeedCopy internal constructor(
     public final override val size: Int,
     public val idxSize: TypeSize,
-    @PublishedApi internal val idxOff: Int = 0,
-    @PublishedApi internal val idxEnd: Int = idxOff + size
+    @PublishedApi internal val idxLimit: Int = size
 ): SpeedCopy {
 
     public inline val lastIndex: Int
@@ -50,95 +49,14 @@ public abstract class AbstractSpeedCopy internal constructor(
         else -> Unit
     }
 
-    internal abstract fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractSpeedCopy
-
-    protected fun innerCopyOfRange(
-        idxFrom: Int,
-        idxTo: Int,
-        action: (
-            basePtr: Long,
-            copyPtr: Long,
-            offset: Int
-                ) -> Unit
-    ): AbstractSpeedCopy {
-        val factor = TypeSize.long / idxSize.size
-        val newIdxOff = (idxOff + idxFrom) % factor
-        val newSize = idxTo - idxFrom
-        val newIdxEnd = newIdxOff + newSize
-        val baseIdx = (idxOff + idxFrom) - newIdxOff
-
-        val copy = create(newSize, newIdxOff, newIdxEnd)
-
-        val basePtr = getBasePtr(baseIdx)
-        val copyPtr = copy.getPointer()
-
-        (0 until copy.length step TypeSize.long).forEach { action(copyPtr, basePtr, it) }
-        return copy
-    }
+    internal abstract fun create(size: Int, idxLimit: Int): AbstractSpeedCopy
 
     internal open fun getPointer(): Long = -1
 
     internal open fun getBasePtr(baseIdx: Int): Long = getPointer() + (baseIdx * idxSize.size)
 
     @PublishedApi
-    internal abstract fun speedCopy(ctx: CopyRangeContext): AbstractSpeedCopy
-
-    @PublishedApi
-    internal fun calculateRangeContext(idxFrom: Int, idxTo: Int): CopyRangeContext {
-        if(idxFrom !in 0.. size || idxTo !in 0.. size) throw IllegalArgumentException("Illegal range.")
-        if(idxFrom > idxTo) throw IllegalStateException("Wrong sizes")
-
-        val factor = TypeSize.long / idxSize.size
-        val newIdxOff = (idxOff + idxFrom) % factor
-        val newSize = idxTo - idxFrom
-        val newIdxEnd = newIdxOff + newSize
-        val baseIdx = (idxOff + idxFrom) - newIdxOff
-        return CopyRangeContext(factor, newIdxOff, newSize, newIdxEnd, baseIdx)
+    internal fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        // TODO()
     }
-
-    internal data class CopyRangeContext(
-        val factor: Int,
-        val newIdxOff: Int,
-        val newSize: Int,
-        val newIdxEnd: Int,
-        val baseIdx: Int
-    ) {
-        override fun toString(): String = "$factor, $newIdxOff, $newSize, $newIdxEnd, $baseIdx"
-    }
-
-    /*@PublishedApi
-    internal abstract fun speedCopyPrecision(ctx: CopyIntoContext): AbstractSpeedCopy
-
-    @PublishedApi
-    internal fun calculateIntoContext(dest: ByteBuffer, destOff: Int, idxFrom: Int, idxTo: Int): CopyIntoContext {
-        if(dest.idxSize != this.idxSize) throw IllegalArgumentException("Not of same TypeSize.")
-        if(idxFrom !in 0..size || idxTo !in 0..size) throw IllegalArgumentException("Illegal range.")
-        if(idxFrom > idxTo) throw IllegalStateException("Wrong sizes")
-
-        val factor = TypeSize.long / idxSize.size
-        val newIdxOff = (idxOff + idxFrom) % factor
-        val newSize = idxTo - idxFrom
-        val newIdxEnd = newIdxOff + newSize
-        val baseIdx = (idxOff + idxFrom) - newIdxOff
-        val leftIdxMargin = 0
-        val rightIdxMargin = 0
-        return CopyIntoContext(factor, newIdxOff, newSize, newIdxEnd, baseIdx)
-    }
-
-    internal data class CopyIntoContext(
-        val factor: Int,
-        val newIdxOff: Int,
-        val newSize: Int,
-        val newIdxEnd: Int,
-        val baseIdx: Int
-    ) {
-        override fun toString(): String = "$factor, $newIdxOff, $newSize, $newIdxEnd, $baseIdx"
-    }*/
 }
-
-@PublishedApi
-internal inline fun<reified T: AbstractSpeedCopy> T.innerCopyOfRange(idxFrom: Int, idxTo: Int): T {
-    val ctx = calculateRangeContext(idxFrom, idxTo)
-    return speedCopy(ctx) as T
-}
-

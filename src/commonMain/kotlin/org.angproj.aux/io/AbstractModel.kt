@@ -14,42 +14,33 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.AbstractSpeedCopy
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 
 public abstract class AbstractModel protected constructor(
-    size: Int, idxOff: Int, idxEnd: Int
-): Segment(size, typeSize, idxOff, idxEnd) {
+    size: Int, idxLimit: Int
+): Segment(size, typeSize, idxLimit) {
 
     init {
         // Must be BYTE
         require(typeSize == TypeSize.BYTE)
     }
 
-    protected val data: LongArray = LongArray(length / TypeSize.long)
+    @PublishedApi
+    internal val data: LongArray = LongArray(length / TypeSize.long)
 
-    abstract override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractModel
-
-    override fun speedCopy(ctx: CopyRangeContext): AbstractModel {
-        val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
-
-        val baseOffset = ctx.baseIdx / TypeSize.long
-
-        (0 until copy.length / TypeSize.long).forEach {
-            copy.data[it] = data[baseOffset + it]
-        }
-        return copy
-    }
+    abstract override fun create(size: Int, idxLimit: Int): AbstractModel
 
     override fun getByte(index: Int): Byte {
         index.checkRangeByte<Reify>()
-        val idx = index + idxOff
+        val idx = index
         return data[idx / TypeSize.long].fullByte<Reify>(idx % TypeSize.long)
     }
 
     override fun getShort(index: Int): Short {
         index.checkRangeShort<Reify>()
-        val idx = index + idxOff
+        val idx = index
         val pos = idx / TypeSize.long
         return when(val offset = idx % TypeSize.long) {
             7 -> data[pos].joinShort<Reify>(data[pos+1])
@@ -59,7 +50,7 @@ public abstract class AbstractModel protected constructor(
 
     override fun getInt(index: Int): Int {
         index.checkRangeInt<Reify>()
-        val idx = index + idxOff
+        val idx = index
         val pos = idx / TypeSize.long
         return when(val offset = idx % TypeSize.long) {
             in 0..<5 -> data[pos].fullInt<Reify>(offset)
@@ -69,7 +60,7 @@ public abstract class AbstractModel protected constructor(
 
     override fun getLong(index: Int): Long {
         index.checkRangeLong<Reify>()
-        val idx = index + idxOff
+        val idx = index
         val pos = idx / TypeSize.long
         return when(val offset = idx % TypeSize.long) {
             0 -> data[pos]
@@ -79,14 +70,14 @@ public abstract class AbstractModel protected constructor(
 
     override fun setByte(index: Int, value: Byte) {
         index.checkRangeByte<Reify>()
-        val idx = index + idxOff
+        val idx = index
         val pos = idx / TypeSize.long
         data[pos] = data[pos].wholeByte<Reify>(idx % TypeSize.long, value)
     }
 
     override fun setShort(index: Int, value: Short) {
         index.checkRangeShort<Reify>()
-        val idx = index + idxOff
+        val idx = index
         var pos = idx / TypeSize.long
         when(val offset = idx % TypeSize.long) {
             7 -> {
@@ -99,7 +90,7 @@ public abstract class AbstractModel protected constructor(
 
     override fun setInt(index: Int, value: Int) {
         index.checkRangeInt<Reify>()
-        val idx = index + idxOff
+        val idx = index
         var pos = idx / TypeSize.long
         when(val offset = idx % TypeSize.long) {
             in 0..<5 -> data[pos] = data[pos].wholeInt<Reify>(offset, value)
@@ -112,7 +103,7 @@ public abstract class AbstractModel protected constructor(
 
     override fun setLong(index: Int, value: Long) {
         index.checkRangeLong<Reify>()
-        val idx = index + idxOff
+        val idx = index
         var pos = idx / TypeSize.long
         when(val offset = idx % TypeSize.long) {
             0 -> data[pos] = value
@@ -229,4 +220,9 @@ public abstract class AbstractModel protected constructor(
     public companion object {
         public val typeSize: TypeSize = TypeSize.BYTE
     }
+}
+
+@PublishedApi
+internal inline fun<reified T: AbstractModel> T.innerCopy(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+    data.copyInto(dest.data, destOff, idxFrom, idxTo)
 }

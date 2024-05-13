@@ -14,10 +14,6 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.buf.PipeMode.*
-import org.angproj.aux.util.Once
-import org.angproj.aux.util.isNull
-
 public abstract class AbstractSource<T: PipeType>(
     protected val pump: Pump = Pump
 ): AbstractPipePoint(), Source<T> {

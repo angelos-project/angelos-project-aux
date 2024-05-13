@@ -18,12 +18,20 @@ import org.angproj.aux.io.Reader
 import org.angproj.aux.io.Writer
 
 public object Pump: Reader, Writer {
+    override fun read(data: ByteArray): Int {
+        throw UnsupportedOperationException()
+    }
+
+    override fun read(length: Int): ByteArray {
+        throw UnsupportedOperationException()
+    }
+
     override fun read(data: ByteBuffer): Int {
         TODO("Not yet implemented")
     }
 
-    override fun read(length: Int): ByteBuffer {
-        TODO("Not yet implemented")
+    override fun write(data: ByteArray): Int {
+        throw UnsupportedOperationException()
     }
 
     override fun write(data: ByteBuffer): Int {

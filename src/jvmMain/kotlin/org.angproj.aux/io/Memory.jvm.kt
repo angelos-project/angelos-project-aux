@@ -26,13 +26,13 @@ import java.lang.ref.Cleaner.Cleanable
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
 )
 public actual open class Memory actual constructor(
-    size: Int, idxOff: Int, idxEnd: Int
-) : AbstractMemory(size, idxOff, idxEnd) {
+    size: Int, idxLimit: Int
+) : AbstractMemory(size, idxLimit) {
 
-    public actual constructor(size: Int) : this(size, 0, size)
+    public actual constructor(size: Int) : this(size, size)
 
     actual final override val data: Chunk = allocateMemory(length)
-    protected val ptr: Long = data.ptr + idxOff
+    protected val ptr: Long = data.ptr
 
     private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }
     public override fun close() { cleanable.clean() }
@@ -77,7 +77,7 @@ public actual open class Memory actual constructor(
         unsafe.putLong(ptr + index, value)
     }
 
-    actual override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory = Memory(size, idxOff, idxEnd)
+    actual override fun create(size: Int, idxLimit: Int): Memory = Memory(size, idxLimit)
 
     override fun getPointer(): Long = data.ptr
 

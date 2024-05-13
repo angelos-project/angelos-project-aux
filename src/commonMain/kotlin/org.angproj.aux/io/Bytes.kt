@@ -14,20 +14,15 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.innerCopyOfRange
-
 public class Bytes private constructor(
-    size: Int, idxOff: Int, idxEnd: Int
-): AbstractBytes(size, idxOff, idxEnd) {
+    size: Int, idxLimit: Int
+): AbstractBytes(size, idxLimit) {
 
-    public constructor(size: Int) : this(size, 0, size)
+    public constructor(size: Int) : this(size, size)
 
-    override fun create(size: Int, idxOff: Int, idxEnd: Int): Bytes = Bytes(size, idxOff, idxEnd)
+    override fun create(size: Int, idxLimit: Int): Bytes = Bytes(size, idxLimit)
 }
 
-public fun Bytes.copyOfRange(
-    idxFrom: Int,
-    idxTo: Int
-): Bytes = innerCopyOfRange(idxFrom, idxTo)
-
-public fun Bytes.copyOf(): Bytes = innerCopyOfRange(0, size)
+public fun Bytes.copyInto(destination: Bytes, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    innerCopy(destination, destinationOffset, fromIndex, toIndex)
+}

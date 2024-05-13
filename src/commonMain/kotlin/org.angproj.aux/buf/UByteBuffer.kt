@@ -18,7 +18,7 @@ import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class UByteBuffer private constructor(
-    size: Int, idxOff: Int, idxEnd: Int
+    size: Int, idxLimit: Int
 ): AbstractBufferType<UByte> {
     public constructor(size: Int)
 
@@ -29,6 +29,3 @@ public expect class UByteBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
-
-public fun UByteBuffer.copyOf(): UByteBuffer = innerCopyOfRange(0, size)
-public fun UByteBuffer.copyOfRange(idxFrom: Int, idxTo: Int): UByteBuffer = innerCopyOfRange(idxFrom, idxTo)

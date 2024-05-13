@@ -23,12 +23,12 @@ import org.angproj.aux.util.Reify
 )
 @OptIn(ExperimentalForeignApi::class)
 public actual class UShortBuffer actual constructor(
-    size: Int, idxOff: Int, idxEnd: Int
-) : AbstractBufferType<UShort>(size, typeSize, idxOff, idxEnd) {
+    size: Int, idxLimit: Int
+) : AbstractBufferType<UShort>(size, typeSize, idxLimit) {
 
-    public actual constructor(size: Int) : this(size, 0, size)
+    public actual constructor(size: Int) : this(size, size)
 
-    override fun create(size: Int, idxOff: Int, idxEnd: Int): UShortBuffer = UShortBuffer(size, idxOff, idxEnd)
+    override fun create(size: Int, idxEnd: Int): UShortBuffer = UShortBuffer(size, idxLimit)
 
     actual override operator fun get(index: Int): UShort {
         index.checkRange<Reify>()
@@ -43,4 +43,8 @@ public actual class UShortBuffer actual constructor(
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.U_SHORT
     }
+}
+
+public fun UShortBuffer.copyInto(destination: UShortBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    innerCopy(destination, destinationOffset, fromIndex, toIndex)
 }

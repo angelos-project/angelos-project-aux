@@ -18,7 +18,7 @@ import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class DoubleBuffer private constructor(
-    size: Int, idxOff: Int, idxEnd: Int
+    size: Int, idxLimit: Int
 ): AbstractBufferType<Double> {
     public constructor(size: Int)
 
@@ -29,6 +29,3 @@ public expect class DoubleBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
-
-public fun DoubleBuffer.copyOf(): DoubleBuffer = innerCopyOfRange(0, size)
-public fun DoubleBuffer.copyOfRange(idxFrom: Int, idxTo: Int): DoubleBuffer = innerCopyOfRange(idxFrom, idxTo)

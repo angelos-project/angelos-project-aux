@@ -17,9 +17,7 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.TypeSize
 import org.angproj.aux.res.*
 import org.angproj.aux.res.Manager
-import org.angproj.aux.res.speedLongSet
 import org.angproj.aux.util.Reify
-import sun.misc.Unsafe
 import java.lang.ref.Cleaner.Cleanable
 
 @Suppress(
@@ -28,14 +26,15 @@ import java.lang.ref.Cleaner.Cleanable
     "MODALITY_CHANGED_IN_NON_FINAL_EXPECT_CLASSIFIER_ACTUALIZATION_WARNING",
 )
 public actual abstract class AbstractBufferType<E> actual constructor(
-    size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int
-) : AbstractSpeedCopy(size, idxSize, idxOff, idxEnd), BufferType<E> {
+    size: Int, idxSize: TypeSize, idxLimit: Int
+) : AbstractSpeedCopy(size, idxSize, idxLimit), BufferType<E> {
 
-    final override val length: Int = SpeedCopy.addMarginInTotalBytes(idxEnd, idxSize)
-    final override val marginSized: Int = SpeedCopy.addMarginByIndexType(idxEnd, idxSize)
+    final override val length: Int = SpeedCopy.addMarginInTotalBytes(idxLimit, idxSize)
+    final override val marginSized: Int = SpeedCopy.addMarginByIndexType(idxLimit, idxSize)
 
-    private val data: Memory = allocateMemory(length)
-    protected val ptr: Long = data.ptr + idxOff * idxSize.size
+    @PublishedApi
+    internal val data: Memory = allocateMemory(length)
+    protected val ptr: Long = data.ptr
 
     init {
         require(data.size == length)
@@ -49,25 +48,10 @@ public actual abstract class AbstractBufferType<E> actual constructor(
 
     override fun getPointer(): Long = data.ptr
 
-    actual abstract override fun create(
-        size: Int,
-        idxOff: Int,
-        idxEnd: Int
-    ): AbstractBufferType<E>
+    actual abstract override fun create(size: Int, idxLimit: Int): AbstractBufferType<E>
+}
 
-    override fun speedCopy(ctx: CopyRangeContext): AbstractSpeedCopy {
-        val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
-        val baseOffset = (ctx.baseIdx * idxSize.size)
-
-        (0 until copy.length step TypeSize.long).forEach {
-            data.speedLongSet<Reify>(it.toLong(),
-                copy.data.speedLongGet<Reify>(baseOffset + it.toLong()))
-        }
-
-        return copy
-    }
-
-    public companion object {
-        internal val unsafe: Unsafe = Memory.unsafe
-    }
+@PublishedApi
+internal inline fun<reified E, T: AbstractBufferType<E>> T.innerCopy(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+    data.copyInto<Reify>(dest.data, destOff, idxFrom, idxTo)
 }

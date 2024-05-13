@@ -221,7 +221,7 @@ abstract class AbstractMutableSegmentValidator {
     }
 
     inline fun <reified E: Segment>tryCopyOfRange(prep: (size: Int) -> E) {
-        val a = ByteArray(16)
+        /*val a = ByteArray(16)
         val m = prep(16)
         Random.nextBytes(a)
 
@@ -254,6 +254,6 @@ abstract class AbstractMutableSegmentValidator {
 
         (0 until c1.size).forEach {
             assertEquals(c1[it], c0[1 + it])
-        }
+        }*/
     }
 }

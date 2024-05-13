@@ -27,13 +27,13 @@ import org.angproj.aux.res.Memory as Chunk
 )
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 public actual open class Memory actual constructor(
-    size: Int, idxOff: Int, idxEnd: Int
-) : AbstractMemory(size, idxOff, idxEnd) {
+    size: Int, idxLimit: Int
+) : AbstractMemory(size, idxLimit) {
 
-    public actual constructor(size: Int) : this(size, 0, size)
+    public actual constructor(size: Int) : this(size, size)
 
     actual final override val data: Chunk = allocateMemory(length)
-    protected val ptr: Long = data.ptr + idxOff
+    protected val ptr: Long = data.ptr
 
     private val cleaner: Cleaner = createCleaner(data) { data.dispose() }
     override fun close() { data.dispose() }
@@ -78,8 +78,7 @@ public actual open class Memory actual constructor(
         (ptr + index).toCPointer<LongVar>()!!.pointed.value = value
     }
 
-    actual override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory = Memory(size, idxOff, idxEnd)
+    actual override fun create(size: Int, idxLimit: Int): Memory = Memory(size, idxLimit)
 
     override fun getPointer(): Long = data.ptr
 }
-

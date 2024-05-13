@@ -24,7 +24,7 @@ public abstract class AbstractWritableReader: Writable, Reader, Sizeable {
         TODO("Not yet implemented")
     }
 
-    override fun read(length: Int): ByteBuffer {
+    override fun read(length: Int): ByteArray {
         TODO("Not yet implemented")
     }
 

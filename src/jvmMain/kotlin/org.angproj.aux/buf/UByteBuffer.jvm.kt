@@ -21,12 +21,12 @@ import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class UByteBuffer actual constructor(
-    size: Int, idxOff: Int, idxEnd: Int
-) : AbstractBufferType<UByte>(size, typeSize, idxOff, idxEnd) {
+    size: Int, idxLimit: Int
+) : AbstractBufferType<UByte>(size, typeSize, idxLimit) {
 
-    public actual constructor(size: Int) : this(size, 0, size)
+    public actual constructor(size: Int) : this(size, size)
 
-    override fun create(size: Int, idxOff: Int, idxEnd: Int): UByteBuffer = UByteBuffer(size, idxOff, idxEnd)
+    override fun create(size: Int, idxLimit: Int): UByteBuffer = UByteBuffer(size, idxLimit)
 
     actual override operator fun get(index: Int): UByte {
         index.checkRange<Reify>()
@@ -42,4 +42,8 @@ public actual class UByteBuffer actual constructor(
         internal val unsafe: Unsafe = Chunk.unsafe
         public actual val typeSize: TypeSize = TypeSize.U_BYTE
     }
+}
+
+public fun UByteBuffer.copyInto(destination: UByteBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    innerCopy(destination, destinationOffset, fromIndex, toIndex)
 }

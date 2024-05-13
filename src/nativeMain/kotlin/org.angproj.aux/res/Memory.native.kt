@@ -15,6 +15,7 @@
 package org.angproj.aux.res
 
 import kotlinx.cinterop.*
+import org.angproj.aux.io.DataSize
 import org.angproj.aux.util.Reifiable
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
@@ -27,8 +28,19 @@ public actual class Memory(public actual val size: Int, public actual val ptr: L
 }
 
 @OptIn(ExperimentalForeignApi::class)
-public actual fun allocateMemory(size: Int): Memory = Memory(size, nativeHeap.allocArray<ByteVar>(size).toLong())
+public actual fun allocateMemory(size: Int): Memory {
+    validateAskedMemorySize(size)
+    return Memory(size, nativeHeap.allocArray<ByteVar>(size).toLong())
+}
+@PublishedApi
 @OptIn(ExperimentalForeignApi::class)
 internal actual inline fun <reified T: Reifiable> Memory.speedLongGet(index: Long): Long = (ptr + index).toCPointer<LongVar>()!!.pointed.value
+@PublishedApi
 @OptIn(ExperimentalForeignApi::class)
 internal actual inline fun <reified T: Reifiable> Memory.speedLongSet(index: Long, value: Long) { (ptr + index).toCPointer<LongVar>()!!.pointed.value = value }
+@PublishedApi
+@OptIn(ExperimentalForeignApi::class)
+internal actual inline fun <reified T: Reifiable> Memory.speedByteGet(index: Long): Byte = (ptr + index).toCPointer<ByteVar>()!!.pointed.value
+@PublishedApi
+@OptIn(ExperimentalForeignApi::class)
+internal actual inline fun <reified T: Reifiable> Memory.speedByteSet(index: Long, value: Byte) { (ptr + index).toCPointer<ByteVar>()!!.pointed.value = value }

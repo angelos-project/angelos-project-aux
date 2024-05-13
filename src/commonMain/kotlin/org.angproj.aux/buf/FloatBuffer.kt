@@ -18,7 +18,7 @@ import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class FloatBuffer private constructor(
-    size: Int, idxOff: Int, idxEnd: Int
+    size: Int, idxLimit: Int
 ): AbstractBufferType<Float> {
     public constructor(size: Int)
 
@@ -29,6 +29,3 @@ public expect class FloatBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
-
-public fun FloatBuffer.copyOf(): FloatBuffer = innerCopyOfRange(0, size)
-public fun FloatBuffer.copyOfRange(idxFrom: Int, idxTo: Int): FloatBuffer = innerCopyOfRange(idxFrom, idxTo)

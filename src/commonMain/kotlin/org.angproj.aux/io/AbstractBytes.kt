@@ -14,70 +14,62 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.AbstractSpeedCopy
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 
 public abstract class AbstractBytes protected constructor(
-    size: Int, idxOff: Int, idxEnd: Int
-): Segment(size, typeSize, idxOff, idxEnd) {
+    size: Int, idxLimit: Int
+): Segment(size, typeSize, idxLimit) {
 
     init {
         // Must be BYTE
         require(typeSize == TypeSize.BYTE)
     }
 
-    protected val data: ByteArray = ByteArray(length)
+    @PublishedApi
+    internal val data: ByteArray = ByteArray(length)
 
-    abstract override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractBytes
-
-    override fun speedCopy(ctx: CopyRangeContext): AbstractBytes {
-        val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
-
-        val baseOffset = (ctx.baseIdx * idxSize.size) + ctx.newIdxOff
-        val copyOffset = ctx.newIdxOff
-
-        data.copyInto(copy.data, copyOffset, baseOffset, baseOffset + ctx.newSize)
-        return copy
-    }
+    abstract override fun create(size: Int, idxLimit: Int): AbstractBytes
 
     override fun getByte(index: Int): Byte {
         index.checkRangeByte<Reify>()
-        return data[index + idxOff]
+        return data[index]
     }
 
     override fun getShort(index: Int): Short {
         index.checkRangeShort<Reify>()
-        return data.getShort<Reify>(index + idxOff)
+        return data.getShort<Reify>(index)
     }
 
     override fun getInt(index: Int): Int {
         index.checkRangeInt<Reify>()
-        return data.getInt<Reify>(index + idxOff)
+        return data.getInt<Reify>(index)
     }
 
     public override fun getLong(index: Int): Long {
         index.checkRangeLong<Reify>()
-        return data.getLong<Reify>(index + idxOff)
+        return data.getLong<Reify>(index)
     }
 
     public override fun setByte(index: Int, value: Byte) {
         index.checkRangeByte<Reify>()
-        data[index + idxOff] = value
+        data[index] = value
     }
 
     public override fun setShort(index: Int, value: Short) {
         index.checkRangeShort<Reify>()
-        data.setShort<Reify>(index + idxOff, value)
+        data.setShort<Reify>(index, value)
     }
 
     public override fun setInt(index: Int, value: Int) {
         index.checkRangeInt<Reify>()
-        data.setInt<Reify>(index + idxOff, value)
+        data.setInt<Reify>(index, value)
     }
 
     public override fun setLong(index: Int, value: Long) {
         index.checkRangeLong<Reify>()
-        data.setLong<Reify>(index + idxOff, value)
+        data.setLong<Reify>(index, value)
     }
 
     internal inline fun <reified T: Reifiable> ByteArray.getShort(index: Int): Short = (
@@ -137,4 +129,9 @@ public abstract class AbstractBytes protected constructor(
     public companion object {
         public val typeSize: TypeSize = TypeSize.BYTE
     }
+}
+
+@PublishedApi
+internal inline fun<reified T: AbstractBytes> T.innerCopy(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+    data.copyInto(dest.data, destOff, idxFrom, idxTo)
 }

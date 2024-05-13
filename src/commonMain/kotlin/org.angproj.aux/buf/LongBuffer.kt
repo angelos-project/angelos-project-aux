@@ -18,7 +18,7 @@ import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class LongBuffer private constructor(
-    size: Int, idxOff: Int, idxEnd: Int
+    size: Int, idxLimit: Int
 ): AbstractBufferType<Long> {
     public constructor(size: Int)
 
@@ -29,6 +29,3 @@ public expect class LongBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
-
-public fun LongBuffer.copyOf(): LongBuffer = innerCopyOfRange(0, size)
-public fun LongBuffer.copyOfRange(idxFrom: Int, idxTo: Int): LongBuffer = innerCopyOfRange(idxFrom, idxTo)

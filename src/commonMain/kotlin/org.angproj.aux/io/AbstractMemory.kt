@@ -15,35 +15,25 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.buf.AbstractSpeedCopy
+import org.angproj.aux.res.copyInto
 import org.angproj.aux.util.Reify
 import org.angproj.aux.res.speedLongGet
 import org.angproj.aux.res.speedLongSet
 import org.angproj.aux.res.Memory as Chunk
 
 public abstract class AbstractMemory protected constructor(
-    size: Int, idxOff: Int, idxEnd: Int
-): Segment(size, typeSize, idxOff, idxEnd) {
+    size: Int, idxLimit: Int
+): Segment(size, typeSize, idxLimit) {
 
     init {
         // Must be BYTE
         require(typeSize == TypeSize.BYTE)
     }
 
-    protected abstract val data: Chunk
+    @PublishedApi
+    internal abstract val data: Chunk
 
-    abstract override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractMemory
-
-    override fun speedCopy(ctx: CopyRangeContext): AbstractSpeedCopy {
-        val copy = create(ctx.newSize, ctx.newIdxOff, ctx.newIdxEnd)
-        val baseOffset = (ctx.baseIdx * idxSize.size)
-
-        (0 until copy.length step TypeSize.long).forEach {
-            data.speedLongSet<Reify>(it.toLong(),
-                copy.data.speedLongGet<Reify>(baseOffset + it.toLong()))
-        }
-
-        return copy
-    }
+    abstract override fun create(size: Int, idxLimit: Int): AbstractMemory
 
     abstract override fun getByte(index: Int): Byte
 
@@ -64,4 +54,9 @@ public abstract class AbstractMemory protected constructor(
     public companion object {
         public val typeSize: TypeSize = TypeSize.BYTE
     }
+}
+
+@PublishedApi
+internal inline fun<reified T: AbstractMemory> T.innerCopy(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+    data.copyInto<Reify>(dest.data, destOff, idxFrom, idxTo)
 }

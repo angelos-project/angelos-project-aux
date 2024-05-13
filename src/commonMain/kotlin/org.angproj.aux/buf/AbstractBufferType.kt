@@ -18,13 +18,10 @@ import org.angproj.aux.io.*
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect abstract class AbstractBufferType<E>(
-    size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int
+    size: Int, idxSize: TypeSize, idxLimit: Int
 ): AbstractSpeedCopy, BufferType<E>{
-    abstract override fun create(size: Int, idxOff: Int, idxEnd: Int): AbstractBufferType<E>
+    abstract override fun create(size: Int, idxLimit: Int): AbstractBufferType<E>
 
     public abstract override operator fun get(index: Int): E
     public abstract override operator fun set(index: Int, value: E)
 }
-
-@PublishedApi
-internal inline fun <E, reified S: AbstractBufferType<E>> S.copyOfRange(idxFrom: Int, idxTo: Int): S = innerCopyOfRange(idxFrom, idxTo)

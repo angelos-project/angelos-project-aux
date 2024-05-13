@@ -14,19 +14,18 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.innerCopyOfRange
 import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect open class Memory protected constructor(
-    size: Int, idxOff: Int, idxEnd: Int
+    size: Int, idxLimit: Int
 ): AbstractMemory {
 
     public constructor(size: Int)
 
     final override val data: Chunk
 
-    override fun create(size: Int, idxOff: Int, idxEnd: Int): Memory
+    override fun create(size: Int, idxLimit: Int): Memory
 
     override fun getByte(index: Int): Byte
 
@@ -45,6 +44,6 @@ public expect open class Memory protected constructor(
     override fun setLong(index: Int, value: Long)
 }
 
-public fun Memory.copyOf(): Memory = innerCopyOfRange(0, size)
-
-public fun Memory.copyOfRange(idxFrom: Int, idxTo: Int): Memory = innerCopyOfRange(idxFrom, idxTo)
+public fun Memory.copyInto(destination: Memory, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    innerCopy(destination, destinationOffset, fromIndex, toIndex)
+}

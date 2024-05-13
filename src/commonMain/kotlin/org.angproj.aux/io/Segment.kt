@@ -19,11 +19,11 @@ import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 
 public abstract class Segment(
-    size: Int, idxSize: TypeSize, idxOff: Int, idxEnd: Int
-): AbstractSpeedCopy(size, idxSize, idxOff, idxEnd), ByteString {
+    size: Int, idxSize: TypeSize, idxLimit: Int
+): AbstractSpeedCopy(size, idxSize, idxLimit), ByteString {
 
-    final override val length: Int = SpeedCopy.addMarginInTotalBytes(idxEnd, idxSize)
-    final override val marginSized: Int = SpeedCopy.addMarginByIndexType(idxEnd, idxSize)
+    final override val length: Int = SpeedCopy.addMarginInTotalBytes(idxLimit, idxSize)
+    final override val marginSized: Int = SpeedCopy.addMarginByIndexType(idxLimit, idxSize)
 
     public inline fun <reified T: Reifiable> Long.reverse(): Long = (
             this.toInt().reverse<Reify>().toLong() shl 32) or (
@@ -36,6 +36,3 @@ public abstract class Segment(
     public inline fun <reified T: Reifiable> Short.reverse(): Short = (
             (this.toInt() shl 16) or (this.toInt() ushr 16)).toShort()
 }
-
-@PublishedApi
-internal inline fun <reified S: Segment> S.copyOfRange(idxFrom: Int, idxTo: Int): S = innerCopyOfRange(idxFrom, idxTo)

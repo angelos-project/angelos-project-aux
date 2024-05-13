@@ -17,5 +17,8 @@ package org.angproj.aux.io
 import org.angproj.aux.buf.ByteBuffer
 
 public interface Writer {
-    public fun write(data: ByteBuffer): Int
+    public fun write(data: ByteArray): Int
+
+    public fun write(data: ByteBuffer): Int { throw UnsupportedOperationException() }
+
 }

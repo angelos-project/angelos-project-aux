@@ -29,3 +29,5 @@ public actual class Memory: Cleanable {
 public actual fun allocateMemory(size: Int): Memory = throw UnsupportedOperationException()
 internal actual inline fun <reified T: Reifiable> Memory.speedLongGet(index: Long): Long = throw UnsupportedOperationException()
 internal actual inline fun <reified T: Reifiable> Memory.speedLongSet(index: Long, value: Long): Unit = throw UnsupportedOperationException()
+internal actual inline fun <reified T: Reifiable> Memory.speedByteGet(index: Long): Byte = throw UnsupportedOperationException()
+internal actual inline fun <reified T: Reifiable> Memory.speedByteSet(index: Long, value: Byte): Unit = throw UnsupportedOperationException()

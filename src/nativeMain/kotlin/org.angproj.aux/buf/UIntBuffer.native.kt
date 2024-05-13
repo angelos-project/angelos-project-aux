@@ -23,12 +23,12 @@ import org.angproj.aux.util.Reify
 )
 @OptIn(ExperimentalForeignApi::class)
 public actual class UIntBuffer actual constructor(
-    size: Int, idxOff: Int, idxEnd: Int
-) : AbstractBufferType<UInt>(size, typeSize, idxOff, idxEnd) {
+    size: Int, idxLimit: Int
+) : AbstractBufferType<UInt>(size, typeSize, idxLimit) {
 
-    public actual constructor(size: Int) : this(size, 0, size)
+    public actual constructor(size: Int) : this(size, size)
 
-    override fun create(size: Int, idxOff: Int, idxEnd: Int): UIntBuffer = UIntBuffer(size, idxOff, idxEnd)
+    override fun create(size: Int, idxLimit: Int): UIntBuffer = UIntBuffer(size, idxLimit)
 
     actual override operator fun get(index: Int): UInt {
         index.checkRange<Reify>()
@@ -43,4 +43,8 @@ public actual class UIntBuffer actual constructor(
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.U_INT
     }
+}
+
+public fun UIntBuffer.copyInto(destination: UIntBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    innerCopy(destination, destinationOffset, fromIndex, toIndex)
 }

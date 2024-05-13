@@ -18,7 +18,7 @@ import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class ShortBuffer private constructor(
-    size: Int, idxOff: Int, idxEnd: Int
+    size: Int, idxLimit: Int
 ): AbstractBufferType<Short> {
     public constructor(size: Int)
 
@@ -29,6 +29,3 @@ public expect class ShortBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
-
-public fun ShortBuffer.copyOf(): ShortBuffer = innerCopyOfRange(0, size)
-public fun ShortBuffer.copyOfRange(idxFrom: Int, idxTo: Int): ShortBuffer = innerCopyOfRange(idxFrom, idxTo)

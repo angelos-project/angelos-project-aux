@@ -23,12 +23,12 @@ import org.angproj.aux.util.Reify
 )
 @OptIn(ExperimentalForeignApi::class)
 public actual class FloatBuffer actual constructor(
-    size: Int, idxOff: Int, idxEnd: Int
-) : AbstractBufferType<Float>(size, typeSize, idxOff, idxEnd) {
+    size: Int, idxLimit: Int
+) : AbstractBufferType<Float>(size, typeSize, idxLimit) {
 
-    public actual constructor(size: Int) : this(size, 0, size)
+    public actual constructor(size: Int) : this(size, size)
 
-    override fun create(size: Int, idxOff: Int, idxEnd: Int): FloatBuffer = FloatBuffer(size, idxOff, idxEnd)
+    override fun create(size: Int, idxLimit: Int): FloatBuffer = FloatBuffer(size, idxLimit)
 
     actual override operator fun get(index: Int): Float {
         index.checkRange<Reify>()
@@ -43,4 +43,8 @@ public actual class FloatBuffer actual constructor(
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.FLOAT
     }
+}
+
+public fun FloatBuffer.copyInto(destination: FloatBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    innerCopy(destination, destinationOffset, fromIndex, toIndex)
 }

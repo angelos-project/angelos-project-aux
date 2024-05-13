@@ -14,21 +14,19 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.innerCopyOfRange
-
 public class Model private constructor(
-    size: Int, idxOff: Int, idxEnd: Int
-): AbstractModel(size, idxOff, idxEnd) {
+    size: Int, idxLimit: Int
+): AbstractModel(size, idxLimit) {
 
-    public constructor(size: Int) : this(size, 0, size)
+    public constructor(size: Int) : this(size, size)
 
-    override fun create(size: Int, idxOff: Int, idxEnd: Int): Model = Model(size, idxOff, idxEnd)
+    override fun create(size: Int, idxLimit: Int): Model = Model(size, idxLimit)
 
     public companion object {
         public val typeSize: TypeSize = TypeSize.BYTE
     }
 }
 
-public fun Model.copyOf(): Model = innerCopyOfRange(0, size)
-
-public fun Model.copyOfRange(idxFrom: Int, idxTo: Int): Model = innerCopyOfRange(idxFrom, idxTo)
+public fun Model.copyInto(destination: Model, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    innerCopy(destination, destinationOffset, fromIndex, toIndex)
+}

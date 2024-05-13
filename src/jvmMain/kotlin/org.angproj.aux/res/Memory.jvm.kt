@@ -25,7 +25,9 @@ public actual class Memory(public actual val size: Int, public actual val ptr: L
         unsafe.freeMemory(ptr)
     }
 
+    @PublishedApi
     internal companion object {
+        @PublishedApi
         internal val unsafe: Unsafe
 
         init {
@@ -36,6 +38,16 @@ public actual class Memory(public actual val size: Int, public actual val ptr: L
     }
 }
 
-public actual fun allocateMemory(size: Int): Memory = Memory(size, Memory.unsafe.allocateMemory(size.toLong()))
+public actual fun allocateMemory(size: Int): Memory {
+    validateAskedMemorySize(size)
+    return Memory(size, Memory.unsafe.allocateMemory(size.toLong()))
+}
+
+@PublishedApi
 internal actual inline fun <reified T: Reifiable> Memory.speedLongGet(index: Long): Long = Memory.unsafe.getLong(ptr + index)
+@PublishedApi
 internal actual inline fun <reified T: Reifiable> Memory.speedLongSet(index: Long, value: Long): Unit = Memory.unsafe.putLong(ptr + index, value)
+@PublishedApi
+internal actual inline fun <reified T: Reifiable> Memory.speedByteGet(index: Long): Byte = Memory.unsafe.getByte(ptr + index)
+@PublishedApi
+internal actual inline fun <reified T: Reifiable> Memory.speedByteSet(index: Long, value: Byte): Unit = Memory.unsafe.putByte(ptr + index, value)

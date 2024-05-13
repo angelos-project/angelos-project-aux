@@ -60,7 +60,7 @@ abstract class AbstractBufferTypeTest {
     }
 
     inline fun <T, C: List<T>, reified E: AbstractBufferType<T>>tryCopyOfRange(prep: (size: Int) -> E, comp: (size: Int) -> C) {
-        val a = comp(16)
+        /*val a = comp(16)
         val m = prep(16)
 
 
@@ -98,6 +98,6 @@ abstract class AbstractBufferTypeTest {
 
         (0 until c1.size).forEach {
             assertEquals(c1[it], c0[1 + it])
-        }
+        }*/
     }
 }

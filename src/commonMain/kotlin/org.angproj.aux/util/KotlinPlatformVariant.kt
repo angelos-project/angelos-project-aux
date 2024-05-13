@@ -25,3 +25,23 @@ public enum class KotlinPlatformVariant(public val code: String) {
 }
 
 public expect fun KotlinPlatformVariant.Companion.getVariant(): KotlinPlatformVariant
+
+public inline fun<reified E: Any> ifNative(block: () -> E): E = when(KotlinPlatformVariant.getVariant()) {
+    KotlinPlatformVariant.NATIVE -> block()
+    else -> NullObject.any as E
+}
+
+public inline fun<reified E: Any> ifJvm(block: () -> E): E = when(KotlinPlatformVariant.getVariant()) {
+    KotlinPlatformVariant.JVM -> block()
+    else -> NullObject.any as E
+}
+
+public inline fun<reified E: Any> ifJs(block: () -> E): E = when(KotlinPlatformVariant.getVariant()) {
+    KotlinPlatformVariant.JS -> block()
+    else -> NullObject.any as E
+}
+
+public inline fun<reified E: Any> ifNotJs(block: () -> E): E = when(KotlinPlatformVariant.getVariant()) {
+    KotlinPlatformVariant.JS -> NullObject.any as E
+    else -> block()
+}
