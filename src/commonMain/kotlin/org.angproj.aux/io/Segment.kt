@@ -36,3 +36,7 @@ public abstract class Segment(
     public inline fun <reified T: Reifiable> Short.reverse(): Short = (
             (this.toInt() shl 16) or (this.toInt() ushr 16)).toShort()
 }
+
+public fun<E: Segment> Segment.copyInto(destination: E, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    throw UnsupportedOperationException()
+}

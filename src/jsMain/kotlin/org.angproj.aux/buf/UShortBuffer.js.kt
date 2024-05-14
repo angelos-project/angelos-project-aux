@@ -45,3 +45,11 @@ public actual class UShortBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.U_SHORT
     }
 }
+
+actual fun UShortBuffer.copyInto(
+    destination: UShortBuffer,
+    destinationOffset: Int,
+    fromIndex: Int,
+    toIndex: Int
+) {
+}

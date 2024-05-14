@@ -22,6 +22,8 @@ import kotlin.random.Random
 import kotlin.random.nextUInt
 import kotlin.random.nextULong
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.time.measureTime
 
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -74,8 +76,8 @@ class ULongBufferTest: AbstractBufferTypeTest() {
         println("Buffer: $writeTimeBuffer")
     }
 
-    val createNew: (size: Int) -> ULongBuffer = { ULongBuffer(it) }
-    val createComparison: (size: Int) -> List<ULong> = { ULongArray(it) { Random.nextLong().toULong() }.toList() }
+    val createNew: (size: Int) -> ULongBuffer = { ULongBuffer(it/ULong.SIZE_BYTES) }
+    val createComparison: (size: Int) -> Array<ULong> = { Array(it/ULong.SIZE_BYTES) { Random.nextLong().toULong() } }
 
 
     @Test
@@ -85,5 +87,33 @@ class ULongBufferTest: AbstractBufferTypeTest() {
     fun testBufferReadWrite() = bufferReadWrite(testLong.toULong(), createNew)
 
     @Test
-    fun testTryCopyOfRange() = tryCopyOfRange(createNew, createComparison)
+    fun testTryCopyInto() {
+        val seg1 = createNew(arr1.size)
+        val seg2 = createNew(arr2.size)
+        val narr1 = createComparison(arr1.size)
+        val narr2 = createComparison(arr2.size)
+
+
+        // Copy and verify that #1 reflect each other
+        (0 until seg1.size).forEach { seg1.set(it, narr1.get(it)) }
+        (0 until seg1.size).forEach {
+            assertEquals(seg1.get(it), narr1.get(it)) }
+
+        // Copy and verify that #2 reflect each other
+        (0 until seg2.size).forEach { seg2.set(it, narr2.get(it)) }
+        (0 until seg2.size).forEach {
+            assertEquals(seg2.get(it), narr2.get(it)) }
+
+        // Prove that a chunk is fully saturated as the reflecting array
+        assertFails { println(narr1[seg1.size]) }
+
+        // Copy chunk 2 into the middle of chunk 1
+        seg2.copyInto(seg1, seg1.size / 4, 0, seg2.size)
+        narr2.copyInto(narr1, narr1.size / 4, 0, narr2.size)
+        narr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
+            assertEquals(seg1.get(it), narr1.get(it)) }
+
+        seg1.close()
+        seg2.close()
+    }
 }

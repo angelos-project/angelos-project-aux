@@ -46,16 +46,16 @@ public inline fun <reified T: Reifiable> chunkLoop(index: Int, length: Int, slic
 }
 
 @PublishedApi
-internal inline fun <reified T: Reifiable> Memory.copyInto(destination: Memory, destinationOffset: Int, fromIdx: Int, toIdx: Int) {
-    val length = toIdx - fromIdx
-    require(fromIdx <= toIdx) {
-        "Start index ($fromIdx) is larger than end index ($toIdx)" }
+internal inline fun <reified T: Reifiable> Memory.copyInto(destination: Memory, destinationOffset: Int, idxFrom: Int, idxTo: Int) {
+    val length = idxTo - idxFrom
+    require(idxFrom <= idxTo) {
+        "Start index ($idxFrom) is larger than end index ($idxTo)" }
     require(length >= 0) {
         "Length ($length) can not be negative" }
-    require(fromIdx in 0..<size) {
-        "Start index ($fromIdx) not in memory range" }
-    require(fromIdx + length in 0..size) {
-        "End index (${fromIdx + length}) outside of memory range" }
+    require(idxFrom in 0..<size) {
+        "Start index ($idxFrom) not in memory range" }
+    require(idxFrom + length in 0..size) {
+        "End index (${idxFrom + length}) outside of memory range" }
     require(destinationOffset in 0..<destination.size) {
         "Destination offset ($destinationOffset) not in memory range" }
     require(destinationOffset + length in 0..destination.size) {
@@ -64,13 +64,13 @@ internal inline fun <reified T: Reifiable> Memory.copyInto(destination: Memory, 
     val index = chunkLoop<Reify>(0, length, TypeSize.long) {
         destination.speedLongSet<Reify>(
             (destinationOffset + it).toLong(),
-            speedLongGet<Reify>((fromIdx + it).toLong())
+            speedLongGet<Reify>((idxFrom + it).toLong())
         )
     }
     chunkLoop<Reify>(index, length, TypeSize.byte) {
         destination.speedByteSet<Reify>(
             (destinationOffset + it).toLong(),
-            speedByteGet<Reify>((fromIdx + it).toLong())
+            speedByteGet<Reify>((idxFrom + it).toLong())
         )
     }
 }

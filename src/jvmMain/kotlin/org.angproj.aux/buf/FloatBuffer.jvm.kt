@@ -44,6 +44,7 @@ public actual class FloatBuffer actual constructor(
     }
 }
 
-public fun FloatBuffer.copyInto(destination: FloatBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    innerCopy(destination, destinationOffset, fromIndex, toIndex)
+public actual fun FloatBuffer.copyInto(destination: FloatBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    val ts = FloatBuffer.typeSize.size
+    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

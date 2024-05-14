@@ -45,3 +45,11 @@ public actual class UByteBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.U_BYTE
     }
 }
+
+public actual fun UByteBuffer.copyInto(
+    destination: UByteBuffer,
+    destinationOffset: Int,
+    fromIndex: Int,
+    toIndex: Int
+) {
+}

@@ -45,3 +45,11 @@ public actual class ByteBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.BYTE
     }
 }
+
+actual fun ByteBuffer.copyInto(
+    destination: ByteBuffer,
+    destinationOffset: Int,
+    fromIndex: Int,
+    toIndex: Int
+) {
+}

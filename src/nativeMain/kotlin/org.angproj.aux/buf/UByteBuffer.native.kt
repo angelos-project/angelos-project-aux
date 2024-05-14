@@ -45,6 +45,7 @@ public actual class UByteBuffer actual constructor(
     }
 }
 
-public fun UByteBuffer.copyInto(destination: UByteBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    innerCopy(destination, destinationOffset, fromIndex, toIndex)
+public actual fun UByteBuffer.copyInto(destination: UByteBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    val ts = UByteBuffer.typeSize.size
+    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

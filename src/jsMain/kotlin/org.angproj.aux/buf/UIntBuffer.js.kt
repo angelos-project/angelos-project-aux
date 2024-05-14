@@ -45,3 +45,11 @@ public actual class UIntBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.U_INT
     }
 }
+
+actual fun UIntBuffer.copyInto(
+    destination: UIntBuffer,
+    destinationOffset: Int,
+    fromIndex: Int,
+    toIndex: Int
+) {
+}

@@ -44,6 +44,7 @@ public actual class DoubleBuffer actual constructor(
     }
 }
 
-public fun DoubleBuffer.copyInto(destination: DoubleBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    innerCopy(destination, destinationOffset, fromIndex, toIndex)
+public actual fun DoubleBuffer.copyInto(destination: DoubleBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    val ts = DoubleBuffer.typeSize.size
+    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

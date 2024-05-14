@@ -29,3 +29,5 @@ public expect class UShortBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
+
+public expect fun UShortBuffer.copyInto(destination: UShortBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int)

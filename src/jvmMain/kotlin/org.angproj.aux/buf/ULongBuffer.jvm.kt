@@ -44,6 +44,7 @@ public actual class ULongBuffer actual constructor(
     }
 }
 
-public fun ULongBuffer.copyInto(destination: ULongBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    innerCopy(destination, destinationOffset, fromIndex, toIndex)
+public actual fun ULongBuffer.copyInto(destination: ULongBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    val ts = ULongBuffer.typeSize.size
+    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

@@ -45,3 +45,11 @@ public actual class DoubleBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.DOUBLE
     }
 }
+
+public actual fun DoubleBuffer.copyInto(
+    destination: DoubleBuffer,
+    destinationOffset: Int,
+    fromIndex: Int,
+    toIndex: Int
+) {
+}

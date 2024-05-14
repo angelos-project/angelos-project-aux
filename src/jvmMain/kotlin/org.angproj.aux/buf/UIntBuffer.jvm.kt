@@ -44,6 +44,7 @@ public actual class UIntBuffer actual constructor(
     }
 }
 
-public fun UIntBuffer.copyInto(destination: UIntBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    innerCopy(destination, destinationOffset, fromIndex, toIndex)
+public actual fun UIntBuffer.copyInto(destination: UIntBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    val ts = UIntBuffer.typeSize.size
+    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

@@ -14,12 +14,15 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.DataSize
 import org.angproj.aux.util.BinHex
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 abstract class AbstractBufferTypeTest {
 
+    val arr1 = ByteArray(DataSize._128B.size) { (-it - 1).toByte() } // From -1 to -128
+    val arr2 = ByteArray(DataSize._64B.size) { it.toByte() } // From 0 to 63
     val testDataAtomic = "fedcba9876543210f0e1d2c3b4a596870123456789abcdef"
 
     val testByte: Byte = 0B1000_0001.toByte()
@@ -28,8 +31,7 @@ abstract class AbstractBufferTypeTest {
     val testLong: Long = 0x1122334455667711
 
     fun <T, E: AbstractBufferType<T>>bufferRWOutbound(tVal: T, prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val m = prep(arr1.size)
 
         m[0]
         assertFailsWith<IllegalArgumentException> {
@@ -53,7 +55,7 @@ abstract class AbstractBufferTypeTest {
     }
 
     fun <T, E: AbstractBufferType<T>>bufferReadWrite(tVal: T, prep: (size: Int) -> E) {
-        val m = prep(16)
+        val m = prep(arr1.size)
 
         (0 until m.size).forEach { m[it] = tVal }
         (0 until m.size).forEach { assertEquals(m[it], tVal) }

@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.AbstractSpeedCopy
 import org.angproj.aux.util.Reify
 import org.angproj.aux.res.Manager
 import org.angproj.aux.res.allocateMemory

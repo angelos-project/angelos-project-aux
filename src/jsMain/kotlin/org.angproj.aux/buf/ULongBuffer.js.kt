@@ -45,3 +45,11 @@ public actual class ULongBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.U_LONG
     }
 }
+
+public actual fun ULongBuffer.copyInto(
+    destination: ULongBuffer,
+    destinationOffset: Int,
+    fromIndex: Int,
+    toIndex: Int
+) {
+}

@@ -15,6 +15,7 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.buf.AbstractSpeedCopy
+import org.angproj.aux.res.*
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 
@@ -224,5 +225,30 @@ public abstract class AbstractModel protected constructor(
 
 @PublishedApi
 internal inline fun<reified T: AbstractModel> T.innerCopy(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
-    data.copyInto(dest.data, destOff, idxFrom, idxTo)
+    val length = idxTo - idxFrom
+    require(idxFrom <= idxTo) {
+        "Start index ($idxFrom) is larger than end index ($idxTo)" }
+    require(length >= 0) {
+        "Length ($length) can not be negative" }
+    require(idxFrom in 0..<size) {
+        "Start index ($idxFrom) not in memory range" }
+    require(idxFrom + length in 0..size) {
+        "End index (${idxFrom + length}) outside of memory range" }
+    require(destOff in 0..<dest.size) {
+        "Destination offset ($destOff) not in memory range" }
+    require(destOff + length in 0..dest.size) {
+        "End index (${destOff + length}) outside of memory range" }
+
+    val index = chunkLoop<Reify>(0, length, TypeSize.long) {
+        dest.setLong(
+            destOff + it,
+            getLong(idxFrom + it)
+        )
+    }
+    chunkLoop<Reify>(index, length, TypeSize.byte) {
+        dest.setByte(
+            destOff + it,
+            getByte(idxFrom + it)
+        )
+    }
 }

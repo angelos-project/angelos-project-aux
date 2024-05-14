@@ -16,37 +16,36 @@ package org.angproj.aux.io
 
 import kotlin.test.assertEquals
 import org.angproj.aux.util.*
-import kotlin.random.Random
+import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
-abstract class AbstractMutableSegmentValidator {
+abstract class AbstractSegmentValidator {
 
-    val testDataAtomic = "fedcba9876543210f0e1d2c3b4a596870123456789abcdef"
-
-    val testByte: Byte = 0B1000_0001.toByte()
+    val arr1 = ByteArray(DataSize._128B.size) { (-it - 1).toByte() } // From -1 to -128
+    val arr2 = ByteArray(DataSize._64B.size) { it.toByte() } // From 0 to 63
     val testShort: Short = 0x1221
     val testInt: Int = 0x11223344
     val testLong: Long = 0x1122334455667711
 
     fun <E: Segment>byteWriteReadSync(prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val b = arr1.copyOf()
+        val m = prep(arr1.size)
 
         b.forEachIndexed { index, byte -> m.setByte(index, byte) }
         b.forEachIndexed { index, byte -> assertEquals(m.getByte(index), byte) }
     }
 
     fun <E: Segment>shortReadAsync(prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val b = arr1.copyOf()
+        val m = prep(arr1.size)
 
         b.forEachIndexed { index, byte -> m.setByte(index, byte) }
         (0 until b.size-1).forEach { index-> assertEquals(m.getShort(index), b.readShortAt(index)) }
     }
 
     fun <E: Segment>shortWriteAsync(prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val b = arr1.copyOf()
+        val m = prep(arr1.size)
 
         (0 until b.size-1).forEach { index ->
             b.forEachIndexed { jdx, byte -> m.setByte(jdx, byte) }
@@ -59,16 +58,16 @@ abstract class AbstractMutableSegmentValidator {
     }
 
     fun <E: Segment>intReadAsync(prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val b = arr1.copyOf()
+        val m = prep(arr1.size)
 
         b.forEachIndexed { index, byte -> m.setByte(index, byte) }
         (0 until b.size-3).forEach{ index-> assertEquals(m.getInt(index), b.readIntAt(index)) }
     }
 
     fun <E: Segment>intWriteAsync(prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val b = arr1.copyOf()
+        val m = prep(arr1.size)
 
         (0 until b.size-3).forEach { index ->
             b.forEachIndexed { jdx, byte -> m.setByte(jdx, byte) }
@@ -81,16 +80,16 @@ abstract class AbstractMutableSegmentValidator {
     }
 
     fun <E: Segment>longReadAsync(prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val b = arr1.copyOf()
+        val m = prep(arr1.size)
 
         b.forEachIndexed { index, byte -> m.setByte(index, byte) }
         (0 until b.size-7).forEach{ index-> assertEquals(m.getLong(index), b.readLongAt(index)) }
     }
 
     fun <E: Segment>longWriteAsync(prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val b = arr1.copyOf()
+        val m = prep(arr1.size)
 
         (0 until b.size-7).forEach { index ->
             b.forEachIndexed { jdx, byte -> m.setByte(jdx, byte) }
@@ -121,8 +120,7 @@ abstract class AbstractMutableSegmentValidator {
     }
 
     fun <E: Segment>byteRWOutbound(prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val m = prep(arr1.size)
 
         m.getByte(0)
         assertFailsWith<IllegalArgumentException> {
@@ -146,8 +144,7 @@ abstract class AbstractMutableSegmentValidator {
     }
 
     fun <E: Segment>shortRWOutbound(prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val m = prep(arr1.size)
 
         m.getShort(0)
         assertFailsWith<IllegalArgumentException> {
@@ -171,8 +168,7 @@ abstract class AbstractMutableSegmentValidator {
     }
 
     fun <E: Segment>intRWOutbound(prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val m = prep(arr1.size)
 
         m.getInt(0)
         assertFailsWith<IllegalArgumentException> {
@@ -196,8 +192,7 @@ abstract class AbstractMutableSegmentValidator {
     }
 
     fun <E: Segment>longRWOutbound(prep: (size: Int) -> E) {
-        val b = BinHex.decodeToBin(testDataAtomic)
-        val m = prep(b.size)
+        val m = prep(arr1.size)
 
         m.getLong(0)
         assertFailsWith<IllegalArgumentException> {
@@ -220,7 +215,34 @@ abstract class AbstractMutableSegmentValidator {
         }
     }
 
-    inline fun <reified E: Segment>tryCopyOfRange(prep: (size: Int) -> E) {
+    inline fun <reified E: Segment>tryCopyInto(prep: (size: Int) -> E) {
+        val seg1 = prep(arr1.size)
+        val seg2 = prep(arr2.size)
+
+        // Copy and verify that #1 reflect each other
+        (0 until seg1.size).forEach { seg1.setByte(it, arr1[it]) }
+        (0 until seg1.size).forEach {
+            assertEquals(seg1.getByte(it), arr1[it]) }
+
+        // Copy and verify that #2 reflect each other
+        (0 until seg2.size).forEach { seg2.setByte(it, arr2[it]) }
+        (0 until seg2.size).forEach {
+            assertEquals(seg2.getByte(it), arr2[it]) }
+
+        // Prove that a chunk is fully saturated as the reflecting array
+        assertFails { println(arr1[seg1.size]) }
+
+        // Copy chunk 2 into the middle of chunk 1
+        seg2.copyInto(seg1, 32, 0, 64)
+        arr2.copyInto(arr1, 32, 0, 64)
+        arr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
+            assertEquals(seg1.getByte(it), arr1[it]) }
+
+        seg1.close()
+        seg2.close()
+    }
+
+    inline fun <reified E: Segment>tryCopyOfRange(prep: () -> E) {
         /*val a = ByteArray(16)
         val m = prep(16)
         Random.nextBytes(a)

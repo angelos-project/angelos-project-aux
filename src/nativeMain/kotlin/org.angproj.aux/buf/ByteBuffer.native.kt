@@ -45,6 +45,6 @@ public actual class ByteBuffer actual constructor(
     }
 }
 
-public fun ByteBuffer.copyInto(destination: ByteBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+public actual fun ByteBuffer.copyInto(destination: ByteBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
     innerCopy(destination, destinationOffset, fromIndex, toIndex)
 }

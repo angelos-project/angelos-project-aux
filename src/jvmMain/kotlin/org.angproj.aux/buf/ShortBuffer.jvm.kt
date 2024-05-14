@@ -44,6 +44,7 @@ public actual class ShortBuffer actual constructor(
     }
 }
 
-public fun ShortBuffer.copyInto(destination: ShortBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    innerCopy(destination, destinationOffset, fromIndex, toIndex)
+public actual fun ShortBuffer.copyInto(destination: ShortBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    val ts = ShortBuffer.typeSize.size
+    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

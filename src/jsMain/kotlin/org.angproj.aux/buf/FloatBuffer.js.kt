@@ -45,3 +45,11 @@ public actual class FloatBuffer actual constructor(
         public actual val typeSize: TypeSize = TypeSize.FLOAT
     }
 }
+
+public actual fun FloatBuffer.copyInto(
+    destination: FloatBuffer,
+    destinationOffset: Int,
+    fromIndex: Int,
+    toIndex: Int
+) {
+}
