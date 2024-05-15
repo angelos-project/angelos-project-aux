@@ -40,12 +40,12 @@ public actual class LongBuffer actual constructor(
         (ptr + index * TypeSize.long).toCPointer<LongVar>()!!.pointed.value = value
     }
 
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        val ts = idxSize.size
+        innerCopy(dest as LongBuffer, destOff * ts, idxFrom * ts, idxTo * ts)
+    }
+
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.LONG
     }
-}
-
-public actual fun LongBuffer.copyInto(destination: LongBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    val ts = LongBuffer.typeSize.size
-    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

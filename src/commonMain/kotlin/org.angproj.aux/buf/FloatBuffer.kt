@@ -29,5 +29,3 @@ public expect class FloatBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
-
-public expect fun FloatBuffer.copyInto(destination: FloatBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int)

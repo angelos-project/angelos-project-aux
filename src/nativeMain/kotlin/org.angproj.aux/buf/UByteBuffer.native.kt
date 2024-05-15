@@ -40,12 +40,12 @@ public actual class UByteBuffer actual constructor(
         (ptr + index).toCPointer<UByteVar>()!!.pointed.value = value
     }
 
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        val ts = idxSize.size
+        innerCopy(dest as UByteBuffer, destOff * ts, idxFrom * ts, idxTo * ts)
+    }
+
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.U_BYTE
     }
-}
-
-public actual fun UByteBuffer.copyInto(destination: UByteBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    val ts = UByteBuffer.typeSize.size
-    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

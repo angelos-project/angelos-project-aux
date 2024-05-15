@@ -29,5 +29,3 @@ public expect class ULongBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
-
-public expect fun ULongBuffer.copyInto(destination: ULongBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int)

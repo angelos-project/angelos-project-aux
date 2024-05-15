@@ -40,12 +40,12 @@ public actual class ShortBuffer actual constructor(
         (ptr + index * TypeSize.short).toCPointer<ShortVar>()!!.pointed.value = value
     }
 
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        val ts = idxSize.size
+        innerCopy(dest as ShortBuffer, destOff * ts, idxFrom * ts, idxTo * ts)
+    }
+
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.SHORT
     }
-}
-
-public actual fun ShortBuffer.copyInto(destination: ShortBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    val ts = ShortBuffer.typeSize.size
-    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

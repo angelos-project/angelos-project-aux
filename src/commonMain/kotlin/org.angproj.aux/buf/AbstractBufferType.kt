@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.*
+import org.angproj.aux.io.TypeSize
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect abstract class AbstractBufferType<E>(
@@ -25,3 +25,14 @@ public expect abstract class AbstractBufferType<E>(
     public abstract override operator fun get(index: Int): E
     public abstract override operator fun set(index: Int, value: E)
 }
+
+/*
+public fun<E, T: AbstractBufferType<E>> T.copyInto(
+    destination: T, destinationOffset: Int, fromIndex: Int, toIndex: Int
+): Unit = copyInto(destination, destinationOffset, fromIndex, toIndex)
+
+public fun<E, T: AbstractBufferType<E>> T.copyOfRange(
+    fromIndex: Int, toIndex: Int): T = copyOfRange(fromIndex, toIndex)
+
+public fun<E, T: AbstractBufferType<E>> T.copyOf(): T = copyOf()
+*/

@@ -40,12 +40,12 @@ public actual class UIntBuffer actual constructor(
         (ptr + index * TypeSize.uInt).toCPointer<UIntVar>()!!.pointed.value = value
     }
 
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        val ts = idxSize.size
+        innerCopy(dest as UIntBuffer, destOff * ts, idxFrom * ts, idxTo * ts)
+    }
+
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.U_INT
     }
-}
-
-public actual fun UIntBuffer.copyInto(destination: UIntBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    val ts = UIntBuffer.typeSize.size
-    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

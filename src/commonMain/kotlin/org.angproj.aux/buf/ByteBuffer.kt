@@ -15,7 +15,6 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.io.innerCopy
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class ByteBuffer private constructor(
@@ -30,5 +29,3 @@ public expect class ByteBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
-
-public expect fun ByteBuffer.copyInto(destination: ByteBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int)

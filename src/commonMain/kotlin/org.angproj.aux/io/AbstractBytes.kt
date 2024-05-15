@@ -14,7 +14,6 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.AbstractSpeedCopy
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 

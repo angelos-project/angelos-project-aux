@@ -15,7 +15,6 @@
 package org.angproj.aux.utf
 
 import org.angproj.aux.codec.DecoderEncoder
-import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.NullObject
 
 public class UtfSanitize(private val mode: SanitizeMode): DecoderEncoder<ByteArray, IntArray>() {

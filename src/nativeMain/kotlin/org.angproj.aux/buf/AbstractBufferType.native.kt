@@ -48,8 +48,6 @@ public actual abstract class AbstractBufferType<E> actual constructor(
         data.dispose()
     }
 
-    override fun getPointer(): Long = data.ptr
-
     actual abstract override fun create(size: Int, idxLimit: Int): AbstractBufferType<E>
 }
 

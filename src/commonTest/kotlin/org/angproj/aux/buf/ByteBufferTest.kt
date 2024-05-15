@@ -16,16 +16,19 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.io.copyInto
 import org.angproj.aux.util.KotlinPlatformVariant
 import org.angproj.aux.util.getVariant
 import kotlin.random.Random
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlin.time.measureTime
 
-class ByteBufferTest: AbstractBufferTypeTest() {
+class ByteBufferTest: AbstractBufferTypeValidator<Byte>() {
+
+    init {
+        tSize = TypeSize.byte
+        arr1 = Array(_arr1.size / Byte.SIZE_BYTES) { _arr1.get(it) }
+        arr2 = Array(_arr2.size / Byte.SIZE_BYTES) { _arr2.get(it) }
+    }
 
     //@Test
     fun measureReadWriteSpeed() {
@@ -83,30 +86,11 @@ class ByteBufferTest: AbstractBufferTypeTest() {
     fun testBufferReadWrite() = bufferReadWrite(testByte, createNew)
 
     @Test
-    fun testTryCopyInto() {
-        val seg1 = createNew(arr1.size)
-        val seg2 = createNew(arr2.size)
+    fun testTryCopyInto() = tryCopyInto(createNew)
 
-        // Copy and verify that #1 reflect each other
-        (0 until seg1.size).forEach { seg1.set(it, arr1[it]) }
-        (0 until seg1.size).forEach {
-            assertEquals(seg1.get(it), arr1[it]) }
+    @Test
+    fun testTryCopyOfRange() = tryCopyOfRange(createNew)
 
-        // Copy and verify that #2 reflect each other
-        (0 until seg2.size).forEach { seg2.set(it, arr2[it]) }
-        (0 until seg2.size).forEach {
-            assertEquals(seg2.get(it), arr2[it]) }
-
-        // Prove that a chunk is fully saturated as the reflecting array
-        assertFails { println(arr1[seg1.size]) }
-
-        // Copy chunk 2 into the middle of chunk 1
-        seg2.copyInto(seg1, 32, 0, 64)
-        arr2.copyInto(arr1, 32, 0, 64)
-        arr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
-            assertEquals(seg1.get(it), arr1[it]) }
-
-        seg1.close()
-        seg2.close()
-    }
+    @Test
+    fun testTryCopyOf() = tryCopyOf(createNew)
 }

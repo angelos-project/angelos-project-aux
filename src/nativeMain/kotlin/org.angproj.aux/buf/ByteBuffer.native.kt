@@ -40,11 +40,11 @@ public actual class ByteBuffer actual constructor(
         (ptr + index).toCPointer<ByteVar>()!!.pointed.value = value
     }
 
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        innerCopy(dest as ByteBuffer, destOff, idxFrom, idxTo)
+    }
+
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.BYTE
     }
-}
-
-public actual fun ByteBuffer.copyInto(destination: ByteBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    innerCopy(destination, destinationOffset, fromIndex, toIndex)
 }

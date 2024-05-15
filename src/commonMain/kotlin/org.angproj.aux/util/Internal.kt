@@ -14,9 +14,6 @@
  */
 package org.angproj.aux.util
 
-import kotlin.jvm.JvmInline
-import kotlin.jvm.JvmStatic
-
 /**
  * Imported from angelos-project-buffer package.
  */

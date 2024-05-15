@@ -38,13 +38,13 @@ public actual class UShortBuffer actual constructor(
         unsafe.putShort(ptr + index * TypeSize.uShort, value.toShort())
     }
 
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        val ts = idxSize.size
+        innerCopy(dest as UShortBuffer, destOff * ts, idxFrom * ts, idxTo * ts)
+    }
+
     public actual companion object {
         internal val unsafe: Unsafe = Chunk.unsafe
         public actual val typeSize: TypeSize = TypeSize.U_SHORT
     }
-}
-
-public actual fun UShortBuffer.copyInto(destination: UShortBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    val ts = UShortBuffer.typeSize.size
-    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

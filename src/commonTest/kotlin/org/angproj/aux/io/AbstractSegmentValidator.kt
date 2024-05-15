@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.copyInto
+import org.angproj.aux.buf.copyOfRange
 import kotlin.test.assertEquals
 import org.angproj.aux.util.*
 import kotlin.test.assertFails
@@ -242,40 +244,31 @@ abstract class AbstractSegmentValidator {
         seg2.close()
     }
 
-    inline fun <reified E: Segment>tryCopyOfRange(prep: () -> E) {
-        /*val a = ByteArray(16)
-        val m = prep(16)
-        Random.nextBytes(a)
+    inline fun <reified E: Segment>tryCopyOfRange(prep: (size: Int) -> E) {
+        val seg1 = prep(arr1.size)
+        (0 until seg1.size).forEach { seg1.setByte(it, arr1[it]) }
 
-        (0 until m.size).forEach { m[it] = a[it] }
-        (0 until m.size).forEach { assertEquals(m[it], a[it]) }
+        val seg2 = seg1.copyOfRange(32, 96)
+        val arr = arr1.copyOfRange(32, 96)
 
-        (0 until 8).forEach { from ->
-            val c = m.copyOfRange(from, 16)
-            (0 until c.size).forEach {
-                assertEquals(c[it], m[from + it]) }
-        }
+        arr.indices.forEach { // Verify similarity between the two operations carried out simultaneously
+            assertEquals(seg2.getByte(it), arr[it]) }
 
-        (8 until 16).forEach { from ->
-            val c = m.copyOfRange(0, from)
-            (0 until c.size).forEach { assertEquals(c[it], m[it]) }
-        }
+        seg1.close()
+        seg2.close()
+    }
 
-        (0 until 8).forEach { from ->
-            val c = m.copyOfRange(from, from + 8)
-            (0 until c.size).forEach { assertEquals(c[it], m[from + it]) }
-        }
+    inline fun <reified E: Segment>tryCopyOf(prep: (size: Int) -> E) {
+        val seg1 = prep(arr1.size)
+        (0 until seg1.size).forEach { seg1.setByte(it, arr1[it]) }
 
-        val c0 = m.copyOfRange(1, m.size-1)
+        val seg2 = seg1.copyOf()
+        val arr = arr1.copyOf()
 
-        (0 until c0.size).forEach {
-            assertEquals(c0[it], m[1 + it])
-        }
+        arr.indices.forEach { // Verify similarity between the two operations carried out simultaneously
+            assertEquals(seg2.getByte(it), arr[it]) }
 
-        val c1 = c0.copyOfRange(1, c0.size-1)
-
-        (0 until c1.size).forEach {
-            assertEquals(c1[it], c0[1 + it])
-        }*/
+        seg1.close()
+        seg2.close()
     }
 }

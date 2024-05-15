@@ -15,7 +15,6 @@
 package org.angproj.aux.util
 
 import kotlin.jvm.JvmStatic
-import kotlin.reflect.KProperty
 
 /**
  * The goal is to avoid all type of NULL pointer exceptions, therefore it is necessary to provide a

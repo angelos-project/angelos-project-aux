@@ -29,5 +29,3 @@ public expect class UByteBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
-
-public expect fun UByteBuffer.copyInto(destination: UByteBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int)

@@ -51,12 +51,25 @@ public abstract class AbstractSpeedCopy internal constructor(
 
     internal abstract fun create(size: Int, idxLimit: Int): AbstractSpeedCopy
 
-    internal open fun getPointer(): Long = -1
-
-    internal open fun getBasePtr(baseIdx: Int): Long = getPointer() + (baseIdx * idxSize.size)
-
     @PublishedApi
-    internal fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
-        // TODO()
-    }
+    internal open fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        throw UnsupportedOperationException("Each implementing class must reimplement this method.") }
+}
+
+public fun<T: AbstractSpeedCopy> T.copyInto(destination: T, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    calculateInto(destination, destinationOffset, fromIndex, toIndex)
+}
+
+public fun<T: AbstractSpeedCopy> T.copyOfRange(fromIndex: Int, toIndex: Int): T {
+    val copy = create(toIndex - fromIndex, toIndex - fromIndex)
+    calculateInto(copy, 0, fromIndex, toIndex)
+    @Suppress("UNCHECKED_CAST")
+    return copy as T
+}
+
+public fun<T: AbstractSpeedCopy> T.copyOf(): T {
+    val copy = create(this.size, this.idxLimit)
+    calculateInto(copy, 0, 0, size)
+    @Suppress("UNCHECKED_CAST")
+    return copy as T
 }

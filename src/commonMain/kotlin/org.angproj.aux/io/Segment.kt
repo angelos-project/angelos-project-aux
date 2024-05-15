@@ -14,7 +14,10 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.*
+import org.angproj.aux.buf.AbstractSpeedCopy
+import org.angproj.aux.buf.SpeedCopy
+import org.angproj.aux.buf.copyInto
+import org.angproj.aux.buf.copyOf
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 
@@ -37,6 +40,11 @@ public abstract class Segment(
             (this.toInt() shl 16) or (this.toInt() ushr 16)).toShort()
 }
 
-public fun<E: Segment> Segment.copyInto(destination: E, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    throw UnsupportedOperationException()
-}
+public fun<T: Segment> T.copyInto(
+    destination: T, destinationOffset: Int, fromIndex: Int, toIndex: Int
+): Unit = copyInto(destination, destinationOffset, fromIndex, toIndex)
+
+public fun<T: Segment> T.copyOfRange(
+    fromIndex: Int, toIndex: Int): T = copyOfRange(fromIndex, toIndex)
+
+public fun<T: Segment> T.copyOf(): T = copyOf()

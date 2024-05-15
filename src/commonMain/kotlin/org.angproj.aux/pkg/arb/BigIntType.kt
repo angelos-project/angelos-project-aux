@@ -17,12 +17,12 @@ package org.angproj.aux.pkg.arb
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Writable
 import org.angproj.aux.num.BigInt
+import org.angproj.aux.num.bigIntOf
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.Unfoldable
 import org.angproj.aux.pkg.type.BlockType
-import org.angproj.aux.num.bigIntOf
 import kotlin.jvm.JvmInline
 
 @JvmInline

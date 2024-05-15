@@ -38,13 +38,13 @@ public actual class UIntBuffer actual constructor(
         unsafe.putInt(ptr + index * TypeSize.uInt, value.toInt())
     }
 
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        val ts = idxSize.size
+        innerCopy(dest as UIntBuffer, destOff * ts, idxFrom * ts, idxTo * ts)
+    }
+
     public actual companion object {
         internal val unsafe: Unsafe = Chunk.unsafe
         public actual val typeSize: TypeSize = TypeSize.U_INT
     }
-}
-
-public actual fun UIntBuffer.copyInto(destination: UIntBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    val ts = UIntBuffer.typeSize.size
-    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

@@ -16,7 +16,6 @@ package org.angproj.aux.util
 
 import org.angproj.aux.codec.Decoder
 import org.angproj.aux.codec.Encoder
-import org.angproj.aux.utf.Sanitizer
 import org.angproj.aux.utf.UtfString
 
 public object Unicode: Encoder<ByteArray, UtfString>, Decoder<UtfString, ByteArray> {

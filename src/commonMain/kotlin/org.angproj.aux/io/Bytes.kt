@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.AbstractSpeedCopy
+
 public class Bytes private constructor(
     size: Int, idxLimit: Int
 ): AbstractBytes(size, idxLimit) {
@@ -21,8 +23,8 @@ public class Bytes private constructor(
     public constructor(size: Int) : this(size, size)
 
     override fun create(size: Int, idxLimit: Int): Bytes = Bytes(size, idxLimit)
-}
 
-public fun Bytes.copyInto(destination: Bytes, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    innerCopy(destination, destinationOffset, fromIndex, toIndex)
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        innerCopy(dest as Bytes, destOff, idxFrom, idxTo)
+    }
 }

@@ -28,7 +28,7 @@ public actual class UShortBuffer actual constructor(
 
     public actual constructor(size: Int) : this(size, size)
 
-    override fun create(size: Int, idxEnd: Int): UShortBuffer = UShortBuffer(size, idxLimit)
+    override fun create(size: Int, idxLimit: Int): UShortBuffer = UShortBuffer(size, idxLimit)
 
     actual override operator fun get(index: Int): UShort {
         index.checkRange<Reify>()
@@ -40,12 +40,12 @@ public actual class UShortBuffer actual constructor(
         (ptr + index * TypeSize.uShort).toCPointer<UShortVar>()!!.pointed.value = value
     }
 
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        val ts = idxSize.size
+        innerCopy(dest as UShortBuffer, destOff * ts, idxFrom * ts, idxTo * ts)
+    }
+
     public actual companion object {
         public actual val typeSize: TypeSize = TypeSize.U_SHORT
     }
-}
-
-public actual fun UShortBuffer.copyInto(destination: UShortBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    val ts = UShortBuffer.typeSize.size
-    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

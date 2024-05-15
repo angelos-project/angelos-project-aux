@@ -21,7 +21,8 @@ import org.angproj.aux.utf.GLYPH_HOLE
 import org.angproj.aux.utf.GLYPH_MAX_VALUE
 import org.angproj.aux.utf.Glyph
 import org.angproj.aux.utf.getSize
-import org.angproj.aux.util.*
+import org.angproj.aux.util.DataBuffer
+import org.angproj.aux.util.floorMod
 import kotlin.native.concurrent.ThreadLocal
 
 /**

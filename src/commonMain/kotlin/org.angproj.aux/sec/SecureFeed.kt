@@ -14,9 +14,9 @@
  */
 package org.angproj.aux.sec
 
+import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Reader
 import org.angproj.aux.rand.AbstractSponge512
-import org.angproj.aux.io.DataSize
 import org.angproj.aux.util.floorMod
 import org.angproj.aux.util.readLongAt
 import kotlin.native.concurrent.ThreadLocal

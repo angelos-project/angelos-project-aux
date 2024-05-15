@@ -43,7 +43,3 @@ public expect open class Memory protected constructor(
 
     override fun setLong(index: Int, value: Long)
 }
-
-public fun Memory.copyInto(destination: Memory, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    innerCopy(destination, destinationOffset, fromIndex, toIndex)
-}

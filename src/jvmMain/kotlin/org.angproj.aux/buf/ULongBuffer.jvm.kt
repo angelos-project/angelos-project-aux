@@ -38,13 +38,13 @@ public actual class ULongBuffer actual constructor(
         unsafe.putLong(ptr + index * TypeSize.uLong, value.toLong())
     }
 
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        val ts = idxSize.size
+        innerCopy(dest as ULongBuffer, destOff * ts, idxFrom * ts, idxTo * ts)
+    }
+
     public actual companion object {
         internal val unsafe: Unsafe = Chunk.unsafe
         public actual val typeSize: TypeSize = TypeSize.U_LONG
     }
-}
-
-public actual fun ULongBuffer.copyInto(destination: ULongBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    val ts = ULongBuffer.typeSize.size
-    innerCopy(destination, destinationOffset * ts, fromIndex * ts, toIndex * ts)
 }

@@ -15,6 +15,7 @@
 package org.angproj.aux.io
 
 import kotlinx.cinterop.*
+import org.angproj.aux.buf.AbstractSpeedCopy
 import org.angproj.aux.util.Reify
 import org.angproj.aux.res.allocateMemory
 import kotlin.experimental.ExperimentalNativeApi
@@ -80,5 +81,7 @@ public actual open class Memory actual constructor(
 
     actual override fun create(size: Int, idxLimit: Int): Memory = Memory(size, idxLimit)
 
-    override fun getPointer(): Long = data.ptr
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        innerCopy(dest as Memory, destOff, idxFrom, idxTo)
+    }
 }

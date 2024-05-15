@@ -80,7 +80,9 @@ public actual open class Memory actual constructor(
 
     actual override fun create(size: Int, idxLimit: Int): Memory = Memory(size, idxLimit)
 
-    override fun getPointer(): Long = data.ptr
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        innerCopy(dest as Memory, destOff, idxFrom, idxTo)
+    }
 
     public companion object {
         internal val unsafe: Unsafe = Chunk.unsafe

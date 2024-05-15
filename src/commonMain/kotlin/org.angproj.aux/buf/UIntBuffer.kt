@@ -29,5 +29,3 @@ public expect class UIntBuffer private constructor(
         public val typeSize: TypeSize
     }
 }
-
-public expect fun UIntBuffer.copyInto(destination: UIntBuffer, destinationOffset: Int, fromIndex: Int, toIndex: Int)

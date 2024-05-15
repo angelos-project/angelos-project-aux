@@ -15,8 +15,6 @@
 package org.angproj.aux.io
 
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFails
 
 class BytesTest: AbstractSegmentValidator() {
 
@@ -56,33 +54,11 @@ class BytesTest: AbstractSegmentValidator() {
     fun testLongRWOutbound() = longRWOutbound(createNew)
 
     @Test
-    fun testTryCopyInto() {
-        val seg1 = createNew(arr1.size)
-        val seg2 = createNew(arr2.size)
+    fun testTryCopyInto() = tryCopyInto(createNew)
 
-        // Copy and verify that #1 reflect each other
-        (0 until seg1.size).forEach { seg1.setByte(it, arr1[it]) }
-        (0 until seg1.size).forEach {
-            assertEquals(seg1.getByte(it), arr1[it]) }
+    @Test
+    fun testTryCopyOfRange() = tryCopyOfRange(createNew)
 
-        // Copy and verify that #2 reflect each other
-        (0 until seg2.size).forEach { seg2.setByte(it, arr2[it]) }
-        (0 until seg2.size).forEach {
-            assertEquals(seg2.getByte(it), arr2[it]) }
-
-        // Prove that a chunk is fully saturated as the reflecting array
-        assertFails { println(arr1[seg1.size]) }
-
-        // Copy chunk 2 into the middle of chunk 1
-        seg2.copyInto(seg1, 32, 0, 64)
-        arr2.copyInto(arr1, 32, 0, 64)
-        arr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
-            assertEquals(seg1.getByte(it), arr1[it]) }
-
-        seg1.close()
-        seg2.close()
-    }
-
-    //@Test
-    //fun testTryCopyOfRange() = tryCopyOfRange(createNew)
+    @Test
+    fun testTryCopyOf() = tryCopyOf(createNew)
 }
