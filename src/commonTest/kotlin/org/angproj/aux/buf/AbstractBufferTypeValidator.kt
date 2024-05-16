@@ -77,10 +77,23 @@ abstract class AbstractBufferTypeValidator<T> {
         assertFails { println(arr1[seg1.size]) }
 
         // Copy chunk 2 into the middle of chunk 1
-        seg2.copyInto(seg1, 32, 0, 64)
-        arr2.copyInto(arr1, 32, 0, 64)
-        arr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
-            assertEquals(seg1[it], arr1[it] as T) }
+        (0 until arr1.size / 4).forEach { idx ->
+            seg2.copyInto(seg1, idx, 0, arr2.size)
+            arr2.copyInto(arr1, idx, 0, arr2.size)
+            arr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
+                assertEquals(seg1[it], arr1[it] as T)
+            }
+        }
+
+        this.arr1.copyInto(arr1)
+        (0 until seg1.size).forEach { seg1[it] = arr1[it] as T }
+        (0 until arr2.size / 4).forEach { idx ->
+            seg2.copyInto(seg1, arr1.size / 4, idx, arr2.size)
+            arr2.copyInto(arr1, arr1.size / 4, idx, arr2.size)
+            arr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
+                assertEquals(seg1[it], arr1[it] as T)
+            }
+        }
 
         seg1.close()
         seg2.close()
@@ -91,8 +104,8 @@ abstract class AbstractBufferTypeValidator<T> {
         val seg1 = prep(arr1.size)
         (0 until seg1.size).forEach { seg1[it] = arr1[it] as T }
 
-        val seg2 = seg1.copyOfRange(32, 96)
-        val arr = arr1.copyOfRange(32, 96)
+        val seg2 = seg1.copyOfRange(arr1.size / 4, arr1.size / 4 * 3)
+        val arr = arr1.copyOfRange(arr1.size / 4, arr1.size / 4 * 3)
 
         arr.indices.forEach { // Verify similarity between the two operations carried out simultaneously
             assertEquals(seg2[it], arr[it] as T) }

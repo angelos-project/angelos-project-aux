@@ -77,8 +77,8 @@ class FloatBufferTest: AbstractBufferTypeValidator<Float>() {
         println("Buffer: $writeTimeBuffer")
     }
 
-    val createNew: (size: Int) -> FloatBuffer = { FloatBuffer(it/Float.SIZE_BYTES) }
-    val createComparison: (size: Int) -> Array<Float> = { Array(it/Float.SIZE_BYTES) { Random.nextFloat() } }
+    val createNew: (size: Int) -> FloatBuffer = { FloatBuffer(it) }
+    val createComparison: (size: Int) -> Array<Float> = { Array(it) { Random.nextFloat() } }
 
 
     @Test

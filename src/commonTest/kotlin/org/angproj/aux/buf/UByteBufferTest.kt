@@ -78,8 +78,8 @@ class UByteBufferTest: AbstractBufferTypeValidator<UByte>() {
         println("Buffer: $writeTimeBuffer")
     }
 
-    val createNew: (size: Int) -> UByteBuffer = { UByteBuffer(it/UByte.SIZE_BYTES) }
-    val createComparison: (size: Int) -> Array<UByte> = { Array(it/UByte.SIZE_BYTES) { Random.nextInt().toUByte() } }
+    val createNew: (size: Int) -> UByteBuffer = { UByteBuffer(it) }
+    val createComparison: (size: Int) -> Array<UByte> = { Array(it) { Random.nextInt().toUByte() } }
 
     @Test
     fun testBufferRWOutbound() = bufferRWOutbound(testByte.toUByte(), createNew)

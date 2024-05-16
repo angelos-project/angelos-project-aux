@@ -25,14 +25,3 @@ public expect abstract class AbstractBufferType<E>(
     public abstract override operator fun get(index: Int): E
     public abstract override operator fun set(index: Int, value: E)
 }
-
-/*
-public fun<E, T: AbstractBufferType<E>> T.copyInto(
-    destination: T, destinationOffset: Int, fromIndex: Int, toIndex: Int
-): Unit = copyInto(destination, destinationOffset, fromIndex, toIndex)
-
-public fun<E, T: AbstractBufferType<E>> T.copyOfRange(
-    fromIndex: Int, toIndex: Int): T = copyOfRange(fromIndex, toIndex)
-
-public fun<E, T: AbstractBufferType<E>> T.copyOf(): T = copyOf()
-*/

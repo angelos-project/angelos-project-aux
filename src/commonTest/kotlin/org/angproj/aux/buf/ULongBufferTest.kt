@@ -80,8 +80,8 @@ class ULongBufferTest: AbstractBufferTypeValidator<ULong>() {
         println("Buffer: $writeTimeBuffer")
     }
 
-    val createNew: (size: Int) -> ULongBuffer = { ULongBuffer(it/ULong.SIZE_BYTES) }
-    val createComparison: (size: Int) -> Array<ULong> = { Array(it/ULong.SIZE_BYTES) { Random.nextLong().toULong() } }
+    val createNew: (size: Int) -> ULongBuffer = { ULongBuffer(it) }
+    val createComparison: (size: Int) -> Array<ULong> = { Array(it) { Random.nextLong().toULong() } }
 
 
     @Test

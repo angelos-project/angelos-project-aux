@@ -77,8 +77,8 @@ class IntBufferTest: AbstractBufferTypeValidator<Int>() {
         println("Buffer: $writeTimeBuffer")
     }
 
-    val createNew: (size: Int) -> IntBuffer = { IntBuffer(it/Int.SIZE_BYTES) }
-    val createComparison: (size: Int) -> Array<Int> = { Array(it/Int.SIZE_BYTES) { Random.nextInt() } }
+    val createNew: (size: Int) -> IntBuffer = { IntBuffer(it) }
+    val createComparison: (size: Int) -> Array<Int> = { Array(it) { Random.nextInt() } }
 
 
     @Test

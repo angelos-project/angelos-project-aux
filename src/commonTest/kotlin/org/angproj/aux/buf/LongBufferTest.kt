@@ -77,8 +77,8 @@ class LongBufferTest: AbstractBufferTypeValidator<Long>() {
         println("Buffer: $writeTimeBuffer")
     }
 
-    val createNew: (size: Int) -> LongBuffer = { LongBuffer(it/Long.SIZE_BYTES) }
-    val createComparison: (size: Int) -> Array<Long> = { Array(it/Long.SIZE_BYTES) { Random.nextLong() } }
+    val createNew: (size: Int) -> LongBuffer = { LongBuffer(it) }
+    val createComparison: (size: Int) -> Array<Long> = { Array(it) { Random.nextLong() } }
 
 
     @Test

@@ -77,8 +77,8 @@ class ShortBufferTest: AbstractBufferTypeValidator<Short>() {
         println("Buffer: $writeTimeBuffer")
     }
 
-    val createNew: (size: Int) -> ShortBuffer = { ShortBuffer(it/Short.SIZE_BYTES) }
-    val createComparison: (size: Int) -> Array<Short> = { Array(it/Short.SIZE_BYTES) { Random.nextInt().toShort() } }
+    val createNew: (size: Int) -> ShortBuffer = { ShortBuffer(it) }
+    val createComparison: (size: Int) -> Array<Short> = { Array(it) { Random.nextInt().toShort() } }
 
 
     @Test

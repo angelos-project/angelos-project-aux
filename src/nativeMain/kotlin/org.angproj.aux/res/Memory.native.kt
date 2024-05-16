@@ -15,7 +15,6 @@
 package org.angproj.aux.res
 
 import kotlinx.cinterop.*
-import org.angproj.aux.io.DataSize
 import org.angproj.aux.util.Reifiable
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")

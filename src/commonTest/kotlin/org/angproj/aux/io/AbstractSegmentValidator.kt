@@ -235,10 +235,21 @@ abstract class AbstractSegmentValidator {
         assertFails { println(arr1[seg1.size]) }
 
         // Copy chunk 2 into the middle of chunk 1
-        seg2.copyInto(seg1, 32, 0, 64)
-        arr2.copyInto(arr1, 32, 0, 64)
-        arr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
-            assertEquals(seg1.getByte(it), arr1[it]) }
+        (32 until 48).forEach { idx ->
+            seg2.copyInto(seg1, idx, 0, 64)
+            arr2.copyInto(arr1, idx, 0, 64)
+            arr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
+                assertEquals(seg1.getByte(it), arr1[it]) }
+        }
+
+        this.arr1.copyInto(arr1)
+        (0 until seg1.size).forEach { seg1.setByte(it, arr1[it]) }
+        (0 until 8).forEach { idx ->
+            seg2.copyInto(seg1, 32, idx, 64)
+            arr2.copyInto(arr1, 32, idx, 64)
+            arr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
+                assertEquals(seg1.getByte(it), arr1[it]) }
+        }
 
         seg1.close()
         seg2.close()

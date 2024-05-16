@@ -76,7 +76,7 @@ class ByteBufferTest: AbstractBufferTypeValidator<Byte>() {
         println("Buffer: $writeTimeBuffer")
     }
 
-    val createNew: (size: Int) -> ByteBuffer = { ByteBuffer(it / Byte.SIZE_BYTES) }
+    val createNew: (size: Int) -> ByteBuffer = { ByteBuffer(it) }
     val createComparison: (size: Int) -> List<Byte> = { ByteArray(it) { Random.nextInt().toByte() }.toList() }
 
     @Test

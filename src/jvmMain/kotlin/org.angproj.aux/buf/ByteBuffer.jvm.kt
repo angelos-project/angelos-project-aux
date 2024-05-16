@@ -38,7 +38,8 @@ public actual class ByteBuffer actual constructor(
         unsafe.putByte(ptr + index, value)
     }
 
-    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) { innerCopy(dest as ByteBuffer, destOff, idxFrom, idxTo) }
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        innerCopy(dest as ByteBuffer, destOff, idxFrom, idxTo) }
 
     public actual companion object {
         internal val unsafe: Unsafe = Chunk.unsafe

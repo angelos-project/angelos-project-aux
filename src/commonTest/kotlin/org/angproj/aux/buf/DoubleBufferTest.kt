@@ -77,8 +77,8 @@ class DoubleBufferTest: AbstractBufferTypeValidator<Double>() {
         println("Buffer: $writeTimeBuffer")
     }
 
-    val createNew: (size: Int) -> DoubleBuffer = { DoubleBuffer(it / Double.SIZE_BYTES) }
-    val createComparison: (size: Int) -> Array<Double> = { Array(it / Double.SIZE_BYTES) { Random.nextDouble() } }
+    val createNew: (size: Int) -> DoubleBuffer = { DoubleBuffer(it) }
+    val createComparison: (size: Int) -> Array<Double> = { Array(it) { Random.nextDouble() } }
 
 
     @Test
