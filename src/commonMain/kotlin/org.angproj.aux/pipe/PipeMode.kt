@@ -12,10 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.pipe
 
-public interface Reader {
-    public fun read(data: Segment): Int
-
-    public fun readInto(data: Segment, size: Int): Int
+public sealed interface PipeMode {
 }

@@ -39,13 +39,6 @@ public interface BinaryReadable {
     public fun readUByte(): UByte
 
     /**
-     * Read next character.
-     *
-     * @return A character of data.
-     */
-    //public fun readChar(): Char
-
-    /**
      * Read next short integer.
      *
      * @return A short integer of data.

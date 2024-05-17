@@ -39,13 +39,6 @@ public interface BinaryWritable {
     public fun writeUByte(value: UByte)
 
     /**
-     * Write next character.
-     *
-     * @param value A character of data.
-     */
-    //public fun writeChar(value: Char)
-
-    /**
      * Write next short integer.
      *
      * @param value A short integer of data.

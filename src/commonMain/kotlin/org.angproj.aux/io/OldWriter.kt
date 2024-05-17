@@ -12,14 +12,9 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.io
 
-import org.angproj.aux.io.DataSize
-
-public abstract class AbstractPipe<M: PipeMode, T: PipeType>(
-    protected val src: AbstractSource<*>,
-    protected val sink: AbstractSink<*>,
-    public val bufferSize: DataSize,
-): Pipe<M, T> {
+public interface OldWriter {
+    public fun write(data: ByteArray): Int { throw UnsupportedOperationException() }
 
 }

@@ -15,7 +15,10 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.utf.Glyph
+import org.angproj.aux.utf.GlyphString
 
 public interface TextReadable {
     public fun readGlyph(): Glyph
+
+    public fun readLine(): GlyphString
 }

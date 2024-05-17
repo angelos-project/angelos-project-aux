@@ -12,9 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-public abstract class AbstractSink<T: PipeType>(
-    protected val pump: Pump = Pump
-): AbstractPipePoint(), Sink<T> {
+public sealed interface PipeType {
 }

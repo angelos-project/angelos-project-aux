@@ -12,9 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-public class BinarySource(
-    pump: Pump = Pump
-): AbstractSource<PipeType.BIN>(pump) {
+public interface Source {
 }

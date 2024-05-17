@@ -12,7 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-public class PackageSource(pump: Pump = Pump): AbstractSource<PipeType.PKG>(pump) {
+public interface PackageType: PipeType {
 }

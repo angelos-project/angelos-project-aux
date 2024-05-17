@@ -16,9 +16,12 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.fsm.StateMachine
 import org.angproj.aux.fsm.States
+import org.angproj.aux.pipe.Pipe
+import org.angproj.aux.pipe.Sink
+import org.angproj.aux.pipe.Source
 import org.angproj.aux.util.Once
 
-public object PipeBuilder {
+/*public object PipeBuilder {
     public fun build(): Context = Context()
 
     internal enum class Builder {
@@ -55,4 +58,4 @@ public object PipeBuilder {
             fsm.state = Builder.SOURCE
         }
     }
-}
+}*/

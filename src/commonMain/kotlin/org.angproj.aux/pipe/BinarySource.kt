@@ -12,13 +12,12 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-import org.angproj.aux.io.TextWritable
-import org.angproj.aux.utf.Glyph
+import org.angproj.aux.buf.Pump
+import org.angproj.aux.io.PumpReader
 
-public class GlyphSource(pump: Pump = Pump): AbstractSource<PipeType.TXT>(pump), TextWritable {
-    override fun writeGlyph(glyph: Glyph) {
-        TODO("Not yet implemented")
-    }
+public class BinarySource(
+    pump: PumpReader = Pump
+): AbstractSource<BinaryType>(pump), BinaryType {
 }

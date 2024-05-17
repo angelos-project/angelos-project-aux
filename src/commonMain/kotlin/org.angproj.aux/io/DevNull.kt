@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.io
 
-public object DevNull : Writer, Writable, Sizeable {
+public object DevNull : OldWriter, Writable, Sizeable {
 
     override val sizeMode: SizeMode = SizeMode.ARBITRARY
     override val dataSize: DataSize = DataSize.UNKNOWN

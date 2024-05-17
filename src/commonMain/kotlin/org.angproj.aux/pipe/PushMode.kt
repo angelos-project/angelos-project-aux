@@ -12,9 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-public abstract class AbstractSource<T: PipeType>(
-    protected val pump: Pump = Pump
-): AbstractPipePoint(), Source<T> {
+public interface PushMode: PipeMode {
 }

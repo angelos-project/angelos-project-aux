@@ -1,6 +1,6 @@
 package org.angproj.aux.rand
 
-import org.angproj.aux.io.Reader
+import org.angproj.aux.io.OldReader
 import org.angproj.aux.util.Benchmark
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.floorMod
@@ -11,7 +11,7 @@ import kotlin.test.Test
 
 class TestSmallRandom: AbstractSmallRandom(
     ByteArray(16).also { InitializationVector.realTimeGatedEntropy(it) }
-), Reader {
+), OldReader {
 
     override fun read(data: ByteArray): Int {
         require(data.size.floorMod(Int.SIZE_BYTES) == 0)

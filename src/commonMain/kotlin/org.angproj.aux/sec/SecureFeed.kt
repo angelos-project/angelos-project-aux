@@ -15,7 +15,7 @@
 package org.angproj.aux.sec
 
 import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Reader
+import org.angproj.aux.io.OldReader
 import org.angproj.aux.rand.AbstractSponge512
 import org.angproj.aux.util.floorMod
 import org.angproj.aux.util.readLongAt
@@ -26,7 +26,7 @@ import kotlin.native.concurrent.ThreadLocal
  * about every 4th to 12th megabyte for high quality of secure output.
  * */
 @ThreadLocal
-public object SecureFeed : AbstractSponge512(), Reader {
+public object SecureFeed : AbstractSponge512(), OldReader {
     private val ROUNDS_64K: Int = DataSize._64K.size
     private val ROUNDS_128K: Int = DataSize._128K.size
 

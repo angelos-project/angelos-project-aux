@@ -15,7 +15,7 @@
 package org.angproj.aux.sec
 
 import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Reader
+import org.angproj.aux.io.OldReader
 import org.angproj.aux.rand.AbstractSponge256
 import org.angproj.aux.rand.InitializationVector
 import org.angproj.aux.util.floorMod
@@ -27,7 +27,7 @@ import kotlin.native.concurrent.ThreadLocal
  * Supposed to pass Monte Carlo testing and security requirements of output quality.
  * */
 @ThreadLocal
-public object SecureEntropy : AbstractSponge256(), Reader {
+public object SecureEntropy : AbstractSponge256(), OldReader {
 
     init {
         revitalize()

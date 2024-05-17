@@ -12,10 +12,10 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.pipe
 
-public interface Reader {
-    public fun read(data: Segment): Int
+import org.angproj.aux.buf.Pump
+import org.angproj.aux.io.PumpReader
 
-    public fun readInto(data: Segment, size: Int): Int
+public class PackageSource(pump: PumpReader = Pump): AbstractSource<PackageType>(pump), PackageType {
 }

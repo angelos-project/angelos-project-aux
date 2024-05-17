@@ -18,6 +18,7 @@ import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.TypeSize
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
+import org.angproj.aux.util.chunkLoop
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class Memory: Cleanable {
@@ -37,13 +38,6 @@ internal expect inline fun <reified T: Reifiable> Memory.speedByteSet(index: Lon
 
 internal fun validateAskedMemorySize(size: Int) = require(size in 1..DataSize._1G.size) {
     "Tried to allocate an illegal amount ($size) of memory" }
-
-public inline fun <reified T: Reifiable> chunkLoop(index: Int, length: Int, slice: Int, action: (Int) -> Unit): Int {
-    val steps = (length - index) / slice
-    val size = steps * slice
-    if (steps > 0) (index until (index + size) step slice).forEach { action(it) }
-    return index + size
-}
 
 @PublishedApi
 internal inline fun <reified T: Reifiable> Memory.copyInto(destination: Memory, destinationOffset: Int, idxFrom: Int, idxTo: Int) {

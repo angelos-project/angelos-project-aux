@@ -14,8 +14,13 @@
  */
 package org.angproj.aux.io
 
-public interface Reader {
-    public fun read(data: Segment): Int
+import org.angproj.aux.buf.ByteBuffer
 
-    public fun readInto(data: Segment, size: Int): Int
+public interface OldReader {
+
+    public fun read(data: ByteArray): Int
+
+    public fun read(length: Int): ByteArray // What to do
+
+    public fun read(data: ByteBuffer): Int { throw UnsupportedOperationException() }
 }

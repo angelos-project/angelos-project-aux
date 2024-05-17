@@ -12,21 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.TextReadable
-
-public class PullPipe<T: PipeType>(
-    src: AbstractSource<T>,
-    bufferSize: DataSize = DataSize._4K
-): AbstractPipe<PipeMode.PULL, T>(
-    src,
-    Pipe.combineWithSink(src),
-    bufferSize
-) {
-    public fun getReadable(): TextReadable = when(isText()) {
-        true -> sink as GlyphSink
-        else -> error("Not readable sink")
-    }
+public interface TextType: PipeType {
 }

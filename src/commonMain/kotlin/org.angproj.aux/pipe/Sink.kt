@@ -12,9 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-public class BinarySink(
-    pump: Pump = Pump
-): AbstractSink<PipeType.BIN>(pump) {
+public interface Sink {
 }

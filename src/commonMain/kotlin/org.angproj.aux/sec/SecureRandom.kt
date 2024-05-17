@@ -16,7 +16,7 @@ package org.angproj.aux.sec
 
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Readable
-import org.angproj.aux.io.Reader
+import org.angproj.aux.io.OldReader
 import org.angproj.aux.utf.GLYPH_HOLE
 import org.angproj.aux.utf.GLYPH_MAX_VALUE
 import org.angproj.aux.utf.Glyph
@@ -29,7 +29,7 @@ import kotlin.native.concurrent.ThreadLocal
  * Portions a secure feed of random into a serviceable format of data for cryptographically secure use.
  * */
 @ThreadLocal
-public object SecureRandom : Reader, Readable {
+public object SecureRandom : OldReader, Readable {
 
     private val buffer = DataBuffer(DataSize._1K)
 

@@ -14,27 +14,15 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.Reader
-import org.angproj.aux.io.Writer
+import org.angproj.aux.io.PumpReader
+import org.angproj.aux.io.Segment
 
-public object Pump: Reader, Writer {
-    override fun read(data: ByteArray): Int {
-        throw UnsupportedOperationException()
+public object Pump: PumpReader {
+    override fun read(data: Segment): Int {
+        throw UnsupportedOperationException("No readable pump set.")
     }
 
-    override fun read(length: Int): ByteArray {
-        throw UnsupportedOperationException()
-    }
-
-    override fun read(data: ByteBuffer): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun write(data: ByteArray): Int {
-        throw UnsupportedOperationException()
-    }
-
-    override fun write(data: ByteBuffer): Int {
-        TODO("Not yet implemented")
+    override fun readInto(data: Segment, size: Int): Int {
+        throw UnsupportedOperationException("No readable pump set.")
     }
 }

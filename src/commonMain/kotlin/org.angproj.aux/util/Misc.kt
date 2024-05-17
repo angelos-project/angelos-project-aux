@@ -24,3 +24,10 @@ public fun Int.floorMod(other: Int): Int = this.absoluteValue.mod(other.absolute
 public fun Long.floorMod(other: Long): Long = this.absoluteValue.mod(other.absoluteValue)
 
 public fun bitArrayOf(value: ByteArray): BitArray = BitArray(value)
+
+public inline fun <reified T: Reifiable> chunkLoop(index: Int, length: Int, slice: Int, action: (Int) -> Unit): Int {
+    val steps = (length - index) / slice
+    val size = steps * slice
+    if (steps > 0) (index until (index + size) step slice).forEach { action(it) }
+    return index + size
+}

@@ -19,7 +19,7 @@ import org.angproj.aux.buf.ByteBuffer
 /**
  * Entrypoint where structured data can be written and streamed data be read from.
  * */
-public abstract class AbstractWritableReader: Writable, Reader, Sizeable {
+public abstract class AbstractWritableReader: Writable, OldReader, Sizeable {
     override fun read(data: ByteBuffer): Int {
         TODO("Not yet implemented")
     }

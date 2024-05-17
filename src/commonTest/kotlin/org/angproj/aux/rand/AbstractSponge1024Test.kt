@@ -1,6 +1,6 @@
 package org.angproj.aux.rand
 
-import org.angproj.aux.io.Reader
+import org.angproj.aux.io.OldReader
 import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.Benchmark
 import org.angproj.aux.util.DataBuffer
@@ -10,7 +10,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.test.Test
 
-class TestRandom1024(iv: LongArray = LongArray(16)): AbstractSponge1024(), Reader {
+class TestRandom1024(iv: LongArray = LongArray(16)): AbstractSponge1024(), OldReader {
     init {
         (0 until min(visibleSize, iv.size)).forEach { absorb(iv[it], it) }
         scramble()

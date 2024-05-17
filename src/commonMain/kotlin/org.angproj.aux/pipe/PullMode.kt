@@ -12,10 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-public sealed interface PipeType {
-    public interface BIN : PipeType
-    public interface TXT : PipeType
-    public interface PKG : PipeType
+public interface PullMode: PipeMode {
 }

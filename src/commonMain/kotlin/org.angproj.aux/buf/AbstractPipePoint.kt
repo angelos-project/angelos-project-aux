@@ -14,10 +14,11 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.pipe.Pipe
 import org.angproj.aux.util.Once
 import org.angproj.aux.util.isNull
 
-public abstract class AbstractPipePoint {
+/*public abstract class AbstractPipePoint {
     private var pipe: Pipe<*, *> by Once()
 
     public fun isPiped(): Boolean = !pipe.isNull()
@@ -25,4 +26,4 @@ public abstract class AbstractPipePoint {
     public fun connect(pipe: Pipe<*, *>) {
         this.pipe = pipe
     }
-}
+}*/

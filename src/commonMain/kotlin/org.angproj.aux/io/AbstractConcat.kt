@@ -20,7 +20,7 @@ import kotlin.math.min
 public abstract class AbstractConcat(
     public override val dataSize: DataSize,
     protected val queueSize: Int
-): Reader, Writer, Sizeable {
+): OldReader, OldWriter, Sizeable {
 
     override val sizeMode: SizeMode = SizeMode.MAXIMUM
 

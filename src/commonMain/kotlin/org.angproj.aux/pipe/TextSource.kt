@@ -12,13 +12,15 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-import kotlin.test.Test
+import org.angproj.aux.buf.Pump
+import org.angproj.aux.io.PumpReader
+import org.angproj.aux.io.TextWritable
+import org.angproj.aux.utf.Glyph
 
-class GlyphPipleTest {
-    @Test
-    fun testBuildTextPipe() {
-
+public class TextSource(pump: PumpReader = Pump): AbstractSource<TextType>(pump), TextType, TextWritable {
+    override fun writeGlyph(glyph: Glyph) {
+        TODO("Not yet implemented")
     }
 }

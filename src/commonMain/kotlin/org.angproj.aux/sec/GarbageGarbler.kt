@@ -26,7 +26,7 @@ public class GarbageGarbler(
     public val maxSize: DataSize = DataSize._1G,
     public val maxTime: Duration = Duration.parse("1 min"),
     public val maxQueue: Int = 8
-): AbstractSponge1024(), Reader, Writer, Sizeable {
+): AbstractSponge1024(), OldReader, OldWriter, Sizeable {
 
     override val sizeMode: SizeMode = SizeMode.FIXED
     override val dataSize: DataSize = DataSize._64B

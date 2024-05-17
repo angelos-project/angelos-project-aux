@@ -12,7 +12,14 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-public interface Sink<T: PipeType> {
+import org.angproj.aux.io.DataSize
+
+public abstract class AbstractPipe<T: PipeType>(
+    protected val src: AbstractSource<out PipeType>,
+    protected val sink: AbstractSink<out PipeType>,
+    public val bufferSize: DataSize,
+): Pipe, PipeMode {
+
 }

@@ -12,13 +12,8 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-import org.angproj.aux.io.TextReadable
-import org.angproj.aux.utf.Glyph
+public interface Pipe: PipeMode {
 
-public class GlyphSink(pump: Pump = Pump): AbstractSink<PipeType.TXT>(pump), TextReadable {
-    override fun readGlyph(): Glyph {
-        TODO("Not yet implemented")
-    }
 }

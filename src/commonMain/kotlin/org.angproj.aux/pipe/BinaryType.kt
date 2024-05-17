@@ -12,9 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-public sealed interface PipeMode {
-    public interface PULL : PipeMode
-    public interface PUSH : PipeMode
+public interface BinaryType: PipeType {
 }

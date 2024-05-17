@@ -12,13 +12,11 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.pipe
 
-import org.angproj.aux.buf.ByteBuffer
+import org.angproj.aux.buf.Pump
 
-public interface Writer {
-    public fun write(data: ByteArray): Int
-
-    public fun write(data: ByteBuffer): Int { throw UnsupportedOperationException() }
-
+public class BinarySink(
+    pump: Pump = Pump
+): AbstractSink<BinaryType>(pump), BinaryType {
 }

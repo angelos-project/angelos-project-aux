@@ -12,7 +12,11 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe
 
-public class PackageSink(pump: Pump = Pump): AbstractSink<PipeType.PKG>(pump) {
+import org.angproj.aux.buf.Pump
+
+public abstract class AbstractSink<T: PipeType>(
+    protected val pump: Pump = Pump
+): Sink, PipeType {
 }
