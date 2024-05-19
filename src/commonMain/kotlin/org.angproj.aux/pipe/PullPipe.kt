@@ -14,7 +14,11 @@
  */
 package org.angproj.aux.pipe
 
+import org.angproj.aux.io.Bytes
 import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.Segment
+import org.angproj.aux.io.segment
+import org.angproj.aux.util.NullObject
 
 public class PullPipe<T: PipeType>(
     src: AbstractSource<T>,
@@ -24,6 +28,27 @@ public class PullPipe<T: PipeType>(
     applySink(src),
     bufferSize
 ), PullMode {
+
+    override val buf: MutableList<Segment> = mutableListOf()
+
+    override fun tap() {
+        val segmentSize = DataSize._1K
+        while(buf.sumOf { it.length } + segmentSize.size <= bufferSize.size) {
+            val seg = Bytes(DataSize._1K.size)
+            when(val limit = src.squeeze(seg)) {
+                segmentSize.size -> buf.add(0, seg)
+                0 -> {
+                    seg.close()
+                    this.limit = limit
+                    buf.add(0, NullObject.segment)
+                }
+                else -> {
+                    this.limit = limit
+                    buf.add(0, seg)
+                }
+            }
+        }
+    }
 
     public fun getTextReadable(): TextSink = when(sink) {
         is TextSink -> sink

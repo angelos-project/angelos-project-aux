@@ -23,4 +23,8 @@ public class TextSource(pump: PumpReader = Pump): AbstractSource<TextType>(pump)
     override fun writeGlyph(glyph: Glyph) {
         TODO("Not yet implemented")
     }
+
+    override fun dispose() {
+        TODO("Not yet implemented")
+    }
 }

@@ -43,9 +43,6 @@ public object NullObject {
 
     @JvmStatic
     public val doubleArray: DoubleArray = doubleArrayOf()
-
-    @JvmStatic
-    public val any: Any = object { val test: String =  "null" }
 }
 
 public fun String.isNull(): Boolean = this.isEmpty()
@@ -61,5 +58,3 @@ public fun LongArray.isNull(): Boolean = NullObject.longArray === this
 public fun FloatArray.isNull(): Boolean = NullObject.floatArray === this
 
 public fun DoubleArray.isNull(): Boolean = NullObject.doubleArray === this
-
-public fun Any.isNull(): Boolean = NullObject.any === this

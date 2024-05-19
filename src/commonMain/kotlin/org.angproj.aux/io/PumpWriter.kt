@@ -12,18 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.io
 
-import org.angproj.aux.pipe.Pipe
-import org.angproj.aux.util.Once
-import org.angproj.aux.util.isNull
-
-/*public abstract class AbstractPipePoint {
-    private var pipe: Pipe<*, *> by Once()
-
-    public fun isPiped(): Boolean = !pipe.isNull()
-
-    public fun connect(pipe: Pipe<*, *>) {
-        this.pipe = pipe
-    }
-}*/
+public interface PumpWriter: Writer {
+}

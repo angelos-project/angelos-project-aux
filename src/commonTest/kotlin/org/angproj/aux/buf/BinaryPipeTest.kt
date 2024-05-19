@@ -16,7 +16,9 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
+import org.angproj.aux.io.TextReadable
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.pipe.BinarySource
 import org.angproj.aux.pipe.TextSource
 import org.angproj.aux.pipe.PullPipe
 import org.angproj.aux.util.DataBuffer
@@ -25,7 +27,7 @@ import org.angproj.aux.util.chunkLoop
 import kotlin.math.min
 import kotlin.test.Test
 
-val theVeryFunText = """
+val theVeryFunData = """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer auctor nisi eu bibendum sodales. Integer dui nulla, 
 gravida sit amet laoreet in, ultricies quis risus. Praesent iaculis fermentum risus non placerat. Phasellus dictum 
 quis velit sed fermentum. Vestibulum bibendum ex vitae dolor mollis, vitae tincidunt orci porta. Donec elementum nisl 
@@ -61,8 +63,8 @@ Maecenas vehicula ligula ac orci sodales fermentum. Suspendisse vel enim in lacu
 Fusce volutpat hendrerit sapien ut mollis.
 """.trimIndent()
 
-class StringReader(text: String) : PumpReader {
-    val data = DataBuffer(text.encodeToByteArray())
+class BinaryReader(data: ByteArray) : PumpReader {
+    val data = DataBuffer(data)
 
     override fun read(data: Segment): Int {
         val length = min(data.size, this.data.remaining)
@@ -90,11 +92,11 @@ class StringReader(text: String) : PumpReader {
 
 }
 
-class GlyphPipeTest {
+class BinaryPipeTest {
     @Test
     fun testBuildTextPipe() {
-        val readable = PullPipe(TextSource(StringReader(theVeryFunText))).getTextReadable()
-        println(readable.readLine())
+        val readable = PullPipe(BinarySource(BinaryReader(theVeryFunData.encodeToByteArray()))).getBinaryReadable()
+        println(readable.readLong())
     }
 
     @Test

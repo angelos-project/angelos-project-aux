@@ -12,13 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pipe
+package org.angproj.aux.io
 
-import org.angproj.aux.buf.Pump
-import org.angproj.aux.io.PumpReader
-
-public class PackageSource(pump: PumpReader = Pump): AbstractSource<PackageType>(pump), PackageType {
-    override fun dispose() {
-        TODO("Not yet implemented")
-    }
+public interface Writer {
 }

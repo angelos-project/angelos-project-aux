@@ -17,18 +17,19 @@ package org.angproj.aux.util
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-@Suppress("UNCHECKED_CAST")
 public class Once<E: Any> : ReadWriteProperty<Any, E> {
 
-    private var value: E = NullObject.any as E
+    private var value: E? = null
 
     override fun getValue(thisRef: Any, property: KProperty<*>): E {
-        require(!value.isNull()) { "Property ${property.name} of $thisRef is not available yet." }
-        return value
+        require(value != null) { "Property ${property.name} of $thisRef is not available yet." }
+        return value as E
     }
 
     override fun setValue(thisRef: Any, property: KProperty<*>, value: E) {
-        require(value.isNull()) { "Property ${property.name} of $thisRef is already set." }
+        require(this.value == null) { "Property ${property.name} of $thisRef is already set." }
         this.value = value
     }
+
+    public fun isNull(): Boolean = value === null
 }

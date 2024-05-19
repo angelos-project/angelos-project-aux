@@ -15,9 +15,10 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.PumpReader
+import org.angproj.aux.io.PumpWriter
 import org.angproj.aux.io.Segment
 
-public object Pump: PumpReader {
+public object Pump: PumpReader, PumpWriter {
     override fun read(data: Segment): Int {
         throw UnsupportedOperationException("No readable pump set.")
     }

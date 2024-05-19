@@ -15,6 +15,7 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.Segment
 
 public class PushPipe<T: PipeType>(
     sink: AbstractSink<T>,
@@ -24,6 +25,9 @@ public class PushPipe<T: PipeType>(
     sink,
     bufferSize
 ), PushMode {
+
+    override val buf: MutableList<Segment>
+        get() = TODO("Not yet implemented")
 
     internal companion object {
         fun<T: PipeType> applySource(src: AbstractSink<T>): AbstractSource<out PipeType> {
