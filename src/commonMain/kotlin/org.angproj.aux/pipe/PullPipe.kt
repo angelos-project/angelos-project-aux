@@ -14,10 +14,7 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.io.Bytes
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.segment
+import org.angproj.aux.io.*
 import org.angproj.aux.util.NullObject
 
 public class PullPipe<T: PipeType>(
@@ -51,17 +48,17 @@ public class PullPipe<T: PipeType>(
     }
 
     public fun getTextReadable(): TextSink = when(sink) {
-        is TextSink -> sink
+        is TextSink -> sink.also { if(buf.isEmpty()) tap() }
         else -> throw UnsupportedOperationException("Doesn't support text!")
     }
 
     public fun getPackageReadable(): PackageSink = when(sink) {
-        is PackageSink -> sink
+        is PackageSink -> sink.also { if(buf.isEmpty()) tap() }
         else -> throw UnsupportedOperationException("Doesn't support package!")
     }
 
     public fun getBinaryReadable(): BinarySink = when(sink) {
-        is BinarySink -> sink
+        is BinarySink -> sink.also { if(buf.isEmpty()) tap() }
         else -> throw UnsupportedOperationException("Doesn't support binary!")
     }
 

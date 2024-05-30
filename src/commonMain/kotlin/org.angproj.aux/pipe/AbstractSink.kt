@@ -32,6 +32,8 @@ public abstract class AbstractSink<T: PipeType>(
         TODO()
     }
 
+    protected abstract fun pullSegment()
+
     protected inline fun <reified E> withinReadLimit(length: Int, action: () -> E): E {
         require(curLim - pos >= length) { "Buffer overflow, limit reached." }
         val out = action()
