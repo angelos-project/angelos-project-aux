@@ -18,6 +18,7 @@ package org.angproj.aux.io
 public interface ByteString: AutoCloseable {
 
     public val size: Int
+    public var limit: Int
 
     public fun getByte(index: Int): Byte
     public fun getShort(index: Int): Short

@@ -61,4 +61,13 @@ class MemoryTest: AbstractSegmentValidator() {
 
     @Test
     fun testTryCopyOf() = tryCopyOf(createNew)
+
+    @Test
+    fun testOneSize() {
+        val seg = Memory(9)
+        println(seg.size)
+        println(seg.length)
+        println(seg.limit)
+        seg.close()
+    }
 }

@@ -29,6 +29,14 @@ public abstract class Segment(
     final override val length: Int = SpeedCopy.addMarginInTotalBytes(idxLimit, idxSize)
     final override val marginSized: Int = SpeedCopy.addMarginByIndexType(idxLimit, idxSize)
 
+    private var _limit: Int = length
+    override var limit: Int
+        get() = _limit
+        set(value) {
+            require(value in 0..length) { "Proposed limit is outside boundaries." }
+            _limit = value
+        }
+
     public inline fun <reified T: Reifiable> Long.reverse(): Long = (
             this.toInt().reverse<Reify>().toLong() shl 32) or (
             this ushr 32).toInt().reverse<Reify>().toLong()
@@ -54,7 +62,7 @@ public fun<T: Segment> T.copyOf(): T = copyOf()
 public fun Segment.isNull(): Boolean = NullObject.segment === this
 
 private val nullSegment = object : Segment(0, TypeSize.INT, 0) {
-    private fun none(): Nothing { throw UnsupportedOperationException() }
+    private fun none(): Nothing { throw UnsupportedOperationException( "Segment NULL is reached, EOF!" ) }
     override fun create(size: Int, idxLimit: Int): AbstractSpeedCopy { none() }
     override fun getByte(index: Int): Byte { none() }
     override fun getShort(index: Int): Short { none() }

@@ -15,7 +15,7 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.io.*
-import org.angproj.aux.util.NullObject
+import kotlin.math.min
 
 public class PullPipe<T: PipeType>(
     src: AbstractSource<T>,
@@ -28,37 +28,32 @@ public class PullPipe<T: PipeType>(
 
     override val buf: MutableList<Segment> = mutableListOf()
 
+    /**
+     * Will tap up data as long there is leftover and will quit when the segment is not fully filled.
+     * */
     override fun tap() {
-        val segmentSize = DataSize._1K
-        while(buf.sumOf { it.length } + segmentSize.size <= bufferSize.size) {
-            val seg = Bytes(DataSize._1K.size)
-            when(val limit = src.squeeze(seg)) {
-                segmentSize.size -> buf.add(0, seg)
-                0 -> {
-                    seg.close()
-                    this.limit = limit
-                    buf.add(0, NullObject.segment)
-                }
-                else -> {
-                    this.limit = limit
-                    buf.add(0, seg)
-                }
-            }
-        }
+        var leftover = bufferSize.size - usedSize
+
+        if(leftover > 0) do {
+            val seg = Bytes(min(segmentSize.size, leftover))
+            src.squeeze(seg)
+            leftover -= seg.limit
+            buf.push(seg)
+        } while(seg.limit == seg.size && leftover > 0)
     }
 
     public fun getTextReadable(): TextSink = when(sink) {
-        is TextSink -> sink.also { if(buf.isEmpty()) tap() }
+        is TextSink -> sink.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
         else -> throw UnsupportedOperationException("Doesn't support text!")
     }
 
     public fun getPackageReadable(): PackageSink = when(sink) {
-        is PackageSink -> sink.also { if(buf.isEmpty()) tap() }
+        is PackageSink -> sink.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
         else -> throw UnsupportedOperationException("Doesn't support package!")
     }
 
     public fun getBinaryReadable(): BinarySink = when(sink) {
-        is BinarySink -> sink.also { if(buf.isEmpty()) tap() }
+        is BinarySink -> sink.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
         else -> throw UnsupportedOperationException("Doesn't support binary!")
     }
 

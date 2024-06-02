@@ -26,7 +26,7 @@ public abstract class AbstractSponge(spongeSize: Int = 0, public val visibleSize
 
     protected var counter: Long = 0
     protected var mask: Long = 0
-    protected val sponge: LongArray = LongArray(spongeSize) { InitializationVector.entries[it].iv }
+    protected val sponge: LongArray = LongArray(spongeSize) { InitializationVector.entries[it+1].iv }
     public val byteSize: Int = visibleSize * Long.SIZE_BYTES
 
     init {

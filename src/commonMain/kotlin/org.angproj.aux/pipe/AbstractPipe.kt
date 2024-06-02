@@ -16,6 +16,8 @@ package org.angproj.aux.pipe
 
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Segment
+import org.angproj.aux.io.segment
+import org.angproj.aux.util.NullObject
 
 public abstract class AbstractPipe<T: PipeType>(
     protected val src: AbstractSource<out PipeType>,
@@ -23,8 +25,11 @@ public abstract class AbstractPipe<T: PipeType>(
     public val bufferSize: DataSize,
 ): Pipe, PipeMode {
 
+    public val segmentSize: DataSize = DataSize._1K
+
     protected abstract val buf: MutableList<Segment>
-    internal var limit: Int = Int.MAX_VALUE
+    protected val usedSize: Int
+        get() = buf.sumOf { it.size }
 
     public val isExhausted: Boolean
         get() = buf.isEmpty()
@@ -46,10 +51,32 @@ public abstract class AbstractPipe<T: PipeType>(
      * */
     internal open fun tap() { throw UnsupportedOperationException("Can not tap.") }
 
+    internal fun pop(): Segment = buf.pop()
+    internal fun push(seg: Segment) = buf.push(seg)
+
     override fun close() {
         if(!src.isClosed)
             src.close()
         if(!sink.isClosed)
             sink.close()
+    }
+
+    /**
+     * Adds FIFO push abilities to the List of Segment.
+     * */
+    public fun MutableList<Segment>.push(seg: Segment) {
+        this.add(0, seg)
+    }
+
+    /**
+     * Adds FIFO pop abilities to the List of Segment
+     * */
+    public fun MutableList<Segment>.pop(): Segment = when {
+        isEmpty() -> NullObject.segment
+        last().limit == 0 -> {
+            removeLast().close()
+            NullObject.segment
+        }
+        else -> removeLast()
     }
 }
