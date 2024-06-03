@@ -14,15 +14,15 @@
  */
 package org.angproj.aux.utf
 
-public enum class SequenceType(public val size: Int) {
-    START_ONE_LONG(1),
-    START_TWO_LONG(2),
-    START_THREE_LONG(3),
-    START_FOUR_LONG(4),
-    START_FIVE_LONG(5),
-    START_SIX_LONG(6),
-    FOLLOW_DATA(0),
-    ILLEGAL(-1);
+public enum class SequenceType(public val size: Int, public val bits: Int) {
+    START_ONE_LONG(1, 7),
+    START_TWO_LONG(2, 5),
+    START_THREE_LONG(3, 4),
+    START_FOUR_LONG(4, 3),
+    START_FIVE_LONG(5, 2),
+    START_SIX_LONG(6, 1),
+    FOLLOW_DATA(0, 6),
+    ILLEGAL(-1, 0);
 
     public companion object {
         public fun qualify(octet: Byte): SequenceType {

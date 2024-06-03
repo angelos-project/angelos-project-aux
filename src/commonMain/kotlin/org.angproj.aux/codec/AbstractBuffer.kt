@@ -68,10 +68,10 @@ public abstract class AbstractBuffer: Readable, Writable {
     override fun readDouble(): Double = withinReadLimit(Double.SIZE_BYTES) {
         _data.readDoubleAt(_position) }
 
-    public fun readGlyph(): Glyph {
+    /*public fun readGlyph(): Glyph {
         val size = _data[_position].glyphSize()
         return withinReadLimit(size) { _data.readGlyphAt(_position, size).escapeInvalid() }
-    }
+    }*/
 
     override fun writeByte(value: Byte): Unit = withinWriteLimit(Byte.SIZE_BYTES) {
         _data[_position] = value }
@@ -97,9 +97,9 @@ public abstract class AbstractBuffer: Readable, Writable {
     override fun writeDouble(value: Double): Unit =
         withinWriteLimit(Double.SIZE_BYTES) { _data.writeDoubleAt(_position, value) }
 
-    public fun writeGlyph(glyph: Glyph) {
+    /*public fun writeGlyph(glyph: Glyph) {
         val escaped = glyph.escapeInvalid()
         val size = escaped.getSize()
         withinWriteLimit(size) { _data.writeGlyphAt(_position, escaped, size) }
-    }
+    }*/
 }

@@ -14,11 +14,8 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.utf.Glyph
-import org.angproj.aux.utf.GlyphString
+import org.angproj.aux.utf.CodePoint
 
 public interface TextReadable {
-    public fun readGlyph(): Glyph
-
-    public fun readLine(): GlyphString
+    public fun readGlyph(): CodePoint
 }

@@ -1,7 +1,5 @@
 package org.angproj.aux.util
 
-import org.angproj.aux.utf.SanitizeMode
-import org.angproj.aux.utf.UtfSanitize
 import kotlin.test.Test
 
 class UnicodeTest {

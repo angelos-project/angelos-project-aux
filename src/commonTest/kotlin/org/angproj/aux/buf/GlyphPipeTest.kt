@@ -94,7 +94,7 @@ class GlyphPipeTest {
     @Test
     fun testBuildTextPipe() {
         val readable = PullPipe(TextSource(StringReader(theVeryFunText))).getTextReadable()
-        println(readable.readLine())
+        println(readable.readGlyph())
     }
 
     @Test

@@ -14,111 +14,98 @@
  */
 package org.angproj.aux.utf
 
-public typealias Glyph = Int
+import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.Reify
 
-public const val GLYPH_MAX_VALUE: Int = 0x10FFFF
-public const val GLYPH_MIN_VALUE: Int = 0x0
+/**
+ * https://www.ietf.org/rfc/rfc2279.txt
+ * https://www.ietf.org/rfc/rfc3629.txt
+ * https://en.wikipedia.org/wiki/UTF-8
+ * */
+public object Glyph {
+    public const val GLYPH_MAX_VALUE: Int = 0x10_FFFF
+    public const val GLYPH_MIN_VALUE: Int = 0x0
 
-internal val GLYPH_RANGE: IntRange = GLYPH_MIN_VALUE..GLYPH_MAX_VALUE
-internal val GLYPH_HOLE: IntRange = 0xD800..0xDFFF
-internal val GLYPH_SIZE_1: IntRange = 0x00..0x7F
-internal val GLYPH_SIZE_2: IntRange = 0x80..0x7FF
-internal val GLYPH_SIZE_3: IntRange = 0x800..0xFFFF
-internal val GLYPH_SIZE_4: IntRange = 0x1_0000..0x10_FFFF
-public const val REPLACEMENT_CHARACTER: Glyph = 0xFFFD
+    public val GLYPH_RANGE: IntRange = GLYPH_MIN_VALUE..GLYPH_MAX_VALUE
+    public val GLYPH_HOLE: IntRange = 0xD800..0xDFFF
+    public val GLYPH_SIZE_1: IntRange = GLYPH_MIN_VALUE..0x7F
+    public val GLYPH_SIZE_2: IntRange = 0x80..0x7FF
+    public val GLYPH_SIZE_3: IntRange = 0x800..0xFFFF
+    public val GLYPH_SIZE_4: IntRange = 0x1_0000..GLYPH_MAX_VALUE
 
-public fun Glyph.isValid(): Boolean = this in GLYPH_RANGE && this !in GLYPH_HOLE
+    public val NEWLINE_CHARACTER: CodePoint = CodePoint('\n'.code)
+    public val REPLACEMENT_CHARACTER: CodePoint = CodePoint(0xFFFD)
 
-public fun Glyph.escapeInvalid(): Glyph = when(isValid()) {
-    false -> REPLACEMENT_CHARACTER
-    else -> this
+    internal inline fun <reified : Reifiable>readStart(readOctet: () -> Byte): CodePoint {
+        val octet = readOctet()
+        return when(val seqType = SequenceType.qualify(octet)) {
+            SequenceType.FOLLOW_DATA, SequenceType.ILLEGAL -> REPLACEMENT_CHARACTER
+            else -> readFollowData<Reify>(seqType, SequenceType.extract(seqType, octet), readOctet)
+        }
+    }
+
+    internal inline fun <reified : Reifiable> readFollowData(
+        seqType: SequenceType, codePoint: Int, readOctet: () -> Byte): CodePoint {
+        var value = codePoint
+        repeat(seqType.size - 1) {
+            val octet = readOctet()
+            if(SequenceType.qualify(octet) != SequenceType.FOLLOW_DATA) return REPLACEMENT_CHARACTER
+            value = (value shl seqType.bits) or (SequenceType.extract(SequenceType.FOLLOW_DATA, octet))
+        }
+        return CodePoint(value)
+    }
+
+    internal inline fun <reified : Reifiable>startOneOctetOf(codePoint: CodePoint): Byte = (
+            0B0000000_00000000_00000000_01111111 and codePoint.value).toByte()
+
+    internal inline fun <reified : Reifiable>startTwoOctetOf(codePoint: CodePoint): Byte = (
+            (0B0000000_00000000_00000111_11000000 and codePoint.value shr 6) or -0B01000000).toByte()
+
+    internal inline fun <reified : Reifiable>startThreeOctetOf(codePoint: CodePoint): Byte = (
+            (0B0000000_00000000_11110000_00000000 and codePoint.value shr 12) or -0B00100000).toByte()
+
+    internal inline fun <reified : Reifiable>startFourOctetOf(codePoint: CodePoint): Byte = (
+            (0B0000000_00011100_00000000_00000000 and codePoint.value shr 18) or -0B00010000).toByte()
+
+    public fun startOctetOf(sequenceType: SequenceType, codePoint: CodePoint): Byte = when(sequenceType){
+        SequenceType.START_ONE_LONG -> startOneOctetOf<Reify>(codePoint)
+        SequenceType.START_TWO_LONG -> startTwoOctetOf<Reify>(codePoint)
+        SequenceType.START_THREE_LONG -> startThreeOctetOf<Reify>(codePoint)
+        SequenceType.START_FOUR_LONG -> startFourOctetOf<Reify>(codePoint)
+        else -> error ("Unsupported start data.")
+    }
+
+    internal inline fun <reified : Reifiable>followThreeUpOctetOf(codePoint: CodePoint): Byte = (
+            (0B0000000_00000011_11110000_00000000 and codePoint.value shr 12) or -0B10000000).toByte()
+
+    internal inline fun <reified : Reifiable>followTwoUpOctetOf(codePoint: CodePoint): Byte = (
+            (0B0000000_00000000_00001111_11000000 and codePoint.value shr 6) or -0B10000000).toByte()
+
+    internal inline fun <reified : Reifiable>followLastOctetOf(codePoint: CodePoint): Byte = (
+            (0B0000000_00000000_00000000_00111111 and codePoint.value) or -0B10000000).toByte()
+
+    public fun followOctetOf(sequenceType: SequenceType, codePoint: CodePoint, index: Int): Byte {
+        return when(sequenceType.size - index) {
+            1 -> followLastOctetOf<Reify>(codePoint)
+            2 -> followTwoUpOctetOf<Reify>(codePoint)
+            3 -> followThreeUpOctetOf<Reify>(codePoint)
+            else -> error("Unsupported follow data.")
+        }
+    }
 }
-
-public fun Glyph.getSize(): Int = when (this) {
-    in GLYPH_SIZE_1 -> 1
-    in GLYPH_SIZE_2 -> 2
-    in GLYPH_SIZE_3 -> 3
-    in GLYPH_SIZE_4 -> 4
-    else -> -1
-}
-
-
-// https://www.ietf.org/rfc/rfc2279.txt
-// https://www.ietf.org/rfc/rfc3629.txt
-// https://en.wikipedia.org/wiki/UTF-8
-
 
 /**
  * Takes a UTF-8 leading octet as a Byte and check what size the multibyte character has.
  * Also works as validation of the first octet in a UTF-8 binary octet sequence.
  */
-public fun Byte.glyphSize(): Int = when {
-    (this.toInt() and -0B1000_0000) == 0 -> 1
-    (this.toInt() and 0B1110_0000) == 0B1100_0000 -> 2
-    (this.toInt() and 0B1111_0000) == 0B1110_0000 -> 3
-    (this.toInt() and 0B1111_1000) == 0B1111_0000 -> 4
-    (this.toInt() and 0B1111_1100) == 0B1111_1000 -> 5 // Just to deal with the illegal sequence
-    (this.toInt() and 0B1111_1110) == 0B1111_1100 -> 6 // Just to deal with the illegal sequence
-    else -> -1
+public fun Byte.sequenceTypeOf(): SequenceType = SequenceType.qualify(this)
+
+public fun ByteArray.readGlyphAt(offset: Int): CodePoint {
+    var pos = offset
+    return Glyph.readStart<Reify> { this[pos].also { pos++ } }
 }
 
-
-/**
- * Validates a UTF-8 binary sequence, presuming that the first octet is already known.
- */
-public fun ByteArray.isGlyphValid(pos: Int, size: Int): Boolean = when (size) {
-    1 -> true
-    2 -> this[pos + 1].toInt() and -0B1000000 == -0B10000000
-
-    3 -> this[pos + 1].toInt() and -0B1000000 == -0B10000000 &&
-            this[pos + 2].toInt() and -0B1000000 == -0B10000000
-
-    4 -> this[pos + 1].toInt() and -0B1000000 == -0B10000000 &&
-            this[pos + 2].toInt() and -0B1000000 == -0B10000000 &&
-            this[pos + 3].toInt() and -0B1000000 == -0B10000000
-    else -> false
-}
-
-public fun glyphRead(data: ByteArray, pos: Int, size: Int): Glyph = when (size) {
-    1 -> 0B01111111 and data[pos].toInt()
-    2 -> (0B00011111 and data[pos].toInt() shl 6) or
-            (0B00111111 and data[pos + 1].toInt())
-
-    3 -> (0B00001111 and data[pos].toInt() shl 12) or
-            (0B00111111 and data[pos + 1].toInt() shl 6) or
-            (0B00111111 and data[pos + 2].toInt())
-
-    4 -> (0B00000111 and data[pos].toInt() shl 18) or
-            (0B00111111 and data[pos + 1].toInt() shl 12) or
-            (0B00111111 and data[pos + 2].toInt() shl 6) or
-            (0B00111111 and data[pos + 3].toInt())
-    else -> REPLACEMENT_CHARACTER
-}
-
-public fun glyphWrite(data: ByteArray, pos: Int, glyph: Glyph, size: Int): Unit = when (size) {
-    1 -> data[pos] = (0B0000000_00000000_00000000_01111111 and glyph).toByte()
-    2 -> {
-        data[pos] = ((0B0000000_00000000_00000111_11000000 and glyph shr 6) or -0B01000000).toByte()
-        data[pos + 1] = ((0B0000000_00000000_00000000_00111111 and glyph) or -0B10000000).toByte()
-    }
-    3 -> {
-        data[pos] = ((0B0000000_00000000_11110000_00000000 and glyph shr 12) or -0B00100000).toByte()
-        data[pos + 1] = ((0B0000000_00000000_00001111_11000000 and glyph shr 6) or -0B10000000).toByte()
-        data[pos + 2] = ((0B0000000_00000000_00000000_00111111 and glyph) or -0B10000000).toByte()
-    }
-    4 -> {
-        data[pos] = ((0B0000000_00011100_00000000_00000000 and glyph shr 18) or -0B00010000).toByte()
-        data[pos + 1] = ((0B0000000_00000011_11110000_00000000 and glyph shr 12) or -0B10000000).toByte()
-        data[pos + 2] = ((0B0000000_00000000_00001111_11000000 and glyph shr 6) or -0B10000000).toByte()
-        data[pos + 3] = ((0B0000000_00000000_00000000_00111111 and glyph) or -0B10000000).toByte()
-    }
-    else -> error("Glyph illegal boundary detected. ${glyph.toString(16)}")
-}
-
-internal fun ByteArray.readGlyphAt(offset: Int, size: Int): Glyph = glyphRead(this, offset, size)
-
-public fun ByteArray.readGlyphAt(offset: Int): Glyph = readGlyphAt(offset, this[offset].glyphSize())
-
-internal fun ByteArray.writeGlyphAt(offset: Int, value: Glyph, size: Int): Unit = glyphWrite(this, offset, value, size)
-
-public fun ByteArray.writeGlyphAt(offset: Int, value: Glyph): Unit = writeGlyphAt(offset, value, value.getSize())
+public fun ByteArray.writeGlyphAt(offset: Int, value: CodePoint): Int = value.sectionTypeOf().also{ secType ->
+    this[offset] = Glyph.startOctetOf(secType, value)
+    (1 until secType.size).forEach{ this[offset + it] = Glyph.followOctetOf(secType, value, it) }
+}.size

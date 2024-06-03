@@ -14,8 +14,8 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.utf.Glyph
+import org.angproj.aux.utf.CodePoint
 
 public interface TextWritable {
-    public fun writeGlyph(glyph: Glyph)
+    public fun writeGlyph(glyph: CodePoint)
 }

@@ -17,10 +17,10 @@ package org.angproj.aux.pipe
 import org.angproj.aux.buf.Pump
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.TextWritable
-import org.angproj.aux.utf.Glyph
+import org.angproj.aux.utf.CodePoint
 
 public class TextSource(pump: PumpReader = Pump): AbstractSource<TextType>(pump), TextType, TextWritable {
-    override fun writeGlyph(glyph: Glyph) {
+    override fun writeGlyph(glyph: CodePoint) {
         TODO("Not yet implemented")
     }
 
