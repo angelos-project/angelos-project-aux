@@ -45,12 +45,17 @@ public object Glyph {
     }
 
     internal inline fun <reified : Reifiable> readFollowData(
-        seqType: SequenceType, codePoint: Int, readOctet: () -> Byte): CodePoint {
+        seqStart: SequenceType, codePoint: Int, readOctet: () -> Byte
+    ): CodePoint {
         var value = codePoint
-        repeat(seqType.size - 1) {
+        repeat(seqStart.size - 1) {
             val octet = readOctet()
-            if(SequenceType.qualify(octet) != SequenceType.FOLLOW_DATA) return REPLACEMENT_CHARACTER
-            value = (value shl seqType.bits) or (SequenceType.extract(SequenceType.FOLLOW_DATA, octet))
+            when(val seqType = SequenceType.qualify(octet)) {
+                SequenceType.FOLLOW_DATA -> value = (
+                        value shl seqType.bits) or (
+                        SequenceType.extract(seqType, octet))
+                else -> return REPLACEMENT_CHARACTER
+            }
         }
         return CodePoint(value)
     }
@@ -102,7 +107,11 @@ public fun Byte.sequenceTypeOf(): SequenceType = SequenceType.qualify(this)
 
 public fun ByteArray.readGlyphAt(offset: Int): CodePoint {
     var pos = offset
-    return Glyph.readStart<Reify> { this[pos].also { pos++ } }
+    return Glyph.readStart<Reify> {
+        val octet = this[pos]
+        pos++
+        octet
+    }
 }
 
 public fun ByteArray.writeGlyphAt(offset: Int, value: CodePoint): Int = value.sectionTypeOf().also{ secType ->

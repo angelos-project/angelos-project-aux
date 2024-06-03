@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2022-2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -12,21 +12,11 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.utf
 
-import org.angproj.aux.io.PumpReader
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.TypeSize
-import org.angproj.aux.pipe.TextSource
-import org.angproj.aux.pipe.PullPipe
-import org.angproj.aux.utf.writeGlyphAt
-import org.angproj.aux.util.DataBuffer
-import org.angproj.aux.util.Reify
-import org.angproj.aux.util.chunkLoop
-import kotlin.math.min
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
-import kotlin.time.measureTime
+import kotlin.test.assertEquals
 
 val latin = """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer auctor nisi eu bibendum sodales. Integer dui nulla, 
@@ -62,7 +52,7 @@ senectus et netus et malesuada fames ac turpis egestas. Mauris auctor fermentum 
 erat sed ex varius suscipit. Duis ut euismod urna. Phasellus elit est, euismod eu dapibus non, fermentum nec purus. 
 Maecenas vehicula ligula ac orci sodales fermentum. Suspendisse vel enim in lacus malesuada vulputate lacinia id erat. 
 Fusce volutpat hendrerit sapien ut mollis.
-"""
+""".trimIndent()
 
 val greek = """
 Ἐπειδὴ τὸν Ἰουδαίων πρὸς Ῥωμαίους πόλεμον συστάντα μέγιστον οὐ μόνον τῶν καθ' ἡμᾶς, σχεδὸν δὲ καὶ ὧν ἀκοῇ
@@ -97,7 +87,7 @@ val greek = """
 τὸ πῦρ ἐπὶ τὸν ναὸν εἵλκυσαν οἱ Ἰουδαίων τύραννοι, μάρτυς αὐτὸς ὁ πορθήσας Καῖσαρ Τίτος, ἐν παντὶ τῷ πολέμῳ τὸν μὲν 
 δῆμον ἐλεήσας ὑπὸ τῶν στασιαστῶν φρουρούμενον, πολλάκις δὲ ἑκὼν τὴν ἅλωσιν τῆς πόλεως ὑπερτιθέμενος καὶ διδοὺς τῇ 
 πολιορκίαι χρόνον εἰς μετάνοιαν τῶν αἰτίων.
-"""
+""".trimIndent()
 
 val chinese = """
 本格表世向駐供暮基造食四検内協案。山文提議負表崎何九被博特止点関通写覧馬。会出週朝野加交伊再謝神年拡員部禁辺。
@@ -139,56 +129,96 @@ val chinese = """
 無科難朝人止反稿込果者残統聞舞果。提機東境本廟滅売動断機禁碁以辺復首謙。追同航女投代脅営士川白康。果管成最将作数上用化気就。
 紙盟護化悼護別場報佐面字法暮。論厳浪権作必秩上貫報極進常止記。線転演江誤守意局面変理文意基明。提年便制入応難苦不習開初勤知周供勝味収前。
 戦六利統既鎌江陵機全円株。感金覚品賞変挙上万合参真警特提。
-"""
+""".trimIndent()
 
-class StringReader(text: String) : PumpReader {
-    val data = DataBuffer(text.encodeToByteArray())
+class GlyphTest {
 
-    override fun read(data: Segment): Int {
-        val length = min(data.size, this.data.remaining)
+    val phrase = "Ἐπειδὴ"
 
-        var index = chunkLoop<Reify>(0, length, TypeSize.long) {
-            data.setLong(it, this.data.readLong())
-        }
-        index = chunkLoop<Reify>(index, length, TypeSize.byte) {
-            data.setByte(it, this.data.readByte())
-        }
-        return index
-    }
+    // Latin Capital Letter A
+    private val ascii = Pair(
+        // Code
+        byteArrayOf(0x41),
+        // Entity
+        0x41.toInt()
+    )
 
-    override fun readInto(data: Segment, size: Int): Int {
-        val length = min(size, min(data.size, this.data.remaining))
+    // Greek Small Letter Stigma
+    private val stigma = Pair(
+        // Code
+        byteArrayOf(0xCF.toByte(), 0x9B.toByte()),
+        // Entity
+        0x03DB.toInt()
+    )
 
-        var index = chunkLoop<Reify>(0, length, TypeSize.long) {
-            data.setLong(it, this.data.readLong())
-        }
-        index = chunkLoop<Reify>(index, length, TypeSize.byte) {
-            data.setByte(it, this.data.readByte())
-        }
-        return index
-    }
+    // CJK Radical J-Simplified Even
+    private val radical = Pair(
+        // Code
+        byteArrayOf(0xE2.toByte(), 0xBB.toByte(), 0xAB.toByte()),
+        // Entity
+        0x2EEB.toInt()
+    )
 
-}
-
-class GlyphPipeTest {
+    // Smiling Face with Heart-Shaped Eyes
+    private val emoji = Pair(
+        // Code
+        byteArrayOf(0xF0.toByte(), 0x9F.toByte(), 0x98.toByte(), 0x8D.toByte()),
+        // Entity
+        0x1F60D.toInt()
+    )
 
     @Test
-    fun testBuildTextPipe() {
+    fun testReadGlyphAt() {
+        assertEquals(ascii.first.readGlyphAt(0).value, ascii.second)
+        assertEquals(stigma.first.readGlyphAt(0).value, stigma.second)
+        assertEquals(radical.first.readGlyphAt(0).value, radical.second)
+        assertEquals(emoji.first.readGlyphAt(0).value, emoji.second)
+    }
 
-        val text = latin + greek + chinese
-        val copy = text.encodeToByteArray()
-        val canvas = ByteArray(copy.size)
+    @Test
+    fun testWriteGlyphAt() {
+        assertContentEquals(ascii.first, ByteArray(1).also { it.writeGlyphAt(0, CodePoint(ascii.second)) })
+        assertContentEquals(stigma.first, ByteArray(2).also { it.writeGlyphAt(0, CodePoint(stigma.second)) })
+        assertContentEquals(radical.first, ByteArray(3).also { it.writeGlyphAt(0, CodePoint(radical.second)) })
+        assertContentEquals(emoji.first, ByteArray(4).also { it.writeGlyphAt(0, CodePoint(emoji.second)) })
+    }
+
+    @Test
+    fun testReconstructLatin() {
+        val text = latin.encodeToByteArray()
+        val recon = ByteArray(text.size)
         var pos = 0
+        do {
+            val cp = text.readGlyphAt(pos)
+            pos += recon.writeGlyphAt(pos, cp)
+        } while(pos < recon.size)
 
-        val readable = PullPipe(TextSource(StringReader(text))).getTextReadable()
-        val time = measureTime {
-            do {
-                val cp = readable.readGlyph()
-                pos += canvas.writeGlyphAt(pos, cp)
-            } while(pos < canvas.size)
-        }
-        //readable.close()
-        println(time)
-        assertContentEquals(copy, canvas)
+        assertEquals(latin, recon.decodeToString())
+    }
+
+    @Test
+    fun testReconstructGreek() {
+        val text = greek.encodeToByteArray()
+        val recon = ByteArray(text.size)
+        var pos = 0
+        do {
+            val cp = text.readGlyphAt(pos)
+            pos += recon.writeGlyphAt(pos, cp)
+        } while(pos < recon.size)
+
+        assertEquals(greek, recon.decodeToString())
+    }
+
+    @Test
+    fun testReconstructChinese() {
+        val text = chinese.encodeToByteArray()
+        val recon = ByteArray(text.size)
+        var pos = 0
+        do {
+            val cp = text.readGlyphAt(pos)
+            pos += recon.writeGlyphAt(pos, cp)
+        } while(pos < recon.size)
+
+        assertEquals(chinese, recon.decodeToString())
     }
 }
