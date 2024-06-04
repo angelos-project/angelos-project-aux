@@ -34,6 +34,9 @@ public abstract class AbstractPipe<T: PipeType>(
     public val isExhausted: Boolean
         get() = buf.isEmpty()
 
+    public val isCrammed: Boolean
+        get() = usedSize >= bufferSize.size
+
     init {
         src.connect(this)
         sink.connect(this)
@@ -43,7 +46,7 @@ public abstract class AbstractPipe<T: PipeType>(
      * Draining should be done by a Source in a PushPipe, it forces the sink to use up the buffer,
      * or 2, forces the sink to finish and close up tidily.
      * */
-    internal fun drain() { throw UnsupportedOperationException("Can not drain.") }
+    internal open fun drain() { throw UnsupportedOperationException("Can not drain.") }
 
     /**
      * Tapping should be done by a Sink in a PullPipe, it forces the source to fill up the buffer,
@@ -55,6 +58,7 @@ public abstract class AbstractPipe<T: PipeType>(
     internal fun push(seg: Segment) = buf.push(seg)
 
     override fun close() {
+        println("Close: ${this::class.qualifiedName}")
         if(!src.isClosed)
             src.close()
         if(!sink.isClosed)

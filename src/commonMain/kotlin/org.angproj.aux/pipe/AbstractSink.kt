@@ -24,9 +24,7 @@ public abstract class AbstractSink<T: PipeType>(
     protected var pos: Int = 0
     protected var seg: Segment = NullObject.segment
 
-    internal fun absorb(seg: Segment, size: Int = seg.length): Int {
-        TODO()
-    }
+    internal fun absorb(seg: Segment, size: Int = seg.size): Int = pump.write(seg, size)
 
     /**
      * Loads a segment from the outside, should only be used by PullPipe class.
@@ -35,6 +33,7 @@ public abstract class AbstractSink<T: PipeType>(
 
     protected fun pullSegment() {
         if(pipe.isExhausted) pipe.tap()
+        seg.close()
         seg = pipe.pop()
         pos = 0
     }

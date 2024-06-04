@@ -17,14 +17,24 @@ package org.angproj.aux.pipe
 import org.angproj.aux.buf.Pump
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.TextWritable
+import org.angproj.aux.io.segment
 import org.angproj.aux.utf.CodePoint
+import org.angproj.aux.utf.Glyph
+import org.angproj.aux.util.NullObject
 
 public class TextSource(pump: PumpReader = Pump): AbstractSource<TextType>(pump), TextType, TextWritable {
-    override fun writeGlyph(glyph: CodePoint) {
-        TODO("Not yet implemented")
+
+    override fun writeGlyph(codePoint: CodePoint): Int = Glyph.writeStart(codePoint) {
+        if(pos == seg.limit) pushSegment()
+        seg.setByte(pos++, it)
     }
 
     override fun dispose() {
-        TODO("Not yet implemented")
+        if(pipe.isCrammed) pipe.drain()
+        seg.limit = pos
+        pipe.push(seg)
+        seg = NullObject.segment
+        pos = 0
+        pipe.drain()
     }
 }

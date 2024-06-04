@@ -15,7 +15,5 @@
 package org.angproj.aux.io
 
 public interface Reader {
-    public fun read(data: Segment): Int
-
-    public fun readInto(data: Segment, size: Int): Int
+    public fun read(data: Segment, size: Int): Int
 }

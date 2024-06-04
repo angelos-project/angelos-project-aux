@@ -26,12 +26,37 @@ public class PushPipe<T: PipeType>(
     bufferSize
 ), PushMode {
 
-    override val buf: MutableList<Segment>
-        get() = TODO("Not yet implemented")
+    override val buf: MutableList<Segment> = mutableListOf()
+
+    /**
+     * Will drain all data.
+     * */
+    override fun drain() {
+        do {
+            val seg = buf.pop()
+            sink.absorb(seg)
+            seg.close()
+        } while(buf.isNotEmpty())
+    }
+
+    public fun getTextWritable(): TextSource = when(src) {
+        is TextSource -> src //.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
+        else -> throw UnsupportedOperationException("Doesn't support text!")
+    }
+
+    public fun getPackageWritable(): PackageSource = when(src) {
+        is PackageSource -> src//.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
+        else -> throw UnsupportedOperationException("Doesn't support package!")
+    }
+
+    public fun getBinaryWritable(): BinarySource = when(src) {
+        is BinarySource -> src//.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
+        else -> throw UnsupportedOperationException("Doesn't support binary!")
+    }
 
     internal companion object {
-        fun<T: PipeType> applySource(src: AbstractSink<T>): AbstractSource<out PipeType> {
-            return when(src) {
+        fun<T: PipeType> applySource(sink: AbstractSink<T>): AbstractSource<out PipeType> {
+            return when(sink) {
                 is TextType -> TextSource()
                 is BinaryType -> BinarySource()
                 is PackageType -> PackageSource()

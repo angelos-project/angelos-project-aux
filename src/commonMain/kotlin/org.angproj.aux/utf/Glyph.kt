@@ -36,7 +36,7 @@ public object Glyph {
     public val NEWLINE_CHARACTER: CodePoint = CodePoint('\n'.code)
     public val REPLACEMENT_CHARACTER: CodePoint = CodePoint(0xFFFD)
 
-    internal inline fun <reified : Reifiable>readStart(readOctet: () -> Byte): CodePoint {
+    public fun readStart(readOctet: () -> Byte): CodePoint {
         val octet = readOctet()
         return when(val seqType = SequenceType.qualify(octet)) {
             SequenceType.FOLLOW_DATA, SequenceType.ILLEGAL -> REPLACEMENT_CHARACTER
@@ -72,7 +72,7 @@ public object Glyph {
     internal inline fun <reified : Reifiable>startFourOctetOf(codePoint: CodePoint): Byte = (
             (0B0000000_00011100_00000000_00000000 and codePoint.value shr 18) or -0B00010000).toByte()
 
-    public fun startOctetOf(sequenceType: SequenceType, codePoint: CodePoint): Byte = when(sequenceType){
+    internal inline fun <reified : Reifiable>startOctetOf(sequenceType: SequenceType, codePoint: CodePoint): Byte = when(sequenceType){
         SequenceType.START_ONE_LONG -> startOneOctetOf<Reify>(codePoint)
         SequenceType.START_TWO_LONG -> startTwoOctetOf<Reify>(codePoint)
         SequenceType.START_THREE_LONG -> startThreeOctetOf<Reify>(codePoint)
@@ -89,13 +89,20 @@ public object Glyph {
     internal inline fun <reified : Reifiable>followLastOctetOf(codePoint: CodePoint): Byte = (
             (0B0000000_00000000_00000000_00111111 and codePoint.value) or -0B10000000).toByte()
 
-    public fun followOctetOf(sequenceType: SequenceType, codePoint: CodePoint, index: Int): Byte {
+    internal inline fun <reified : Reifiable>followOctetOf(sequenceType: SequenceType, codePoint: CodePoint, index: Int): Byte {
         return when(sequenceType.size - index) {
             1 -> followLastOctetOf<Reify>(codePoint)
             2 -> followTwoUpOctetOf<Reify>(codePoint)
             3 -> followThreeUpOctetOf<Reify>(codePoint)
             else -> error("Unsupported follow data.")
         }
+    }
+
+    public fun writeStart(codePoint: CodePoint, writeOctet: (octet: Byte) -> Unit): Int {
+        val seqType = codePoint.sectionTypeOf()
+        writeOctet(startOctetOf<Reify>(seqType, codePoint))
+        repeat(seqType.size - 1) { writeOctet(followOctetOf<Reify>(seqType, codePoint, it + 1)) }
+        return seqType.size
     }
 }
 
@@ -107,14 +114,13 @@ public fun Byte.sequenceTypeOf(): SequenceType = SequenceType.qualify(this)
 
 public fun ByteArray.readGlyphAt(offset: Int): CodePoint {
     var pos = offset
-    return Glyph.readStart<Reify> {
-        val octet = this[pos]
-        pos++
+    return Glyph.readStart {
+        val octet = this[pos++]
         octet
     }
 }
 
 public fun ByteArray.writeGlyphAt(offset: Int, value: CodePoint): Int = value.sectionTypeOf().also{ secType ->
-    this[offset] = Glyph.startOctetOf(secType, value)
-    (1 until secType.size).forEach{ this[offset + it] = Glyph.followOctetOf(secType, value, it) }
+    this[offset] = Glyph.startOctetOf<Reifiable>(secType, value)
+    (1 until secType.size).forEach{ this[offset + it] = Glyph.followOctetOf<Reifiable>(secType, value, it) }
 }.size

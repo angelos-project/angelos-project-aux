@@ -34,6 +34,7 @@ public abstract class AbstractPipePoint<T: PipeType>: AutoCloseable {
 
     override fun close(): Unit = when(_closed) {
         false -> {
+            println("Close: ${this::class.qualifiedName}")
             dispose()
             _closed = true
             pipe.close()

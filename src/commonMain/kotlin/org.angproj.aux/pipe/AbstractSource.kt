@@ -15,11 +15,29 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.buf.Pump
-import org.angproj.aux.io.PumpReader
-import org.angproj.aux.io.Segment
+import org.angproj.aux.io.*
+import org.angproj.aux.util.NullObject
 
 public abstract class AbstractSource<T: PipeType>(
     protected val pump: PumpReader = Pump
 ): AbstractPipePoint<T>(), Source, PipeType {
-    internal fun squeeze(seg: Segment, size: Int = seg.length): Int = pump.readInto(seg, size)
+    protected var pos: Int = 0
+    protected var seg: Segment = NullObject.segment
+
+    internal fun squeeze(seg: Segment, size: Int = seg.size): Int = pump.read(seg, size)
+
+    /**
+     * Stuffs a segment to the outside, should only be used by PushPipe class.
+     * */
+    internal fun stuffSegment(): Unit = pushSegment()
+
+    protected fun pushSegment() {
+        if(pipe.isCrammed) pipe.drain()
+        if(!seg.isNull()) {
+            seg.limit = pos
+            pipe.push(seg)
+        }
+        seg = Bytes(pipe.segmentSize.size)
+        pos = 0
+    }
 }
