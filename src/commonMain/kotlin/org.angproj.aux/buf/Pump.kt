@@ -19,7 +19,7 @@ import org.angproj.aux.io.PumpWriter
 import org.angproj.aux.io.Segment
 
 public object Pump: PumpReader, PumpWriter {
-    override fun read(data: Segment, size: Int): Int {
+    override fun read(data: Segment): Int {
         throw UnsupportedOperationException("No readable pump set.")
     }
 

@@ -24,7 +24,7 @@ public abstract class AbstractSource<T: PipeType>(
     protected var pos: Int = 0
     protected var seg: Segment = NullObject.segment
 
-    internal fun squeeze(seg: Segment, size: Int = seg.size): Int = pump.read(seg, size)
+    internal fun squeeze(seg: Segment): Int = pump.read(seg)
 
     /**
      * Stuffs a segment to the outside, should only be used by PushPipe class.

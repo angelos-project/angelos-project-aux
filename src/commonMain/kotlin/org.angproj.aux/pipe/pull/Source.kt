@@ -12,12 +12,7 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.pipe.pull
 
-public interface Reader {
-
-    /**
-     * The implementation must set the segments limit value to the same as the returning value.
-     * */
-    public fun read(data: Segment): Int
+public interface Source: Close {
 }

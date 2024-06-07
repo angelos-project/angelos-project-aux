@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.9.23"
+    kotlin("multiplatform") version "1.9.24"
     `maven-publish`
 }
 
@@ -41,7 +41,7 @@ kotlin {
     sourceSets {
         val commonMain by getting{
             dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
             }
         }
         val commonTest by getting {

@@ -12,15 +12,11 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.pipe.pull
 
 import org.angproj.aux.io.PumpReader
-import org.angproj.aux.io.PumpWriter
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.pipe.*
-import org.angproj.aux.utf.CodePoint
-import org.angproj.aux.utf.readGlyphAt
 import org.angproj.aux.utf.writeGlyphAt
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.Reify
@@ -28,7 +24,6 @@ import org.angproj.aux.util.chunkLoop
 import kotlin.math.min
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
-import kotlin.test.assertFailsWith
 import kotlin.time.measureTime
 
 const val latin = """
@@ -144,7 +139,7 @@ const val chinese = """
 戦六利統既鎌江陵機全円株。感金覚品賞変挙上万合参真警特提。
 """
 
-data class PullConst<T: PipeType>(
+/*data class PullConst<T: PipeType>(
     val pump: PumpReader,
     val sink: TextSink,
     val pipe: PullPipe<T>,
@@ -154,17 +149,17 @@ data class PullConst<T: PipeType>(
         fun createText(pump: PumpReader): PullConst<TextType> {
             val source = TextSource(pump)
             val pipe = PullPipe(source)
-            val sink = pipe.getTextReadable()
+            val sink = pipe.
             return PullConst(pump, sink, pipe, source)
         }
     }
-}
+}*/
 
 class StringReader(text: String) : PumpReader {
     val data = DataBuffer(text.encodeToByteArray())
 
     override fun read(data: Segment): Int {
-        data.limit = min(data.limit, this.data.remaining)
+        data.limit  = min(data.limit, this.data.remaining)
 
         var index = chunkLoop<Reify>(0, data.limit, TypeSize.long) {
             data.setLong(it, this.data.readLong())
@@ -176,39 +171,7 @@ class StringReader(text: String) : PumpReader {
     }
 }
 
-data class PushConst<T: PipeType>(
-    val pump: PumpWriter,
-    val sink: TextSink,
-    val pipe: PushPipe<T>,
-    val source: TextSource,
-) {
-    companion object {
-        fun createText(pump: PumpWriter): PushConst<TextType> {
-            val sink = TextSink(pump)
-            val pipe = PushPipe(sink)
-            val source = pipe.getTextWritable()
-            return PushConst(pump, sink, pipe, source)
-        }
-    }
-}
-
-class StringWriter(data: ByteArray) : PumpWriter {
-    val data = DataBuffer(data)
-
-    override fun write(data: Segment, size: Int): Int {
-        val length = min(size, min(data.size, this.data.remaining))
-
-        var index = chunkLoop<Reify>(0, length, TypeSize.long) {
-            this.data.writeLong(data.getLong(it))
-        }
-        index = chunkLoop<Reify>(index, length, TypeSize.byte) {
-            this.data.writeByte(data.getByte(it))
-        }
-        return index
-    }
-}
-
-class GlyphPipeTest {
+class PullTest {
 
     /**
      * The goal is to pull all data from the TextSource.
@@ -221,7 +184,7 @@ class GlyphPipeTest {
         val canvas = ByteArray(copy.size)
         var pos = 0
 
-        val readable = PullPipe(TextSource(StringReader(text))).getTextReadable()
+        val readable = PullPipe(TextSource(StringReader(text))).getSink()
         val time = measureTime {
             do {
                 val cp = readable.readGlyph()
@@ -231,140 +194,5 @@ class GlyphPipeTest {
         readable.close()
         println(time)
         assertContentEquals(copy, canvas)
-    }
-
-    /**
-     * The goal is to push all data unto the TextSink.
-     * */
-    @Test
-    fun testStreamPush() {
-
-        val text = (latin + greek + chinese).encodeToByteArray()
-        val canvas = ByteArray(text.size)
-        val writeable = PushPipe(TextSink(StringWriter(canvas))).getTextWritable()
-        var pos = 0
-
-        val time = measureTime {
-            do {
-                val cp = text.readGlyphAt(pos)
-                pos += cp.sectionTypeOf().size
-                writeable.writeGlyph(cp)
-            } while(pos < text.size)
-        }
-        writeable.close()
-        println(time)
-        assertContentEquals(text, canvas)
-    }
-
-    @Test
-    fun testPushCloseSinkManual() {
-        val text = (latin + greek + chinese).encodeToByteArray()
-        val canvas = ByteArray(text.size)
-
-        val pipeCtx = PushConst.createText(StringWriter(canvas))
-        var pos = 0
-        var closed = false
-
-        assertFailsWith<IllegalStateException> {
-            do {
-                val cp = text.readGlyphAt(pos)
-                pos += cp.sectionTypeOf().size
-                if(!closed && pos > text.size / 2) {
-                    println("Closed sink at $pos")
-                    pipeCtx.sink.close()
-                    closed = true
-                }
-                pipeCtx.source.writeGlyph(cp)
-            } while(pos < text.size)
-        }
-
-        pipeCtx.source.close()
-        println(pos)
-    }
-
-    @Test
-    fun testPushCloseSourceManual() {
-        val text = (latin + greek + chinese).encodeToByteArray()
-        val canvas = ByteArray(text.size)
-
-        val pipeCtx = PushConst.createText(StringWriter(canvas))
-        var pos = 0
-        var closed = false
-
-        assertFailsWith<IllegalStateException> {
-            do {
-                val cp = text.readGlyphAt(pos)
-                pos += cp.sectionTypeOf().size
-                if(!closed && pos > text.size / 2) {
-                    println("Closed source at $pos")
-                    pipeCtx.source.close()
-                    closed = true
-                }
-                pipeCtx.source.writeGlyph(cp)
-            } while(pos < text.size)
-        }
-
-        pipeCtx.source.close()
-        println(pos)
-    }
-
-    @Test
-    fun testPushCloseSourceForce() {
-        val pump = StringWriter(byteArrayOf())
-        val sink = TextSink(pump)
-        val pipe = PushPipe(sink)
-        val source = pipe.getTextWritable()
-
-        sink.readGlyph()
-
-        pipe.close()
-        println("Sink-isClosed ${sink.isClosed}")
-        println("Sink-isPiped ${sink.isPiped}")
-        println("Source-isClosed ${source.isClosed}")
-        println("Source-isPiped ${source.isPiped}")
-    }
-
-    @Test
-    fun testPullCloseSourceManual() {
-        val pump = StringReader("")
-        val source = TextSource(pump)
-        val pipe = PullPipe(source)
-        val sink = pipe.getTextReadable()
-
-        source.writeGlyph(CodePoint(234))
-
-        source.close()
-        println("Sink-isClosed ${sink.isClosed}")
-        println("Sink-isPiped ${sink.isPiped}")
-        println("Source-isClosed ${source.isClosed}")
-        println("Source-isPiped ${source.isPiped}")
-    }
-
-    @Test
-    fun testPullCloseSinkManual() {
-        val pump = StringReader("")
-        val source = TextSource(pump)
-        val pipe = PullPipe(source)
-        val sink = pipe.getTextReadable()
-
-        sink.close()
-        println("Sink-isClosed ${sink.isClosed}")
-        println("Sink-isPiped ${sink.isPiped}")
-        println("Source-isClosed ${source.isClosed}")
-        println("Source-isPiped ${source.isPiped}")
-    }
-
-    @Test
-    fun testPullCloseSinkForce() {
-        val pump = StringReader("")
-        val source = TextSource(pump)
-        val pipe = PullPipe(source)
-        val sink = pipe.getTextReadable()
-
-        pipe.close()
-        println("Sink-isClosed ${sink.isClosed}")
-        println("Sink-isPiped ${sink.isPiped}")
-        println("Source-isClosed ${source.isClosed}")
-        println("Source-isPiped ${source.isPiped}")
     }
 }

@@ -12,12 +12,19 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.pipe.pull
 
-public interface Reader {
+import org.angproj.aux.io.TextReadable
+import org.angproj.aux.utf.CodePoint
+import org.angproj.aux.utf.Glyph
+import org.angproj.aux.util.Reify
 
-    /**
-     * The implementation must set the segments limit value to the same as the returning value.
-     * */
-    public fun read(data: Segment): Int
+public class TextSink(
+    pipe: PullPipe<TextType>
+): AbstractSink<TextType>(pipe), TextType, TextReadable {
+
+    override fun readGlyph(): CodePoint = Glyph.readStart {
+        if(pos == seg.limit) pullSegment<Reify>()
+        seg.getByte(pos++)
+    }
 }

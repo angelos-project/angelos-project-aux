@@ -12,12 +12,9 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.pipe.pull
 
-public interface Reader {
+import org.angproj.aux.buf.Pump
+import org.angproj.aux.io.PumpReader
 
-    /**
-     * The implementation must set the segments limit value to the same as the returning value.
-     * */
-    public fun read(data: Segment): Int
-}
+public class BinarySource(pump: PumpReader = Pump): AbstractSource<BinaryType>(pump), BinaryType
