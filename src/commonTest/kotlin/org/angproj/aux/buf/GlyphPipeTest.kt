@@ -18,10 +18,8 @@ import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.PumpWriter
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.pipe.TextSource
-import org.angproj.aux.pipe.PullPipe
-import org.angproj.aux.pipe.PushPipe
-import org.angproj.aux.pipe.TextSink
+import org.angproj.aux.pipe.*
+import org.angproj.aux.utf.CodePoint
 import org.angproj.aux.utf.readGlyphAt
 import org.angproj.aux.utf.writeGlyphAt
 import org.angproj.aux.util.DataBuffer
@@ -30,6 +28,7 @@ import org.angproj.aux.util.chunkLoop
 import kotlin.math.min
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.test.assertFailsWith
 import kotlin.time.measureTime
 
 const val latin = """
@@ -145,6 +144,22 @@ const val chinese = """
 戦六利統既鎌江陵機全円株。感金覚品賞変挙上万合参真警特提。
 """
 
+data class PullConst<T: PipeType>(
+    val pump: PumpReader,
+    val sink: TextSink,
+    val pipe: PullPipe<T>,
+    val source: TextSource,
+) {
+    companion object {
+        fun createText(pump: PumpReader): PullConst<TextType> {
+            val source = TextSource(pump)
+            val pipe = PullPipe(source)
+            val sink = pipe.getTextReadable()
+            return PullConst(pump, sink, pipe, source)
+        }
+    }
+}
+
 class StringReader(text: String) : PumpReader {
     val data = DataBuffer(text.encodeToByteArray())
 
@@ -158,6 +173,22 @@ class StringReader(text: String) : PumpReader {
             data.setByte(it, this.data.readByte())
         }
         return index
+    }
+}
+
+data class PushConst<T: PipeType>(
+    val pump: PumpWriter,
+    val sink: TextSink,
+    val pipe: PushPipe<T>,
+    val source: TextSource,
+) {
+    companion object {
+        fun createText(pump: PumpWriter): PushConst<TextType> {
+            val sink = TextSink(pump)
+            val pipe = PushPipe(sink)
+            val source = pipe.getTextWritable()
+            return PushConst(pump, sink, pipe, source)
+        }
     }
 }
 
@@ -197,7 +228,7 @@ class GlyphPipeTest {
                 pos += canvas.writeGlyphAt(pos, cp)
             } while(pos < canvas.size)
         }
-        //readable.close()
+        readable.close()
         println(time)
         assertContentEquals(copy, canvas)
     }
@@ -227,30 +258,54 @@ class GlyphPipeTest {
 
     @Test
     fun testPushCloseSinkManual() {
-        val pump = StringWriter(byteArrayOf())
-        val sink = TextSink(pump)
-        val pipe = PushPipe(sink)
-        val source = pipe.getTextWritable()
+        val text = (latin + greek + chinese).encodeToByteArray()
+        val canvas = ByteArray(text.size)
 
-        sink.close()
-        println("Sink-isClosed ${sink.isClosed}")
-        println("Sink-isPiped ${sink.isPiped}")
-        println("Source-isClosed ${source.isClosed}")
-        println("Source-isPiped ${source.isPiped}")
+        val pipeCtx = PushConst.createText(StringWriter(canvas))
+        var pos = 0
+        var closed = false
+
+        assertFailsWith<IllegalStateException> {
+            do {
+                val cp = text.readGlyphAt(pos)
+                pos += cp.sectionTypeOf().size
+                if(!closed && pos > text.size / 2) {
+                    println("Closed sink at $pos")
+                    pipeCtx.sink.close()
+                    closed = true
+                }
+                pipeCtx.source.writeGlyph(cp)
+            } while(pos < text.size)
+        }
+
+        pipeCtx.source.close()
+        println(pos)
     }
 
     @Test
     fun testPushCloseSourceManual() {
-        val pump = StringWriter(byteArrayOf())
-        val sink = TextSink(pump)
-        val pipe = PushPipe(sink)
-        val source = pipe.getTextWritable()
+        val text = (latin + greek + chinese).encodeToByteArray()
+        val canvas = ByteArray(text.size)
 
-        source.close()
-        println("Sink-isClosed ${sink.isClosed}")
-        println("Sink-isPiped ${sink.isPiped}")
-        println("Source-isClosed ${source.isClosed}")
-        println("Source-isPiped ${source.isPiped}")
+        val pipeCtx = PushConst.createText(StringWriter(canvas))
+        var pos = 0
+        var closed = false
+
+        assertFailsWith<IllegalStateException> {
+            do {
+                val cp = text.readGlyphAt(pos)
+                pos += cp.sectionTypeOf().size
+                if(!closed && pos > text.size / 2) {
+                    println("Closed source at $pos")
+                    pipeCtx.source.close()
+                    closed = true
+                }
+                pipeCtx.source.writeGlyph(cp)
+            } while(pos < text.size)
+        }
+
+        pipeCtx.source.close()
+        println(pos)
     }
 
     @Test
@@ -259,6 +314,8 @@ class GlyphPipeTest {
         val sink = TextSink(pump)
         val pipe = PushPipe(sink)
         val source = pipe.getTextWritable()
+
+        sink.readGlyph()
 
         pipe.close()
         println("Sink-isClosed ${sink.isClosed}")
@@ -273,6 +330,8 @@ class GlyphPipeTest {
         val source = TextSource(pump)
         val pipe = PullPipe(source)
         val sink = pipe.getTextReadable()
+
+        source.writeGlyph(CodePoint(234))
 
         source.close()
         println("Sink-isClosed ${sink.isClosed}")

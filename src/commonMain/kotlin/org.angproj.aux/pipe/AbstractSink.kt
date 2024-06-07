@@ -37,8 +37,4 @@ public abstract class AbstractSink<T: PipeType>(
         seg = pipe.pop()
         pos = 0
     }
-
-    override fun dispose() {
-        if(!seg.isNull()) seg.close()
-    }
 }

@@ -15,6 +15,7 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.util.Once
+import org.angproj.aux.util.Reifiable
 
 @OptIn(ExperimentalStdlibApi::class)
 public abstract class AbstractPipePoint<T: PipeType>: AutoCloseable {
@@ -40,6 +41,11 @@ public abstract class AbstractPipePoint<T: PipeType>: AutoCloseable {
             pipe.close()
         }
         else -> Unit
+    }
+
+    internal inline fun <reified E> isNotClosed(block: () -> E): E {
+        check(!_closed) { "Pipe is closed!" }
+        return block()
     }
 
     internal fun connect(pipe: AbstractPipe<*>) {

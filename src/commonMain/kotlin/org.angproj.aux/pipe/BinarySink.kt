@@ -17,6 +17,7 @@ package org.angproj.aux.pipe
 import org.angproj.aux.buf.Pump
 import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.isNull
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 import kotlin.math.min
@@ -74,4 +75,8 @@ public class BinarySink(
     override fun readFloat(): Float = Float.fromBits(withSegmentInt<Reify>())
 
     override fun readDouble(): Double = Double.fromBits(withSegmentLong<Reify>())
+
+    override fun dispose() {
+        if(!seg.isNull()) seg.close()
+    }
 }
