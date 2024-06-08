@@ -29,17 +29,25 @@ public abstract class AbstractSink<T: PipeType>(protected val pipe: PullPipe<T>)
         pullSegment<Reify>()
     }
 
-    protected fun<reified : Reifiable> pullSegment() {
-        if(pipe.isExhausted<Reify>()) pipe.tap<Reify>()
+    private fun<reified : Reifiable> nextSegment() {
         pipe.recycle<Reify>(seg)
         seg = pipe.pop<Reify>()
         pos = 0
-        if(seg.isNull()) close()
+    }
+
+    protected fun<reified : Reifiable> pullSegment() {
+        if(pipe.isExhausted<Reify>()) pipe.tap<Reify>()
+        nextSegment<Reify>()
+        if(seg.isNull()) _open = false
     }
 
     override fun isOpen(): Boolean = _open
 
     override fun close() {
-        _open = false
+        if(_open) {
+            pipe.dispose<Reify>()
+            nextSegment<Reify>()
+            _open = false
+        }
     }
 }

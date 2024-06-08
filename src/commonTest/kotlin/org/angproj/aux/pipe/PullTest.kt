@@ -24,6 +24,7 @@ import org.angproj.aux.util.chunkLoop
 import kotlin.math.min
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.test.assertFailsWith
 import kotlin.time.measureTime
 
 const val latin = """
@@ -191,8 +192,11 @@ class PullTest {
                 pos += canvas.writeGlyphAt(pos, cp)
             } while(pos < canvas.size)
         }
-        readable.close()
+        //
         println(time)
         assertContentEquals(copy, canvas)
+        assertFailsWith<UnsupportedOperationException> { readable.readGlyph() }
+        readable.close()
+        assertFailsWith<UnsupportedOperationException> { readable.readGlyph() }
     }
 }

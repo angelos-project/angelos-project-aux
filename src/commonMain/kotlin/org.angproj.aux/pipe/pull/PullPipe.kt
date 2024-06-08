@@ -25,9 +25,9 @@ import org.angproj.aux.util.Reify
 import kotlin.math.min
 
 public class PullPipe<T: PipeType>(
-    internal val src: AbstractSource<T>,
-    public val segSize: DataSize = DataSize._1K,
-    public val bufSize: DataSize = DataSize._4K
+    private val src: AbstractSource<T>,
+    private val segSize: DataSize = DataSize._1K,
+    private val bufSize: DataSize = DataSize._4K
 ) {
 
     internal val buf: MutableList<Segment> = mutableListOf()
@@ -36,13 +36,13 @@ public class PullPipe<T: PipeType>(
 
     public fun<reified : Reifiable> isExhausted(): Boolean = buf.isEmpty()
 
+    public fun<reified : Reifiable> dispose() { while(buf.isNotEmpty()) recycle<Reify>(buf.pop<Reify>()) }
+
     /**
      * Will tap up data as long there is leftover and will quit when the segment is not fully filled.
      * */
     public fun<reified : Reifiable> tap() {
-        check(src.isOpen()) { "Buffer underflow!." }
         var leftover = bufSize.size - totSize<Reify>()
-
         if(leftover > 0) do {
             val seg = allocate<Reify>(min(segSize.size, leftover))
             src.squeeze<Reify>(seg)
@@ -68,7 +68,7 @@ public class PullPipe<T: PipeType>(
     private fun<reified : Reifiable> MutableList<Segment>.pop(): Segment = when {
         isEmpty() -> NullObject.segment
         last().limit == 0 -> {
-            removeLast().close()
+            recycle<Reify>(removeLast())
             NullObject.segment
         }
         else -> removeLast()
