@@ -14,54 +14,34 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
+import org.angproj.aux.io.*
+import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.Reify
 
 public class PushPipe<T: PipeType>(
-    sink: AbstractSink<T>,
-    bufferSize: DataSize = DataSize._4K
-): AbstractPipe<T>(
-    applySource(sink),
-    sink,
-    bufferSize
-), PushMode {
+    private val sink: PumpSink<T>,
+    segSize: DataSize = DataSize._1K,
+    bufSize: DataSize = DataSize._4K
+): AbstractPipe<T>(segSize, bufSize) {
 
-    override val buf: MutableList<Segment> = mutableListOf()
+    public fun<reified : Reifiable> isCrammed(): Boolean = totSize<Reify>() >= bufSize.size
 
     /**
      * Will drain all data.
      * */
-    override fun drain() {
+    public fun<reified : Reifiable> drain() {
         do {
-            val seg = buf.pop()
-            sink.absorb(seg)
-            seg.close()
-        } while(buf.isNotEmpty())
+            val seg = buf.pop<Reify>()
+            sink.absorb<Reify>(seg)
+            recycle<Reify>(seg)
+        } while(buf.isNotEmpty() && sink.isOpen())
     }
 
-    public fun getTextWritable(): TextSource = when(src) {
-        is TextSource -> src //.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
-        else -> throw UnsupportedOperationException("Doesn't support text!")
-    }
+    public fun<reified : Reifiable> push(seg: Segment): Unit = buf.push<Reify>(seg)
 
-    public fun getPackageWritable(): PackageSource = when(src) {
-        is PackageSource -> src//.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
-        else -> throw UnsupportedOperationException("Doesn't support package!")
-    }
-
-    public fun getBinaryWritable(): BinarySource = when(src) {
-        is BinarySource -> src//.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
-        else -> throw UnsupportedOperationException("Doesn't support binary!")
-    }
-
-    internal companion object {
-        fun<T: PipeType> applySource(sink: AbstractSink<T>): AbstractSource<out PipeType> {
-            return when(sink) {
-                is TextType -> TextSource()
-                is BinaryType -> BinarySource()
-                is PackageType -> PackageSource()
-                else -> { error("Doesn't work") }
-            }
-        }
-    }
+    public fun<reified : Reifiable> isSinkOpen(): Boolean = sink.isOpen()
 }
+
+public fun PushPipe<TextType>.getSource(): TextSource = TextSource(this)
+
+public fun PushPipe<BinaryType>.getSource(): BinarySource = BinarySource(this)

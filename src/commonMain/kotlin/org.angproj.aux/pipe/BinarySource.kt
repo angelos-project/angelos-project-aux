@@ -14,54 +14,68 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.buf.Pump
-import org.angproj.aux.io.BinaryReadable
-import org.angproj.aux.io.PumpReader
+import org.angproj.aux.io.BinaryWritable
+import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.Reify
+import kotlin.math.min
 
-public class BinarySource(
-    pump: PumpReader = Pump
-): AbstractSource<BinaryType>(pump), BinaryType, BinaryReadable {
-    override fun dispose() {
-        TODO("Not yet implemented")
+public class BinarySource(pipe: PushPipe<BinaryType>): AbstractSource<BinaryType>(pipe), BinaryType, BinaryWritable {
+
+    private inline fun <reified : Reifiable> storeToSegment(length: Int, maxIter: Int): Long {
+        var value = 0L
+        repeat(min(length, maxIter)) {
+            if(pos == seg.limit && _open) pushSegment<Reify>()
+            ((value shl 8) or (seg.getByte(pos++).toLong() and 0xff)).also { value = it }
+        }
+        return value
     }
 
-    override fun readByte(): Byte {
-        TODO("Not yet implemented")
+    private inline fun <reified : Reifiable> withSegmentByte(value: Byte) {
+        when(seg.limit - pos < TypeSize.byte) {
+            true -> seg.setByte(pos, value).also { pos += TypeSize.byte }
+            else -> storeToSegment<Reify>(TypeSize.byte, TypeSize.byte).toByte()
+        }
     }
 
-    override fun readUByte(): UByte {
-        TODO("Not yet implemented")
+    private inline fun <reified : Reifiable> withSegmentShort(value: Short) {
+        when(seg.limit - pos < TypeSize.short) {
+            true -> seg.setShort(pos, value).also { pos += TypeSize.short }
+            else -> storeToSegment<Reify>(TypeSize.short, TypeSize.short).toShort()
+        }
     }
 
-    override fun readShort(): Short {
-        TODO("Not yet implemented")
+    private inline fun <reified : Reifiable> withSegmentInt(value: Int) {
+        when(seg.limit - pos < TypeSize.int) {
+            true -> seg.setInt(pos, value).also { pos += TypeSize.int }
+            else -> storeToSegment<Reify>(TypeSize.int, TypeSize.int).toInt()
+        }
     }
 
-    override fun readUShort(): UShort {
-        TODO("Not yet implemented")
+    private inline fun <reified : Reifiable> withSegmentLong(value: Long) {
+        when(seg.limit - pos < TypeSize.long) {
+            true -> seg.setLong(pos, value).also { pos += TypeSize.long }
+            else -> storeToSegment<Reify>(TypeSize.long, TypeSize.long)
+        }
     }
 
-    override fun readInt(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun writeByte(value: Byte): Unit = withSegmentByte<Reify>(value)
 
-    override fun readUInt(): UInt {
-        TODO("Not yet implemented")
-    }
+    override fun writeUByte(value: UByte): Unit = withSegmentByte<Reify>(value.toByte())
 
-    override fun readLong(): Long {
-        TODO("Not yet implemented")
-    }
+    override fun writeShort(value: Short): Unit = withSegmentShort<Reify>(value)
 
-    override fun readULong(): ULong {
-        TODO("Not yet implemented")
-    }
+    override fun writeUShort(value: UShort): Unit = withSegmentShort<Reify>(value.toShort())
 
-    override fun readFloat(): Float {
-        TODO("Not yet implemented")
-    }
+    override fun writeInt(value: Int): Unit = withSegmentInt<Reify>(value)
 
-    override fun readDouble(): Double {
-        TODO("Not yet implemented")
-    }
+    override fun writeUInt(value: UInt): Unit = withSegmentInt<Reify>(value.toInt())
+
+    override fun writeLong(value: Long): Unit = withSegmentLong<Reify>(value)
+
+    override fun writeULong(value: ULong): Unit = withSegmentLong<Reify>(value.toLong())
+
+    override fun writeFloat(value: Float): Unit = withSegmentInt<Reify>(value.toBits())
+
+    override fun writeDouble(value: Double): Unit = withSegmentLong<Reify>(value.toBits())
 }

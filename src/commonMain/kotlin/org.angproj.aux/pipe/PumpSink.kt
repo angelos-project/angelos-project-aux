@@ -12,20 +12,19 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pipe.pull
+package org.angproj.aux.pipe
 
-import org.angproj.aux.buf.Pump
 import org.angproj.aux.io.*
 import org.angproj.aux.util.Reifiable
 
-public abstract class AbstractSource<T: PipeType>(
-    protected val pump: PumpReader = Pump
-): Source, PipeType {
+public class PumpSink<T: PipeType>(
+    private val pump: PumpWriter
+): Sink, PipeType  {
     private var _open: Boolean = true
 
-    public fun<reified : Reifiable> squeeze(seg: Segment): Int {
+    public fun<reified : Reifiable> absorb(seg: Segment): Int {
         val size = seg.limit
-        return pump.read(seg).also { if (it < size || it == 0) close() }
+        return pump.write(seg).also { if (it < size || it == 0) close() }
     }
 
     override fun isOpen(): Boolean = _open

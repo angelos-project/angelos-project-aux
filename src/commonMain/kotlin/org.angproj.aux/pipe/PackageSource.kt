@@ -14,11 +14,10 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.buf.Pump
-import org.angproj.aux.io.PumpReader
+import org.angproj.aux.io.PackageWritable
 
-public class PackageSource(pump: PumpReader = Pump): AbstractSource<PackageType>(pump), PackageType {
-    override fun dispose() {
-        TODO("Not yet implemented")
-    }
+public class PackageSource(
+    pipe: PushPipe<PackageType>
+): AbstractSource<PackageType>(pipe), PackageType, PackageWritable {
+
 }

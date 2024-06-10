@@ -14,27 +14,45 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.buf.Pump
 import org.angproj.aux.io.*
 import org.angproj.aux.util.NullObject
+import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.Reify
 
 public abstract class AbstractSink<T: PipeType>(
-    protected val pump: PumpWriter = Pump
-): AbstractPipePoint<T>(), Sink, PipeType {
+    protected val pipe: PullPipe<T>
+) : Sink, PipeType {
     protected var pos: Int = 0
     protected var seg: Segment = NullObject.segment
 
-    internal fun absorb(seg: Segment, size: Int = seg.size): Int = pump.write(seg, size)
+    protected var _open: Boolean = true
 
-    /**
-     * Loads a segment from the outside, should only be used by PullPipe class.
-     * */
-    internal fun loadSegment(): Unit = pullSegment()
+    init {
+        pullSegment<Reify>()
+    }
 
-    protected fun pullSegment() {
-        if(pipe.isExhausted) pipe.tap()
-        seg.close()
-        seg = pipe.pop()
+    private fun<reified : Reifiable> nextSegment(open: Boolean = true) {
+        pipe.recycle<Reify>(seg)
+        seg = when(open){
+            true -> pipe.pop<Reify>()
+            else -> NullObject.segment
+        }
         pos = 0
+    }
+
+    protected fun<reified : Reifiable> pullSegment() {
+        if(pipe.isExhausted<Reify>()) pipe.tap<Reify>()
+        nextSegment<Reify>()
+        if(seg.isNull()) _open = false
+    }
+
+    override fun isOpen(): Boolean = _open
+
+    override fun close() {
+        if(_open) {
+            pipe.dispose<Reify>()
+            nextSegment<Reify>(false)
+            _open = false
+        }
     }
 }

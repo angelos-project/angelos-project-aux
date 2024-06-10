@@ -14,29 +14,17 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.buf.Pump
-import org.angproj.aux.io.PumpWriter
 import org.angproj.aux.io.TextReadable
-import org.angproj.aux.io.isNull
 import org.angproj.aux.utf.CodePoint
 import org.angproj.aux.utf.Glyph
+import org.angproj.aux.util.Reify
 
 public class TextSink(
-    pump: PumpWriter = Pump
-): AbstractSink<TextType>(pump), TextType, TextReadable {
+    pipe: PullPipe<TextType>
+): AbstractSink<TextType>(pipe), TextType, TextReadable {
 
-    override fun readGlyph(): CodePoint = isNotClosed {
-        Glyph.readStart {
-            if(pos == seg.limit) pullSegment()
-            seg.getByte(pos++)
-        }
-    }
-
-    override fun dispose() {
-        when(pipe) {
-            is PushPipe -> Unit
-            is PullPipe -> seg.also { if(!it.isNull()) it.close() }
-            else -> error("Cannot dispose undefined pipe class.")
-        }
+    override fun readGlyph(): CodePoint = Glyph.readStart {
+        if(pos == seg.limit && _open) pullSegment<Reify>()
+        seg.getByte(pos++)
     }
 }

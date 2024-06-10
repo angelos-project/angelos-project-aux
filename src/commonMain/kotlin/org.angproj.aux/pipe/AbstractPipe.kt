@@ -14,71 +14,40 @@
  */
 package org.angproj.aux.pipe
 
+import org.angproj.aux.io.Bytes
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.segment
 import org.angproj.aux.util.NullObject
+import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.Reify
 
 public abstract class AbstractPipe<T: PipeType>(
-    protected val src: AbstractSource<out PipeType>,
-    protected val sink: AbstractSink<out PipeType>,
-    public val bufferSize: DataSize,
-): Pipe, PipeMode {
+    public val segSize: DataSize = DataSize._1K,
+    public val bufSize: DataSize = DataSize._4K
+) {
+    internal val buf: MutableList<Segment> = mutableListOf()
 
-    public val segmentSize: DataSize = DataSize._1K
+    public fun<reified : Reifiable> totSize(): Int = buf.sumOf { it.size }
 
-    protected abstract val buf: MutableList<Segment>
-    protected val usedSize: Int
-        get() = buf.sumOf { it.size }
+    public fun<reified : Reifiable> dispose() { while(buf.isNotEmpty()) recycle<Reify>(buf.pop<Reify>()) }
 
-    public val isExhausted: Boolean
-        get() = buf.isEmpty()
+    public fun<reified : Reifiable> allocate(size: Int): Segment = Bytes(size)
 
-    public val isCrammed: Boolean
-        get() = usedSize >= bufferSize.size
-
-    init {
-        src.connect(this)
-        sink.connect(this)
-    }
-
-    /**
-     * Draining should be done by a Source in a PushPipe, it forces the sink to use up the buffer,
-     * or 2, forces the sink to finish and close up tidily.
-     * */
-    internal open fun drain() { throw UnsupportedOperationException("Can not drain.") }
-
-    /**
-     * Tapping should be done by a Sink in a PullPipe, it forces the source to fill up the buffer,
-     * or 2, forces the source to complete and finish.
-     * */
-    internal open fun tap() { throw UnsupportedOperationException("Can not tap.") }
-
-    internal fun pop(): Segment = buf.pop()
-    internal fun push(seg: Segment) = buf.push(seg)
-
-    override fun close() {
-        println("Close: ${this::class.qualifiedName}")
-        if(!src.isClosed)
-            src.close()
-        if(!sink.isClosed)
-            sink.close()
-    }
+    public fun<reified : Reifiable> recycle(seg: Segment) { seg.close() }
 
     /**
      * Adds FIFO push abilities to the List of Segment.
      * */
-    public fun MutableList<Segment>.push(seg: Segment) {
-        this.add(0, seg)
-    }
+    protected fun<reified : Reifiable> MutableList<Segment>.push(seg: Segment) { this.add(0, seg) }
 
     /**
      * Adds FIFO pop abilities to the List of Segment
      * */
-    public fun MutableList<Segment>.pop(): Segment = when {
+    protected fun<reified : Reifiable> MutableList<Segment>.pop(): Segment = when {
         isEmpty() -> NullObject.segment
         last().limit == 0 -> {
-            removeLast().close()
+            recycle<Reify>(removeLast())
             NullObject.segment
         }
         else -> removeLast()

@@ -12,7 +12,9 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pipe.pull
+package org.angproj.aux.pipe
 
-public sealed interface PipeType {
+public interface Close {
+    public fun isOpen(): Boolean
+    public fun close()
 }

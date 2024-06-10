@@ -15,5 +15,5 @@
 package org.angproj.aux.pipe
 
 @OptIn(ExperimentalStdlibApi::class)
-public interface Pipe: AutoCloseable, PipeMode {
+public interface Pipe: AutoCloseable {
 }

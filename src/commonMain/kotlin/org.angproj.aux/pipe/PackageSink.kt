@@ -14,12 +14,10 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.buf.Pump
-import org.angproj.aux.io.Segment
+import org.angproj.aux.io.PackageReadable
 
-public class PackageSink(pump: Pump = Pump): AbstractSink<PackageType>(pump), PackageType {
+public class PackageSink(
+    pipe: PullPipe<PackageType>
+): AbstractSink<PackageType>(pipe), PackageType, PackageReadable {
 
-    override fun dispose() {
-        TODO("Not yet implemented")
-    }
 }

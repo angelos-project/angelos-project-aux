@@ -14,30 +14,56 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.buf.Pump
-import org.angproj.aux.io.*
+import org.angproj.aux.io.Segment
+import org.angproj.aux.io.isNull
+import org.angproj.aux.io.segment
 import org.angproj.aux.util.NullObject
+import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.Reify
 
 public abstract class AbstractSource<T: PipeType>(
-    protected val pump: PumpReader = Pump
-): AbstractPipePoint<T>(), Source, PipeType {
+    protected val pipe: PushPipe<T>
+): Source, PipeType {
     protected var pos: Int = 0
     protected var seg: Segment = NullObject.segment
 
-    internal fun squeeze(seg: Segment): Int = pump.read(seg)
+    protected var _open: Boolean = true
 
-    /**
-     * Stuffs a segment to the outside, should only be used by PushPipe class.
-     * */
-    internal fun stuffSegment(): Unit = pushSegment()
+    init {
+        nextSegment<Reify>(true)
+    }
 
-    protected fun pushSegment() {
-        if(pipe.isCrammed) pipe.drain()
-        if(!seg.isNull()) {
-            seg.limit = pos
-            pipe.push(seg)
+    private fun<reified : Reifiable> nextSegment(open: Boolean) {
+        seg = when(open){
+            true -> pipe.allocate<Reify>(pipe.segSize.size)
+            else -> NullObject.segment
         }
-        seg = Bytes(pipe.segmentSize.size)
         pos = 0
+    }
+
+    protected fun<reified : Reifiable>pushSegment() {
+        if(!seg.isNull()) {
+            if(pipe.isSinkOpen<Reify>() && pipe.isCrammed<Reify>()) pipe.drain<Reify>()
+            pipe.push<Reify>(seg)
+            nextSegment<Reify>(pipe.isSinkOpen<Reify>())
+        }
+    }
+
+    public fun flush() {
+        pushSegment<Reify>()
+        pipe.drain<Reify>()
+    }
+
+    override fun isOpen(): Boolean = _open
+
+    override fun close() {
+        if(_open) {
+            pipe.dispose<Reify>()
+            if(!seg.isNull()) {
+                pipe.recycle<Reify>(seg)
+                nextSegment<Reify>(false)
+            }
+            _open = false
+        }
     }
 }

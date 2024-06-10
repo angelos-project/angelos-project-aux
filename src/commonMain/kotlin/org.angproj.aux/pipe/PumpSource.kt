@@ -14,5 +14,22 @@
  */
 package org.angproj.aux.pipe
 
-public interface PullMode: PipeMode {
+import org.angproj.aux.io.*
+import org.angproj.aux.util.Reifiable
+
+public class PumpSource<T: PipeType>(
+    private val pump: PumpReader
+): Source, PipeType  {
+    private var _open: Boolean = true
+
+    public fun<reified : Reifiable> squeeze(seg: Segment): Int {
+        val size = seg.limit
+        return pump.read(seg).also { if (it < size || it == 0) close() }
+    }
+
+    override fun isOpen(): Boolean = _open
+
+    override fun close() {
+        _open = false
+    }
 }

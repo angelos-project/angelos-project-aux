@@ -14,57 +14,36 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.io.*
+import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.Segment
+import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.Reify
 import kotlin.math.min
 
 public class PullPipe<T: PipeType>(
-    src: AbstractSource<T>,
-    bufferSize: DataSize = DataSize._4K
-): AbstractPipe<T>(
-    src,
-    applySink(src),
-    bufferSize
-), PullMode {
+    private val src: PumpSource<T>,
+    segSize: DataSize = DataSize._1K,
+    bufSize: DataSize = DataSize._4K
+): AbstractPipe<T>(segSize, bufSize) {
 
-    override val buf: MutableList<Segment> = mutableListOf()
+    public fun<reified : Reifiable> isExhausted(): Boolean = buf.isEmpty()
 
     /**
      * Will tap up data as long there is leftover and will quit when the segment is not fully filled.
      * */
-    override fun tap() {
-        var leftover = bufferSize.size - usedSize
-
+    public fun<reified : Reifiable> tap() {
+        var leftover = bufSize.size - totSize<Reify>()
         if(leftover > 0) do {
-            val seg = Bytes(min(segmentSize.size, leftover))
-            src.squeeze(seg)
+            val seg = allocate<Reify>(min(segSize.size, leftover))
+            src.squeeze<Reify>(seg)
             leftover -= seg.limit
-            buf.push(seg)
+            buf.push<Reify>(seg)
         } while(seg.limit == seg.size && leftover > 0)
     }
 
-    public fun getTextReadable(): TextSink = when(sink) {
-        is TextSink -> sink.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
-        else -> throw UnsupportedOperationException("Doesn't support text!")
-    }
-
-    public fun getPackageReadable(): PackageSink = when(sink) {
-        is PackageSink -> sink.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
-        else -> throw UnsupportedOperationException("Doesn't support package!")
-    }
-
-    public fun getBinaryReadable(): BinarySink = when(sink) {
-        is BinarySink -> sink.also { if(buf.isEmpty()) tap() }.also { it.loadSegment() }
-        else -> throw UnsupportedOperationException("Doesn't support binary!")
-    }
-
-    internal companion object {
-        fun<T: PipeType> applySink(src: AbstractSource<T>): AbstractSink<out PipeType> {
-            return when(src) {
-                is TextType -> TextSink()
-                is BinaryType -> BinarySink()
-                is PackageType -> PackageSink()
-                else -> { error("Doesn't work") }
-            }
-        }
-    }
+    public fun<reified : Reifiable> pop(): Segment = buf.pop<Reify>()
 }
+
+public fun PullPipe<TextType>.getSink(): TextSink = TextSink(this)
+
+public fun PullPipe<BinaryType>.getSink(): BinarySink = BinarySink(this)

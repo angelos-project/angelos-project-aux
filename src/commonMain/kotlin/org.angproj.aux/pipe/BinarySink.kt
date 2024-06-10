@@ -14,24 +14,21 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.buf.Pump
 import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.io.isNull
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 import kotlin.math.min
 
 public class BinarySink(
-    pump: Pump = Pump
-): AbstractSink<BinaryType>(pump), BinaryType, BinaryReadable {
+    pipe: PullPipe<BinaryType>
+): AbstractSink<BinaryType>(pipe), BinaryType, BinaryReadable {
 
     private inline fun <reified : Reifiable> buildFromSegment(length: Int, maxIter: Int): Long {
         var value = 0L
         repeat(min(length, maxIter)) {
-            if(pos == seg.limit) pullSegment()
-            ((value shl 8) or (seg.getByte(pos).toLong() and 0xff)).also { value = it }
-            pos++
+            if(pos == seg.limit) pullSegment<Reify>()
+            ((value shl 8) or (seg.getByte(pos++).toLong() and 0xff)).also { value = it }
         }
         return value
     }
@@ -75,8 +72,4 @@ public class BinarySink(
     override fun readFloat(): Float = Float.fromBits(withSegmentInt<Reify>())
 
     override fun readDouble(): Double = Double.fromBits(withSegmentLong<Reify>())
-
-    override fun dispose() {
-        if(!seg.isNull()) seg.close()
-    }
 }

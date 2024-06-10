@@ -17,8 +17,7 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.pipe.BinarySource
-import org.angproj.aux.pipe.PullPipe
+import org.angproj.aux.pipe.*
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.Reify
 import org.angproj.aux.util.chunkLoop
@@ -81,7 +80,7 @@ class BinaryReader(data: ByteArray) : PumpReader {
 class BinaryPipeTest {
     @Test
     fun testBuildTextPipe() {
-        val readable = PullPipe(BinarySource(BinaryReader(theVeryFunData.encodeToByteArray()))).getBinaryReadable()
+        val readable = PullPipe(PumpSource<BinaryType>(BinaryReader(theVeryFunData.encodeToByteArray()))).getSink()
         println(readable.readLong())
     }
 

@@ -14,6 +14,5 @@
  */
 package org.angproj.aux.pipe
 
-@OptIn(ExperimentalStdlibApi::class)
-public interface Sink: AutoCloseable {
+public interface Sink: Close {
 }

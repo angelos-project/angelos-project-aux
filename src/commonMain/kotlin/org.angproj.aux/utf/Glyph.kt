@@ -114,10 +114,7 @@ public fun Byte.sequenceTypeOf(): SequenceType = SequenceType.qualify(this)
 
 public fun ByteArray.readGlyphAt(offset: Int): CodePoint {
     var pos = offset
-    return Glyph.readStart {
-        val octet = this[pos++]
-        octet
-    }
+    return Glyph.readStart { this[pos++] }
 }
 
 public fun ByteArray.writeGlyphAt(offset: Int, value: CodePoint): Int = value.sectionTypeOf().also{ secType ->

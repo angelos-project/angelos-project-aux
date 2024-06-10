@@ -12,11 +12,12 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pipe.pull
+package org.angproj.aux.pipe
 
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.pipe.*
 import org.angproj.aux.utf.writeGlyphAt
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.Reify
@@ -27,7 +28,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertFailsWith
 import kotlin.time.measureTime
 
-const val latin = """
+const val latinLL = """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer auctor nisi eu bibendum sodales. Integer dui nulla, 
 gravida sit amet laoreet in, ultricies quis risus. Praesent iaculis fermentum risus non placerat. Phasellus dictum 
 quis velit sed fermentum. Vestibulum bibendum ex vitae dolor mollis, vitae tincidunt orci porta. Donec elementum nisl 
@@ -63,7 +64,7 @@ Maecenas vehicula ligula ac orci sodales fermentum. Suspendisse vel enim in lacu
 Fusce volutpat hendrerit sapien ut mollis.
 """
 
-const val greek = """
+const val greekLL = """
 Ἐπειδὴ τὸν Ἰουδαίων πρὸς Ῥωμαίους πόλεμον συστάντα μέγιστον οὐ μόνον τῶν καθ' ἡμᾶς, σχεδὸν δὲ καὶ ὧν ἀκοῇ
 παρειλήφαμεν ἢ πόλεων πρὸς πόλεις ἢ ἐθνῶν ἔθνεσι συρραγέντων, οἱ μὲν οὐ παρατυχόντες τοῖς πράγμασιν, ἀλλ' ἀκοῇ
 συλλέγοντες εἰκαῖα καὶ ἀσύμφωνα διηγήματα σοφιστικῶς ἀναγράφουσιν, οἱ παραγενόμενοι δὲ ἢ κολακείᾳ τῇ πρὸς Ῥωμαίους 
@@ -98,7 +99,7 @@ const val greek = """
 πολιορκίαι χρόνον εἰς μετάνοιαν τῶν αἰτίων.
 """
 
-const val chinese = """
+const val chineseLL = """
 本格表世向駐供暮基造食四検内協案。山文提議負表崎何九被博特止点関通写覧馬。会出週朝野加交伊再謝神年拡員部禁辺。
 府構供投十隊済参国拐政意紛集癒夜治和。陸規地景何守谷困乱青購謝輸。同極価売現近題日稿売報革衛月塁両改。禁消情飯治刊読救南毎番五掲田夫意鈴。
 手新市要所由州時青拳数子。党詳半前象写鐘木亡情強万構図天報。🤪
@@ -140,27 +141,13 @@ const val chinese = """
 戦六利統既鎌江陵機全円株。感金覚品賞変挙上万合参真警特提。
 """
 
-/*data class PullConst<T: PipeType>(
-    val pump: PumpReader,
-    val sink: TextSink,
-    val pipe: PullPipe<T>,
-    val source: TextSource,
-) {
-    companion object {
-        fun createText(pump: PumpReader): PullConst<TextType> {
-            val source = TextSource(pump)
-            val pipe = PullPipe(source)
-            val sink = pipe.
-            return PullConst(pump, sink, pipe, source)
-        }
-    }
-}*/
-
-class StringReader(text: String) : PumpReader {
+class StringReader(text: String, private val half: Boolean = false) : PumpReader {
     val data = DataBuffer(text.encodeToByteArray())
 
     override fun read(data: Segment): Int {
         data.limit  = min(data.limit, this.data.remaining)
+
+        if(half) if (this.data.remaining < (this.data.size / 2)) data.limit /= 2
 
         var index = chunkLoop<Reify>(0, data.limit, TypeSize.long) {
             data.setLong(it, this.data.readLong())
@@ -180,22 +167,37 @@ class PullTest {
     @Test
     fun testStreamPull() {
 
-        val text = latin + greek + chinese
+        val text = latinLL + greekLL + chineseLL
         val copy = text.encodeToByteArray()
         val canvas = ByteArray(copy.size)
         var pos = 0
 
-        val readable = PullPipe(TextSource(StringReader(text))).getSink()
+        val readable = PullPipe(PumpSource<TextType>(StringReader(text))).getSink()
         val time = measureTime {
             do {
                 val cp = readable.readGlyph()
                 pos += canvas.writeGlyphAt(pos, cp)
             } while(pos < canvas.size)
         }
-        //
         println(time)
         assertContentEquals(copy, canvas)
         assertFailsWith<UnsupportedOperationException> { readable.readGlyph() }
+    }
+
+    @Test
+    fun testStreamPullClose() {
+
+        val text = latinLL + greekLL + chineseLL
+        val copy = text.encodeToByteArray()
+        val canvas = ByteArray(copy.size)
+        var pos = 0
+
+        val readable = PullPipe(PumpSource<TextType>(StringReader(text))).getSink()
+        do {
+            val cp = readable.readGlyph()
+            pos += canvas.writeGlyphAt(pos, cp)
+        } while(pos < canvas.size / 2)
+
         readable.close()
         assertFailsWith<UnsupportedOperationException> { readable.readGlyph() }
     }
