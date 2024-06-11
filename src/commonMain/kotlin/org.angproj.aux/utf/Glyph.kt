@@ -44,7 +44,7 @@ public object Glyph {
         }
     }
 
-    internal inline fun <reified : Reifiable> readFollowData(
+    internal inline fun <reified R: Reifiable> readFollowData(
         seqStart: SequenceType, codePoint: Int, readOctet: () -> Byte
     ): CodePoint {
         var value = codePoint
@@ -60,19 +60,19 @@ public object Glyph {
         return CodePoint(value)
     }
 
-    internal inline fun <reified : Reifiable>startOneOctetOf(codePoint: CodePoint): Byte = (
+    internal inline fun <reified R : Reifiable>startOneOctetOf(codePoint: CodePoint): Byte = (
             0B0000000_00000000_00000000_01111111 and codePoint.value).toByte()
 
-    internal inline fun <reified : Reifiable>startTwoOctetOf(codePoint: CodePoint): Byte = (
+    internal inline fun <reified R : Reifiable>startTwoOctetOf(codePoint: CodePoint): Byte = (
             (0B0000000_00000000_00000111_11000000 and codePoint.value shr 6) or -0B01000000).toByte()
 
-    internal inline fun <reified : Reifiable>startThreeOctetOf(codePoint: CodePoint): Byte = (
+    internal inline fun <reified R : Reifiable>startThreeOctetOf(codePoint: CodePoint): Byte = (
             (0B0000000_00000000_11110000_00000000 and codePoint.value shr 12) or -0B00100000).toByte()
 
-    internal inline fun <reified : Reifiable>startFourOctetOf(codePoint: CodePoint): Byte = (
+    internal inline fun <reified R : Reifiable>startFourOctetOf(codePoint: CodePoint): Byte = (
             (0B0000000_00011100_00000000_00000000 and codePoint.value shr 18) or -0B00010000).toByte()
 
-    internal inline fun <reified : Reifiable>startOctetOf(sequenceType: SequenceType, codePoint: CodePoint): Byte = when(sequenceType){
+    internal inline fun <reified R : Reifiable>startOctetOf(sequenceType: SequenceType, codePoint: CodePoint): Byte = when(sequenceType){
         SequenceType.START_ONE_LONG -> startOneOctetOf<Reify>(codePoint)
         SequenceType.START_TWO_LONG -> startTwoOctetOf<Reify>(codePoint)
         SequenceType.START_THREE_LONG -> startThreeOctetOf<Reify>(codePoint)
@@ -80,16 +80,16 @@ public object Glyph {
         else -> error ("Unsupported start data.")
     }
 
-    internal inline fun <reified : Reifiable>followThreeUpOctetOf(codePoint: CodePoint): Byte = (
+    internal inline fun <reified R : Reifiable>followThreeUpOctetOf(codePoint: CodePoint): Byte = (
             (0B0000000_00000011_11110000_00000000 and codePoint.value shr 12) or -0B10000000).toByte()
 
-    internal inline fun <reified : Reifiable>followTwoUpOctetOf(codePoint: CodePoint): Byte = (
+    internal inline fun <reified R : Reifiable>followTwoUpOctetOf(codePoint: CodePoint): Byte = (
             (0B0000000_00000000_00001111_11000000 and codePoint.value shr 6) or -0B10000000).toByte()
 
-    internal inline fun <reified : Reifiable>followLastOctetOf(codePoint: CodePoint): Byte = (
+    internal inline fun <reified R : Reifiable>followLastOctetOf(codePoint: CodePoint): Byte = (
             (0B0000000_00000000_00000000_00111111 and codePoint.value) or -0B10000000).toByte()
 
-    internal inline fun <reified : Reifiable>followOctetOf(sequenceType: SequenceType, codePoint: CodePoint, index: Int): Byte {
+    internal inline fun <reified R : Reifiable>followOctetOf(sequenceType: SequenceType, codePoint: CodePoint, index: Int): Byte {
         return when(sequenceType.size - index) {
             1 -> followLastOctetOf<Reify>(codePoint)
             2 -> followTwoUpOctetOf<Reify>(codePoint)

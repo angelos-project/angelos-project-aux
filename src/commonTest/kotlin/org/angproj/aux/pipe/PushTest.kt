@@ -141,7 +141,6 @@ const val chineseSH = """
 
 class StringWriter(data: ByteArray, private val half: Boolean = false) : PumpWriter {
     val data = DataBuffer(data)
-    var closed = false
 
     override fun write(data: Segment): Int {
         var length = min(data.limit, this.data.remaining)

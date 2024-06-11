@@ -15,21 +15,12 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.PumpReader
-import org.angproj.aux.io.PumpWriter
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.pipe.*
-import org.angproj.aux.utf.CodePoint
-import org.angproj.aux.utf.readGlyphAt
-import org.angproj.aux.utf.writeGlyphAt
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.Reify
 import org.angproj.aux.util.chunkLoop
 import kotlin.math.min
-import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertFailsWith
-import kotlin.time.measureTime
 
 const val latin = """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer auctor nisi eu bibendum sodales. Integer dui nulla, 

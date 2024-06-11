@@ -22,7 +22,7 @@ import kotlin.math.min
 
 public class BinarySource(pipe: PushPipe<BinaryType>): AbstractSource<BinaryType>(pipe), BinaryType, BinaryWritable {
 
-    private inline fun <reified : Reifiable> storeToSegment(length: Int, maxIter: Int): Long {
+    private inline fun <reified R : Reifiable> storeToSegment(length: Int, maxIter: Int): Long {
         var value = 0L
         repeat(min(length, maxIter)) {
             if(pos == seg.limit && _open) pushSegment<Reify>()
@@ -31,28 +31,28 @@ public class BinarySource(pipe: PushPipe<BinaryType>): AbstractSource<BinaryType
         return value
     }
 
-    private inline fun <reified : Reifiable> withSegmentByte(value: Byte) {
+    private inline fun <reified R : Reifiable> withSegmentByte(value: Byte) {
         when(seg.limit - pos < TypeSize.byte) {
             true -> seg.setByte(pos, value).also { pos += TypeSize.byte }
             else -> storeToSegment<Reify>(TypeSize.byte, TypeSize.byte).toByte()
         }
     }
 
-    private inline fun <reified : Reifiable> withSegmentShort(value: Short) {
+    private inline fun <reified R : Reifiable> withSegmentShort(value: Short) {
         when(seg.limit - pos < TypeSize.short) {
             true -> seg.setShort(pos, value).also { pos += TypeSize.short }
             else -> storeToSegment<Reify>(TypeSize.short, TypeSize.short).toShort()
         }
     }
 
-    private inline fun <reified : Reifiable> withSegmentInt(value: Int) {
+    private inline fun <reified R : Reifiable> withSegmentInt(value: Int) {
         when(seg.limit - pos < TypeSize.int) {
             true -> seg.setInt(pos, value).also { pos += TypeSize.int }
             else -> storeToSegment<Reify>(TypeSize.int, TypeSize.int).toInt()
         }
     }
 
-    private inline fun <reified : Reifiable> withSegmentLong(value: Long) {
+    private inline fun <reified R : Reifiable> withSegmentLong(value: Long) {
         when(seg.limit - pos < TypeSize.long) {
             true -> seg.setLong(pos, value).also { pos += TypeSize.long }
             else -> storeToSegment<Reify>(TypeSize.long, TypeSize.long)

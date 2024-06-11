@@ -33,22 +33,22 @@ public class BinarySink(
         return value
     }
 
-    private inline fun <reified : Reifiable> withSegmentByte(): Byte = when(seg.limit - pos < TypeSize.byte) {
+    private inline fun <reified R : Reifiable> withSegmentByte(): Byte = when(seg.limit - pos < TypeSize.byte) {
         true -> seg.getByte(pos).also { pos += TypeSize.byte }
         else -> buildFromSegment<Reify>(TypeSize.byte, TypeSize.byte).toByte()
     }
 
-    private inline fun <reified : Reifiable> withSegmentShort(): Short = when(seg.limit - pos < TypeSize.short) {
+    private inline fun <reified R : Reifiable> withSegmentShort(): Short = when(seg.limit - pos < TypeSize.short) {
         true -> seg.getShort(pos).also { pos += TypeSize.short }
         else -> buildFromSegment<Reify>(TypeSize.short, TypeSize.short).toShort()
     }
 
-    private inline fun <reified : Reifiable> withSegmentInt(): Int = when(seg.limit - pos < TypeSize.int) {
+    private inline fun <reified R : Reifiable> withSegmentInt(): Int = when(seg.limit - pos < TypeSize.int) {
         true -> seg.getInt(pos).also { pos += TypeSize.int }
         else -> buildFromSegment<Reify>(TypeSize.int, TypeSize.int).toInt()
     }
 
-    private inline fun <reified : Reifiable> withSegmentLong(): Long = when(seg.limit - pos < TypeSize.long) {
+    private inline fun <reified R : Reifiable> withSegmentLong(): Long = when(seg.limit - pos < TypeSize.long) {
         true -> seg.getLong(pos).also { pos += TypeSize.long }
         else -> buildFromSegment<Reify>(TypeSize.long, TypeSize.long)
     }
