@@ -15,14 +15,16 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 
 public class PushPipe<T: PipeType>(
+    memMgr: MemoryManager,
     private val sink: PumpSink<T>,
     segSize: DataSize = DataSize._1K,
     bufSize: DataSize = DataSize._4K
-): AbstractPipe<T>(segSize, bufSize) {
+): AbstractPipe<T>(segSize, bufSize, memMgr) {
 
     public fun<reified : Reifiable> isCrammed(): Boolean = totSize<Reify>() >= bufSize.size
 

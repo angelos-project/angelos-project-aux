@@ -17,6 +17,7 @@ package org.angproj.aux.pipe
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.mem.Default
 import org.angproj.aux.utf.writeGlyphAt
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.Reify
@@ -171,7 +172,8 @@ class PullTest {
         val canvas = ByteArray(copy.size)
         var pos = 0
 
-        val readable = PullPipe(PumpSource<TextType>(StringReader(text))).getSink()
+
+        val readable = Pipe.buildTextPullPipe(StringReader(text)) //PullPipe(Default, PumpSource<TextType>(StringReader(text))).getSink()
         val time = measureTime {
             do {
                 val cp = readable.readGlyph()
@@ -191,7 +193,7 @@ class PullTest {
         val canvas = ByteArray(copy.size)
         var pos = 0
 
-        val readable = PullPipe(PumpSource<TextType>(StringReader(text))).getSink()
+        val readable = Pipe.buildTextPullPipe(StringReader(text)) // PullPipe(Default, PumpSource<TextType>(StringReader(text))).getSink()
         do {
             val cp = readable.readGlyph()
             pos += canvas.writeGlyphAt(pos, cp)

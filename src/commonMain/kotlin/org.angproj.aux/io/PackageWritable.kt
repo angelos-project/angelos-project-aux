@@ -14,5 +14,8 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.pkg.Enfoldable
+
 public interface PackageWritable {
+    public fun<S: Enfoldable> writePackage(pkg: S)
 }

@@ -15,9 +15,17 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.io.PackageReadable
+import org.angproj.aux.pkg.Enfoldable
+import org.angproj.aux.pkg.Unfoldable
 
 public class PackageSink(
-    pipe: PullPipe<PackageType>
-): AbstractSink<PackageType>(pipe), PackageType, PackageReadable {
+    private val sink: BinarySink
+): Sink, PackageType, PackageReadable {
+    override fun isOpen(): Boolean = sink.isOpen()
 
+    override fun close(): Unit = sink.close()
+
+    override fun<E : Enfoldable, S: Unfoldable<E>> readPackage(): S {
+        TODO("Not yet implemented")
+    }
 }

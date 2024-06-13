@@ -12,11 +12,14 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.mem
 
-import org.angproj.aux.pkg.Enfoldable
-import org.angproj.aux.pkg.Unfoldable
+import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.Segment
 
-public interface PackageReadable {
-    public fun<E : Enfoldable, S: Unfoldable<E>> readPackage(): S
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+public expect object Default: MemoryManager {
+    override fun allocate(dataSize: DataSize): Segment
+
+    override fun recycle(segment: Segment)
 }

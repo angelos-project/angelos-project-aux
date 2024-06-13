@@ -35,7 +35,7 @@ public abstract class AbstractSource<T: PipeType>(
 
     private fun<reified : Reifiable> nextSegment(open: Boolean) {
         seg = when(open){
-            true -> pipe.allocate<Reify>(pipe.segSize.size)
+            true -> pipe.allocate<Reify>(pipe.segSize)
             else -> NullObject.segment
         }
         pos = 0
@@ -49,7 +49,7 @@ public abstract class AbstractSource<T: PipeType>(
         }
     }
 
-    public fun flush() {
+    public override fun flush() {
         pushSegment<Reify>()
         pipe.drain<Reify>()
     }

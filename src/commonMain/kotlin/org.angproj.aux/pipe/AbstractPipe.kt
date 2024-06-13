@@ -14,17 +14,19 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.io.Bytes
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.segment
+import org.angproj.aux.mem.Default
+import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 
 public abstract class AbstractPipe<T: PipeType>(
     public val segSize: DataSize = DataSize._1K,
-    public val bufSize: DataSize = DataSize._4K
+    public val bufSize: DataSize = DataSize._4K,
+    private val memMgr: MemoryManager = Default
 ) {
     internal val buf: MutableList<Segment> = mutableListOf()
 
@@ -32,9 +34,9 @@ public abstract class AbstractPipe<T: PipeType>(
 
     public fun<reified : Reifiable> dispose() { while(buf.isNotEmpty()) recycle<Reify>(buf.pop<Reify>()) }
 
-    public fun<reified : Reifiable> allocate(size: Int): Segment = Bytes(size)
+    public fun<reified : Reifiable> allocate(size: DataSize): Segment = memMgr.allocate(size)
 
-    public fun<reified : Reifiable> recycle(seg: Segment) { seg.close() }
+    public fun<reified : Reifiable> recycle(seg: Segment) { memMgr.recycle(seg) }
 
     /**
      * Adds FIFO push abilities to the List of Segment.

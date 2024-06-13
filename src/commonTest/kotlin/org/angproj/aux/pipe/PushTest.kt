@@ -17,6 +17,7 @@ package org.angproj.aux.pipe
 import org.angproj.aux.io.PumpWriter
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.mem.Default
 import org.angproj.aux.utf.CodePoint
 import org.angproj.aux.utf.readGlyphAt
 import org.angproj.aux.util.DataBuffer
@@ -168,7 +169,7 @@ class PushTest {
 
         val text = (latinSH + greekSH + chineseSH).encodeToByteArray()
         val canvas = ByteArray(text.size)
-        val writeable = PushPipe(PumpSink<TextType>(StringWriter(canvas))).getSource()
+        val writeable = Pipe.buildTextPushPipe(StringWriter(canvas)) // PushPipe(PumpSink<TextType>(StringWriter(canvas))).getSource()
         var pos = 0
 
         val time = measureTime {
@@ -188,7 +189,7 @@ class PushTest {
 
         val text = (latinSH + greekSH + chineseSH).encodeToByteArray()
         val canvas = ByteArray(text.size)
-        val writeable = PushPipe(PumpSink<TextType>(StringWriter(canvas, true))).getSource()
+        val writeable = Pipe.buildTextPushPipe(StringWriter(canvas, true)) //PushPipe(Default, PumpSink<TextType>(StringWriter(canvas, true))).getSource()
         var pos = 0
 
         assertFailsWith<UnsupportedOperationException> {
@@ -208,7 +209,7 @@ class PushTest {
 
         val text = (latinSH + greekSH + chineseSH).encodeToByteArray()
         val canvas = ByteArray(text.size)
-        val writeable = PushPipe(PumpSink<TextType>(StringWriter(canvas))).getSource()
+        val writeable = Pipe.buildTextPushPipe(StringWriter(canvas)) // PushPipe(PumpSink<TextType>(StringWriter(canvas))).getSource()
         var pos = 0
 
         do {

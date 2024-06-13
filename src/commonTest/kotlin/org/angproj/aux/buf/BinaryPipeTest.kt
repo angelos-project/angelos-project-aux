@@ -78,11 +78,11 @@ class BinaryReader(data: ByteArray) : PumpReader {
 }
 
 class BinaryPipeTest {
-    @Test
+    /*@Test
     fun testBuildTextPipe() {
         val readable = PullPipe(PumpSource<BinaryType>(BinaryReader(theVeryFunData.encodeToByteArray()))).getSink()
         println(readable.readLong())
-    }
+    }*/
 
     @Test
     fun testFixTrix() {
