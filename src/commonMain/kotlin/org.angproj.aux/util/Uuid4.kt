@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2023-2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -14,34 +14,63 @@
  */
 package org.angproj.aux.util
 
+import org.angproj.aux.buf.copyOf
+import org.angproj.aux.io.Binary
+import org.angproj.aux.io.toBinary
 import org.angproj.aux.rand.AbstractSmallRandom
 import org.angproj.aux.rand.InitializationVector
+import org.angproj.aux.utf.CodePoint
+import org.angproj.aux.util.Hex.bin2hex
 import kotlin.native.concurrent.ThreadLocal
 
-public class Uuid4 internal constructor(private val uuid: ByteArray) {
+public class Uuid4 internal constructor(private val uuid: Binary) {
 
     public constructor() : this(generateByteArray())
 
     init {
-        require(uuid.size == 16) { "Wrong size of data!" }
-        require(uuid[6].toInt() and 0xf0 == 64) { "Not UUID version 4!" }
+        require(uuid.capacity == 16) { "Wrong size of data!" }
+        require(uuid.retrieveByte(6).toInt() and 0xf0 == 64) { "Not UUID version 4!" }
     }
 
     private val hex: String by lazy {
-        val _1 = BinHex.encodeToHex(uuid.sliceArray(0 until 4))
-        val _2 = BinHex.encodeToHex(uuid.sliceArray(4 until 6))
-        val _3 = BinHex.encodeToHex(uuid.sliceArray(6 until 8))
-        val _4 = BinHex.encodeToHex(uuid.sliceArray(8 until 10))
-        val _5 = BinHex.encodeToHex(uuid.sliceArray(10 until 16))
+        val _1 = uuid.retrieveInt(0).toUInt().toString(16)// BinHex.encodeToHex(arr.sliceArray(0 until 4))
+        val _2 = uuid.retrieveShort(4).toUShort().toString(16) // BinHex.encodeToHex(arr.sliceArray(4 until 6))
+        val _3 = uuid.retrieveShort(6).toUShort().toString(16) //BinHex.encodeToHex(arr.sliceArray(6 until 8))
+        val _4 = uuid.retrieveShort(8).toUShort().toString(16) //BinHex.encodeToHex(arr.sliceArray(8 until 10))
+        val _5 = (uuid.retrieveLong(8) and 0xffffff).toULong().toString(16) //BinHex.encodeToHex(arr.sliceArray(10 until 16))
         "$_1-$_2-$_3-$_4-$_5"
     }
 
-    public fun toByteArray(): ByteArray = uuid.copyOf()
+    public fun toBinary(): Binary = Binary(uuid.segment.copyOf())
 
-    override fun toString(): String = hex
+    protected fun hex(r: IntRange): String {
+        var hex = ""
+        r.forEach {
+            val byte = uuid.retrieveByte(it)
+            hex += byte.upperToHex<Reify>().value.toChar()
+            hex += byte.lowerToHex<Reify>().value.toChar()
+        }
+        return hex
+    }
+
+    override fun toString(): String {
+        var hex = ""
+        hex += hex(0 until 4)
+        hex += '-'
+        hex += hex(4 until 6)
+        hex += '-'
+        hex += hex(6 until 8)
+        hex += '-'
+        hex += hex(8 until 10)
+        hex += '-'
+        hex += hex(10 until 16)
+        return hex
+    }
 
     @ThreadLocal
-    private companion object : AbstractSmallRandom() {
+    protected companion object : AbstractSmallRandom(
+        Binary(16).also { InitializationVector.realTimeGatedEntropy(it) }
+    ) {
 
         private var counter: Int = 0
 
@@ -50,39 +79,51 @@ public class Uuid4 internal constructor(private val uuid: ByteArray) {
         }
 
         private fun revitalize() {
-            val data = ByteArray(16)
+            val data = Binary(16)
             InitializationVector.realTimeGatedEntropy(data)
             reseed(data)
+            data.segment.close()
             counter = 0
         }
 
-        fun generateByteArray(): ByteArray {
+        private fun generateByteArray(): Binary {
             if (counter.floorMod(Int.MAX_VALUE) == 0) revitalize()
             else counter++
 
-            val data = ByteArray(16)
+            val data = Binary(16)
 
-            data.writeIntAt(0, round())
-            data.writeIntAt(4, round())
-            data.writeIntAt(8, round())
-            data.writeIntAt(12, round())
+            data.storeInt(0, round())
+            data.storeInt(4, round())
+            data.storeInt(8, round())
+            data.storeInt(12, round())
 
-            data[6] = data[6].flipOffFlag7()
-            data[6] = data[6].flipOnFlag6()
-            data[6] = data[6].flipOffFlag5()
-            data[6] = data[6].flipOffFlag4()
+            var four = data.retrieveByte(6)
+            four = four.flipOffFlag7()
+            four = four.flipOnFlag6()
+            four = four.flipOffFlag5()
+            four = four.flipOffFlag4()
+            data.storeByte(6, four)
 
             return data
         }
     }
 }
 
+internal inline fun<reified T: Reifiable> Byte.upperToHex(): CodePoint = CodePoint(bin2hex[toInt() ushr 4 and 0xf])
+
+internal inline fun<reified T: Reifiable> Byte.lowerToHex(): CodePoint = CodePoint(bin2hex[toInt() and 0xf])
+
 public fun uuid4(): Uuid4 = Uuid4()
 
-public fun uuid4Of(data: ByteArray): Uuid4 = Uuid4(data)
+public fun uuid4Of(data: Binary): Uuid4 = Uuid4(data)
 
 public fun Uuid4.isNull(): Boolean = NullObject.uuid4 === this
 
-private val nullUuid4 = uuid4Of(byteArrayOf(0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0))
+private val nullUuid4 = uuid4Of(byteArrayOf(
+    0, 0, 0, 0,
+    0, 0, 64, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0
+).toBinary())
 public val NullObject.uuid4: Uuid4
     get() = nullUuid4

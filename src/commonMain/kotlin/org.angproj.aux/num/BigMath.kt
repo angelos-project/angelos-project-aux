@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.num
 
+import org.angproj.aux.io.Binary
 import org.angproj.aux.util.ExcHelper
 import org.angproj.aux.util.readIntAt
 import org.angproj.aux.util.swapEndian

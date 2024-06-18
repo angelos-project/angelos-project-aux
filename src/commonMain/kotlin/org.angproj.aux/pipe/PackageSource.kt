@@ -20,7 +20,7 @@ import org.angproj.aux.pkg.Enfoldable
 public class PackageSource(
     private val src: BinarySource
 ): Source, PackageType, PackageWritable {
-    override fun flush(): Unit = src.flush()
+    public fun flush(): Unit = src.flush()
 
     override fun isOpen(): Boolean = src.isOpen()
 

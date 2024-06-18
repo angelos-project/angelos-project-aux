@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.rand
 
-import org.angproj.aux.util.DataBuffer
+import org.angproj.aux.io.BinaryWritable
 
 /**
  * Qualifies both using ent for a balanced natural random, and with die-harder on a high level when running:
@@ -74,7 +74,7 @@ public abstract class AbstractSponge1024 : AbstractSponge(16, 16) {
         counter++
     }
 
-    override fun squeeze(data: DataBuffer) {
+    override fun squeeze(data: BinaryWritable) {
         data.writeLong((sponge[0] xor (mask * 3)).asLittle())
         data.writeLong((sponge[1] xor (mask * 7)).asLittle())
         data.writeLong((sponge[2] xor (mask * 11)).asLittle())

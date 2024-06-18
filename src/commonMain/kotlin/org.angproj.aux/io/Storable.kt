@@ -39,13 +39,6 @@ public interface Storable {
     public fun storeUByte(position: Int, value: UByte)
 
     /**
-     * Store character unto said position.
-     *
-     * @param value A character of data.
-     */
-    public fun storeChar(position: Int, value: Char)
-
-    /**
      * Store a short integer unto said position.
      *
      * @param value A short integer of data.

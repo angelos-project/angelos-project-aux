@@ -14,10 +14,7 @@
  */
 package org.angproj.aux.pkg.type
 
-import org.angproj.aux.io.Readable
-import org.angproj.aux.io.Retrievable
-import org.angproj.aux.io.Storable
-import org.angproj.aux.io.Writable
+import org.angproj.aux.io.*
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
@@ -26,103 +23,103 @@ import org.angproj.aux.util.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class BlockType(public val block: ByteArray) : Storable, Retrievable, Enfoldable {
+public value class BlockType(public val block: Binary) : Storable, Retrievable, Enfoldable {
 
-    public constructor(size: Long) : this(ByteArray(size.toInt()))
+    public constructor(size: Long) : this(Binary(size.toInt()))
 
-    override fun retrieveByte(position: Int): Byte = block[position]
-    override fun retrieveUByte(position: Int): UByte = block[position].toUByte()
-    override fun retrieveChar(position: Int): Char = block.readCharAt(position)
-    override fun retrieveShort(position: Int): Short = block.readShortAt(position)
-    override fun retrieveUShort(position: Int): UShort = block.readUShortAt(position)
-    override fun retrieveInt(position: Int): Int = block.readIntAt(position)
-    override fun retrieveUInt(position: Int): UInt = block.readUIntAt(position)
-    override fun retrieveLong(position: Int): Long = block.readLongAt(position)
-    override fun retrieveULong(position: Int): ULong = block.readULongAt(position)
-    override fun retrieveFloat(position: Int): Float = block.readFloatAt(position)
-    override fun retrieveDouble(position: Int): Double = block.readDoubleAt(position)
+    override fun retrieveByte(position: Int): Byte = block.retrieveByte(position)
+    override fun retrieveUByte(position: Int): UByte = block.retrieveUByte(position)
+    //override fun retrieveChar(position: Int): Char = block.readCharAt(position)
+    override fun retrieveShort(position: Int): Short = block.retrieveShort(position)
+    override fun retrieveUShort(position: Int): UShort = block.retrieveUShort(position)
+    override fun retrieveInt(position: Int): Int = block.retrieveInt(position)
+    override fun retrieveUInt(position: Int): UInt = block.retrieveUInt(position)
+    override fun retrieveLong(position: Int): Long = block.retrieveLong(position)
+    override fun retrieveULong(position: Int): ULong = block.retrieveULong(position)
+    override fun retrieveFloat(position: Int): Float = block.retrieveFloat(position)
+    override fun retrieveDouble(position: Int): Double = block.retrieveDouble(position)
 
     override fun storeByte(position: Int, value: Byte) {
-        block[position] = value
+        block.storeByte(position, value)
     }
 
     override fun storeUByte(position: Int, value: UByte) {
-        block[position] = value.toByte()
+        block.storeUByte(position, value)
     }
 
-    override fun storeChar(position: Int, value: Char) {
+    /*override fun storeChar(position: Int, value: Char) {
         block.writeCharAt(position, value)
-    }
+    }*/
 
     override fun storeShort(position: Int, value: Short) {
-        block.writeShortAt(position, value)
+        block.storeShort(position, value)
     }
 
     override fun storeUShort(position: Int, value: UShort) {
-        block.writeUShortAt(position, value)
+        block.storeUShort(position, value)
     }
 
     override fun storeInt(position: Int, value: Int) {
-        block.writeIntAt(position, value)
+        block.storeInt(position, value)
     }
 
     override fun storeUInt(position: Int, value: UInt) {
-        block.writeUIntAt(position, value)
+        block.storeUInt(position, value)
     }
 
     override fun storeLong(position: Int, value: Long) {
-        block.writeLongAt(position, value)
+        block.storeLong(position, value)
     }
 
     override fun storeULong(position: Int, value: ULong) {
-        block.writeULongAt(position, value)
+        block.storeULong(position, value)
     }
 
     override fun storeFloat(position: Int, value: Float) {
-        block.writeFloatAt(position, value)
+        block.storeFloat(position, value)
     }
 
     override fun storeDouble(position: Int, value: Double) {
-        block.writeDoubleAt(position, value)
+        block.storeDouble(position, value)
     }
 
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
-        FoldFormat.BLOCK -> block.size.toLong()
-        FoldFormat.STREAM -> block.size + Enfoldable.OVERHEAD_LENGTH
+        FoldFormat.BLOCK -> block.limit.toLong()
+        FoldFormat.STREAM -> block.limit + Enfoldable.OVERHEAD_LENGTH
     }
 
     public fun enfoldToBlock(outData: Storable, offset: Int): Long {
-        var index = chunkLoop(0, block.size, Long.SIZE_BYTES) {
-            outData.storeLong(offset + it, block.readLongAt(it))
+        var index = chunkLoop(0, block.limit, Long.SIZE_BYTES) {
+            outData.storeLong(offset + it, block.retrieveLong(it))
         }
-        index = chunkSimple(index, block.size, Int.SIZE_BYTES) {
-            outData.storeInt(offset + it, block.readIntAt(it))
+        index = chunkSimple(index, block.limit, Int.SIZE_BYTES) {
+            outData.storeInt(offset + it, block.retrieveInt(it))
         }
-        index = chunkSimple(index, block.size, Short.SIZE_BYTES) {
-            outData.storeShort(offset + it, block.readShortAt(it))
+        index = chunkSimple(index, block.limit, Short.SIZE_BYTES) {
+            outData.storeShort(offset + it, block.retrieveShort(it))
         }
-        return chunkSimple(index, block.size, Byte.SIZE_BYTES) {
-            outData.storeByte(offset + it, block[it])
+        return chunkSimple(index, block.limit, Byte.SIZE_BYTES) {
+            outData.storeByte(offset + it, block.retrieveByte(it))
         }.toLong()
     }
 
     public fun enfoldToStreamByConvention(outStream: Writable, type: Convention): Long {
         Enfoldable.setType(outStream, type)
         Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH)
-        var index = chunkLoop(0, block.size, Long.SIZE_BYTES) {
-            outStream.writeLong(block.readLongAt(it))
+        var index = chunkLoop(0, block.limit, Long.SIZE_BYTES) {
+            outStream.writeLong(block.retrieveLong(it))
         }
-        index = chunkSimple(index, block.size, Int.SIZE_BYTES) {
-            outStream.writeInt(block.readIntAt(it))
+        index = chunkSimple(index, block.limit, Int.SIZE_BYTES) {
+            outStream.writeInt(block.retrieveInt(it))
         }
-        index = chunkSimple(index, block.size, Short.SIZE_BYTES) {
-            outStream.writeShort(block.readShortAt(it))
+        index = chunkSimple(index, block.limit, Short.SIZE_BYTES) {
+            outStream.writeShort(block.retrieveShort(it))
         }
-        chunkSimple(index, block.size, Byte.SIZE_BYTES) {
-            outStream.writeByte(block[it])
+        chunkSimple(index, block.limit, Byte.SIZE_BYTES) {
+            outStream.writeByte(block.retrieveByte(it))
         }.toLong()
         Enfoldable.setEnd(outStream, type)
         return foldSize(FoldFormat.STREAM)

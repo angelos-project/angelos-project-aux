@@ -16,6 +16,8 @@ package org.angproj.aux.pkg.arb
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Writable
+import org.angproj.aux.io.toBinary
+import org.angproj.aux.io.toByteArray
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
@@ -39,7 +41,7 @@ public value class StringType(public val value: ByteArray) : Enfoldable {
     }
 
     public fun enfoldToStream(outStream: Writable): Long {
-        val block = BlockType(value)
+        val block = BlockType(value.toBinary())
         return block.enfoldToStreamByConvention(outStream, conventionType)
     }
 
@@ -50,7 +52,7 @@ public value class StringType(public val value: ByteArray) : Enfoldable {
 
         public fun unfoldFromStream(inStream: Readable): StringType {
             val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
-            return StringType(block.block)
+            return StringType(block.block.toByteArray())
         }
     }
 }

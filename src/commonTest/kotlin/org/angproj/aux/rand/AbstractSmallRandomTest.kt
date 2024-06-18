@@ -1,6 +1,8 @@
 package org.angproj.aux.rand
 
+import org.angproj.aux.io.Binary
 import org.angproj.aux.io.OldReader
+import org.angproj.aux.io.toByteArray
 import org.angproj.aux.util.Benchmark
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.floorMod
@@ -10,7 +12,7 @@ import kotlin.math.absoluteValue
 import kotlin.test.Test
 
 class TestSmallRandom: AbstractSmallRandom(
-    ByteArray(16).also { InitializationVector.realTimeGatedEntropy(it) }
+    Binary(16).also { InitializationVector.realTimeGatedEntropy(it) }
 ), OldReader {
 
     override fun read(data: ByteArray): Int {

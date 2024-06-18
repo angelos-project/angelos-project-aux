@@ -1,7 +1,10 @@
 package org.angproj.aux.sec
 
+import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.io.DataSize
-import org.angproj.aux.util.DataBuffer
+import org.angproj.aux.util.Benchmark
+import kotlin.math.PI
+import kotlin.math.absoluteValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -17,12 +20,6 @@ class SecureRandomTest {
     @Test
     fun readUByte() {
         val sample = Array(256) { SecureRandom.readUByte() }
-        assertTrue(sample.toSet().size > 1)
-    }
-
-    @Test
-    fun readChar() {
-        val sample = Array(256) { SecureRandom.readChar() }
         assertTrue(sample.toSet().size > 1)
     }
 
@@ -77,22 +74,19 @@ class SecureRandomTest {
     @Test
     fun read() {
         val count = DataSize._8K.size / Long.SIZE_BYTES
-        val buffer = DataBuffer(DataSize._8K)
-        SecureRandom.read(buffer.asByteArray())
+        val buffer = BinaryBuffer(DataSize._8K)
+        SecureRandom.read(buffer.segment)
         val values = LongArray(count) { buffer.readLong() }
         assertEquals(values.toSet().size, count)
     }
 
-    @Test
-    fun testRead() {
-        val count = DataSize._8K.size / Long.SIZE_BYTES
-        val buffer = DataBuffer(SecureRandom.read(DataSize._8K.size))
-        val values = LongArray(count) { buffer.readLong() }
-        assertEquals(values.toSet().size, count)
-    }
-
-    @Test
-    fun getSecureEntropy() {
-        SecureRandom.read(1024).forEach { print("$it, ") }
+    //@Test
+    fun testMonteCarlo() {
+        val monteCarlo = Benchmark()
+        repeat(10_000_000) {
+            monteCarlo.scatterPoint(SecureRandom.readLong(), SecureRandom.readLong())
+        }
+        println(monteCarlo.distribution())
+        println((monteCarlo.distribution() - PI).absoluteValue)
     }
 }

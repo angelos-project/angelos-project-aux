@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.rand
 
+import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.util.DataBuffer
 
 /**
@@ -59,7 +60,7 @@ public abstract class AbstractSponge512 : AbstractSponge(9, 8) {
         counter++
     }
 
-    override fun squeeze(data: DataBuffer) {
+    override fun squeeze(data: BinaryWritable) {
         data.writeLong((sponge[0] xor (mask * 3)).asLittle())
         data.writeLong((sponge[1] xor (mask * 7)).asLittle())
         data.writeLong((sponge[2] xor (mask * 11)).asLittle())

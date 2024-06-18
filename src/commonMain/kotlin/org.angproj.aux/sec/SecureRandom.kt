@@ -14,82 +14,43 @@
  */
 package org.angproj.aux.sec
 
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Readable
-import org.angproj.aux.io.OldReader
-import org.angproj.aux.util.DataBuffer
-import org.angproj.aux.util.floorMod
+import org.angproj.aux.io.*
+import org.angproj.aux.mem.Default
+import org.angproj.aux.pipe.*
+import org.angproj.aux.util.*
 import kotlin.native.concurrent.ThreadLocal
 
 /**
  * Portions a secure feed of random into a serviceable format of data for cryptographically secure use.
  * */
 @ThreadLocal
-public object SecureRandom : OldReader, Readable {
+public object SecureRandom : BinaryReadable, Reader {
 
-    private val buffer = DataBuffer(DataSize._1K)
+    private val sink: BinarySink = PullPipe<BinaryType>(
+        Default,
+        PumpSource(SecureFeed),
+        DataSize._1K,
+        DataSize._1K
+    ).getSink()
 
-    init {
-        refill()
-    }
+    override fun readByte(): Byte = sink.readByte()
+    override fun readUByte(): UByte = sink.readUByte()
+    override fun readShort(): Short = sink.readShort()
+    override fun readUShort(): UShort = sink.readUShort()
+    override fun readInt(): Int = sink.readInt()
+    override fun readUInt(): UInt = sink.readUInt()
+    override fun readLong(): Long = sink.readLong()
+    override fun readULong(): ULong = sink.readULong()
+    override fun readFloat(): Float = sink.readFloat()
+    override fun readDouble(): Double = sink.readDouble()
 
-    private fun refill() {
-        buffer.reset()
-        SecureFeed.read(buffer.asByteArray())
-    }
-
-    private fun <E> withinLimit(size: Int, block: () -> E): E {
-        if (buffer.remaining < size) refill()
-        return block()
-    }
-
-    override fun readByte(): Byte = withinLimit(Byte.SIZE_BYTES) { buffer.readByte() }
-    override fun readUByte(): UByte = withinLimit(UByte.SIZE_BYTES) { buffer.readUByte() }
-    override fun readChar(): Char = withinLimit(Char.SIZE_BYTES) { buffer.readChar() }
-    override fun readShort(): Short = withinLimit(Short.SIZE_BYTES) { buffer.readShort() }
-    override fun readUShort(): UShort = withinLimit(UShort.SIZE_BYTES) { buffer.readUShort() }
-    override fun readInt(): Int = withinLimit(Int.SIZE_BYTES) { buffer.readInt() }
-    override fun readUInt(): UInt = withinLimit(UInt.SIZE_BYTES) { buffer.readUInt() }
-    override fun readLong(): Long = withinLimit(Long.SIZE_BYTES) { buffer.readLong() }
-    override fun readULong(): ULong = withinLimit(ULong.SIZE_BYTES) { buffer.readULong() }
-    override fun readFloat(): Float = withinLimit(Float.SIZE_BYTES) { buffer.readFloat() }
-    override fun readDouble(): Double = withinLimit(Double.SIZE_BYTES) { buffer.readDouble() }
-
-    /*public fun readGlyph(): Glyph = withinLimit(UInt.SIZE_BYTES) {
-        val value = buffer.readUInt().mod(G_RANGE.toUInt()).toInt() + 1
-        value + if(value in GLYPH_HOLE) G_HOLE else 0
-    }*/
-
-    /*private val G_HOLE = GLYPH_HOLE.last - GLYPH_HOLE.first
-    private val G_RANGE: Int = GLYPH_MAX_VALUE - G_HOLE - 1*/
-
-    private fun fill(data: ByteArray) {
-        val buffer = ByteArray(DataSize._1K.size)
-        val remaining = data.size.floorMod(buffer.size)
-        (0 until data.size-remaining step buffer.size).forEach { offset ->
-            SecureFeed.read(buffer)
-            buffer.copyInto(data, offset, 0, buffer.size)
+    override fun read(data: Segment): Int {
+        val binary = Binary(data)
+        val index = chunkLoop<Reify>(0, binary.limit, Long.SIZE_BYTES) {
+            binary.storeLong(it, readLong())
         }
-
-        if (remaining > 0) {
-            SecureFeed.read(buffer)
-            buffer.copyInto(data, data.size - remaining, 0, remaining)
+        return chunkLoop<Reify>(index, binary.limit, Byte.SIZE_BYTES) {
+            binary.storeByte(it, readByte())
         }
     }
-
-    override fun read(length: Int): ByteArray = ByteArray(length).also { fill(it) }
-
-    override fun read(data: ByteArray): Int = (data.size).also { fill(data) }
-
-    /*public fun readLine(text: ByteArray): Int {
-        val buffer = DataBuffer(text)
-        var glyph = readGlyph()
-        while ((buffer.remaining-1) > glyph.getSize()) {
-            buffer.writeGlyph(glyph)
-            glyph = readGlyph()
-        }
-        buffer.writeGlyph('\n'.code)
-        buffer.flip()
-        return buffer.limit
-    }*/
 }

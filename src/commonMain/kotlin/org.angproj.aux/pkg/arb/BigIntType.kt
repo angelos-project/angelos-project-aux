@@ -16,6 +16,8 @@ package org.angproj.aux.pkg.arb
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Writable
+import org.angproj.aux.io.toBinary
+import org.angproj.aux.io.toByteArray
 import org.angproj.aux.num.BigInt
 import org.angproj.aux.num.bigIntOf
 import org.angproj.aux.pkg.Convention
@@ -37,7 +39,7 @@ public value class BigIntType(public val value: BigInt) : Enfoldable {
     }
 
     public fun enfoldToStream(outStream: Writable): Long {
-        val block = BlockType(value.toByteArray())
+        val block = BlockType(value.toByteArray().toBinary())
         return block.enfoldToStreamByConvention(outStream, conventionType)
     }
 
@@ -48,7 +50,7 @@ public value class BigIntType(public val value: BigInt) : Enfoldable {
 
         public fun unfoldFromStream(inStream: Readable): BigIntType {
             val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
-            return BigIntType(bigIntOf(block.block))
+            return BigIntType(bigIntOf(block.block.toByteArray()))
         }
     }
 }

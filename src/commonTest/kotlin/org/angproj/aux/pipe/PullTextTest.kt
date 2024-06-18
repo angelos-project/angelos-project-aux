@@ -17,7 +17,6 @@ package org.angproj.aux.pipe
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.mem.Default
 import org.angproj.aux.utf.writeGlyphAt
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.Reify
@@ -159,7 +158,7 @@ class StringReader(text: String, private val half: Boolean = false) : PumpReader
     }
 }
 
-class PullTest {
+class PullTextTest {
 
     /**
      * The goal is to pull all data from the TextSource.

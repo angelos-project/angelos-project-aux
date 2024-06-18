@@ -16,7 +16,7 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
 
-public class BinaryBuffer private constructor(
+public class BinaryBuffer internal constructor(
     segment: Segment
 ): Buffer(segment), BinaryReadable, BinaryWritable {
 

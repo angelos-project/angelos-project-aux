@@ -17,7 +17,6 @@ package org.angproj.aux.pipe
 import org.angproj.aux.io.PumpWriter
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.mem.Default
 import org.angproj.aux.utf.CodePoint
 import org.angproj.aux.utf.readGlyphAt
 import org.angproj.aux.util.DataBuffer
@@ -159,7 +158,7 @@ class StringWriter(data: ByteArray, private val half: Boolean = false) : PumpWri
     }
 }
 
-class PushTest {
+class PushTextTest {
 
     /**
      * The goal is to pull all data from the TextSource.

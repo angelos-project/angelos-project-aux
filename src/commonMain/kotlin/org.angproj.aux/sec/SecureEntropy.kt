@@ -14,8 +14,7 @@
  */
 package org.angproj.aux.sec
 
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.OldReader
+import org.angproj.aux.io.*
 import org.angproj.aux.rand.AbstractSponge256
 import org.angproj.aux.rand.InitializationVector
 import org.angproj.aux.util.floorMod
@@ -27,18 +26,19 @@ import kotlin.native.concurrent.ThreadLocal
  * Supposed to pass Monte Carlo testing and security requirements of output quality.
  * */
 @ThreadLocal
-public object SecureEntropy : AbstractSponge256(), OldReader {
+public object SecureEntropy : AbstractSponge256(), PumpReader {
 
     init {
         revitalize()
     }
 
     private fun revitalize() {
-        val entropy = ByteArray(visibleSize * Long.SIZE_BYTES)
+        val entropy = Binary(visibleSize * TypeSize.long)
         InitializationVector.realTimeGatedEntropy(entropy)
         (0 until visibleSize).forEach {
-            absorb(entropy.readLongAt(it * Long.SIZE_BYTES), it)
+            absorb(entropy.retrieveLong(it * TypeSize.long), it)
         }
+        entropy.segment.close()
         scramble()
     }
 
@@ -47,14 +47,8 @@ public object SecureEntropy : AbstractSponge256(), OldReader {
         require(length <= DataSize._1K.size) { "Length must not surpass 1 Kilobyte." }
     }
 
-    override fun read(length: Int): ByteArray {
-        require(length)
-        revitalize()
-        return ByteArray(length).also { fill(it) { round() } }
-    }
-
-    override fun read(data: ByteArray): Int {
-        require(data.size)
+    override fun read(data: Segment): Int {
+        require(data.limit)
         revitalize()
         fill(data) { round() }
         return data.size

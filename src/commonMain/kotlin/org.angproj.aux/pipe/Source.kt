@@ -15,5 +15,4 @@
 package org.angproj.aux.pipe
 
 public interface Source: Close {
-    public fun flush()
 }

@@ -39,13 +39,6 @@ public interface Retrievable {
     public fun retrieveUByte(position: Int): UByte
 
     /**
-     * Retrieve a character from said position.
-     *
-     * @return A character of data.
-     */
-    public fun retrieveChar(position: Int): Char
-
-    /**
      * Retrieve a short integer from said position.
      *
      * @return A short integer of data.

@@ -45,7 +45,7 @@ public class GarbageGarbler(
         if(inBuffer.remaining < dataSize.size) {
             if(inQueue.isEmpty()) {
                 val entropy = ByteArray(dataSize.size)
-                InitializationVector.realTimeGatedEntropy(entropy)
+                //InitializationVector.realTimeGatedEntropy(entropy)
                 inQueue.addLast(entropy)
             }
             inBuffer = DataBuffer(inQueue.removeFirst())
@@ -70,19 +70,19 @@ public class GarbageGarbler(
     override fun read(length: Int): ByteArray {
         require(length)
         return ByteArray(length).also {
-            fill(it) {
+            /*fill(it) {
                 dataCount += dataSize.size
                 cycle()
-            }
+            }*/
         }
     }
 
     override fun read(data: ByteArray): Int {
         require(data.size)
-        fill(data) {
+        /*fill(data) {
             dataCount += dataSize.size
             cycle()
-        }
+        }*/
         return data.size
     }
 

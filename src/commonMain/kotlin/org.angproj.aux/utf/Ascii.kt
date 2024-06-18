@@ -1,0 +1,147 @@
+/**
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ *
+ * This software is available under the terms of the MIT license. Parts are licensed
+ * under different terms if stated. The legal terms are attached to the LICENSE file
+ * and are made available on:
+ *
+ *      https://opensource.org/licenses/MIT
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Contributors:
+ *      Kristoffer Paulsson - initial implementation
+ */
+package org.angproj.aux.utf
+
+public enum class Ascii(public val cp: Int) {
+    CTRL_NUL(0x00),
+    CTRL_SOH(0x01),
+    CTRL_STX(0x02),
+    CTRL_ETX(0x03),
+    CTRL_EOT(0x04),
+    CTRL_ENQ(0x05),
+    CTRL_ACK(0x06),
+    CTRL_BEL(0x07),
+    CTRL_BS(0x08),
+    CTRL_HT(0x09),
+    CTRL_LF(0x0A),
+    CTRL_VT(0x0B),
+    CTRL_FF(0x0C),
+    CTRL_CR(0x0D),
+    CTRL_SO(0x0E),
+    CTRL_SI(0x0F),
+    CTRL_DLE(0x10),
+    CTRL_DC1(0x11),
+    CTRL_DC2(0x12),
+    CTRL_DC3(0x13),
+    CTRL_DC4(0x14),
+    CTRL_NAK(0x15),
+    CTRL_SYN(0x16),
+    CTRL_ETB(0x17),
+    CTRL_CAN(0x18),
+    CTRL_EM(0x19),
+    CTRL_SUB(0x1A),
+    CTRL_ESC(0x1B),
+    CTRL_FS(0x1C),
+    CTRL_GS(0x1D),
+    CTRL_RS(0x1E),
+    CTRL_US(0x1F),
+    CTRL_DEL(0x7F),
+
+    PRNT_NOBR(0x20), //   - SPACE
+    PRNT_EXCL(0x21), // ! - EXCLAMATION MARK
+    PRNT_QUOT(0x22), // " - QUOTATION MARK
+    PRNT_HASH(0x23), // # - NUMBER SIGN
+    PRNT_DOLLAR(0x24), // $ - DOLLAR SIGN
+    PRNT_PERCNT(0x25), // % - PERCENT SIGN
+    PRNT_AMP(0x26), // & - AMPERSAND
+    PRNT_APOS(0x27), // ' - APOSTROPHE
+    PRNT_LPAR(0x28), // ( - LEFT PARENTHESIS
+    PRNT_RPAR(0x29), // ) - RIGHT PARENTHESIS
+    PRNT_AST(0x2a), // * - ASTERISK
+    PRNT_PLUS(0x2b), // + - PLUS SIGN
+    PRNT_COMMA(0x2c), // , - COMMA
+    PRNT_HYPHEN(0x2d), // - - HYPHEN-MINUS
+    PRNT_PERIOD(0x2e), // . - FULL STOP
+    PRNT_SLASH(0x2f), // / - SOLIDUS
+    PRNT_ZERO(0x30), // 0 - DIGIT ZERO
+    PRNT_ONE(0x31), // 1 - DIGIT ONE
+    PRNT_TWO(0x32), // 2 - DIGIT TWO
+    PRNT_THREE(0x33), // 3 - DIGIT THREE
+    PRNT_FOUR(0x34), // 4 - DIGIT FOUR
+    PRNT_FIVE(0x35), // 5 - DIGIT FIVE
+    PRNT_SIX(0x36), // 6 - DIGIT SIX
+    PRNT_SEVEN(0x37), // 7 - DIGIT SEVEN
+    PRNT_EIGHT(0x38), // 8 - DIGIT EIGHT
+    PRNT_NINE(0x39), // 9 - DIGIT NINE
+    PRNT_COLON(0x3a), // : - COLON
+    PRNT_SEMI(0x3b), // ; - SEMICOLON
+    PRNT_LESS(0x3c), // < - LESS-THAN SIGN
+    PRNT_EQUALS(0x3d), // = - EQUALS SIGN
+    PRNT_GREAT(0x3e), // > - GREATER-THAN SIGN
+    PRNT_QUEST(0x3f), // ? - QUESTION MARK
+    PRNT_COMMAT(0x40), // @ - COMMERCIAL AT
+    PRNT_A_UP(0x41), // A - LATIN CAPITAL LETTER A
+    PRNT_B_UP(0x42), // B - LATIN CAPITAL LETTER B
+    PRNT_C_UP(0x43), // C - LATIN CAPITAL LETTER C
+    PRNT_D_UP(0x44), // D - LATIN CAPITAL LETTER D
+    PRNT_E_UP(0x45), // E - LATIN CAPITAL LETTER E
+    PRNT_F_UP(0x46), // F - LATIN CAPITAL LETTER F
+    PRNT_G_UP(0x47), // G - LATIN CAPITAL LETTER G
+    PRNT_H_UP(0x48), // H - LATIN CAPITAL LETTER H
+    PRNT_I_UP(0x49), // I - LATIN CAPITAL LETTER I
+    PRNT_J_UP(0x4a), // J - LATIN CAPITAL LETTER J
+    PRNT_K_UP(0x4b), // K - LATIN CAPITAL LETTER K
+    PRNT_L_UP(0x4c), // L - LATIN CAPITAL LETTER L
+    PRNT_M_UP(0x4d), // M - LATIN CAPITAL LETTER M
+    PRNT_N_UP(0x4e), // N - LATIN CAPITAL LETTER N
+    PRNT_O_UP(0x4f), // O - LATIN CAPITAL LETTER O
+    PRNT_P_UP(0x50), // P - LATIN CAPITAL LETTER P
+    PRNT_Q_UP(0x51), // Q - LATIN CAPITAL LETTER Q
+    PRNT_R_UP(0x52), // R - LATIN CAPITAL LETTER R
+    PRNT_S_UP(0x53), // S - LATIN CAPITAL LETTER S
+    PRNT_T_UP(0x54), // T - LATIN CAPITAL LETTER T
+    PRNT_U_UP(0x55), // U - LATIN CAPITAL LETTER U
+    PRNT_V_UP(0x56), // V - LATIN CAPITAL LETTER V
+    PRNT_W_UP(0x57), // W - LATIN CAPITAL LETTER W
+    PRNT_X_UP(0x58), // X - LATIN CAPITAL LETTER X
+    PRNT_Y_UP(0x59), // Y - LATIN CAPITAL LETTER Y
+    PRNT_Z_UP(0x5a), // Z - LATIN CAPITAL LETTER Z
+    PRNT_LBRACK(0x5b), // [ - LEFT SQUARE BRACKET
+    PRNT_BSLASH(0x5c), // \ - REVERSE SOLIDUS
+    PRNT_RBRACK(0x5d), // ] - RIGHT SQUARE BRACKET
+    PRNT_CARET(0x5e), // ^ - CIRCUMFLEX ACCENT
+    PRNT_UNDER(0x5f), // _ - LOW LINE
+    PRNT_GRAVE(0x60), // ` - GRAVE ACCENT
+    PRNT_A_LOW(0x61), // a - LATIN SMALL LETTER A
+    PRNT_B_LOW(0x62), // b - LATIN SMALL LETTER B
+    PRNT_C_LOW(0x63), // c - LATIN SMALL LETTER C
+    PRNT_D_LOW(0x64), // d - LATIN SMALL LETTER D
+    PRNT_E_LOW(0x65), // e - LATIN SMALL LETTER E
+    PRNT_F_LOW(0x66), // f - LATIN SMALL LETTER F
+    PRNT_G_LOW(0x67), // g - LATIN SMALL LETTER G
+    PRNT_H_LOW(0x68), // h - LATIN SMALL LETTER H
+    PRNT_I_LOW(0x69), // i - LATIN SMALL LETTER I
+    PRNT_J_LOW(0x6a), // j - LATIN SMALL LETTER J
+    PRNT_K_LOW(0x6b), // k - LATIN SMALL LETTER K
+    PRNT_L_LOW(0x6c), // l - LATIN SMALL LETTER L
+    PRNT_M_LOW(0x6d), // m - LATIN SMALL LETTER M
+    PRNT_N_LOW(0x6e), // n - LATIN SMALL LETTER N
+    PRNT_O_LOW(0x6f), // o - LATIN SMALL LETTER O
+    PRNT_P_LOW(0x70), // p - LATIN SMALL LETTER P
+    PRNT_Q_LOW(0x71), // q - LATIN SMALL LETTER Q
+    PRNT_R_LOW(0x72), // r - LATIN SMALL LETTER R
+    PRNT_S_LOW(0x73), // s - LATIN SMALL LETTER S
+    PRNT_T_LOW(0x74), // t - LATIN SMALL LETTER T
+    PRNT_U_LOW(0x75), // u - LATIN SMALL LETTER U
+    PRNT_V_LOW(0x76), // v - LATIN SMALL LETTER V
+    PRNT_W_LOW(0x77), // w - LATIN SMALL LETTER W
+    PRNT_X_LOW(0x78), // x - LATIN SMALL LETTER X
+    PRNT_Y_LOW(0x79), // y - LATIN SMALL LETTER Y
+    PRNT_Z_LOW(0x7a), // z - LATIN SMALL LETTER Z
+    PRNT_LBRACE(0x7b), // { - LEFT CURLY BRACKET
+    PRNT_VBAR(0x7c), // | - VERTICAL LINE
+    PRNT_RBRACE(0x7d), // } - RIGHT CURLY BRACKET
+    PRNT_TILDE(0x7e); // ~ - TILDE
+}

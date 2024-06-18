@@ -31,3 +31,10 @@ public inline fun <reified T: Reifiable> chunkLoop(index: Int, length: Int, slic
     if (steps > 0) (index until (index + size) step slice).forEach { action(it) }
     return index + size
 }
+
+public inline fun <reified T: Reifiable> chunkSimple(
+    index: Int, length: Int, slice: Int, action: (Int) -> Unit
+): Int = when (length - index >= slice) {
+    true -> (index + slice).also { action(index) }
+    else -> index
+}

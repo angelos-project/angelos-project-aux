@@ -24,7 +24,7 @@ public class BinarySink(
     pipe: PullPipe<BinaryType>
 ): AbstractSink<BinaryType>(pipe), BinaryType, BinaryReadable {
 
-    private inline fun <reified : Reifiable> buildFromSegment(length: Int, maxIter: Int): Long {
+    private inline fun <reified T : Reifiable> buildFromSegment(length: Int, maxIter: Int): Long {
         var value = 0L
         repeat(min(length, maxIter)) {
             if(pos == seg.limit) pullSegment<Reify>()
@@ -34,22 +34,22 @@ public class BinarySink(
     }
 
     private inline fun <reified R : Reifiable> withSegmentByte(): Byte = when(seg.limit - pos < TypeSize.byte) {
-        true -> seg.getByte(pos).also { pos += TypeSize.byte }
+        false -> seg.getByte(pos).also { pos += TypeSize.byte }
         else -> buildFromSegment<Reify>(TypeSize.byte, TypeSize.byte).toByte()
     }
 
     private inline fun <reified R : Reifiable> withSegmentShort(): Short = when(seg.limit - pos < TypeSize.short) {
-        true -> seg.getShort(pos).also { pos += TypeSize.short }
+        false -> seg.getShort(pos).also { pos += TypeSize.short }
         else -> buildFromSegment<Reify>(TypeSize.short, TypeSize.short).toShort()
     }
 
     private inline fun <reified R : Reifiable> withSegmentInt(): Int = when(seg.limit - pos < TypeSize.int) {
-        true -> seg.getInt(pos).also { pos += TypeSize.int }
+        false -> seg.getInt(pos).also { pos += TypeSize.int }
         else -> buildFromSegment<Reify>(TypeSize.int, TypeSize.int).toInt()
     }
 
     private inline fun <reified R : Reifiable> withSegmentLong(): Long = when(seg.limit - pos < TypeSize.long) {
-        true -> seg.getLong(pos).also { pos += TypeSize.long }
+        false -> seg.getLong(pos).also { pos += TypeSize.long }
         else -> buildFromSegment<Reify>(TypeSize.long, TypeSize.long)
     }
 

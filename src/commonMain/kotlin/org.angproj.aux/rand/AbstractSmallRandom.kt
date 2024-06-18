@@ -14,21 +14,21 @@
  */
 package org.angproj.aux.rand
 
-import org.angproj.aux.util.NullObject
-import org.angproj.aux.util.readLongAt
+import org.angproj.aux.io.Binary
+import org.angproj.aux.io.TypeSize
 
 /**
  * Fast little random that is Monte Carlo proof.
  * */
-public abstract class AbstractSmallRandom(iv: ByteArray = NullObject.byteArray) {
+public abstract class AbstractSmallRandom(iv: Binary) {
 
     private var state: Long = InitializationVector.IV_CA35.iv
     private var state1: Long = InitializationVector.IV_CA53.iv
 
     init {
         when {
-            iv.isEmpty() -> scramble()
-            iv.size >= 16 -> reseed(iv)
+            iv.limit == 0 -> scramble()
+            iv.limit >= 16 -> reseed(iv).also { iv.segment.close() }
             else -> error("Faulty initialization vector!")
         }
     }
@@ -37,10 +37,10 @@ public abstract class AbstractSmallRandom(iv: ByteArray = NullObject.byteArray) 
         repeat(8) { round() }
     }
 
-    protected fun reseed(seed: ByteArray) {
-        require(seed.size == 16) { "Wrong seed size" }
-        state = InitializationVector.IV_CA35.iv xor seed.readLongAt(0)
-        state1 = InitializationVector.IV_CA53.iv xor seed.readLongAt(Long.SIZE_BYTES)
+    protected fun reseed(seed: Binary) {
+        require(seed.limit == 16) { "Wrong seed size" }
+        state = InitializationVector.IV_CA35.iv xor seed.retrieveLong(0)
+        state1 = InitializationVector.IV_CA53.iv xor seed.retrieveLong(TypeSize.long)
         scramble()
     }
 

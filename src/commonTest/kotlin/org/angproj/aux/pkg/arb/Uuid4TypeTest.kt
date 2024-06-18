@@ -1,5 +1,6 @@
 package org.angproj.aux.pkg.arb
 
+import org.angproj.aux.io.toByteArray
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
 import org.angproj.aux.util.DataBuffer
@@ -18,7 +19,7 @@ class Uuid4TypeTest {
         type.enfoldToBlock(block)
 
         val retrieved = Uuid4Type.unfoldFromBlock(block)
-        assertContentEquals(type.value.toByteArray(), retrieved.value.toByteArray())
+        assertContentEquals(type.value.toBinary().toByteArray(), retrieved.value.toBinary().toByteArray())
     }
 
     @Test
@@ -30,6 +31,6 @@ class Uuid4TypeTest {
         assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())
 
         val retrieved = Uuid4Type.unfoldFromStream(stream)
-        assertContentEquals(type.value.toByteArray(), retrieved.value.toByteArray())
+        assertContentEquals(type.value.toBinary().toByteArray(), retrieved.value.toBinary().toByteArray())
     }
 }

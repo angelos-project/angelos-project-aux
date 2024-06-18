@@ -49,7 +49,7 @@ public abstract class AbstractSource<T: PipeType>(
         }
     }
 
-    public override fun flush() {
+    public fun flush() {
         pushSegment<Reify>()
         pipe.drain<Reify>()
     }

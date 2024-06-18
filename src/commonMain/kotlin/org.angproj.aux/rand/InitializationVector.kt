@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.rand
 
+import org.angproj.aux.io.Binary
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.util.floorMod
 import kotlin.time.TimeSource
@@ -436,14 +437,14 @@ public enum class InitializationVector(public val iv: Long) {
          * Actually costs precious processing time to generate, use sparsely.
          * Also comes close to Monte Carlo but not perfect!
          * */
-        public fun realTimeGatedEntropy(data: ByteArray) {
-            require(data.size <= DataSize._256B.size) { "To large for time-gated entropy! Max 256 bytes." }
+        public fun realTimeGatedEntropy(data: Binary) {
+            require(data.limit <= DataSize._256B.size) { "To large for time-gated entropy! Max 256 bytes." }
 
             var stub: Int = Int.MAX_VALUE
-            data.indices.forEach {
+            (0 until data.limit).forEach {
                 repeat(it.floorMod(16)) { stub += stub * Int.MAX_VALUE }
                 entropy = (moment.elapsedNow().inWholeNanoseconds * entropy).rotateLeft(32)
-                data[it] = entropy.toByte()
+                data.storeByte(it, entropy.toByte())
             }
         }
     }

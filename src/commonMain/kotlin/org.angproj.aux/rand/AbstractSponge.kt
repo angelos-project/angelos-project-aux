@@ -14,7 +14,8 @@
  */
 package org.angproj.aux.rand
 
-import org.angproj.aux.util.DataBuffer
+import org.angproj.aux.buf.BinaryBuffer
+import org.angproj.aux.io.*
 import org.angproj.aux.util.EndianAware
 import org.angproj.aux.util.floorMod
 
@@ -27,7 +28,7 @@ public abstract class AbstractSponge(spongeSize: Int = 0, public val visibleSize
     protected var counter: Long = 0
     protected var mask: Long = 0
     protected val sponge: LongArray = LongArray(spongeSize) { InitializationVector.entries[it+1].iv }
-    public val byteSize: Int = visibleSize * Long.SIZE_BYTES
+    public val byteSize: Int = visibleSize * TypeSize.long
 
     init {
         require(visibleSize <= spongeSize) {
@@ -42,15 +43,15 @@ public abstract class AbstractSponge(spongeSize: Int = 0, public val visibleSize
         sponge[offset] = sponge[offset] xor value
     }
 
-    protected abstract fun squeeze(data: DataBuffer)
+    protected abstract fun squeeze(data: BinaryWritable)
 
     protected fun scramble() {
         repeat(sponge.size) { round() }
     }
 
-    protected fun fill(data: ByteArray, cycle: () -> Unit) {
-        val buffer = DataBuffer(data)
-        repeat(data.size / byteSize) { _ ->
+    protected fun fill(data: Segment, cycle: () -> Unit) {
+        val buffer = BinaryBuffer(data)
+        repeat(data.limit / byteSize) {
             squeeze(buffer)
             cycle()
         }
