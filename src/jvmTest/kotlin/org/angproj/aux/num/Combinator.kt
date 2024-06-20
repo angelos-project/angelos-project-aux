@@ -1,8 +1,9 @@
 package org.angproj.aux.num
 
-import org.angproj.aux.io.Binary
 import org.angproj.aux.io.toByteArray
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.sec.SecureRandom
+import org.angproj.aux.util.useWith
 import kotlin.math.absoluteValue
 
 
@@ -10,19 +11,21 @@ object Combinator {
 
     fun numberGenerator(range: IntRange, action: (num: ByteArray) -> Unit) {
         range.forEach {
-            val bin = Binary(it.absoluteValue + 1)
-            SecureRandom.read(bin.segment)
-            bin.storeByte(0, if(it < 0) BigSigned.NEGATIVE.signed.toByte() else BigSigned.POSITIVE.signed.toByte())
-            action(bin.toByteArray())
+            BufMgr.bin(it.absoluteValue + 1).useWith { bin ->
+                SecureRandom.read(bin.segment)
+                bin.storeByte(0, if(it < 0) BigSigned.NEGATIVE.signed.toByte() else BigSigned.POSITIVE.signed.toByte())
+                action(bin.toByteArray())
+            }
         }
     }
 
     fun innerNumberGenerator(range: IntRange, action: (num: ByteArray) -> Unit) {
         range.forEach {
-            val bin = Binary(it.absoluteValue + 1)
-            SecureRandom.read(bin.segment)
-            bin.storeByte(0, if(it < 0) BigSigned.NEGATIVE.signed.toByte() else BigSigned.POSITIVE.signed.toByte())
-            action(bin.toByteArray())
+            BufMgr.bin(it.absoluteValue + 1).useWith { bin ->
+                SecureRandom.read(bin.segment)
+                bin.storeByte(0, if (it < 0) BigSigned.NEGATIVE.signed.toByte() else BigSigned.POSITIVE.signed.toByte())
+                action(bin.toByteArray())
+            }
         }
     }
 

@@ -16,11 +16,17 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.Memory
 import org.angproj.aux.io.Segment
+import org.angproj.aux.util.Auto
 
-public abstract class Buffer protected constructor(protected val _segment: Segment) {
+public abstract class Buffer protected constructor(
+    internal val _segment: Segment, protected val view: Boolean = false
+): Auto {
 
     internal abstract fun create(segment: Segment): Buffer
-    
+
+    public val segment: Segment
+        get() = _segment
+
     /**
      * Gives the max capacity of the buffer
      * */
@@ -56,7 +62,7 @@ public abstract class Buffer protected constructor(protected val _segment: Segme
      * */
     public fun limitAt(newLimit: Int) {
         require(newLimit in _mark.._segment.size)
-        segment.limit = newLimit
+        _segment.limit = newLimit
         if(_position > newLimit) _position = newLimit
     }
 
@@ -112,32 +118,29 @@ public abstract class Buffer protected constructor(protected val _segment: Segme
     public val remaining: Int
         get() = _segment.limit - _position
 
-    /**
-     * Exploits the underlying segment.
-     * */
-    public val segment: Segment
-        get() = _segment
+    override fun isView(): Boolean = view
 
-    /**
-     * Is considered 'direct' if the underlying segment is a Memory segment.
-     * */
-    public fun isDirect(): Boolean = _segment is Memory
+    override fun isMem(): Boolean = _segment is Memory
+
+    override fun close() {
+        _segment.close()
+    }
 }
 
 /**
  * Copy the current buffer from between mark and limit into the position of the destination buffer.
  * */
 public fun<T: Buffer> T.copyInto(destination: T) { 
-    segment.calculateInto(destination.segment, destination.position, mark, limit) }
+    _segment.calculateInto(destination._segment, destination.position, mark, limit) }
 
 /**
  * Make a new copy buffer of the current buffer between mark and limit.
  * */
 @Suppress("UNCHECKED_CAST")
-public fun<T: Buffer> T.copyOfRange(): T = create(segment.copyOfRange(mark, limit)) as T
+public fun<T: Buffer> T.copyOfRange(): T = create(_segment.copyOfRange(mark, limit)) as T
 
 /**
  * Make a full buffer copy.
  * */
 @Suppress("UNCHECKED_CAST")
-public fun<T: Buffer> T.copyOf(): T = create(segment.copyOf()) as T
+public fun<T: Buffer> T.copyOf(): T = create(_segment.copyOf()) as T

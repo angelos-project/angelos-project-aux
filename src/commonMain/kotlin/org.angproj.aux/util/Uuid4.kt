@@ -17,6 +17,7 @@ package org.angproj.aux.util
 import org.angproj.aux.buf.copyOf
 import org.angproj.aux.io.Binary
 import org.angproj.aux.io.toBinary
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.rand.AbstractSmallRandom
 import org.angproj.aux.rand.InitializationVector
 import org.angproj.aux.utf.CodePoint
@@ -41,9 +42,9 @@ public class Uuid4 internal constructor(private val uuid: Binary) {
         "$_1-$_2-$_3-$_4-$_5"
     }
 
-    public fun toBinary(): Binary = Binary(uuid.segment.copyOf())
+    public fun asBinary(): Binary = uuid.asBinary()
 
-    protected fun hex(r: IntRange): String {
+    private fun hex(r: IntRange): String {
         var hex = ""
         r.forEach {
             val byte = uuid.retrieveByte(it)
@@ -79,18 +80,18 @@ public class Uuid4 internal constructor(private val uuid: Binary) {
         }
 
         private fun revitalize() {
-            val data = Binary(16)
-            InitializationVector.realTimeGatedEntropy(data)
-            reseed(data)
-            data.segment.close()
-            counter = 0
+            BufMgr.bin(16).useWith {
+                InitializationVector.realTimeGatedEntropy(it)
+                reseed(it)
+                counter = 0
+            }
         }
 
         private fun generateByteArray(): Binary {
             if (counter.floorMod(Int.MAX_VALUE) == 0) revitalize()
             else counter++
 
-            val data = Binary(16)
+            val data = BufMgr.bin(16)
 
             data.storeInt(0, round())
             data.storeInt(4, round())

@@ -24,6 +24,7 @@ import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.Unfoldable
 import org.angproj.aux.pkg.type.BlockType
 import org.angproj.aux.util.Uuid4
+import org.angproj.aux.util.useWith
 import kotlin.jvm.JvmInline
 
 @JvmInline
@@ -37,18 +38,20 @@ public value class Uuid4Type(public val value: Uuid4) : Enfoldable {
     }
 
     public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long {
-        val uuid = value.toBinary()
-        outData.storeLong(offset, uuid.retrieveLong(0))
-        outData.storeLong(offset + 8, uuid.retrieveLong(8))
+        value.asBinary().useWith {
+            outData.storeLong(offset, it.retrieveLong(0))
+            outData.storeLong(offset + 8, it.retrieveLong(8))
+        }
         return foldSize(FoldFormat.BLOCK)
     }
 
     public fun enfoldToStream(outStream: Writable): Long {
-        val uuid = value.toBinary()
-        Enfoldable.setType(outStream, conventionType)
-        outStream.writeLong(uuid.retrieveLong(0))
-        outStream.writeLong(uuid.retrieveLong(8))
-        Enfoldable.setEnd(outStream, conventionType)
+        value.asBinary().useWith {
+            Enfoldable.setType(outStream, conventionType)
+            outStream.writeLong(it.retrieveLong(0))
+            outStream.writeLong(it.retrieveLong(8))
+            Enfoldable.setEnd(outStream, conventionType)
+        }
         return foldSize(FoldFormat.STREAM)
     }
 

@@ -17,8 +17,8 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.*
 
 public class BinaryBuffer internal constructor(
-    segment: Segment
-): Buffer(segment), BinaryReadable, BinaryWritable {
+    segment: Segment, view: Boolean = false
+): Buffer(segment, view), BinaryReadable, BinaryWritable {
 
     public constructor(size: Int) : this(Bytes(size))
 
@@ -95,4 +95,6 @@ public class BinaryBuffer internal constructor(
 
     override fun writeDouble(value: Double): Unit = withinWriteLimit(TypeSize.long) {
         _segment.setLong(_position, value.toBits()) }
+
+    public fun asBinary(): Binary = Binary(_segment, true)
 }

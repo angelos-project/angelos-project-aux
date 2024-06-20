@@ -55,3 +55,4 @@ public actual abstract class AbstractBufferType<E> actual constructor(
 internal inline fun<reified E, T: AbstractBufferType<E>> T.innerCopy(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
     data.copyInto<Reify>(dest.data, destOff, idxFrom, idxTo)
 }
+

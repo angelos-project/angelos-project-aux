@@ -28,7 +28,7 @@ public abstract class AbstractSmallRandom(iv: Binary) {
     init {
         when {
             iv.limit == 0 -> scramble()
-            iv.limit >= 16 -> reseed(iv).also { iv.segment.close() }
+            iv.limit >= 16 -> reseed(iv)
             else -> error("Faulty initialization vector!")
         }
     }

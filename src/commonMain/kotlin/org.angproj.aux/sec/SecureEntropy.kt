@@ -15,10 +15,11 @@
 package org.angproj.aux.sec
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.rand.AbstractSponge256
 import org.angproj.aux.rand.InitializationVector
 import org.angproj.aux.util.floorMod
-import org.angproj.aux.util.readLongAt
+import org.angproj.aux.util.useWith
 import kotlin.native.concurrent.ThreadLocal
 
 /**
@@ -33,12 +34,12 @@ public object SecureEntropy : AbstractSponge256(), PumpReader {
     }
 
     private fun revitalize() {
-        val entropy = Binary(visibleSize * TypeSize.long)
-        InitializationVector.realTimeGatedEntropy(entropy)
-        (0 until visibleSize).forEach {
-            absorb(entropy.retrieveLong(it * TypeSize.long), it)
+        BufMgr.bin(visibleSize * TypeSize.long).useWith { bin ->
+            InitializationVector.realTimeGatedEntropy(bin)
+            (0 until visibleSize).forEach {
+                absorb(bin.retrieveLong(it * TypeSize.long), it)
+            }
         }
-        entropy.segment.close()
         scramble()
     }
 

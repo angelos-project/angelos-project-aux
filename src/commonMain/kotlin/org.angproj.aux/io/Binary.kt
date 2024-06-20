@@ -17,8 +17,8 @@ package org.angproj.aux.io
 import org.angproj.aux.util.*
 
 public class Binary internal constructor(
-    private val _segment: Segment
-) : Retrievable, Storable {
+    internal val _segment: Segment, protected val view: Boolean = false
+) : Auto, Retrievable, Storable {
 
     public constructor(size: Int) : this(Bytes(size))
 
@@ -104,6 +104,16 @@ public class Binary internal constructor(
 
     override fun storeDouble(position: Int, value: Double): Unit = withinWriteLimit(position, TypeSize.double) {
         _segment.setLong(position, value.toBits()) }
+
+    override fun isView(): Boolean = view
+
+    override fun isMem(): Boolean = _segment is Memory
+
+    override fun close() {
+        _segment.close()
+    }
+
+    public fun asBinary(): Binary = Binary(_segment, true)
 }
 
 public fun ByteArray.toBinary(): Binary {

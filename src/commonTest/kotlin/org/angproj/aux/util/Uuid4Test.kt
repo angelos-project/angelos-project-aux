@@ -43,7 +43,7 @@ class Uuid4Test {
     fun testMonteCarlo() {
         val monteCarlo = Benchmark()
         repeat(10_000_000) {
-            val data = uuid4().toBinary()
+            val data = uuid4().asBinary()
             monteCarlo.scatterPoint(data.retrieveLong(0), data.retrieveLong(8))
         }
         println(monteCarlo.distribution())

@@ -24,8 +24,8 @@ import org.angproj.aux.utf.SequenceType
 import org.angproj.aux.util.Reify
 
 public class TextBuffer private constructor(
-    segment: Segment
-): Buffer(segment), TextReadable, TextWritable {
+    segment: Segment, view: Boolean = false
+): Buffer(segment, view), TextReadable, TextWritable {
 
     public constructor(size: Int) : this(Bytes(size))
 

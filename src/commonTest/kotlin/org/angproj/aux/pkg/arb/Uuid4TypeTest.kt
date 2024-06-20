@@ -19,7 +19,7 @@ class Uuid4TypeTest {
         type.enfoldToBlock(block)
 
         val retrieved = Uuid4Type.unfoldFromBlock(block)
-        assertContentEquals(type.value.toBinary().toByteArray(), retrieved.value.toBinary().toByteArray())
+        assertContentEquals(type.value.asBinary().toByteArray(), retrieved.value.asBinary().toByteArray())
     }
 
     @Test
@@ -31,6 +31,6 @@ class Uuid4TypeTest {
         assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())
 
         val retrieved = Uuid4Type.unfoldFromStream(stream)
-        assertContentEquals(type.value.toBinary().toByteArray(), retrieved.value.toBinary().toByteArray())
+        assertContentEquals(type.value.asBinary().toByteArray(), retrieved.value.asBinary().toByteArray())
     }
 }
