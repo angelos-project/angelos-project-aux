@@ -14,11 +14,7 @@
  */
 package org.angproj.aux.num
 
-import org.angproj.aux.io.Binary
-import org.angproj.aux.util.ExcHelper
-import org.angproj.aux.util.readIntAt
-import org.angproj.aux.util.swapEndian
-import org.angproj.aux.util.writeIntAt
+import org.angproj.aux.util.*
 
 public interface BigMath<E : List<Int>>: BigScope {
     public val mag: E
@@ -103,7 +99,7 @@ public interface BigMath<E : List<Int>>: BigScope {
         }
     }
 
-    public companion object: ExcHelper<BigMathException> {
+    public companion object: ExcHelper<BigMathException>, BufferAware {
 
         override fun thrower(msg: String): BigMathException = BigMathException(msg)
 

@@ -14,10 +14,11 @@
  */
 package org.angproj.aux.num
 
+import org.angproj.aux.util.BufferAware
 import org.angproj.aux.util.ExcHelper
 import kotlin.math.max
 
-public interface BigScope: ExcHelper<BigMathException> {
+public interface BigScope: ExcHelper<BigMathException>, BufferAware {
 
     public fun bigMask(pos: Int): Int = 1 shl (pos and Int.SIZE_BITS - 1)
 

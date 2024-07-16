@@ -3,9 +3,7 @@ package org.angproj.aux.rand
 import org.angproj.aux.io.Binary
 import org.angproj.aux.io.OldReader
 import org.angproj.aux.io.toByteArray
-import org.angproj.aux.util.Benchmark
-import org.angproj.aux.util.DataBuffer
-import org.angproj.aux.util.floorMod
+import org.angproj.aux.util.*
 import org.angproj.aux.util.writeIntAt
 import kotlin.math.PI
 import kotlin.math.absoluteValue
@@ -13,7 +11,7 @@ import kotlin.test.Test
 
 class TestSmallRandom: AbstractSmallRandom(
     Binary(16).also { InitializationVector.realTimeGatedEntropy(it) }
-), OldReader {
+), OldReader, BufferAware {
 
     override fun read(data: ByteArray): Int {
         require(data.size.floorMod(Int.SIZE_BYTES) == 0)

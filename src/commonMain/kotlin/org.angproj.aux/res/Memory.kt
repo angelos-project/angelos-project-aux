@@ -15,13 +15,10 @@
 package org.angproj.aux.res
 
 import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.TypeSize
-import org.angproj.aux.util.Reifiable
-import org.angproj.aux.util.Reify
-import org.angproj.aux.util.chunkLoop
+import org.angproj.aux.util.*
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class Memory: Cleanable {
+public expect class Memory: SpeedCopy, Cleanable {
     public val size: Int
     public val ptr: Long
 }
@@ -40,7 +37,10 @@ internal fun validateAskedMemorySize(size: Int) = require(size in 1..DataSize._1
     "Tried to allocate an illegal amount ($size) of memory" }
 
 @PublishedApi
-internal inline fun <reified T: Reifiable> Memory.copyInto(destination: Memory, destinationOffset: Int, idxFrom: Int, idxTo: Int) {
+internal inline fun <reified T: Reifiable> Memory.copyInto(
+    destination: Memory, destinationOffset: Int, idxFrom: Int, idxTo: Int
+): Int = secure(idxFrom, idxTo, destinationOffset, this, destination)
+/*{
     val length = idxTo - idxFrom
     require(idxFrom <= idxTo) {
         "Start index ($idxFrom) is larger than end index ($idxTo)" }
@@ -67,4 +67,4 @@ internal inline fun <reified T: Reifiable> Memory.copyInto(destination: Memory, 
             speedByteGet<Reify>((idxFrom + it).toLong())
         )
     }
-}
+}*/

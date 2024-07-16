@@ -15,11 +15,12 @@
 package org.angproj.aux.res
 
 import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.SpeedCopy
 import sun.misc.Unsafe
 import java.lang.reflect.Field
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class Memory(public actual val size: Int, public actual val ptr: Long): Cleanable {
+public actual class Memory(public actual val size: Int, public actual val ptr: Long): SpeedCopy, Cleanable {
 
     public override fun dispose() {
         unsafe.freeMemory(ptr)
@@ -36,6 +37,21 @@ public actual class Memory(public actual val size: Int, public actual val ptr: L
             unsafe = f.get(null) as Unsafe
         }
     }
+
+    override val limit: Int = size
+
+    private inline fun <reified T: Number> speedLongGet(index: Int): Long = unsafe.getLong(ptr + index)
+    private inline fun <reified T: Number> speedLongSet(index: Int, value: Long): Unit = unsafe.putLong(ptr + index, value)
+    private inline fun <reified T: Number> speedByteGet(index: Int): Byte = unsafe.getByte(ptr + index)
+    private inline fun <reified T: Number> speedByteSet(index: Int, value: Byte): Unit = unsafe.putByte(ptr + index, value)
+
+    override fun getLong(pos: Int): Long = speedLongGet<Int>(pos)
+
+    override fun getByte(pos: Int): Byte = speedByteGet<Int>(pos)
+
+    override fun setLong(pos: Int, value: Long): Unit = speedLongSet<Int>(pos, value)
+
+    override fun setByte(pos: Int, value: Byte): Unit = speedByteSet<Int>(pos, value)
 }
 
 public actual fun allocateMemory(size: Int): Memory {

@@ -184,67 +184,136 @@ public fun Byte.checkFlag6(): Boolean = (this.toInt() and 0B01000000) == 64
  *
  * @return Boolean result of check.
  */
+
 public fun Byte.checkFlag7(): Boolean = (this.toInt() and -0B10000000) == -128
+
+public fun interface InnerJoin<X: Number, Y: Number> {
+    public operator fun invoke(upper: Y, lower: Y): X
+}
+
+public fun interface Split< X: Number, Y: Number> {
+    public operator fun invoke(value: X): Y
+}
+
+public val joinLong: InnerJoin<Long, Int> = InnerJoin {
+        u: Int, l: Int -> ((u.toLong() shl 32 and -0x100000000) or (l.toLong() and 0xFFFFFFFF)) }
+public val joinInt: InnerJoin<Int, Short> = InnerJoin {
+        u: Short, l: Short -> (u.toInt() shl 16 and -0x10000) or (l.toInt() and 0xFFFF) }
+public val joinShort: InnerJoin<Short, Byte> = InnerJoin {
+        u: Byte, l: Byte -> ((u.toInt() shl 8 and 0xFF00) or (l.toInt() and 0xFF)).toShort() }
+
+public val upperLong: Split<Long, Int> = Split { (it ushr 32).toInt() }
+public val upperInt: Split<Int, Short> = Split { (it ushr 16).toShort() }
+public val upperShort: Split<Short, Byte> = Split { (it.toInt() ushr 8).toByte() }
+
+public val lowerLong: Split<Long, Int> = Split { it.toInt() }
+public val lowerInt: Split<Int, Short> = Split { it.toShort() }
+public val lowerShort: Split<Short, Byte> = Split { it.toByte() }
+
+public object Num {
+
+    public fun interface Swap<T: Number> {
+        public operator fun invoke(value: T): T
+    }
+
+    public fun interface Convert<X, Y> {
+        public operator fun invoke(value: X): Y
+    }
+
+    public val swapLong: Swap<Long> = Swap { joinLong(swapInt(lowerLong(it)), swapInt(upperLong(it))) }
+    public val swapInt: Swap<Int> = Swap { joinInt(swapShort(lowerInt(it)), swapShort(upperInt(it))) }
+    public val swapShort: Swap<Short> = Swap { joinShort(lowerShort(it), upperShort(it)) }
+
+    public val convL2UL: Convert<Long, ULong> = Convert { it.toULong() }
+    public val convUL2L: Convert<ULong, Long> = Convert { it.toLong() }
+    public val convL2D: Convert<Long, Double> = Convert { Double.fromBits(it) }
+    public val convD2L: Convert<Double, Long> = Convert { it.toBits() }
+
+    public val convI2UI: Convert<Int, UInt> = Convert { it.toUInt() }
+    public val convUI2I: Convert<UInt, Int> = Convert { it.toInt() }
+    public val convI2F: Convert<Int, Float> = Convert { Float.fromBits(it) }
+    public val convF2I: Convert<Float, Int> = Convert { it.toBits() }
+
+    public val convS2US: Convert<Short, UShort> = Convert { it.toUShort() }
+    public val convUS2S: Convert<UShort, Short> = Convert { it.toShort() }
+
+    public val convB2UB: Convert<Byte, UByte> = Convert { it.toUByte() }
+    public val convUB2B: Convert<UByte, Byte> = Convert { it.toByte() }
+}
+
+public fun Byte.conv2uB(): UByte = Num.convB2UB(this)
+public fun UByte.conv2D(): Byte = Num.convUB2B(this)
+public fun Short.conv2uS(): UShort = Num.convS2US(this)
+public fun UShort.conv2S(): Short = Num.convUS2S(this)
+public fun Int.conv2uI(): UInt = Num.convI2UI(this)
+public fun UInt.conv2I(): Int = Num.convUI2I(this)
+public fun Int.conv2F(): Float = Num.convI2F(this)
+public fun Float.conv2I(): Int = Num.convF2I(this)
+public fun Long.conv2uL(): ULong = Num.convL2UL(this)
+public fun ULong.conv2L(): Long = Num.convUL2L(this)
+public fun Long.conv2D(): Double = Num.convL2D(this)
+public fun Double.conv2L(): Long = Num.convD2L(this)
+
 
 /**
  * Swap endian on Short.
  *
  * @return
  */
-public fun Short.swapEndian(): Short = reverseShort(this)
+public fun Short.swapEndian(): Short = Num.swapShort(this)
 
 /**
  * Swap endian on UShort.
  *
  * @return
  */
-public fun UShort.swapEndian(): UShort = reverseShort(this.toShort()).toUShort()
+public fun UShort.swapEndian(): UShort = this.conv2S().swapEndian().conv2uS()
 
 /**
  * Swap endian on Char.
  *
  * @return
  */
-public fun Char.swapEndian(): Char = reverseShort(this.code.toShort()).toInt().toChar()
+public fun Char.swapEndian(): Char = this.code.toShort().swapEndian().toInt().toChar()
 
 /**
  * Swap endian on Int.
  *
  * @return
  */
-public fun Int.swapEndian(): Int = reverseInt(this)
+public fun Int.swapEndian(): Int = Num.swapInt(this)
 
 /**
  * Swap endian on UInt.
  *
  * @return
  */
-public fun UInt.swapEndian(): UInt = reverseInt(this.toInt()).toUInt()
+public fun UInt.swapEndian(): UInt = this.conv2I().swapEndian().conv2uI()
 
 /**
  * Swap endian on Long.
  *
  * @return
  */
-public fun Long.swapEndian(): Long = reverseLong(this)
+public fun Long.swapEndian(): Long = Num.swapLong(this)
 
 /**
  * Swap endian on ULong.
  *
  * @return
  */
-public fun ULong.swapEndian(): ULong = reverseLong(this.toLong()).toULong()
+public fun ULong.swapEndian(): ULong = this.conv2L().swapEndian().conv2uL()
 
 /**
  * Swap endian on Float.
  *
  * @return
  */
-public fun Float.swapEndian(): Float = Float.fromBits(reverseInt(this.toBits()))
+public fun Float.swapEndian(): Float = this.conv2I().swapEndian().conv2F()
 
 /**
  * Swap endian on Double.
  *
  * @return
  */
-public fun Double.swapEndian(): Double = Double.fromBits(reverseLong(this.toBits()))
+public fun Double.swapEndian(): Double = this.conv2L().swapEndian().conv2D()

@@ -15,11 +15,12 @@
 package org.angproj.aux.num
 
 import org.angproj.aux.util.BinHex
+import org.angproj.aux.util.BufferAware
 import org.angproj.aux.util.writeIntAt
 import org.angproj.aux.util.writeLongAt
 import java.math.BigInteger as JavaBigInteger
 
-object Debugger {
+object Debugger: BufferAware {
 
     private const val sigMagError = "sigNum and magnitude not equal, either bigger or not zero."
     private const val magSizeError = "Magnitude has leading zero integers."

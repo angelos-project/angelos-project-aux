@@ -18,7 +18,7 @@ import org.angproj.aux.util.*
 
 public class Binary internal constructor(
     internal val _segment: Segment, protected val view: Boolean = false
-) : Auto, Retrievable, Storable {
+) : Auto, Retrievable, Storable, BufferAware {
 
     public constructor(size: Int) : this(Bytes(size))
 
@@ -70,7 +70,7 @@ public class Binary internal constructor(
         _segment.getLong(position).toULong() }
 
     override fun retrieveFloat(position: Int): Float = withinReadLimit(position, TypeSize.float) {
-        _segment.getInt(position).toFloat() }
+        Float.fromBits(_segment.getInt(position)) }
 
     override fun retrieveDouble(position: Int): Double = withinReadLimit(position, TypeSize.double) {
         Double.fromBits(_segment.getLong(position)) }
@@ -116,13 +116,13 @@ public class Binary internal constructor(
     public fun asBinary(): Binary = Binary(_segment, true)
 }
 
-public fun ByteArray.toBinary(): Binary {
-    val binary = Binary(size)
-    val index = chunkLoop<Reify>(0, binary.limit, TypeSize.long) {
-        binary.storeLong(it, readLongAt(it))
+public fun ByteArray.toBinary(): Binary = withBufferAware(this){
+    val binary = Binary(it.size)
+    val index = chunkLoop<Reify>(0, binary.limit, TypeSize.long) { v ->
+        binary.storeLong(v, it.readLongAt(v))
     }
-    chunkSimple<Reify>(index, binary.limit, Byte.SIZE_BYTES) {
-        binary.storeByte(it, this[it])
+    chunkLoop<Reify>(index, binary.limit, TypeSize.byte) { v ->
+        binary.storeByte(v, it[v])
     }
     return binary
 }
@@ -132,7 +132,7 @@ public fun Binary.toByteArray(): ByteArray {
     val index = chunkLoop<Reify>(0, limit, TypeSize.long) {
         byteArray.writeLongAt(it, retrieveLong(it))
     }
-    chunkSimple<Reify>(index, limit, Byte.SIZE_BYTES) {
+    chunkLoop<Reify>(index, limit, Byte.SIZE_BYTES) {
         byteArray[it] = retrieveByte(it)
     }
     return byteArray

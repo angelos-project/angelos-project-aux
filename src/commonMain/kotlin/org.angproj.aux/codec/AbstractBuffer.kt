@@ -19,7 +19,7 @@ import org.angproj.aux.io.Writable
 import org.angproj.aux.utf.*
 import org.angproj.aux.util.*
 
-public abstract class AbstractBuffer: Readable, Writable {
+public abstract class AbstractBuffer: Readable, Writable, BufferAware {
 
     protected abstract val _data: ByteArray
 

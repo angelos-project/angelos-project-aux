@@ -29,11 +29,11 @@ public abstract class Segment(
     final override val length: Int = SpeedCopy.addMarginInTotalBytes(idxLimit, idxSize)
     final override val marginSized: Int = SpeedCopy.addMarginByIndexType(idxLimit, idxSize)
 
-    private var _limit: Int = length
+    private var _limit: Int = size
     override var limit: Int
         get() = _limit
         set(value) {
-            require(value in 0..length) { "Proposed limit is outside boundaries." }
+            require(value in 0..size) { "Proposed limit is outside boundaries." }
             _limit = value
         }
 

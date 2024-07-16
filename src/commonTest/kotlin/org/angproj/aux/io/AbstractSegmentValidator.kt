@@ -21,7 +21,7 @@ import org.angproj.aux.util.*
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
-abstract class AbstractSegmentValidator {
+abstract class AbstractSegmentValidator: BufferAware {
 
     val arr1 = ByteArray(DataSize._128B.size) { (-it - 1).toByte() } // From -1 to -128
     val arr2 = ByteArray(DataSize._64B.size) { it.toByte() } // From 0 to 63

@@ -21,6 +21,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
+import kotlin.time.measureTime
 
 class MemoryTest {
     @Test
@@ -105,5 +106,52 @@ class MemoryTest {
 
         mem1.dispose()
         mem2.dispose()
+    }
+
+    @Test
+    fun testCopyInto2(): Unit = ifNotJs {
+        // Allocate two memory chunks
+        val mem1 = allocateMemory(DataSize._128B.size)
+        val mem2 = allocateMemory(DataSize._64B.size)
+        // Allocate equal reference arrays reflecting the chunks
+        val arr1 = ByteArray(mem1.size) { (-it - 1).toByte() } // From -1 to -128
+        val arr2 = ByteArray(mem2.size) { it.toByte() } // From 0 to 63
+
+        // Copy and verify that #1 reflect each other
+        (0 until mem1.size).forEach { mem1.setByte(it, arr1[it]) }
+        (0 until mem1.size).forEach {
+            assertEquals(mem1.getByte(it), arr1[it]) }
+
+        // Copy and verify that #2 reflect each other
+        (0 until mem2.size).forEach { mem2.setByte(it, arr2[it]) }
+        (0 until mem2.size).forEach {
+            assertEquals(mem2.getByte(it), arr2[it]) }
+
+        // Prove that a chunk is fully saturated as the reflecting array
+        assertFails { println(arr1[mem1.size]) }
+
+        // Copy chunk 2 into the middle of chunk 1
+        mem2.copyInto<Reify>(mem1, 32, 0, 64)
+        arr2.copyInto(arr1, 32, 0, 64)
+        arr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
+            assertEquals(mem1.getByte(it), arr1[it]) }
+
+        mem1.dispose()
+        mem2.dispose()
+    }
+
+    // @Test
+    fun testSpeedMeasure() {
+        val mem1 = allocateMemory(DataSize._128M.size)
+        val mem2 = allocateMemory(DataSize._128M.size)
+
+        var time = measureTime { mem1.copyInto<Reify>(mem2, 0, 0, mem1.size) }
+        println(time)
+
+        val arr1 = ByteArray(DataSize._128M.size)
+        val arr2 = ByteArray(DataSize._128M.size)
+
+        time = measureTime { arr1.copyInto(arr2) }
+        println(time)
     }
 }

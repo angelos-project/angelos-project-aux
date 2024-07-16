@@ -18,7 +18,7 @@ import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 
 
-public interface CopySource {
+/*public interface CopySource {
     public fun get8(): (pos: Int) -> Byte
     public fun get64(): (pos: Int) -> Long
 }
@@ -28,17 +28,22 @@ public interface CopyDestination {
     public fun set64(): (pos: Int, value: Long) -> Unit
 }
 
-public abstract class Copy: CopySource, CopyDestination {
+public abstract class Copyable {
+    internal abstract fun src(): CopySource
+    internal abstract fun dst(): CopyDestination
+}
+
+public abstract class Copy(private val src: CopySource, private val dst: CopyDestination): CopySource, CopyDestination {
 
     private inline fun <reified R: Reifiable> build64(): (Int) -> Unit {
-        val s64 = set64()
-        val g64 = get64()
+        val s64 = dst.set64()
+        val g64 = src.get64()
         return { it: Int -> s64(it, g64(it)) }
     }
 
     private inline fun <reified R: Reifiable> build8(): (Int) -> Unit {
-        val s8 = set8()
-        val g8 = get8()
+        val s8 = dst.set8()
+        val g8 = src.get8()
         return { it: Int -> s8(it, g8(it)) }
     }
 
@@ -65,7 +70,7 @@ public abstract class Copy: CopySource, CopyDestination {
     }
 }
 
-public class Adam {
+public class Adam: Copyable() {
 
     protected fun readLong(pos: Int) : Long = 34
 
@@ -73,6 +78,19 @@ public class Adam {
         override fun get8(): (Int) -> Byte = { 0x01 }
 
         override fun get64(): (pos: Int) -> Long = { this.readLong(pos) }
+    }
+
+    override fun src(): CopySource = object : CopySource {
+        override fun get8(): (pos: Int) -> Byte = { 0x01 }
+
+        override fun get64(): (pos: Int) -> Long {
+            TODO("Not yet implemented")
+        }
+
+    }
+
+    override fun dst(): CopyDestination {
+        TODO("Not yet implemented")
     }
 }
 
@@ -90,3 +108,4 @@ public fun doCopy() {
 }
 
 public object Subject:
+*/

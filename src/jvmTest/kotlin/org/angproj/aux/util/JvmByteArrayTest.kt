@@ -15,13 +15,14 @@
 package org.angproj.aux.util
 
 import junit.framework.TestCase.assertEquals
+import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.ByteBuffer as JavaByteBuffer
 import kotlin.test.Test
 import kotlin.test.assertNotEquals
 
-class JvmByteArrayTest {
-    private val refChar: Char = 'Ö'
+class JvmByteArrayTest: BufferAware {
+    /*private val refChar: Char = 'Ö'
 
     private val refShort: Short = 0B1010101_10101010
 
@@ -30,7 +31,21 @@ class JvmByteArrayTest {
     private val refLong: Long = 0B1010101_10101010_10101010_10101010_10101010_10101010_10101010_10101010L
 
     private val refFloat: Float = 23.43585F
-    private val refDouble: Double = -0.892384774029876
+    private val refDouble: Double = -0.892384774029876*/
+
+    private val refChar: Char = 'Ö'
+
+    private val refLong: Long = 0x3569356935693569L
+    private val refULong: ULong = 0xCA96CA96CA96CA96uL
+
+    private val refInt: Int = 0x35693569
+    private val refUInt: UInt = 0xCA96CA96u
+
+    private val refShort: Short = 0x3569
+    private val refUShort: UShort = 0xCA96u
+
+    private val refFloat: Float = Float.fromBits(refInt)
+    private val refDouble: Double = Double.fromBits(refLong)
 
     @Test
     fun short() {

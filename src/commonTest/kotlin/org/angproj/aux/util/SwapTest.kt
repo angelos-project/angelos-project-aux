@@ -20,17 +20,17 @@ import kotlin.test.assertEquals
 class SwapTest {
     private val refChar: Char = 'Ö'
 
-    private val refShort: Short = 0B1010101_10101010
-    private val refUShort: UShort = 0B10101010_10101010u
+    private val refLong: Long = 0x3569356935693569L
+    private val refULong: ULong = 0xCA96CA96CA96CA96uL
 
-    private val refInt: Int = 0B1010101_10101010_10101010_10101010
-    private val refUInt: UInt = 0B10101010_10101010_10101010_10101010u
+    private val refInt: Int = 0x35693569
+    private val refUInt: UInt = 0xCA96CA96u
 
-    private val refLong: Long = 0B1010101_10101010_10101010_10101010_10101010_10101010_10101010_10101010L
-    private val refULong: ULong = 0B10101010_10101010_10101010_10101010_10101010_10101010_10101010_10101010u
+    private val refShort: Short = 0x3569
+    private val refUShort: UShort = 0xCA96u
 
-    private val refFloat: Float = 23.43585F
-    private val refDouble: Double = -0.892384774029876
+    private val refFloat: Float = Float.fromBits(refInt)
+    private val refDouble: Double = Double.fromBits(refLong)
 
     /**
      * Testing .swapEndian() on Short.
@@ -38,7 +38,7 @@ class SwapTest {
      */
     @Test
     fun shortSwapEndian() {
-        assertEquals(refShort.swapEndian().swapEndian(), refShort)
+        assertEquals(refShort.swapEndian(), 0x6935)
         /*assertEquals(Short.MIN_VALUE.swapEndian().swapEndian(), Short.MIN_VALUE)
         assertEquals(Short.MAX_VALUE.swapEndian().swapEndian(), Short.MAX_VALUE)*/
     }
@@ -49,7 +49,7 @@ class SwapTest {
      */
     @Test
     fun ushortSwapEndian() {
-        assertEquals(refUShort.swapEndian().swapEndian(), refUShort)
+        assertEquals(refUShort.swapEndian(), 0x96CAu)
         /*assertEquals(UShort.MIN_VALUE.swapEndian().swapEndian(), UShort.MIN_VALUE)
         assertEquals(UShort.MAX_VALUE.swapEndian().swapEndian(), UShort.MAX_VALUE)*/
     }
@@ -71,7 +71,7 @@ class SwapTest {
      */
     @Test
     fun intSwapEndian() {
-        assertEquals(refInt.swapEndian().swapEndian(), refInt)
+        assertEquals(refInt.swapEndian(), 0x69356935)
         /*assertEquals(Int.MIN_VALUE.swapEndian().swapEndian(), Int.MIN_VALUE)
         assertEquals(Int.MAX_VALUE.swapEndian().swapEndian(), Int.MAX_VALUE)*/
     }
@@ -82,7 +82,7 @@ class SwapTest {
      */
     @Test
     fun uintSwapEndian() {
-        assertEquals(refUInt.swapEndian().swapEndian(), refUInt)
+        assertEquals(refUInt.swapEndian(), 0x96CA96CAu)
         /*assertEquals(UInt.MIN_VALUE.swapEndian().swapEndian(), UInt.MIN_VALUE)
         assertEquals(UInt.MAX_VALUE.swapEndian().swapEndian(), UInt.MAX_VALUE)*/
     }
@@ -93,7 +93,7 @@ class SwapTest {
      */
     @Test
     fun longSwapEndian() {
-        assertEquals(refLong.swapEndian().swapEndian(), refLong)
+        assertEquals(refLong.swapEndian(), 0x6935693569356935L)
         /*assertEquals(Long.MIN_VALUE.swapEndian().swapEndian(), Long.MIN_VALUE)
         assertEquals(Long.MAX_VALUE.swapEndian().swapEndian(), Long.MAX_VALUE)*/
     }
@@ -104,7 +104,7 @@ class SwapTest {
      */
     @Test
     fun ulongSwapEndian() {
-        assertEquals(refULong.swapEndian().swapEndian(), refULong)
+        assertEquals(refULong.swapEndian(), 0x96CA96CA96CA96CAuL)
         /*assertEquals(ULong.MIN_VALUE.swapEndian().swapEndian(), ULong.MIN_VALUE)
         assertEquals(ULong.MAX_VALUE.swapEndian().swapEndian(), ULong.MAX_VALUE)*/
     }
@@ -115,7 +115,7 @@ class SwapTest {
      */
     @Test
     fun floatSwapEndian() {
-        assertEquals(refFloat.swapEndian().swapEndian().toRawBits(), refFloat.toRawBits())
+        assertEquals(refFloat.swapEndian(), Float.fromBits(refInt.swapEndian()))
         /*assertEquals((Float.MIN_VALUE).swapEndian().swapEndian().toRawBits(), Float.MIN_VALUE.toRawBits()) // <-- Fix KN
         assertEquals((Float.MAX_VALUE).swapEndian().swapEndian().toRawBits(), Float.MAX_VALUE.toRawBits()) // <-- Fix KN/JVM */
     }
@@ -126,7 +126,7 @@ class SwapTest {
      */
     @Test
     fun doubleSwapEndian() {
-        assertEquals(refDouble.swapEndian().swapEndian(), refDouble)
+        assertEquals(refDouble.swapEndian(), Double.fromBits(refLong.swapEndian()))
         /*assertEquals(Double.MIN_VALUE.swapEndian().swapEndian(), Double.MIN_VALUE)
         assertEquals(Double.MAX_VALUE.swapEndian().swapEndian().toRawBits(), Double.MAX_VALUE.toRawBits()) // <-- Fix KN/JVM */
     }

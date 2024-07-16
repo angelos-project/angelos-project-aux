@@ -82,3 +82,11 @@ public interface EndianAware {
         public val bigEndian: Boolean = !Endian.native.asLittleIfUnknown()
     }
 }
+
+public object EndianAwareContext: EndianAware
+
+public inline fun<reified T> withEndianAware(block: EndianAwareContext.() -> T): T = EndianAwareContext.block()
+
+public inline fun<reified T> withEndianAware(
+    array: ByteArray, block: EndianAwareContext.(array: ByteArray) -> T
+): T = EndianAwareContext.block(array)

@@ -17,20 +17,20 @@ package org.angproj.aux.util
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ByteArrayTest {
+class ByteArrayTest: BufferAware {
     private val refChar: Char = 'Ö'
 
-    private val refShort: Short = 0B1010101_10101010
-    private val refUShort: UShort = 0B10101010_10101010u
+    private val refLong: Long = 0x3569356935693569L
+    private val refULong: ULong = 0xCA96CA96CA96CA96uL
 
-    private val refInt: Int = 0B1010101_10101010_10101010_10101010
-    private val refUInt: UInt = 0B10101010_10101010_10101010_10101010u
+    private val refInt: Int = 0x35693569
+    private val refUInt: UInt = 0xCA96CA96u
 
-    private val refLong: Long = 0B1010101_10101010_10101010_10101010_10101010_10101010_10101010_10101010L
-    private val refULong: ULong = 0B10101010_10101010_10101010_10101010_10101010_10101010_10101010_10101010u
+    private val refShort: Short = 0x3569
+    private val refUShort: UShort = 0xCA96u
 
-    private val refFloat: Float = 23.43585F
-    private val refDouble: Double = -0.892384774029876
+    private val refFloat: Float = Float.fromBits(refInt)
+    private val refDouble: Double = Double.fromBits(refLong)
 
     @Test
     fun short() {
@@ -85,7 +85,7 @@ class ByteArrayTest {
     fun float() {
         val array = ByteArray(8)
         array.writeFloatAt(0, refFloat)
-        assertEquals(array.readFloatAt(0).toRawBits(), refFloat.toRawBits())
+        assertEquals(array.readFloatAt(0), refFloat)
     }
 
     @Test

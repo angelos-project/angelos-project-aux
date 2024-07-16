@@ -16,6 +16,7 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.BufferAware
 import org.angproj.aux.util.KotlinPlatformVariant
 import org.angproj.aux.util.getVariant
 import org.angproj.aux.util.readULongAt
