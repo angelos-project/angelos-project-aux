@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.util.Reifiable
+
 public enum class DataSize(public val size: Int) {
     UNKNOWN(-1),
     _32B(32),
@@ -41,5 +43,13 @@ public enum class DataSize(public val size: Int) {
     _128M(_64M.size * 2),
     _256M(_128M.size * 2),
     _512M(_256M.size * 2),
-    _1G(_512M.size * 2),
+    _1G(_512M.size * 2);
 }
+
+/*private inline operator fun<reified R: Reifiable> Int.plusAssign(other: DataSize): Unit = this += other.size
+
+private operator fun Int.plusAssign(size: Int) {
+
+}
+
+public fun Array<DataSize>.sum()*/

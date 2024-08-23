@@ -16,6 +16,7 @@ package org.angproj.aux.utf
 
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
+import org.angproj.aux.util.withUnicodeAware
 
 /**
  * https://www.ietf.org/rfc/rfc2279.txt
@@ -112,12 +113,12 @@ public object Glyph {
  */
 public fun Byte.sequenceTypeOf(): SequenceType = SequenceType.qualify(this)
 
-public fun ByteArray.readGlyphAt(offset: Int): CodePoint {
+public fun ByteArray.readGlyphAt(offset: Int): CodePoint = withUnicodeAware(this) {
     var pos = offset
-    return Glyph.readStart { this[pos++] }
+    return readGlyphSafe(size - pos) { it[pos++] }
 }
 
-public fun ByteArray.writeGlyphAt(offset: Int, value: CodePoint): Int = value.sectionTypeOf().also{ secType ->
-    this[offset] = Glyph.startOctetOf<Reifiable>(secType, value)
-    (1 until secType.size).forEach{ this[offset + it] = Glyph.followOctetOf<Reifiable>(secType, value, it) }
-}.size
+public fun ByteArray.writeGlyphAt(offset: Int, value: CodePoint): Int = withUnicodeAware(this) {
+    var pos = offset
+    return writeGlyphSafe(value, size - pos) { it2 -> it[pos++] = it2 }
+}

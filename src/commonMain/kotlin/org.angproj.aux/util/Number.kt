@@ -242,7 +242,7 @@ public object Num {
 }
 
 public fun Byte.conv2uB(): UByte = Num.convB2UB(this)
-public fun UByte.conv2D(): Byte = Num.convUB2B(this)
+public fun UByte.conv2B(): Byte = Num.convUB2B(this)
 public fun Short.conv2uS(): UShort = Num.convS2US(this)
 public fun UShort.conv2S(): Short = Num.convUS2S(this)
 public fun Int.conv2uI(): UInt = Num.convI2UI(this)

@@ -23,3 +23,30 @@ public expect object Default: MemoryManager {
 
     override fun recycle(segment: Segment)
 }
+
+public fun interface Set64 {
+    public fun invoke(pos: Int, value: Long)
+}
+
+public fun interface Set8 {
+    public fun invoke(pos: Int, value: Byte)
+}
+
+public fun interface Get64 {
+    public fun invoke(pos: Int): Long
+}
+
+public fun interface Get8 {
+    public fun invoke(pos: Int): Byte
+}
+
+public interface Copy {
+    public val set64: Set64
+    public val set8: Set8
+    public val get64: Get64
+    public val get8: Get8
+
+    private inline fun bla() {
+
+    }
+}

@@ -26,7 +26,7 @@ public interface NumberAware {
     public fun Double.swapEndian(): Double = withNumeral(this) { swapLong<Long>(it.convD2L<Int>()).convL2D<Int>() }
 
     public fun Byte.conv2uB(): UByte = withNumeral(this) { it.convB2UB<Int>() }
-    public fun UByte.conv2D(): Byte = withNumeral(this) { it.convUB2B<Int>() }
+    public fun UByte.conv2B(): Byte = withNumeral(this) { it.convUB2B<Int>() }
     public fun Short.conv2uS(): UShort = withNumeral(this) { it.convS2US<Int>() }
     public fun UShort.conv2S(): Short = withNumeral(this) { it.convUS2S<Int>() }
     public fun Int.conv2uI(): UInt = withNumeral(this) { it.convI2UI<Int>() }

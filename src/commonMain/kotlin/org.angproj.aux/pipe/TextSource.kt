@@ -16,15 +16,17 @@ package org.angproj.aux.pipe
 
 import org.angproj.aux.io.TextWritable
 import org.angproj.aux.utf.CodePoint
-import org.angproj.aux.utf.Glyph
 import org.angproj.aux.util.Reify
+import org.angproj.aux.util.withUnicodeAware
 
 
 public class TextSource(
     pipe: PushPipe<TextType>
 ): AbstractSource<TextType>(pipe), TextType, TextWritable {
-    override fun writeGlyph(codePoint: CodePoint): Int = Glyph.writeStart(codePoint) {
-        if(pos == seg.limit && _open) pushSegment<Reify>()
-        seg.setByte(pos++, it)
+    override fun writeGlyph(codePoint: CodePoint): Int = withUnicodeAware {
+        writeGlyph(codePoint) {
+            if(pos == seg.limit && _open) pushSegment<Reify>()
+            seg.setByte(pos++, it)
+        }
     }
 }

@@ -15,10 +15,11 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
+import org.angproj.aux.util.NumberAware
 
 public class BinaryBuffer internal constructor(
     segment: Segment, view: Boolean = false
-): Buffer(segment, view), BinaryReadable, BinaryWritable {
+): Buffer(segment, view), BinaryReadable, BinaryWritable, NumberAware {
 
     public constructor(size: Int) : this(Bytes(size))
 
@@ -40,61 +41,61 @@ public class BinaryBuffer internal constructor(
         _segment.getByte(_position) }
 
     override fun readUByte(): UByte = withinReadLimit(TypeSize.uByte) {
-        _segment.getByte(_position).toUByte() }
+        _segment.getByte(_position).conv2uB() }
 
     override fun readShort(): Short = withinReadLimit(TypeSize.short) {
         _segment.getShort(_position) }
 
     override fun readUShort(): UShort = withinReadLimit(TypeSize.uShort) {
-        _segment.getShort(_position).toUShort() }
+        _segment.getShort(_position).conv2uS() }
 
     override fun readInt(): Int = withinReadLimit(TypeSize.int) {
         _segment.getInt(_position) }
 
     override fun readUInt(): UInt = withinReadLimit(TypeSize.uInt) {
-        _segment.getInt(_position).toUInt() }
+        _segment.getInt(_position).conv2uI() }
 
     override fun readLong(): Long = withinReadLimit(TypeSize.long) {
         _segment.getLong(_position) }
 
     override fun readULong(): ULong = withinReadLimit(TypeSize.uLong) {
-        _segment.getLong(_position).toULong() }
+        _segment.getLong(_position).conv2uL() }
 
     override fun readFloat(): Float = withinReadLimit(TypeSize.float) {
-        Float.fromBits(_segment.getInt(_position)) }
+        _segment.getInt(_position).conv2F() }
 
     override fun readDouble(): Double = withinReadLimit(TypeSize.double) {
-        Double.fromBits(_segment.getLong(_position)) }
+        _segment.getLong(_position).conv2D() }
 
     override fun writeByte(value: Byte): Unit = withinWriteLimit(TypeSize.byte) {
         _segment.setByte(_position, value) }
 
     override fun writeUByte(value: UByte): Unit = withinWriteLimit(TypeSize.uByte) {
-        _segment.setByte(_position, value.toByte()) }
+        _segment.setByte(_position, value.conv2B()) }
 
     override fun writeShort(value: Short): Unit = withinWriteLimit(TypeSize.short) {
         _segment.setShort(_position, value) }
 
     override fun writeUShort(value: UShort): Unit = withinWriteLimit(TypeSize.uShort) {
-        _segment.setShort(_position, value.toShort()) }
+        _segment.setShort(_position, value.conv2S()) }
 
     override fun writeInt(value: Int): Unit = withinWriteLimit(TypeSize.int) {
         _segment.setInt(_position, value) }
 
     override fun writeUInt(value: UInt): Unit = withinWriteLimit(TypeSize.uInt) {
-        _segment.setInt(_position, value.toInt()) }
+        _segment.setInt(_position, value.conv2I()) }
 
     override fun writeLong(value: Long): Unit = withinWriteLimit(TypeSize.long) {
         _segment.setLong(_position, value) }
 
     override fun writeULong(value: ULong): Unit = withinWriteLimit(TypeSize.uLong) {
-        _segment.setLong(_position, value.toLong()) }
+        _segment.setLong(_position, value.conv2L()) }
 
     override fun writeFloat(value: Float): Unit = withinWriteLimit(TypeSize.float) {
-        _segment.setInt(_position, value.toBits()) }
+        _segment.setInt(_position, value.conv2I()) }
 
     override fun writeDouble(value: Double): Unit = withinWriteLimit(TypeSize.long) {
-        _segment.setLong(_position, value.toBits()) }
+        _segment.setLong(_position, value.conv2L()) }
 
     public fun asBinary(): Binary = Binary(_segment, true)
 }
