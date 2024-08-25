@@ -29,8 +29,8 @@ public class TextBuffer private constructor(
     override fun create(segment: Segment): TextBuffer = TextBuffer(segment)
 
     override fun readGlyph(): CodePoint = withUnicodeAware {
-        readGlyphSafe(remaining) { segment.getByte(_position++) } }
+        readGlyphBlk(remaining) { segment.getByte(_position++) } }
 
     override fun writeGlyph(codePoint: CodePoint): Int = withUnicodeAware {
-        writeGlyphSafe(codePoint, remaining) { segment.setByte(_position++, it) } }
+        writeGlyphBlk(codePoint, remaining) { segment.setByte(_position++, it) } }
 }

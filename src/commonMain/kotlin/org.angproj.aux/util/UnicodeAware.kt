@@ -38,85 +38,59 @@ public interface UnicodeAware {
         }
     }
 
-    private inline fun <reified R : Number> octetRead(readOctet: () -> Byte): Int {
+    private inline fun <reified R : Number> octetReadStrm(readOctet: () -> Byte): Int {
         val octet = readOctet().toInt()
         return when {
             octet and 0B1000_0000 == 0B0000_0000 -> octet and 0B0111_1111
-            octet and 0B1110_0000 == 0B1100_0000 -> followDataRead<Int>(octet and 0B0001_1111, readOctet)
+            octet and 0B1110_0000 == 0B1100_0000 -> followDataRead<Int>(
+                octet and 0B0001_1111, readOctet
+            )
             octet and 0B1111_0000 == 0B1110_0000 -> followDataLoop<Int>(
-                2,
-                octet and 0B0000_1111,
-                readOctet
+                2, octet and 0B0000_1111, readOctet
             ) //SequenceType.START_THREE_LONG
             octet and 0B1111_1000 == 0B1111_0000 -> followDataLoop<Int>(
-                3,
-                octet and 0B0000_0111,
-                readOctet
+                3, octet and 0B0000_0111, readOctet
             ) //SequenceType.START_FOUR_LONG
             octet and 0B1111_1100 == 0B1111_1000 -> followDataLoop<Int>(
-                4,
-                octet and 0B0000_0011,
-                readOctet
+                4, octet and 0B0000_0011, readOctet
             ) //SequenceType.START_FIVE_LONG // Just to deal with the illegal sequence
             octet and 0B1111_1110 == 0B1111_1100 -> followDataLoop<Int>(
-                5,
-                octet and 0B0000_0001,
-                readOctet
+                5, octet and 0B0000_0001, readOctet
             ) //SequenceType.START_SIX_LONG // Just to deal with the illegal sequence
             else -> REPLACEMENT_CHARACTER
         }
     }
 
-    private inline fun <reified R : Number> octetReadSafe(remaining: Int, readOctet: () -> Byte): Int {
+    private inline fun <reified R : Number> octetReadBlk(remaining: Int, readOctet: () -> Byte): Int {
         val octet = readOctet().toInt()
         return when {
             octet and 0B1000_0000 == 0B0000_0000 -> octet and 0B0111_1111
             octet and 0B1110_0000 == 0B1100_0000 -> req(remaining, 2) {
-                followDataRead<Int>(
-                    octet and 0B0001_1111,
-                    readOctet
-                )
+                followDataRead<Int>(octet and 0B0001_1111, readOctet)
             }
-
             octet and 0B1111_0000 == 0B1110_0000 -> req(remaining, 3) {
-                followDataLoop<Int>(
-                    2,
-                    octet and 0B0000_1111,
-                    readOctet
-                )
+                followDataLoop<Int>(2, octet and 0B0000_1111, readOctet)
             } //SequenceType.START_THREE_LONG
             octet and 0B1111_1000 == 0B1111_0000 -> req(remaining, 4) {
-                followDataLoop<Int>(
-                    3,
-                    octet and 0B0000_0111,
-                    readOctet
-                )
+                followDataLoop<Int>(3, octet and 0B0000_0111, readOctet)
             } //SequenceType.START_FOUR_LONG
             octet and 0B1111_1100 == 0B1111_1000 -> req(remaining, 5) {
-                followDataLoop<Int>(
-                    4,
-                    octet and 0B0000_0011,
-                    readOctet
-                )
+                followDataLoop<Int>(4, octet and 0B0000_0011, readOctet)
             } //SequenceType.START_FIVE_LONG // Just to deal with the illegal sequence
             octet and 0B1111_1110 == 0B1111_1100 -> req(remaining, 6) {
-                followDataLoop<Int>(
-                    5,
-                    octet and 0B0000_0001,
-                    readOctet
-                )
+                followDataLoop<Int>(5, octet and 0B0000_0001, readOctet)
             } //SequenceType.START_SIX_LONG // Just to deal with the illegal sequence
             else -> REPLACEMENT_CHARACTER
         }
     }
 
-    public fun readGlyph(readOctet: () -> Byte): CodePoint {
-        val value = octetRead<Int>(readOctet)
+    public fun readGlyphStrm(readOctet: () -> Byte): CodePoint {
+        val value = octetReadStrm<Int>(readOctet)
         return CodePoint(value)
     }
 
-    public fun readGlyphSafe(remaining: Int, readOctet: () -> Byte): CodePoint {
-        val value = req(remaining, 1) { octetReadSafe<Int>(remaining, readOctet) }
+    public fun readGlyphBlk(remaining: Int, readOctet: () -> Byte): CodePoint {
+        val value = req(remaining, 1) { octetReadBlk<Int>(remaining, readOctet) }
         return CodePoint(value)
     }
 
@@ -152,25 +126,22 @@ public interface UnicodeAware {
         return 4
     }
 
-    private inline fun <reified R : Number> octetWrite(codePoint: Int, writeOctet: (octet: Byte) -> Unit): Int {
-        return when (codePoint) {
-            in GLYPH_HOLE -> 0
-            in GLYPH_SIZE_1 -> octetWrite1<Int>(codePoint, writeOctet)
-            in GLYPH_SIZE_2 -> octetWrite2<Int>(codePoint, writeOctet)
-            in GLYPH_SIZE_3 -> octetWrite3<Int>(codePoint, writeOctet)
-            in GLYPH_SIZE_4 -> octetWrite4<Int>(codePoint, writeOctet)
+    private inline fun <reified R : Number> octetWriteStrm(codePoint: Int, writeOctet: (octet: Byte) -> Unit): Int {
+        return when (val value = escapeInvalid<Int>(codePoint)) {
+            in GLYPH_SIZE_1 -> octetWrite1<Int>(value, writeOctet)
+            in GLYPH_SIZE_2 -> octetWrite2<Int>(value, writeOctet)
+            in GLYPH_SIZE_3 -> octetWrite3<Int>(value, writeOctet)
+            in GLYPH_SIZE_4 -> octetWrite4<Int>(value, writeOctet)
             else -> 0
         }
     }
 
-    private inline fun <reified R : Number> octetWriteSafe(
+    private inline fun <reified R : Number> octetWriteBlk(
         codePoint: Int,
         remaining: Int,
         writeOctet: (octet: Byte) -> Unit
     ): Int {
-        val value = escapeInvalid<Int>(codePoint)
-        return when (value) {
-            in GLYPH_HOLE -> 0
+        return when (val value = escapeInvalid<Int>(codePoint)) {
             in GLYPH_SIZE_1 -> req(remaining, 1) { octetWrite1<Int>(value, writeOctet) }
             in GLYPH_SIZE_2 -> req(remaining, 2) { octetWrite2<Int>(value, writeOctet) }
             in GLYPH_SIZE_3 -> req(remaining, 3) { octetWrite3<Int>(value, writeOctet) }
@@ -179,13 +150,12 @@ public interface UnicodeAware {
         }
     }
 
-
-    public fun writeGlyph(codePoint: CodePoint, writeOctet: (octet: Byte) -> Unit): Int {
-        return octetWrite<Int>(codePoint.value, writeOctet)
+    public fun writeGlyphStrm(codePoint: CodePoint, writeOctet: (octet: Byte) -> Unit): Int {
+        return octetWriteStrm<Int>(codePoint.value, writeOctet)
     }
 
-    public fun writeGlyphSafe(codePoint: CodePoint, remaining: Int, writeOctet: (octet: Byte) -> Unit): Int {
-        return octetWriteSafe<Int>(codePoint.value, remaining, writeOctet)
+    public fun writeGlyphBlk(codePoint: CodePoint, remaining: Int, writeOctet: (octet: Byte) -> Unit): Int {
+        return octetWriteBlk<Int>(codePoint.value, remaining, writeOctet)
     }
 
     private companion object {

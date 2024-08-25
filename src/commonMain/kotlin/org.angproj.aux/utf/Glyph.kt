@@ -115,10 +115,10 @@ public fun Byte.sequenceTypeOf(): SequenceType = SequenceType.qualify(this)
 
 public fun ByteArray.readGlyphAt(offset: Int): CodePoint = withUnicodeAware(this) {
     var pos = offset
-    return readGlyphSafe(size - pos) { it[pos++] }
+    return readGlyphBlk(size - pos) { it[pos++] }
 }
 
 public fun ByteArray.writeGlyphAt(offset: Int, value: CodePoint): Int = withUnicodeAware(this) {
     var pos = offset
-    return writeGlyphSafe(value, size - pos) { it2 -> it[pos++] = it2 }
+    return writeGlyphBlk(value, size - pos) { it2 -> it[pos++] = it2 }
 }
