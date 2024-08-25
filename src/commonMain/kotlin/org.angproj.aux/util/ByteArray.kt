@@ -22,33 +22,6 @@ public typealias Noop = () -> Unit
 
 public fun noop(): Unit = Unit
 
-public object BArr {
-    public fun interface GetVal<X, T: Number> {
-        public operator fun invoke(res: X, pos: Int, noop: Noop) : T
-    }
-
-    public fun interface SetVal<X, T: Number> {
-        public operator fun invoke(res: X, pos: Int, value: T)
-    }
-
-    public val getLong: GetVal<ByteArray, Long> = GetVal {
-            res: ByteArray, pos: Int, _: Noop -> joinLong(getInt(res, pos + 4) {}, getInt(res, pos, ) {}) }
-    public val getInt: GetVal<ByteArray, Int> = GetVal {
-            res: ByteArray, pos: Int, _: Noop -> joinInt(getShort(res, pos + 2) {}, getShort(res, pos) {}) }
-    public val getShort: GetVal<ByteArray, Short> = GetVal {
-            res: ByteArray, pos: Int, _: Noop -> joinShort(res[pos + 1], res[pos]) }
-
-    public val setLong: SetVal<ByteArray, Long> = SetVal { res: ByteArray, pos: Int, value: Long ->
-        setInt(res, pos + 4, upperLong(value))
-        setInt(res, pos, lowerLong(value)) }
-    public val setInt: SetVal<ByteArray, Int> = SetVal { res: ByteArray, pos: Int, value: Int ->
-        setShort(res, pos + 2, upperInt(value))
-        setShort(res, pos, lowerInt(value)) }
-    public val setShort: SetVal<ByteArray, Short> = SetVal { res: ByteArray, pos: Int, value: Short ->
-        res[pos + 1] = upperShort(value)
-        res[pos] = lowerShort(value) }
-}
-
 /**
  * Read Short at offset.
  *
@@ -56,7 +29,7 @@ public object BArr {
  * @return
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.readShortAt(offset: Int): Short = BArr.getShort(this, offset) {}
+public fun ByteArray.readShortAt(offset: Int): Short = withBufferAware(this) { it.readShortAt(offset) }
 
 /**
  * Read UShort at offset.
@@ -65,7 +38,7 @@ public fun ByteArray.readShortAt(offset: Int): Short = BArr.getShort(this, offse
  * @return
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.readUShortAt(offset: Int): UShort = readShortAt(offset).conv2uS()
+public fun ByteArray.readUShortAt(offset: Int): UShort = withBufferAware(this) { it.readUShortAt(offset) }
 
 /**
  * Read Char at offset.
@@ -83,7 +56,7 @@ public fun ByteArray.readCharAt(offset: Int): Char = readShortAt(offset).toInt()
  * @return
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.readIntAt(offset: Int): Int = BArr.getInt(this, offset) {}
+public fun ByteArray.readIntAt(offset: Int): Int = withBufferAware(this) { it.readIntAt(offset) }
 
 /**
  * Read UInt at offset.
@@ -92,7 +65,7 @@ public fun ByteArray.readIntAt(offset: Int): Int = BArr.getInt(this, offset) {}
  * @return
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.readUIntAt(offset: Int): UInt = readIntAt(offset).conv2uI()
+public fun ByteArray.readUIntAt(offset: Int): UInt = withBufferAware(this) { it.readUIntAt(offset) }
 
 /**
  * Read Long at offset.
@@ -101,7 +74,7 @@ public fun ByteArray.readUIntAt(offset: Int): UInt = readIntAt(offset).conv2uI()
  * @return
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.readLongAt(offset: Int): Long = BArr.getLong(this, offset) {}
+public fun ByteArray.readLongAt(offset: Int): Long = withBufferAware(this) { it.readLongAt(offset) }
 
 /**
  * Read ULong at offset.
@@ -110,7 +83,7 @@ public fun ByteArray.readLongAt(offset: Int): Long = BArr.getLong(this, offset) 
  * @return
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.readULongAt(offset: Int): ULong = readLongAt(offset).conv2uL()
+public fun ByteArray.readULongAt(offset: Int): ULong = withBufferAware(this) { it.readULongAt(offset) }
 
 /**
  * Read Float at offset.
@@ -119,7 +92,7 @@ public fun ByteArray.readULongAt(offset: Int): ULong = readLongAt(offset).conv2u
  * @return
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.readFloatAt(offset: Int): Float = readIntAt(offset).conv2F()
+public fun ByteArray.readFloatAt(offset: Int): Float = withBufferAware(this) { it.readFloatAt(offset) }
 
 /**
  * Read Double at offset.
@@ -128,7 +101,7 @@ public fun ByteArray.readFloatAt(offset: Int): Float = readIntAt(offset).conv2F(
  * @return
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.readDoubleAt(offset: Int): Double = readLongAt(offset).conv2D()
+public fun ByteArray.readDoubleAt(offset: Int): Double = withBufferAware(this) { it.readDoubleAt(offset) }
 
 /**
  * Write Short at offset.
@@ -137,7 +110,7 @@ public fun ByteArray.readDoubleAt(offset: Int): Double = readLongAt(offset).conv
  * @param value
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.writeShortAt(offset: Int, value: Short): Unit = BArr.setShort(this, offset, value)
+public fun ByteArray.writeShortAt(offset: Int, value: Short): Unit = withBufferAware(this) { it.writeShortAt(offset, value) }
 
 /**
  * Write UShort at offset.
@@ -146,9 +119,9 @@ public fun ByteArray.writeShortAt(offset: Int, value: Short): Unit = BArr.setSho
  * @param value
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.writeUShortAt(offset: Int, value: UShort): Unit = writeShortAt(offset, value.conv2S())
+public fun ByteArray.writeUShortAt(offset: Int, value: UShort): Unit = withBufferAware(this) { it.writeUShortAt(offset, value) }
 
-/**
+    /**
  * Write Char at offset.
  *
  * @param offset
@@ -164,16 +137,16 @@ public fun ByteArray.writeCharAt(offset: Int, value: Char): Unit = writeShortAt(
  * @param value
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.writeIntAt(offset: Int, value: Int): Unit = BArr.setInt(this, offset, value)
+public fun ByteArray.writeIntAt(offset: Int, value: Int): Unit = withBufferAware(this) { it.writeIntAt(offset, value) }
 
-/**
+    /**
  * Write UInt at offset.
  *
  * @param offset
  * @param value
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.writeUIntAt(offset: Int, value: UInt): Unit = writeIntAt(offset, value.conv2I())
+public fun ByteArray.writeUIntAt(offset: Int, value: UInt): Unit = withBufferAware(this) { it.writeUIntAt(offset, value) }
 
 /**
  * Write Long at offset.
@@ -182,7 +155,7 @@ public fun ByteArray.writeUIntAt(offset: Int, value: UInt): Unit = writeIntAt(of
  * @param value
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.writeLongAt(offset: Int, value: Long): Unit = BArr.setLong(this, offset, value)
+public fun ByteArray.writeLongAt(offset: Int, value: Long): Unit = withBufferAware(this) { it.writeLongAt(offset, value) }
 
 /**
  * Write ULong at offset.
@@ -191,7 +164,7 @@ public fun ByteArray.writeLongAt(offset: Int, value: Long): Unit = BArr.setLong(
  * @param value
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.writeULongAt(offset: Int, value: ULong): Unit = writeLongAt(offset, value.conv2L())
+public fun ByteArray.writeULongAt(offset: Int, value: ULong): Unit = withBufferAware(this) { it.writeULongAt(offset, value) }
 
 /**
  * Write Float at offset.
@@ -200,7 +173,7 @@ public fun ByteArray.writeULongAt(offset: Int, value: ULong): Unit = writeLongAt
  * @param value
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.writeFloatAt(offset: Int, value: Float): Unit = writeIntAt(offset, value.conv2I())
+public fun ByteArray.writeFloatAt(offset: Int, value: Float): Unit = withBufferAware(this) { it.writeFloatAt(offset, value) }
 
 /**
  * Write Double at offset.
@@ -209,7 +182,7 @@ public fun ByteArray.writeFloatAt(offset: Int, value: Float): Unit = writeIntAt(
  * @param value
  */
 @Deprecated("Use BufferAware instead.", ReplaceWith("BufferAware"))
-public fun ByteArray.writeDoubleAt(offset: Int, value: Double): Unit = writeLongAt(offset, value.conv2L())
+public fun ByteArray.writeDoubleAt(offset: Int, value: Double): Unit = withBufferAware(this) { it.writeDoubleAt(offset, value) }
 
 /**
  * Convert ShortArray to ByteArray.

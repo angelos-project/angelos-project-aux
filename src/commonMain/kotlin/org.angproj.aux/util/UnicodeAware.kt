@@ -16,7 +16,7 @@ package org.angproj.aux.util
 
 import org.angproj.aux.utf.CodePoint
 
-public interface UnicodeAware : NumberAware {
+public interface UnicodeAware {
 
     private inline fun <reified R : Any> req(remaining: Int, count: Int, block: () -> R): R {
         require(remaining >= count) { "Buffer overflow, limit reached." }

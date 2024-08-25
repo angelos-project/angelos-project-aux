@@ -38,3 +38,12 @@ public interface NumberAware {
     public fun Long.conv2D(): Double = withNumeral(this) { it.convL2D<Int>() }
     public fun Double.conv2L(): Long = withNumeral(this) { it.convD2L<Int>() }
 }
+
+
+public object NumberAwareContext: NumberAware
+
+public inline fun<reified T> withNumberAware(block: NumberAwareContext.() -> T): T = NumberAwareContext.block()
+
+public inline fun<reified T> withNumberAware(
+    array: ByteArray, block: NumberAwareContext.(array: ByteArray) -> T
+): T = NumberAwareContext.block(array)
