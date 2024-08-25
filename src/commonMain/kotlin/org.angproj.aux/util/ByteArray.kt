@@ -193,6 +193,22 @@ public fun ShortArray.toByteArray(): ByteArray = ByteArray(Short.SIZE_BYTES * th
 
 
 /**
+ * Takes a UTF-8 leading octet as a Byte and check what size the multibyte character has.
+ * Also works as validation of the first octet in a UTF-8 binary octet sequence.
+ */
+
+public fun ByteArray.readGlyphAt(offset: Int): CodePoint = withUnicodeAware(this) {
+    var pos = offset
+    return readGlyphBlk(size - pos) { it[pos++] }
+}
+
+public fun ByteArray.writeGlyphAt(offset: Int, value: CodePoint): Int = withUnicodeAware(this) {
+    var pos = offset
+    return writeGlyphBlk(value, size - pos) { it2 -> it[pos++] = it2 }
+}
+
+
+/**
  * Convert IntArray to ByteArray.
  * */
 public fun IntArray.toByteArray(): ByteArray = ByteArray(Int.SIZE_BYTES * this.size).also {

@@ -17,8 +17,8 @@ package org.angproj.aux.pipe
 import org.angproj.aux.io.PumpWriter
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.utf.CodePoint
-import org.angproj.aux.utf.readGlyphAt
+import org.angproj.aux.util.CodePoint
+import org.angproj.aux.util.readGlyphAt
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.Reify
 import org.angproj.aux.util.chunkLoop
@@ -174,7 +174,7 @@ class PushTextTest {
         val time = measureTime {
             do {
                 val cp = text.readGlyphAt(pos)
-                pos += cp.sectionTypeOf().size
+                pos += cp.octetSize()
                 writeable.writeGlyph(cp)
             } while(pos < text.size)
         }
@@ -194,7 +194,7 @@ class PushTextTest {
         assertFailsWith<UnsupportedOperationException> {
             do {
                 val cp = text.readGlyphAt(pos)
-                pos += cp.sectionTypeOf().size
+                pos += cp.octetSize()
                 writeable.writeGlyph(cp)
             } while(pos < text.size)
         }
@@ -213,7 +213,7 @@ class PushTextTest {
 
         do {
             val cp = text.readGlyphAt(pos)
-            pos += cp.sectionTypeOf().size
+            pos += cp.octetSize()
             writeable.writeGlyph(cp)
         } while(pos < text.size / 2)
 

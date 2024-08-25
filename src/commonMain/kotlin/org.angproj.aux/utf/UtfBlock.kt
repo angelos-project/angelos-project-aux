@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.utf
 
+import org.angproj.aux.util.CodePoint
+
 public interface UtfBlock {
     public val name: String
     public val meta: String

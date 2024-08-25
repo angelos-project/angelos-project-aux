@@ -20,7 +20,6 @@ import org.angproj.aux.io.toBinary
 import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.rand.AbstractSmallRandom
 import org.angproj.aux.rand.InitializationVector
-import org.angproj.aux.utf.CodePoint
 import org.angproj.aux.util.Hex.bin2hex
 import kotlin.native.concurrent.ThreadLocal
 

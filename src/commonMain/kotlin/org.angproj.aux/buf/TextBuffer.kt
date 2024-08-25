@@ -15,7 +15,7 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
-import org.angproj.aux.utf.CodePoint
+import org.angproj.aux.util.CodePoint
 import org.angproj.aux.util.withUnicodeAware
 
 public class TextBuffer private constructor(

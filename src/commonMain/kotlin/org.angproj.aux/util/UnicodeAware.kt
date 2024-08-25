@@ -14,8 +14,30 @@
  */
 package org.angproj.aux.util
 
-import org.angproj.aux.utf.CodePoint
+import kotlin.jvm.JvmInline
 
+
+@JvmInline
+public value class CodePoint(public val value: Int) {
+    public fun isValid(): Boolean = value in UnicodeAware.GLYPH_RANGE && value !in UnicodeAware.GLYPH_HOLE
+
+    public fun octetSize(): Int = when (value) {
+        in UnicodeAware.GLYPH_HOLE -> -1
+        in UnicodeAware.GLYPH_SIZE_1 -> 1
+        in UnicodeAware.GLYPH_SIZE_2 -> 2
+        in UnicodeAware.GLYPH_SIZE_3 -> 3
+        in UnicodeAware.GLYPH_SIZE_4 -> 4
+        else -> -1
+    }
+}
+
+public fun Int.toCodePoint(): CodePoint = CodePoint(this)
+
+/**
+ * https://www.ietf.org/rfc/rfc2279.txt
+ * https://www.ietf.org/rfc/rfc3629.txt
+ * https://en.wikipedia.org/wiki/UTF-8
+ * */
 public interface UnicodeAware {
 
     private inline fun <reified R : Any> req(remaining: Int, count: Int, block: () -> R): R {
@@ -158,17 +180,17 @@ public interface UnicodeAware {
         return octetWriteBlk<Int>(codePoint.value, remaining, writeOctet)
     }
 
-    private companion object {
-        const val REPLACEMENT_CHARACTER: Int = 0xFFFD
+    public companion object {
+        public const val REPLACEMENT_CHARACTER: Int = 0xFFFD
 
         private const val GLYPH_MAX_VALUE: Int = 0x10_FFFF
         private const val GLYPH_MIN_VALUE: Int = 0x0
-        val GLYPH_RANGE: IntRange = GLYPH_MIN_VALUE..GLYPH_MAX_VALUE
-        val GLYPH_HOLE: IntRange = 0xD800..0xDFFF
-        val GLYPH_SIZE_1: IntRange = GLYPH_MIN_VALUE..0x7F
-        val GLYPH_SIZE_2: IntRange = 0x80..0x7FF
-        val GLYPH_SIZE_3: IntRange = 0x800..0xFFFF
-        val GLYPH_SIZE_4: IntRange = 0x1_0000..GLYPH_MAX_VALUE
+        public val GLYPH_RANGE: IntRange = GLYPH_MIN_VALUE..GLYPH_MAX_VALUE
+        public val GLYPH_HOLE: IntRange = 0xD800..0xDFFF
+        public val GLYPH_SIZE_1: IntRange = GLYPH_MIN_VALUE..0x7F
+        public val GLYPH_SIZE_2: IntRange = 0x80..0x7FF
+        public val GLYPH_SIZE_3: IntRange = 0x800..0xFFFF
+        public val GLYPH_SIZE_4: IntRange = 0x1_0000..GLYPH_MAX_VALUE
     }
 }
 

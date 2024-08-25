@@ -19,9 +19,9 @@ import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
 import org.angproj.aux.mem.Default
-import org.angproj.aux.utf.writeGlyphAt
 import org.angproj.aux.util.Reify
 import org.angproj.aux.util.chunkLoop
+import org.angproj.aux.util.writeGlyphAt
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertFailsWith

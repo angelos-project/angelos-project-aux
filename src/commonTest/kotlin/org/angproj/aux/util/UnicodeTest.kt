@@ -1,7 +1,5 @@
 package org.angproj.aux.util
 
-import org.angproj.aux.utf.readGlyphAt
-import org.angproj.aux.utf.writeGlyphAt
 import kotlin.test.Test
 
 class UnicodeTest {
@@ -70,7 +68,7 @@ class UnicodeTest {
         do {
             val cp = josephus.readGlyphAt(pos)
             text.writeGlyphAt(pos, cp)
-            pos += cp.sectionTypeOf().size
+            pos += cp.octetSize()
         } while (pos < josephus.size)
         println(josephus.decodeToString())
         println(text.decodeToString())

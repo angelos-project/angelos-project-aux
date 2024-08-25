@@ -15,7 +15,7 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.io.TextReadable
-import org.angproj.aux.utf.CodePoint
+import org.angproj.aux.util.CodePoint
 import org.angproj.aux.util.Reify
 import org.angproj.aux.util.withUnicodeAware
 

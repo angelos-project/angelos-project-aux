@@ -14,6 +14,9 @@
  */
 package org.angproj.aux.utf
 
+import org.angproj.aux.util.CodePoint
+import org.angproj.aux.util.readGlyphAt
+import org.angproj.aux.util.writeGlyphAt
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
