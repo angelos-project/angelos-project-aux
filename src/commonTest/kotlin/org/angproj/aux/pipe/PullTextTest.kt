@@ -144,14 +144,14 @@ class StringReader(text: String, private val half: Boolean = false) : PumpReader
     val data = DataBuffer(text.encodeToByteArray())
 
     override fun read(data: Segment): Int {
-        data.limit  = min(data.limit, this.data.remaining)
+        var length  = min(data.limit, this.data.remaining)
 
-        if(half) if (this.data.remaining < (this.data.size / 2)) data.limit /= 2
+        if(half) if (this.data.remaining < (this.data.size / 2)) length /= 2
 
-        var index = chunkLoop<Reify>(0, data.limit, TypeSize.long) {
+        var index = chunkLoop<Reify>(0, length, TypeSize.long) {
             data.setLong(it, this.data.readLong())
         }
-        index = chunkLoop<Reify>(index, data.limit, TypeSize.byte) {
+        index = chunkLoop<Reify>(index, length, TypeSize.byte) {
             data.setByte(it, this.data.readByte())
         }
         return index

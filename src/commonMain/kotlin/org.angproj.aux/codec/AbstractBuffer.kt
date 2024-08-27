@@ -16,7 +16,6 @@ package org.angproj.aux.codec
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Writable
-import org.angproj.aux.utf.*
 import org.angproj.aux.util.*
 
 public abstract class AbstractBuffer: Readable, Writable, BufferAware {

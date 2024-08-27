@@ -18,7 +18,7 @@ import org.angproj.aux.io.*
 import org.angproj.aux.util.CodePoint
 import org.angproj.aux.util.withUnicodeAware
 
-public class TextBuffer private constructor(
+public class TextBuffer internal constructor(
     segment: Segment, view: Boolean = false
 ): Buffer(segment, view), TextReadable, TextWritable {
 
@@ -34,3 +34,6 @@ public class TextBuffer private constructor(
     override fun writeGlyph(codePoint: CodePoint): Int = withUnicodeAware {
         writeGlyphBlk(codePoint, remaining) { segment.setByte(_position++, it) } }
 }
+
+
+public fun String.toTextBuffer(): TextBuffer = TextBuffer(this.encodeToByteArray().toBinary().segment, false)

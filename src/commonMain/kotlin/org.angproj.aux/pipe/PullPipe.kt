@@ -46,6 +46,9 @@ public class PullPipe<T: PipeType>(
     }
 
     public fun<reified : Reifiable> pop(): Segment = buf.pop<Reify>()
+
+    public fun<reified : Reifiable> isSourceOpen(): Boolean = src.isOpen()
+
 }
 
 public fun PullPipe<TextType>.getSink(): TextSink = TextSink(this)

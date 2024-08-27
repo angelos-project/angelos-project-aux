@@ -16,13 +16,14 @@ package org.angproj.aux.pipe
 
 import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.NumberAware
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 import kotlin.math.min
 
 public class BinarySink(
     pipe: PullPipe<BinaryType>
-): AbstractSink<BinaryType>(pipe), BinaryType, BinaryReadable {
+): AbstractSink<BinaryType>(pipe), BinaryType, BinaryReadable, NumberAware {
 
     private inline fun <reified T : Reifiable> buildFromSegment(length: Int, maxIter: Int): Long {
         var value = 0L
@@ -55,21 +56,21 @@ public class BinarySink(
 
     override fun readByte(): Byte = withSegmentByte<Reify>()
 
-    override fun readUByte(): UByte = withSegmentByte<Reify>().toUByte()
+    override fun readUByte(): UByte = withSegmentByte<Reify>().conv2uB()
 
     override fun readShort(): Short = withSegmentShort<Reify>()
 
-    override fun readUShort(): UShort = withSegmentShort<Reify>().toUShort()
+    override fun readUShort(): UShort = withSegmentShort<Reify>().conv2uS()
 
     override fun readInt(): Int = withSegmentInt<Reify>()
 
-    override fun readUInt(): UInt = withSegmentInt<Reify>().toUInt()
+    override fun readUInt(): UInt = withSegmentInt<Reify>().conv2uI()
 
     override fun readLong(): Long = withSegmentLong<Reify>()
 
-    override fun readULong(): ULong = withSegmentLong<Reify>().toULong()
+    override fun readULong(): ULong = withSegmentLong<Reify>().conv2uL()
 
-    override fun readFloat(): Float = Float.fromBits(withSegmentInt<Reify>())
+    override fun readFloat(): Float = withSegmentInt<Reify>().conv2F()
 
-    override fun readDouble(): Double = Double.fromBits(withSegmentLong<Reify>())
+    override fun readDouble(): Double = withSegmentLong<Reify>().conv2D()
 }

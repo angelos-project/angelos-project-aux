@@ -55,4 +55,6 @@ public abstract class AbstractSink<T: PipeType>(
             _open = false
         }
     }
+
+    public fun eofReached(): Boolean = seg.isNull()
 }

@@ -22,9 +22,16 @@ public class PumpSource<T: PipeType>(
 ): Source, PipeType  {
     private var _open: Boolean = true
 
+    /**
+     * This function forcefully sets the limit of the segment to the returned value
+     * to avoid programming mistakes.
+     * */
     public fun<reified : Reifiable> squeeze(seg: Segment): Int {
         val size = seg.limit
-        return pump.read(seg).also { if (it < size || it == 0) close() }
+        return pump.read(seg).also {
+            seg.limit = it
+            if (it < size || it == 0) close()
+        }
     }
 
     override fun isOpen(): Boolean = _open
