@@ -14,13 +14,11 @@
  */
 package org.angproj.aux.util
 
-import org.angproj.aux.buf.copyOf
 import org.angproj.aux.io.Binary
 import org.angproj.aux.io.toBinary
 import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.rand.AbstractSmallRandom
 import org.angproj.aux.rand.InitializationVector
-import org.angproj.aux.util.Hex.bin2hex
 import kotlin.native.concurrent.ThreadLocal
 
 public class Uuid4 internal constructor(private val uuid: Binary) {
@@ -46,9 +44,11 @@ public class Uuid4 internal constructor(private val uuid: Binary) {
     private fun hex(r: IntRange): String {
         var hex = ""
         r.forEach {
-            val byte = uuid.retrieveByte(it)
-            hex += byte.upperToHex<Reify>().value.toChar()
-            hex += byte.lowerToHex<Reify>().value.toChar()
+            with(Hex) {
+                val octet = uuid.retrieveByte(it)
+                hex += octet.upperToHex<Int>().toChar()
+                hex += octet.lowerToHex<Int>().toChar()
+            }
         }
         return hex
     }
@@ -108,10 +108,6 @@ public class Uuid4 internal constructor(private val uuid: Binary) {
         }
     }
 }
-
-internal inline fun<reified T: Reifiable> Byte.upperToHex(): CodePoint = CodePoint(bin2hex[toInt() ushr 4 and 0xf])
-
-internal inline fun<reified T: Reifiable> Byte.lowerToHex(): CodePoint = CodePoint(bin2hex[toInt() and 0xf])
 
 public fun uuid4(): Uuid4 = Uuid4()
 

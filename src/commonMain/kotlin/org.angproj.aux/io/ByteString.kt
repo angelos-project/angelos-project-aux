@@ -14,25 +14,20 @@
  */
 package org.angproj.aux.io
 
-@OptIn(ExperimentalStdlibApi::class)
-public interface ByteString: AutoCloseable {
+import org.angproj.aux.com.Limitable
 
-    public val size: Int
-    public var limit: Int
+@OptIn(ExperimentalStdlibApi::class)
+public interface ByteString: Limitable, AutoCloseable {
 
     public fun getByte(index: Int): Byte
     public fun getShort(index: Int): Short
     public fun getInt(index: Int): Int
     public fun getLong(index: Int): Long
 
-    public operator fun get(index: Int): Byte = getByte(index)
-
     public fun setByte(index: Int, value: Byte): Unit
     public fun setShort(index: Int, value: Short): Unit
     public fun setInt(index: Int, value: Int): Unit
     public fun setLong(index: Int, value: Long): Unit
-
-    public operator fun set(index: Int, value: Byte): Unit = setByte(index, value)
 
     public override fun close() {}
 

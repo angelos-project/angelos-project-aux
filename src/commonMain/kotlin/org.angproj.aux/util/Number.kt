@@ -224,7 +224,7 @@ public fun UShort.swapEndian(): UShort = withNumberAware { swapEndian() }
  *
  * @return
  */
-public fun Char.swapEndian(): Char = withNumberAware { swapEndian() }
+public fun Char.swapEndian(): Char = this.code.toShort().swapEndian().toInt().toChar()
 
 /**
  * Swap endian on Int.

@@ -16,6 +16,7 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
 import org.angproj.aux.util.CodePoint
+import org.angproj.aux.util.Unicode
 import org.angproj.aux.util.withUnicodeAware
 
 public class TextBuffer internal constructor(
@@ -36,4 +37,6 @@ public class TextBuffer internal constructor(
 }
 
 
-public fun String.toTextBuffer(): TextBuffer = TextBuffer(this.encodeToByteArray().toBinary().segment, false)
+public fun String.toTextBuffer(size: DataSize = DataSize._4K): TextBuffer = TextBuffer(size).also { tb ->
+    Unicode.importUnicode(this) { tb.writeGlyph(it) }
+}

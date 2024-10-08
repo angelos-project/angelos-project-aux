@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.util
 
+import org.angproj.aux.utf.Ascii
+
 public fun Base64.encodeUrlSafe(data: ByteArray): CharArray {
     return encode(data, URL_SAFE)
 }
@@ -31,6 +33,52 @@ public fun Base64.decodeMimeSafe(data: CharArray): ByteArray {
 }
 
 public object Base64 {
+
+    public val padding: Int = Ascii.PRNT_EQUALS.cp
+
+    public val base2bin: Map<Int, Int> = mapOf(
+        Ascii.PRNT_A_UP.cp to 0x00, Ascii.PRNT_B_UP.cp to 0x01,
+        Ascii.PRNT_C_UP.cp to 0x02, Ascii.PRNT_D_UP.cp to 0x03, Ascii.PRNT_E_UP.cp to 0x04, Ascii.PRNT_F_UP.cp to 0x05,
+        Ascii.PRNT_G_UP.cp to 0x06, Ascii.PRNT_H_UP.cp to 0x07, Ascii.PRNT_I_UP.cp to 0x08, Ascii.PRNT_J_UP.cp to 0x09,
+        Ascii.PRNT_K_UP.cp to 0x0a, Ascii.PRNT_L_UP.cp to 0x0b, Ascii.PRNT_M_UP.cp to 0x0c, Ascii.PRNT_N_UP.cp to 0x0d,
+        Ascii.PRNT_O_UP.cp to 0x0e, Ascii.PRNT_P_UP.cp to 0x0f, Ascii.PRNT_Q_UP.cp to 0x10, Ascii.PRNT_R_UP.cp to 0x11,
+        Ascii.PRNT_S_UP.cp to 0x12, Ascii.PRNT_T_UP.cp to 0x13, Ascii.PRNT_U_UP.cp to 0x14, Ascii.PRNT_V_UP.cp to 0x15,
+        Ascii.PRNT_W_UP.cp to 0x16, Ascii.PRNT_X_UP.cp to 0x17, Ascii.PRNT_Y_UP.cp to 0x18, Ascii.PRNT_Z_UP.cp to 0x19,
+
+        Ascii.PRNT_A_LOW.cp to 0x1a, Ascii.PRNT_B_LOW.cp to 0x1b,
+        Ascii.PRNT_C_LOW.cp to 0x1c, Ascii.PRNT_D_LOW.cp to 0x1d, Ascii.PRNT_E_LOW.cp to 0x1e, Ascii.PRNT_F_LOW.cp to 0x1f,
+        Ascii.PRNT_G_LOW.cp to 0x20, Ascii.PRNT_H_LOW.cp to 0x21, Ascii.PRNT_I_LOW.cp to 0x22, Ascii.PRNT_J_LOW.cp to 0x23,
+        Ascii.PRNT_K_LOW.cp to 0x24, Ascii.PRNT_L_LOW.cp to 0x25, Ascii.PRNT_M_LOW.cp to 0x26, Ascii.PRNT_N_LOW.cp to 0x27,
+        Ascii.PRNT_O_LOW.cp to 0x28, Ascii.PRNT_P_LOW.cp to 0x29, Ascii.PRNT_Q_LOW.cp to 0x2a, Ascii.PRNT_R_LOW.cp to 0x2b,
+        Ascii.PRNT_S_LOW.cp to 0x2c, Ascii.PRNT_T_LOW.cp to 0x2d, Ascii.PRNT_U_LOW.cp to 0x2e, Ascii.PRNT_V_LOW.cp to 0x2f,
+        Ascii.PRNT_W_LOW.cp to 0x30, Ascii.PRNT_X_LOW.cp to 0x31, Ascii.PRNT_Y_LOW.cp to 0x32, Ascii.PRNT_Z_LOW.cp to 0x33,
+
+        Ascii.PRNT_ZERO.cp to 0x34, Ascii.PRNT_ONE.cp to 0x35, Ascii.PRNT_TWO.cp to 0x36, Ascii.PRNT_THREE.cp to 0x37,
+        Ascii.PRNT_FOUR.cp to 0x38, Ascii.PRNT_FIVE.cp to 0x39, Ascii.PRNT_SIX.cp to 0x3a, Ascii.PRNT_SEVEN.cp to 0x3b,
+        Ascii.PRNT_EIGHT.cp to 0x3c, Ascii.PRNT_NINE.cp to 0x3d, Ascii.PRNT_PLUS.cp to 0x3e, Ascii.PRNT_SLASH.cp to 0x3f,
+    )
+
+    public val bin2base: List<Int> = listOf(
+        Ascii.PRNT_A_UP.cp, Ascii.PRNT_B_UP.cp,
+        Ascii.PRNT_C_UP.cp, Ascii.PRNT_D_UP.cp, Ascii.PRNT_E_UP.cp, Ascii.PRNT_F_UP.cp,
+        Ascii.PRNT_G_UP.cp, Ascii.PRNT_H_UP.cp, Ascii.PRNT_I_UP.cp, Ascii.PRNT_J_UP.cp,
+        Ascii.PRNT_K_UP.cp, Ascii.PRNT_L_UP.cp, Ascii.PRNT_M_UP.cp, Ascii.PRNT_N_UP.cp,
+        Ascii.PRNT_O_UP.cp, Ascii.PRNT_P_UP.cp, Ascii.PRNT_Q_UP.cp, Ascii.PRNT_R_UP.cp,
+        Ascii.PRNT_S_UP.cp, Ascii.PRNT_T_UP.cp, Ascii.PRNT_U_UP.cp, Ascii.PRNT_V_UP.cp,
+        Ascii.PRNT_W_UP.cp, Ascii.PRNT_X_UP.cp, Ascii.PRNT_Y_UP.cp, Ascii.PRNT_Z_UP.cp,
+
+        Ascii.PRNT_A_LOW.cp, Ascii.PRNT_B_LOW.cp,
+        Ascii.PRNT_C_LOW.cp, Ascii.PRNT_D_LOW.cp, Ascii.PRNT_E_LOW.cp, Ascii.PRNT_F_LOW.cp,
+        Ascii.PRNT_G_LOW.cp, Ascii.PRNT_H_LOW.cp, Ascii.PRNT_I_LOW.cp, Ascii.PRNT_J_LOW.cp,
+        Ascii.PRNT_K_LOW.cp, Ascii.PRNT_L_LOW.cp, Ascii.PRNT_M_LOW.cp, Ascii.PRNT_N_LOW.cp,
+        Ascii.PRNT_O_LOW.cp, Ascii.PRNT_P_LOW.cp, Ascii.PRNT_Q_LOW.cp, Ascii.PRNT_R_LOW.cp,
+        Ascii.PRNT_S_LOW.cp, Ascii.PRNT_T_LOW.cp, Ascii.PRNT_U_LOW.cp, Ascii.PRNT_V_LOW.cp,
+        Ascii.PRNT_W_LOW.cp, Ascii.PRNT_X_LOW.cp, Ascii.PRNT_Y_LOW.cp, Ascii.PRNT_Z_LOW.cp,
+
+        Ascii.PRNT_ZERO.cp, Ascii.PRNT_ONE.cp, Ascii.PRNT_TWO.cp, Ascii.PRNT_THREE.cp,
+        Ascii.PRNT_FOUR.cp, Ascii.PRNT_FIVE.cp, Ascii.PRNT_SIX.cp, Ascii.PRNT_SEVEN.cp,
+        Ascii.PRNT_EIGHT.cp, Ascii.PRNT_NINE.cp, Ascii.PRNT_PLUS.cp, Ascii.PRNT_SLASH.cp,
+    )
 
     internal val STANDARD: CharArray = charArrayOf(
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',

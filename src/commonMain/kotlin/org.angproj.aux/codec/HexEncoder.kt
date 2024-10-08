@@ -45,12 +45,15 @@ public class HexEncoder : Encoder<Binary, TextBuffer> {
         val pipe = Pipe.buildBinaryPullPipe(BinaryBufferReader(data))
 
         do {
-            val octet = pipe.readByte().toInt()
-            tb.writeGlyph(Hex.bin2hex[octet shr 4 and 0xF].toCodePoint())
-            tb.writeGlyph(Hex.bin2hex[octet and 0xF].toCodePoint())
+            with(Hex) {
+                val octet = pipe.readByte()
+                tb.writeGlyph(octet.upperToHex<Int>().toCodePoint())
+                tb.writeGlyph(octet.upperToHex<Int>().toCodePoint())
+            }
         } while(pipe.eofReached())
         pipe.close()
 
+        tb.flip()
         return tb
     }
 }

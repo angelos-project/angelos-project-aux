@@ -12,17 +12,11 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.com
 
-/**
- * SizeMode describes the type of mode a Sizeable operates in. Three modes are available.
- *
- * FIXED: Always require a ByteArray of said size, never less, or more.
- * MAXIMUM: The ByteArray must never exceed said size, if not exact it is considered EOF.
- * ARBITRARY: There is no exact system to follow nor apply.
- * */
-public enum class SizeMode {
-    FIXED,
-    MAXIMUM,
-    ARBITRARY,
+public interface Sized {
+    /**
+     * The fixed size of element.
+     * */
+    public val size: Int
 }

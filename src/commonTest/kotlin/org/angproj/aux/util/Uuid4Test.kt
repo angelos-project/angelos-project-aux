@@ -34,12 +34,12 @@ class Uuid4Test {
         assertFalse(uuid4().isNull())
     }
 
-    // @Test
+    //@Test
     fun testPrintUuid4() {
         repeat(100) { println(uuid4()) }
     }
 
-    // @Test
+    //@Test
     fun testMonteCarlo() {
         val monteCarlo = Benchmark()
         repeat(10_000_000) {

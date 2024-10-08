@@ -33,6 +33,21 @@ public class Binary internal constructor(
     public val capacity: Int
         get() = _segment.size
 
+    /**
+     * The same as on Buffer with upper limit.
+     * */
+    public fun limitAt(newLimit: Int) {
+        require(newLimit in 0.._segment.size)
+        _segment.limit = newLimit
+    }
+
+    /**
+     * Reduced function compared to Buffer interface due to no rewind capability.
+     * */
+    public fun clear() {
+        _segment.limit = _segment.size
+    }
+
     private inline fun <reified E: Reifiable> remaining(position: Int): Int = _segment.limit - position
 
     private inline fun <reified E: Any> withinReadLimit(position: Int, length: Int, action: () -> E): E {

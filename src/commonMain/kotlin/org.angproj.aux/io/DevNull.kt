@@ -14,14 +14,12 @@
  */
 package org.angproj.aux.io
 
-public object DevNull : OldWriter, Writable, Sizeable {
+import org.angproj.aux.util.CodePoint
 
-    override val sizeMode: SizeMode = SizeMode.ARBITRARY
-    override val dataSize: DataSize = DataSize.UNKNOWN
+public object DevNull : BinaryWritable, TextWritable, Writer {
 
     override fun writeByte(value: Byte) {}
     override fun writeUByte(value: UByte) {}
-    override fun writeChar(value: Char) {}
     override fun writeShort(value: Short) {}
     override fun writeUShort(value: UShort) {}
     override fun writeInt(value: Int) {}
@@ -31,5 +29,7 @@ public object DevNull : OldWriter, Writable, Sizeable {
     override fun writeFloat(value: Float) {}
     override fun writeDouble(value: Double) {}
 
-    override fun write(data: ByteArray): Int = (data.size).also { data.fill(0) }
+    override fun write(data: Segment): Int = data.limit
+
+    override fun writeGlyph(codePoint: CodePoint): Int = codePoint.octetSize()
 }

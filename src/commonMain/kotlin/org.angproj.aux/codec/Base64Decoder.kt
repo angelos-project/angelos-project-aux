@@ -21,11 +21,13 @@ import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.copyInto
 import org.angproj.aux.pipe.Pipe
-import org.angproj.aux.util.Hex
+import org.angproj.aux.util.Base64
 import kotlin.math.min
 
-
-public class HexDecoder : Decoder<TextBuffer, Binary> {
+public class Base64Decoder(
+    protected val alphabet: Map<Int, Int> = Base64.base2bin,
+    protected val padding: Int = Base64.padding
+) : Decoder<TextBuffer, Binary>{
 
     private class TextBufferReader(private val buffer: TextBuffer): PumpReader {
         private var mark = buffer.mark
@@ -40,25 +42,37 @@ public class HexDecoder : Decoder<TextBuffer, Binary> {
     }
 
     override fun decode(data: TextBuffer): Binary {
-        require((data.limit - data.mark).mod(2) == 0) { "Hexadecimals must be divisible by two." }
+        require((data.limit - data.mark).mod(4) == 0) { "Base64 block must be divisible by 4." }
 
-        val limit = data.limit - data.mark
-        val bin = Binary(limit / 2)
+        val fullBlkCnt = data.limit - data.mark / 4
+        val bin = Binary(3 * fullBlkCnt)
         val bb = BinaryBuffer(bin.segment, true)
-        data.reset() // Resetting position to mark
         val pipe = Pipe.buildTextPullPipe(TextBufferReader(data))
 
-        val value = {
-            val cp = pipe.readGlyph()
-            check(cp.value in Hex.valid)
-            cp.value
-        }
-
         do {
-            val upperHex: Int = (Hex.hex2bin[value()]!!.toInt() shl 4)
-            val lowerHex: Int = Hex.hex2bin[value()]!!
-            bb.writeByte((upperHex or lowerHex and 0xFF).toByte())
-        } while(pipe.eofReached())
+            var cp: Int
+            var bits: Int = 0
+            var cnt = 4
+            do {
+                cp = pipe.readGlyph().value
+                when {
+                    cp != padding -> bits = (bits shl 6) or alphabet.getValue(cp) and 0B0011_1111
+                    cnt == 2 -> bits = (bits shl 12)
+                    cnt == 1 -> bits = (bits shl 6)
+                }
+            } while(--cnt > 0 && cp != padding)
+            when (cnt) {
+                0, 1 -> {
+                    bb.writeByte((bits shr 16).toByte())
+                    bb.writeByte((bits shr 8).toByte())
+                    bb.writeByte(bits.toByte())
+                }
+                2 -> {
+                    bb.writeByte((bits shr 16).toByte())
+                    bb.writeByte((bits shr 8).toByte())
+                }
+            }
+        } while (!pipe.eofReached() || cp != padding)
         pipe.close()
 
         bin.limitAt(bb.position)

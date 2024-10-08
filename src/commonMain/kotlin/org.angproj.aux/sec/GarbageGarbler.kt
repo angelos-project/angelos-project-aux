@@ -16,7 +16,6 @@ package org.angproj.aux.sec
 
 import org.angproj.aux.io.*
 import org.angproj.aux.rand.AbstractSponge1024
-import org.angproj.aux.rand.InitializationVector
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.NullObject
 import kotlin.time.Duration
@@ -26,10 +25,7 @@ public class GarbageGarbler(
     public val maxSize: DataSize = DataSize._1G,
     public val maxTime: Duration = Duration.parse("1 min"),
     public val maxQueue: Int = 8
-): AbstractSponge1024(), OldReader, OldWriter, Sizeable {
-
-    override val sizeMode: SizeMode = SizeMode.FIXED
-    override val dataSize: DataSize = DataSize._64B
+): AbstractSponge1024(), OldReader, OldWriter {
 
     private val inQueue: ArrayDeque<ByteArray> = ArrayDeque(maxQueue)
     private var inBuffer = DataBuffer(NullObject.byteArray)
@@ -42,9 +38,9 @@ public class GarbageGarbler(
     }
 
     private fun revitalize() {
-        if(inBuffer.remaining < dataSize.size) {
+        if(inBuffer.remaining < DataSize._1K.size) {
             if(inQueue.isEmpty()) {
-                val entropy = ByteArray(dataSize.size)
+                val entropy = ByteArray(DataSize._1K.size)
                 //InitializationVector.realTimeGatedEntropy(entropy)
                 inQueue.addLast(entropy)
             }
@@ -64,7 +60,7 @@ public class GarbageGarbler(
     }
 
     private fun require(length: Int) {
-        require(length.mod(dataSize.size) == 0) { "Garble must be divisible by the length of the inner sponge." }
+        require(length.mod(DataSize._1K.size) == 0) { "Garble must be divisible by the length of the inner sponge." }
     }
 
     override fun read(length: Int): ByteArray {

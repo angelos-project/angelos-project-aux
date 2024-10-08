@@ -33,6 +33,9 @@ public value class CodePoint(public val value: Int) {
 
 public fun Int.toCodePoint(): CodePoint = CodePoint(this)
 
+public fun Char.toCodePoint(): CodePoint = CodePoint(this.code)
+
+
 /**
  * https://www.ietf.org/rfc/rfc2279.txt
  * https://www.ietf.org/rfc/rfc3629.txt
@@ -202,3 +205,4 @@ public inline fun <reified T> withUnicodeAware(block: UnicodeAwareContext.() -> 
 public inline fun <reified T> withUnicodeAware(
     array: ByteArray, block: UnicodeAwareContext.(array: ByteArray) -> T
 ): T = UnicodeAwareContext.block(array)
+

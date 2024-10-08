@@ -22,6 +22,7 @@ public abstract class Buffer protected constructor(
     internal val _segment: Segment, protected val view: Boolean = false
 ): Auto {
 
+
     internal abstract fun create(segment: Segment): Buffer
 
     public val segment: Segment

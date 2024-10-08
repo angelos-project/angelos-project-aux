@@ -12,9 +12,18 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.io
+package org.angproj.aux.com
 
-public interface Sizeable {
-    public val sizeMode: SizeMode
-    public val dataSize: DataSize
+public interface Limitable: Sized {
+    /**
+     * The limited use of an element between 0 and size.
+     * */
+    public val limit: Int
+
+    /**
+     * Sets a new limit.
+     * */
+    public fun limitAt(newLimit: Int)
+
+    public fun clear() { limitAt(size) }
 }

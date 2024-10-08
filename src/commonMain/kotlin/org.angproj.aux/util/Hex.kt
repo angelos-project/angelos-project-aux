@@ -71,4 +71,8 @@ public object Hex {
         Ascii.PRNT_E_LOW.cp,
         Ascii.PRNT_F_LOW.cp
     )
+
+    internal inline fun<reified R: Number> Byte.upperToHex(): Int = bin2hex[toInt() ushr 4 and 0xf]
+
+    internal inline fun<reified R: Number> Byte.lowerToHex(): Int = bin2hex[toInt() and 0xf]
 }

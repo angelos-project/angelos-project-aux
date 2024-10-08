@@ -37,6 +37,10 @@ public abstract class Segment(
             _limit = value
         }
 
+    override fun limitAt(newLimit: Int) {
+        limit = newLimit
+    }
+
     public inline fun <reified T: Reifiable> Long.reverse(): Long = (
             this.toInt().reverse<Reify>().toLong() shl 32) or (
             this ushr 32).toInt().reverse<Reify>().toLong()
