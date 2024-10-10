@@ -2,6 +2,21 @@ package org.angproj.aux
 
 object TestInformationStub {
 
+    const val refByte: Byte = 0x35
+    const val refUByte: UByte = 0xCAu
+
+    const val refLong: Long = 0x3569356935693569L
+    const val refULong: ULong = 0xCA96CA96CA96CA96uL
+
+    const val refInt: Int = 0x35693569
+    const val refUInt: UInt = 0xCA96CA96u
+
+    const val refShort: Short = 0x3569
+    const val refUShort: UShort = 0xCA96u
+
+    val refFloat: Float = Float.fromBits(refInt)
+    val refDouble: Double = Double.fromBits(refLong)
+
     const val number1 = "" +
             "15638aafb152690877aa62faff228c72ff407b1d75860486a5885409ce8d6292" +
             "a51911e8b7128f926b5307f4673232a445952e346d61fb0d7dc2edd77ccbfbe5" +

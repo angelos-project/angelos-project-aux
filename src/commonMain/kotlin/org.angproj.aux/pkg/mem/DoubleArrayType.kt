@@ -14,60 +14,50 @@
  */
 package org.angproj.aux.pkg.mem
 
-import org.angproj.aux.io.Readable
-import org.angproj.aux.io.Retrievable
-import org.angproj.aux.io.Storable
-import org.angproj.aux.io.Writable
+import org.angproj.aux.buf.DoubleBuffer
+import org.angproj.aux.io.*
 import org.angproj.aux.pkg.Convention
-import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
-import org.angproj.aux.pkg.Unfoldable
 import kotlin.jvm.JvmInline
 
+
 @JvmInline
-public value class DoubleArrayType(public val value: DoubleArray) : Enfoldable {
+public value class DoubleArrayType(public override val value: DoubleBuffer): ArrayEnfoldable<Double, DoubleBuffer> {
 
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
-        FoldFormat.BLOCK -> (atomicSize * value.size).toLong()
-        FoldFormat.STREAM -> (atomicSize * value.size).toLong() + Enfoldable.OVERHEAD_COUNT
-    }
+    override fun foldSize(foldFormat: FoldFormat): Long = ArrayEnfoldable.arrayFoldSize(
+        value, atomicSize, foldFormat)
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long {
-        value.indices.forEach {
-            outData.storeDouble((offset + it * atomicSize), value[it])
-        }
-        return foldSize(FoldFormat.BLOCK)
-    }
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
+        value, atomicSize, outData, offset) { o, i, v -> o.storeDouble(i, v) }
 
-    public fun enfoldToStream(outStream: Writable): Long {
-        Enfoldable.setType(outStream, conventionType)
-        Enfoldable.setCount(outStream, value.size)
-        value.forEach { outStream.writeDouble(it) }
-        Enfoldable.setEnd(outStream, conventionType)
-        return foldSize(FoldFormat.STREAM)
-    }
+    public fun enfoldToStream(outStream: Writable): Long = ArrayEnfoldable.arrayEnfoldToStream(
+        value, atomicSize, conventionType, outStream) { o, v -> o.writeDouble(v) }
 
-    public companion object : Unfoldable<DoubleArrayType> {
+    public companion object : ArrayUnfoldable<Double, DoubleBuffer, DoubleArrayType> {
+        override val factory: (count: Int) -> DoubleArrayType = { c -> DoubleArrayType(DoubleBuffer(c)) }
+
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.ARRAY_DOUBLE
-        override val atomicSize: Int = Double.SIZE_BYTES
+        override val atomicSize: Int = TypeSize.double
 
-        public fun unfoldFromBlock(inData: Retrievable, count: Int): DoubleArrayType = unfoldFromBlock(inData, 0, count)
+        public fun unfoldFromBlock(
+            inData: Retrievable,
+            count: Int
+        ): DoubleArrayType = unfoldFromBlock(inData, 0, count)
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int, count: Int): DoubleArrayType {
-            val data = DoubleArray(count) { inData.retrieveDouble(offset + it * atomicSize) }
-            return DoubleArrayType(data)
-        }
+        public fun unfoldFromBlock(
+            inData: Retrievable,
+            offset: Int,
+            count: Int
+        ): DoubleArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
+            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveDouble(i) }
 
-        public fun unfoldFromStream(inStream: Readable): DoubleArrayType {
-            require(Unfoldable.getType(inStream, conventionType))
-            val count = Unfoldable.getCount(inStream)
-            val data = DoubleArray(count) { inStream.readDouble() }
-            require(Unfoldable.getEnd(inStream, conventionType))
-            return DoubleArrayType(data)
-        }
+        public fun unfoldFromStream(
+            inStream: Readable
+        ): DoubleArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
+            inStream, conventionType, factory) { s -> s.readDouble() }
     }
 }

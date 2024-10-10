@@ -21,11 +21,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 
-abstract class AbstractBufferTest<E: Buffer> {
+abstract class AbstractFlowBufferTest<E: FlowBuffer>: AbstractBufferTest<E>() {
 
-    protected abstract fun setInput(): E
+    //protected abstract fun setInput(): E
 
-    /*protected abstract val posValue: Int*/
+    protected abstract val posValue: Int
 
     /*@Test
     abstract fun getSegment()
@@ -75,7 +75,7 @@ abstract class AbstractBufferTest<E: Buffer> {
     @Test
     abstract fun close() */
 
-    /*@Test
+    @Test
     fun getSegment() {
         assertIs<Segment>(setInput().segment)
     }
@@ -198,9 +198,9 @@ abstract class AbstractBufferTest<E: Buffer> {
     @Test
     fun getRemaining() {
         assertEquals(setInput().remaining, DataSize._4K.size - posValue)
-    }*/
+    }
 
-    @Test
+    /*@Test
     fun isView() {
         assertEquals(setInput().isView(), false)
     }
@@ -213,5 +213,5 @@ abstract class AbstractBufferTest<E: Buffer> {
     @Test
     fun close() {
         setInput().close()
-    }
+    }*/
 }

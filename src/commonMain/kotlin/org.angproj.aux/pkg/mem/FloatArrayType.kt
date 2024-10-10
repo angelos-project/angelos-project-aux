@@ -14,60 +14,50 @@
  */
 package org.angproj.aux.pkg.mem
 
-import org.angproj.aux.io.Readable
-import org.angproj.aux.io.Retrievable
-import org.angproj.aux.io.Storable
-import org.angproj.aux.io.Writable
+import org.angproj.aux.buf.FloatBuffer
+import org.angproj.aux.io.*
 import org.angproj.aux.pkg.Convention
-import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
-import org.angproj.aux.pkg.Unfoldable
 import kotlin.jvm.JvmInline
 
+
 @JvmInline
-public value class FloatArrayType(public val value: FloatArray) : Enfoldable {
+public value class FloatArrayType(public override val value: FloatBuffer): ArrayEnfoldable<Float, FloatBuffer> {
 
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
-        FoldFormat.BLOCK -> (atomicSize * value.size).toLong()
-        FoldFormat.STREAM -> (atomicSize * value.size).toLong() + Enfoldable.OVERHEAD_COUNT
-    }
+    override fun foldSize(foldFormat: FoldFormat): Long = ArrayEnfoldable.arrayFoldSize(
+        value, atomicSize, foldFormat)
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long {
-        value.indices.forEach {
-            outData.storeFloat((offset + it * atomicSize), value[it])
-        }
-        return foldSize(FoldFormat.BLOCK)
-    }
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
+        value, atomicSize, outData, offset) { o, i, v -> o.storeFloat(i, v) }
 
-    public fun enfoldToStream(outStream: Writable): Long {
-        Enfoldable.setType(outStream, conventionType)
-        Enfoldable.setCount(outStream, value.size)
-        value.forEach { outStream.writeFloat(it) }
-        Enfoldable.setEnd(outStream, conventionType)
-        return foldSize(FoldFormat.STREAM)
-    }
+    public fun enfoldToStream(outStream: Writable): Long = ArrayEnfoldable.arrayEnfoldToStream(
+        value, atomicSize, conventionType, outStream) { o, v -> o.writeFloat(v) }
 
-    public companion object : Unfoldable<FloatArrayType> {
+    public companion object : ArrayUnfoldable<Float, FloatBuffer, FloatArrayType> {
+        override val factory: (count: Int) -> FloatArrayType = { c -> FloatArrayType(FloatBuffer(c)) }
+
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.ARRAY_FLOAT
-        override val atomicSize: Int = Float.SIZE_BYTES
+        override val atomicSize: Int = TypeSize.float
 
-        public fun unfoldFromBlock(inData: Retrievable, count: Int): FloatArrayType = unfoldFromBlock(inData, 0, count)
+        public fun unfoldFromBlock(
+            inData: Retrievable,
+            count: Int
+        ): FloatArrayType = unfoldFromBlock(inData, 0, count)
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int, count: Int): FloatArrayType {
-            val data = FloatArray(count) { inData.retrieveFloat(offset + it * atomicSize) }
-            return FloatArrayType(data)
-        }
+        public fun unfoldFromBlock(
+            inData: Retrievable,
+            offset: Int,
+            count: Int
+        ): FloatArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
+            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveFloat(i) }
 
-        public fun unfoldFromStream(inStream: Readable): FloatArrayType {
-            require(Unfoldable.getType(inStream, conventionType))
-            val count = Unfoldable.getCount(inStream)
-            val data = FloatArray(count) { inStream.readFloat() }
-            require(Unfoldable.getEnd(inStream, conventionType))
-            return FloatArrayType(data)
-        }
+        public fun unfoldFromStream(
+            inStream: Readable
+        ): FloatArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
+            inStream, conventionType, factory) { s -> s.readFloat() }
     }
 }

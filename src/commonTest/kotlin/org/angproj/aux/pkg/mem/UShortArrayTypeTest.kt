@@ -1,7 +1,7 @@
 package org.angproj.aux.pkg.mem
 
-import org.angproj.aux.buf.IntBuffer
-import org.angproj.aux.buf.toIntBuffer
+import org.angproj.aux.buf.UShortBuffer
+import org.angproj.aux.buf.toShortBuffer
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
@@ -10,31 +10,30 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 
-class IntArrayTypeTest {
+class UShortArrayTypeTest {
 
-    val first = intArrayOf(-867525528, -424427028, -200053096).toIntBuffer()
-    val second = intArrayOf(393483776, -1786415628, -947006215, 1631859464, 1469943351).toIntBuffer()
-    val third = intArrayOf(
-        -1041512378, 2027971732, -937853390, 147748328, 2042021213, 1496947466, -452068048).toIntBuffer()
+    val first = UShortBuffer(shortArrayOf(-31123, -25444, 9662).toShortBuffer().segment)
+    val second = UShortBuffer(shortArrayOf(12959, 28616, 2619, 17090, -31423).toShortBuffer().segment)
+    val third = UShortBuffer(shortArrayOf(20417, 11571, 30775, 2691, 26005, -28863, -1299).toShortBuffer().segment)
 
-    protected fun enfoldArrayToBlock(data: IntBuffer) {
-        val type = IntArrayType(data)
+    protected fun enfoldArrayToBlock(data: UShortBuffer) {
+        val type = UShortArrayType(data)
         val block = BlockType(type.foldSize(FoldFormat.BLOCK))
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block)
 
-        val retrieved = IntArrayType.unfoldFromBlock(block, type.value.limit)
+        val retrieved = UShortArrayType.unfoldFromBlock(block, type.value.limit)
         assertContentEquals(type.value, retrieved.value)
     }
 
-    protected fun enfoldArrayToStream(data: IntBuffer) {
-        val type = IntArrayType(data)
+    protected fun enfoldArrayToStream(data: UShortBuffer) {
+        val type = UShortArrayType(data)
         val stream = DataBuffer()
         type.enfoldToStream(stream)
         stream.flip()
         assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())
 
-        val retrieved = IntArrayType.unfoldFromStream(stream)
+        val retrieved = UShortArrayType.unfoldFromStream(stream)
         assertContentEquals(type.value, retrieved.value)
     }
 

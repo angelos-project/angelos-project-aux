@@ -14,18 +14,29 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.Bytes
+import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class ShortBuffer private constructor(
-    size: Int, idxLimit: Int
-): AbstractBufferType<Short> {
-    public constructor(size: Int)
 
-    public override operator fun get(index: Int): Short
-    public override operator fun set(index: Int, value: Short)
+public class ShortBuffer internal constructor(
+    segment: Segment, view: Boolean = false
+): ArrayBuffer<Short>(segment, view, TypeSize.SHORT) {
 
-    public companion object {
-        public val typeSize: TypeSize
+    public constructor(size: Int) : this(Bytes(size * TypeSize.short))
+
+    public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.short)
+
+    override fun create(segment: Segment): ShortBuffer = ShortBuffer(segment)
+
+    override fun get(index: Int): Short = _segment.getShort(index * TypeSize.short)
+
+    override fun set(index: Int, value: Short) {
+        _segment.setShort(index * TypeSize.short, value)
     }
+}
+
+public fun ShortArray.toShortBuffer(): ShortBuffer = ShortBuffer(this.size).also {
+    this.forEachIndexed { index, v -> it[index] = v }
 }

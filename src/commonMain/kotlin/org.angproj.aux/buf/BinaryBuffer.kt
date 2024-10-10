@@ -19,7 +19,7 @@ import org.angproj.aux.util.NumberAware
 
 public class BinaryBuffer internal constructor(
     segment: Segment, view: Boolean = false
-): Buffer(segment, view), BinaryReadable, BinaryWritable, NumberAware {
+): FlowBuffer(segment, view), BinaryReadable, BinaryWritable, NumberAware {
 
     public constructor(size: Int) : this(Bytes(size))
 

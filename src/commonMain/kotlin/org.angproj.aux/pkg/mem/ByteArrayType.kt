@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.pkg.mem
 
-import org.angproj.aux.buf.ShortBuffer
+import org.angproj.aux.buf.ByteBuffer
 import org.angproj.aux.io.*
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.FoldFormat
@@ -22,7 +22,7 @@ import kotlin.jvm.JvmInline
 
 
 @JvmInline
-public value class ShortArrayType(public override val value: ShortBuffer): ArrayEnfoldable<Short, ShortBuffer> {
+public value class ByteArrayType(public override val value: ByteBuffer): ArrayEnfoldable<Byte, ByteBuffer> {
 
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
@@ -31,33 +31,33 @@ public value class ShortArrayType(public override val value: ShortBuffer): Array
         value, atomicSize, foldFormat)
 
     public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
-        value, atomicSize, outData, offset) { o, i, v -> o.storeShort(i, v) }
+        value, atomicSize, outData, offset) { o, i, v -> o.storeByte(i, v) }
 
     public fun enfoldToStream(outStream: Writable): Long = ArrayEnfoldable.arrayEnfoldToStream(
-        value, atomicSize, conventionType, outStream) { o, v -> o.writeShort(v) }
+        value, atomicSize, conventionType, outStream) { o, v -> o.writeByte(v) }
 
-    public companion object : ArrayUnfoldable<Short, ShortBuffer, ShortArrayType> {
-        override val factory: (count: Int) -> ShortArrayType = { c -> ShortArrayType(ShortBuffer(c)) }
+    public companion object : ArrayUnfoldable<Byte, ByteBuffer, ByteArrayType> {
+        override val factory: (count: Int) -> ByteArrayType = { c -> ByteArrayType(ByteBuffer(c)) }
 
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
-        override val conventionType: Convention = Convention.ARRAY_SHORT
-        override val atomicSize: Int = TypeSize.short
+        override val conventionType: Convention = Convention.ARRAY_BYTE
+        override val atomicSize: Int = TypeSize.byte
 
         public fun unfoldFromBlock(
             inData: Retrievable,
             count: Int
-        ): ShortArrayType = unfoldFromBlock(inData, 0, count)
+        ): ByteArrayType = unfoldFromBlock(inData, 0, count)
 
         public fun unfoldFromBlock(
             inData: Retrievable,
             offset: Int,
             count: Int
-        ): ShortArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
-            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveShort(i) }
+        ): ByteArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
+            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveByte(i) }
 
         public fun unfoldFromStream(
             inStream: Readable
-        ): ShortArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
-            inStream, conventionType, factory) { s -> s.readShort() }
+        ): ByteArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
+            inStream, conventionType, factory) { s -> s.readByte() }
     }
 }

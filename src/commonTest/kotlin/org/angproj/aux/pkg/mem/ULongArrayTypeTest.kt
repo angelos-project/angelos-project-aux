@@ -1,7 +1,7 @@
 package org.angproj.aux.pkg.mem
 
-import org.angproj.aux.buf.IntBuffer
-import org.angproj.aux.buf.toIntBuffer
+import org.angproj.aux.buf.ULongBuffer
+import org.angproj.aux.buf.toLongBuffer
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
@@ -10,31 +10,39 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 
-class IntArrayTypeTest {
+class ULongArrayTypeTest {
 
-    val first = intArrayOf(-867525528, -424427028, -200053096).toIntBuffer()
-    val second = intArrayOf(393483776, -1786415628, -947006215, 1631859464, 1469943351).toIntBuffer()
-    val third = intArrayOf(
-        -1041512378, 2027971732, -937853390, 147748328, 2042021213, 1496947466, -452068048).toIntBuffer()
+    val first = ULongBuffer(longArrayOf(
+        7350606340558794086, 4605821548019215976, -3128307633535295103
+    ).toLongBuffer().segment)
+    val second = ULongBuffer(longArrayOf(
+        7945849346388654169, -4297059938720181180, -1681121171521567076,
+        8719833755577087749, -7527003565038888806
+    ).toLongBuffer().segment)
+    val third = ULongBuffer(longArrayOf(
+        -6674685465426633689, -4828168200396455132, 1963319562884594548,
+        5797122671369353319, -6876203796469653941, -2417569782213643756,
+        5235272198954834514
+    ).toLongBuffer().segment)
 
-    protected fun enfoldArrayToBlock(data: IntBuffer) {
-        val type = IntArrayType(data)
+    protected fun enfoldArrayToBlock(data: ULongBuffer) {
+        val type = ULongArrayType(data)
         val block = BlockType(type.foldSize(FoldFormat.BLOCK))
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block)
 
-        val retrieved = IntArrayType.unfoldFromBlock(block, type.value.limit)
+        val retrieved = ULongArrayType.unfoldFromBlock(block, type.value.limit)
         assertContentEquals(type.value, retrieved.value)
     }
 
-    protected fun enfoldArrayToStream(data: IntBuffer) {
-        val type = IntArrayType(data)
+    protected fun enfoldArrayToStream(data: ULongBuffer) {
+        val type = ULongArrayType(data)
         val stream = DataBuffer()
         type.enfoldToStream(stream)
         stream.flip()
         assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())
 
-        val retrieved = IntArrayType.unfoldFromStream(stream)
+        val retrieved = ULongArrayType.unfoldFromStream(stream)
         assertContentEquals(type.value, retrieved.value)
     }
 

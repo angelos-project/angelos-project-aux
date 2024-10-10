@@ -14,18 +14,30 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.Bytes
+import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.NumberAware
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class DoubleBuffer private constructor(
-    size: Int, idxLimit: Int
-): AbstractBufferType<Double> {
-    public constructor(size: Int)
 
-    public override operator fun get(index: Int): Double
-    public override operator fun set(index: Int, value: Double)
+public class DoubleBuffer internal constructor(
+    segment: Segment, view: Boolean = false
+): ArrayBuffer<Double>(segment, view, TypeSize.DOUBLE), NumberAware {
 
-    public companion object {
-        public val typeSize: TypeSize
+    public constructor(size: Int) : this(Bytes(size * TypeSize.double))
+
+    public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.double)
+
+    override fun create(segment: Segment): DoubleBuffer = DoubleBuffer(segment)
+
+    override fun get(index: Int): Double = _segment.getLong(index * TypeSize.long).conv2D()
+
+    override fun set(index: Int, value: Double) {
+        _segment.setLong(index * TypeSize.long, value.conv2L())
     }
+}
+
+public fun DoubleArray.toDoubleBuffer(): DoubleBuffer = DoubleBuffer(this.size).also {
+    this.forEachIndexed { index, v -> it[index] = v }
 }

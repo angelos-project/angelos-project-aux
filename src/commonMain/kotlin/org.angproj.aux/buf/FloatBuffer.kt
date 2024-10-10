@@ -14,18 +14,30 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.Bytes
+import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.NumberAware
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class FloatBuffer private constructor(
-    size: Int, idxLimit: Int
-): AbstractBufferType<Float> {
-    public constructor(size: Int)
 
-    public override operator fun get(index: Int): Float
-    public override operator fun set(index: Int, value: Float)
+public class FloatBuffer internal constructor(
+    segment: Segment, view: Boolean = false
+): ArrayBuffer<Float>(segment, view, TypeSize.FLOAT), NumberAware {
 
-    public companion object {
-        public val typeSize: TypeSize
+    public constructor(size: Int) : this(Bytes(size * TypeSize.float))
+
+    public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.float)
+
+    override fun create(segment: Segment): FloatBuffer = FloatBuffer(segment)
+
+    override fun get(index: Int): Float = _segment.getInt(index * TypeSize.float).conv2F()
+
+    override fun set(index: Int, value: Float) {
+        _segment.setInt(index * TypeSize.float, value.conv2I())
     }
+}
+
+public fun FloatArray.toFloatBuffer(): FloatBuffer = FloatBuffer(this.size).also {
+    this.forEachIndexed { index, v -> it[index] = v }
 }

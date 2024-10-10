@@ -14,18 +14,26 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.*
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class LongBuffer private constructor(
-    size: Int, idxLimit: Int
-): AbstractBufferType<Long> {
-    public constructor(size: Int)
 
-    public override operator fun get(index: Int): Long
-    public override operator fun set(index: Int, value: Long)
+public class LongBuffer internal constructor(
+    segment: Segment, view: Boolean = false
+): ArrayBuffer<Long>(segment, view, TypeSize.LONG) {
 
-    public companion object {
-        public val typeSize: TypeSize
+    public constructor(size: Int) : this(Bytes(size * TypeSize.long))
+
+    public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.long)
+
+    override fun create(segment: Segment): LongBuffer = LongBuffer(segment)
+
+    override fun get(index: Int): Long = _segment.getLong(index * TypeSize.long)
+
+    override fun set(index: Int, value: Long) {
+        _segment.setLong(index * TypeSize.long, value)
     }
+}
+
+public fun LongArray.toLongBuffer(): LongBuffer = LongBuffer(this.size).also {
+    this.forEachIndexed { index, v -> it[index] = v }
 }

@@ -21,7 +21,7 @@ import org.angproj.aux.util.withUnicodeAware
 
 public class TextBuffer internal constructor(
     segment: Segment, view: Boolean = false
-): Buffer(segment, view), TextReadable, TextWritable {
+): FlowBuffer(segment, view), TextReadable, TextWritable {
 
     public constructor(size: Int) : this(Bytes(size))
 

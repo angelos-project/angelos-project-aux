@@ -14,18 +14,26 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.Bytes
+import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.NumberAware
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class UShortBuffer private constructor(
-    size: Int, idxLimit: Int
-): AbstractBufferType<UShort> {
-    public constructor(size: Int)
 
-    public override operator fun get(index: Int): UShort
-    public override operator fun set(index: Int, value: UShort)
+public class UShortBuffer internal constructor(
+    segment: Segment, view: Boolean = false
+): ArrayBuffer<UShort>(segment, view, TypeSize.U_SHORT), NumberAware {
 
-    public companion object {
-        public val typeSize: TypeSize
+    public constructor(size: Int) : this(Bytes(size * TypeSize.uShort))
+
+    public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.uShort)
+
+    override fun create(segment: Segment): UShortBuffer = UShortBuffer(segment)
+
+    override fun get(index: Int): UShort = _segment.getShort(index * TypeSize.uShort).conv2uS()
+
+    override fun set(index: Int, value: UShort) {
+        _segment.setShort(index * TypeSize.uShort, value.conv2S())
     }
 }

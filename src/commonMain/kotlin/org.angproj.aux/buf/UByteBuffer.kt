@@ -14,18 +14,26 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.Bytes
+import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.NumberAware
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class UByteBuffer private constructor(
-    size: Int, idxLimit: Int
-): AbstractBufferType<UByte> {
-    public constructor(size: Int)
 
-    public override operator fun get(index: Int): UByte
-    public override operator fun set(index: Int, value: UByte)
+public class UByteBuffer internal constructor(
+    segment: Segment, view: Boolean = false
+): ArrayBuffer<UByte>(segment, view, TypeSize.U_BYTE), NumberAware{
 
-    public companion object {
-        public val typeSize: TypeSize
+    public constructor(size: Int) : this(Bytes(size * TypeSize.uByte))
+
+    public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.uByte)
+
+    override fun create(segment: Segment): UByteBuffer = UByteBuffer(segment)
+
+    override fun get(index: Int): UByte = _segment.getByte(index).conv2uB()
+
+    override fun set(index: Int, value: UByte) {
+        _segment.setByte(index, value.conv2B())
     }
 }

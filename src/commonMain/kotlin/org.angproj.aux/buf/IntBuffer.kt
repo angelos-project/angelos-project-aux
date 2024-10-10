@@ -14,18 +14,29 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.Bytes
+import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class IntBuffer private constructor(
-    size: Int, idxLimit: Int
-): AbstractBufferType<Int> {
-    public constructor(size: Int)
 
-    public override operator fun get(index: Int): Int
-    public override operator fun set(index: Int, value: Int)
+public class IntBuffer internal constructor(
+    segment: Segment, view: Boolean = false
+): ArrayBuffer<Int>(segment, view, TypeSize.INT) {
 
-    public companion object {
-        public val typeSize: TypeSize
+    public constructor(size: Int) : this(Bytes(size * TypeSize.int))
+
+    public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.int)
+
+    override fun create(segment: Segment): IntBuffer = IntBuffer(segment)
+
+    override fun get(index: Int): Int = _segment.getInt(index * TypeSize.int)
+
+    override fun set(index: Int, value: Int) {
+        _segment.setInt(index * TypeSize.int, value)
     }
+}
+
+public fun IntArray.toIntBuffer(): IntBuffer = IntBuffer(this.size).also {
+    this.forEachIndexed { index, v -> it[index] = v }
 }
