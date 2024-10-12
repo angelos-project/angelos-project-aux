@@ -12,6 +12,10 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pkg
+package org.angproj.aux.io
 
-public interface BlockPackageable : BlockEnpackageable, BlockUnpackageable
+import org.angproj.aux.util.CodePoint
+
+public interface TextRetrievable {
+    public fun retrieveGlyph(position: Int): CodePoint
+}

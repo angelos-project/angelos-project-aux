@@ -15,6 +15,7 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
+import org.angproj.aux.util.NullObject
 
 
 public class LongBuffer internal constructor(
@@ -37,3 +38,8 @@ public class LongBuffer internal constructor(
 public fun LongArray.toLongBuffer(): LongBuffer = LongBuffer(this.size).also {
     this.forEachIndexed { index, v -> it[index] = v }
 }
+
+public fun LongBuffer.isNull(): Boolean = NullObject.longBuffer === this
+private val nullLongBuffer = LongBuffer(NullObject.segment)
+public val NullObject.longBuffer: LongBuffer
+    get() = nullLongBuffer

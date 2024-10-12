@@ -14,10 +14,10 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.Bytes
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.*
+import org.angproj.aux.util.NullObject
+import org.angproj.aux.util.Uuid4
+import org.angproj.aux.util.uuid4Of
 
 
 public class ByteBuffer internal constructor(
@@ -40,3 +40,8 @@ public class ByteBuffer internal constructor(
 public fun ByteArray.toByteBuffer(): ByteBuffer = ByteBuffer(this.size).also {
     this.forEachIndexed { index, v -> it[index] = v }
 }
+
+public fun ByteBuffer.isNull(): Boolean = NullObject.byteBuffer === this
+private val nullByteBuffer = ByteBuffer(NullObject.segment)
+public val NullObject.byteBuffer: ByteBuffer
+    get() = nullByteBuffer

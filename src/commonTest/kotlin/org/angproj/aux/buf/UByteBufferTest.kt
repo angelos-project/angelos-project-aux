@@ -15,6 +15,10 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.TestInformationStub
+import org.angproj.aux.util.NullObject
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 
 class UByteBufferTest: AbstractArrayBufferTest<UByte>() {
@@ -27,5 +31,11 @@ class UByteBufferTest: AbstractArrayBufferTest<UByte>() {
             lb[it] = refValue
         }
         return lb
+    }
+
+    @Test
+    fun testNullUByteBuffer() {
+        assertTrue(NullObject.uByteBuffer.isNull())
+        assertFalse(UByteBuffer().isNull())
     }
 }

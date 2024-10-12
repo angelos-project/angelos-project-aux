@@ -20,7 +20,7 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class ObjectType<P : StreamPackageable>(public val value: P) : Enfoldable {
+public value class ObjectType<P: Packageable>(public val value: P) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
@@ -34,14 +34,14 @@ public value class ObjectType<P : StreamPackageable>(public val value: P) : Enfo
         return foldSize(FoldFormat.STREAM)
     }
 
-    public companion object : Unfoldable<ObjectType<StreamPackageable>> {
+    public companion object : Unfoldable<ObjectType<Packageable>> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.STREAM)
         override val conventionType: Convention = Convention.OBJECT
         override val atomicSize: Int = 0
 
         public fun unfoldFromStream(
-            inStream: Readable, unpack: (Readable) -> StreamPackageable
-        ): ObjectType<StreamPackageable> {
+            inStream: Readable, unpack: (Readable) -> Packageable
+        ): ObjectType<Packageable> {
             require(Unfoldable.getType(inStream, conventionType))
             val length = Unfoldable.getLength(inStream)
             val obj = ObjectType(unpack(inStream))

@@ -20,7 +20,7 @@ import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class ListType<P : Packageable>(public val value: List<P>) : Enfoldable {
+public value class ListType<P: Packageable>(public val value: List<P>) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
@@ -30,14 +30,14 @@ public value class ListType<P : Packageable>(public val value: List<P>) : Enfold
         TODO("Not yet implemented")
     }
 
-    public companion object : Unfoldable<ListType<StreamPackageable>> {
+    public companion object : Unfoldable<ListType<Packageable>> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.STREAM)
-        override val conventionType: Convention = Convention.DICT
+        override val conventionType: Convention = Convention.LIST
         override val atomicSize: Int = 0
 
         public fun unfoldFromStream(
             inStream: Readable, unpack: (Readable) -> Packageable
-        ): ListType<StreamPackageable> {
+        ): ListType<Packageable> {
             TODO("Not yet implemented")
         }
     }

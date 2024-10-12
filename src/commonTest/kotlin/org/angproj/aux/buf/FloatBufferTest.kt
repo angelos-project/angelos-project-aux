@@ -15,6 +15,10 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.TestInformationStub
+import org.angproj.aux.util.NullObject
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 
 class FloatBufferTest: AbstractArrayBufferTest<Float>() {
@@ -27,5 +31,11 @@ class FloatBufferTest: AbstractArrayBufferTest<Float>() {
             lb[it] = refValue
         }
         return lb
+    }
+
+    @Test
+    fun testNullFloatBuffer() {
+        assertTrue(NullObject.floatBuffer.isNull())
+        assertFalse(FloatBuffer().isNull())
     }
 }

@@ -19,6 +19,7 @@ import org.angproj.aux.util.CodePoint
 import org.angproj.aux.util.Unicode
 import org.angproj.aux.util.withUnicodeAware
 
+
 public class TextBuffer internal constructor(
     segment: Segment, view: Boolean = false
 ): FlowBuffer(segment, view), TextReadable, TextWritable {

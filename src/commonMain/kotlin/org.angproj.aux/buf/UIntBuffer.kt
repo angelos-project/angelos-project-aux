@@ -14,10 +14,8 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.Bytes
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.*
+import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.NumberAware
 
 
@@ -37,3 +35,8 @@ public class UIntBuffer internal constructor(
         _segment.setInt(index * TypeSize.uInt, value.conv2I())
     }
 }
+
+public fun UIntBuffer.isNull(): Boolean = NullObject.uIntBuffer === this
+private val nullUIntBuffer = UIntBuffer(NullObject.segment)
+public val NullObject.uIntBuffer: UIntBuffer
+    get() = nullUIntBuffer

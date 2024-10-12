@@ -14,10 +14,7 @@
  */
 package org.angproj.aux.pkg.arb
 
-import org.angproj.aux.io.Readable
-import org.angproj.aux.io.Writable
-import org.angproj.aux.io.toBinary
-import org.angproj.aux.io.toByteArray
+import org.angproj.aux.io.*
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
@@ -26,22 +23,18 @@ import org.angproj.aux.pkg.type.BlockType
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class StringType(public val value: ByteArray) : Enfoldable {
-
-    public constructor(text: String) : this(text.encodeToByteArray())
-
-    override fun toString(): String = value.decodeToString()
+public value class StringType(public val value: Text) : Enfoldable {
 
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
         FoldFormat.BLOCK -> error("Unsupported fold format.")
-        FoldFormat.STREAM -> value.size + Enfoldable.OVERHEAD_LENGTH
+        FoldFormat.STREAM -> value.limit + Enfoldable.OVERHEAD_LENGTH
     }
 
     public fun enfoldToStream(outStream: Writable): Long {
-        val block = BlockType(value.toBinary())
+        val block = BlockType(value.asBinary())
         return block.enfoldToStreamByConvention(outStream, conventionType)
     }
 
@@ -52,7 +45,7 @@ public value class StringType(public val value: ByteArray) : Enfoldable {
 
         public fun unfoldFromStream(inStream: Readable): StringType {
             val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
-            return StringType(block.block.toByteArray())
+            return StringType(Text(block.block.segment))
         }
     }
 }

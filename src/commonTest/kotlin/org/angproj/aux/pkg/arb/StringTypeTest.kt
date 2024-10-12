@@ -1,6 +1,7 @@
 package org.angproj.aux.pkg.arb
 
 import org.angproj.aux.TestInformationStub
+import org.angproj.aux.io.toText
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.util.DataBuffer
 import kotlin.test.Test
@@ -12,9 +13,9 @@ class StringTypeTest {
     @Test
     fun enfoldToStream() {
         val texts = listOf(
-            TestInformationStub.lipsumShort,
-            TestInformationStub.lipsumMedium,
-            TestInformationStub.lipsumLong
+            TestInformationStub.lipsumShort.toText(),
+            TestInformationStub.lipsumMedium.toText(),
+            TestInformationStub.lipsumLong.toText()
         )
         val stream = DataBuffer()
 

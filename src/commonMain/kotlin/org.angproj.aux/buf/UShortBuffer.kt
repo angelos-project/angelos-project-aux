@@ -14,10 +14,8 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.Bytes
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.*
+import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.NumberAware
 
 
@@ -37,3 +35,8 @@ public class UShortBuffer internal constructor(
         _segment.setShort(index * TypeSize.uShort, value.conv2S())
     }
 }
+
+public fun UShortBuffer.isNull(): Boolean = NullObject.uShortBuffer === this
+private val nullUShortBuffer = UShortBuffer(NullObject.segment)
+public val NullObject.uShortBuffer: UShortBuffer
+    get() = nullUShortBuffer

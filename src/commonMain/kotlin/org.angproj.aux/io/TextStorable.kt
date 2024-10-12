@@ -12,6 +12,10 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.pkg
+package org.angproj.aux.io
 
-public interface StreamPackageable : StreamEnpackageable, StreamUnpackageable
+import org.angproj.aux.util.CodePoint
+
+public interface TextStorable {
+    public fun storeGlyph(position: Int, codePoint: CodePoint): Int
+}

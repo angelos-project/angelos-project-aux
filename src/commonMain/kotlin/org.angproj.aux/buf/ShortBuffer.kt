@@ -14,10 +14,8 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.Bytes
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.*
+import org.angproj.aux.util.NullObject
 
 
 public class ShortBuffer internal constructor(
@@ -40,3 +38,8 @@ public class ShortBuffer internal constructor(
 public fun ShortArray.toShortBuffer(): ShortBuffer = ShortBuffer(this.size).also {
     this.forEachIndexed { index, v -> it[index] = v }
 }
+
+public fun ShortBuffer.isNull(): Boolean = NullObject.shortBuffer === this
+private val nullShortBuffer = ShortBuffer(NullObject.segment)
+public val NullObject.shortBuffer: ShortBuffer
+    get() = nullShortBuffer

@@ -39,7 +39,7 @@ public interface Unfoldable<E : Enfoldable> {
         throw UnsupportedOperationException()
     }
 
-    public fun <P : BlockPackageable> unfold(
+    public fun <P : Packageable> unfold(
         inData: Retrievable, offset: Int, unpack: (Retrievable, Int) -> P
     ): StructType<P> {
         throw UnsupportedOperationException()

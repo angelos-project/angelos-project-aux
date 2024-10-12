@@ -29,7 +29,7 @@ class Uuid4Test {
     }
 
     @Test
-    fun testNullBigInt() {
+    fun testNullUuid4() {
         assertTrue(NullObject.uuid4.isNull())
         assertFalse(uuid4().isNull())
     }

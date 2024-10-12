@@ -28,7 +28,6 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
 
     override fun retrieveByte(position: Int): Byte = block.retrieveByte(position)
     override fun retrieveUByte(position: Int): UByte = block.retrieveUByte(position)
-    //override fun retrieveChar(position: Int): Char = block.readCharAt(position)
     override fun retrieveShort(position: Int): Short = block.retrieveShort(position)
     override fun retrieveUShort(position: Int): UShort = block.retrieveUShort(position)
     override fun retrieveInt(position: Int): Int = block.retrieveInt(position)
@@ -45,10 +44,6 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
     override fun storeUByte(position: Int, value: UByte) {
         block.storeUByte(position, value)
     }
-
-    /*override fun storeChar(position: Int, value: Char) {
-        block.writeCharAt(position, value)
-    }*/
 
     override fun storeShort(position: Int, value: Short) {
         block.storeShort(position, value)

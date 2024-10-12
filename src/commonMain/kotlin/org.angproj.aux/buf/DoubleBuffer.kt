@@ -14,10 +14,8 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.Bytes
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.*
+import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.NumberAware
 
 
@@ -41,3 +39,8 @@ public class DoubleBuffer internal constructor(
 public fun DoubleArray.toDoubleBuffer(): DoubleBuffer = DoubleBuffer(this.size).also {
     this.forEachIndexed { index, v -> it[index] = v }
 }
+
+public fun DoubleBuffer.isNull(): Boolean = NullObject.doubleBuffer === this
+private val nullDoubleBuffer = DoubleBuffer(NullObject.segment)
+public val NullObject.doubleBuffer: DoubleBuffer
+    get() = nullDoubleBuffer

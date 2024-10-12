@@ -5,9 +5,7 @@ import org.angproj.aux.buf.toByteBuffer
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
-import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertEquals
+import kotlin.test.*
 
 
 class ByteArrayTypeTest {

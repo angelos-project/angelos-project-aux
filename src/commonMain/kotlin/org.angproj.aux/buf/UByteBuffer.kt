@@ -14,10 +14,8 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.Bytes
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.*
+import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.NumberAware
 
 
@@ -37,3 +35,8 @@ public class UByteBuffer internal constructor(
         _segment.setByte(index, value.conv2B())
     }
 }
+
+public fun UByteBuffer.isNull(): Boolean = NullObject.uByteBuffer === this
+private val nullUByteBuffer = UByteBuffer(NullObject.segment)
+public val NullObject.uByteBuffer: UByteBuffer
+    get() = nullUByteBuffer

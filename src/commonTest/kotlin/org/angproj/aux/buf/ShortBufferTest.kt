@@ -15,6 +15,10 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.TestInformationStub
+import org.angproj.aux.util.NullObject
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 
 class ShortBufferTest: AbstractArrayBufferTest<Short>() {
@@ -27,5 +31,11 @@ class ShortBufferTest: AbstractArrayBufferTest<Short>() {
             lb[it] = refValue
         }
         return lb
+    }
+
+    @Test
+    fun testNullShortBuffer() {
+        assertTrue(NullObject.shortBuffer.isNull())
+        assertFalse(ShortBuffer().isNull())
     }
 }

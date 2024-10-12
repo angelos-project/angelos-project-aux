@@ -23,7 +23,7 @@ import org.angproj.aux.pkg.type.BlockType
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class StructType<P : BlockPackageable>(public val value: P) : Enfoldable {
+public value class StructType<P: Packageable>(public val value: P) : Enfoldable {
     override val foldFormat: FoldFormat
         get() = TODO("Not yet implemented")
 
@@ -46,22 +46,22 @@ public value class StructType<P : BlockPackageable>(public val value: P) : Enfol
         return block.enfoldToStreamByConvention(outStream, conventionType)
     }
 
-    public companion object : Unfoldable<StructType<BlockPackageable>> {
+    public companion object : Unfoldable<StructType<Packageable>> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.STRUCT
         override val atomicSize: Int = 0
 
         public fun unfoldFromBlock(
-            inData: Retrievable, unpack: (Retrievable, Int) -> BlockPackageable
-        ): StructType<BlockPackageable> = unfoldFromBlock(inData, 0, unpack)
+            inData: Retrievable, unpack: (Retrievable, Int) -> Packageable
+        ): StructType<Packageable> = unfoldFromBlock(inData, 0, unpack)
 
         public fun unfoldFromBlock(
-            inData: Retrievable, offset: Int, unpack: (Retrievable, Int) -> BlockPackageable
-        ): StructType<BlockPackageable> = StructType(unpack(inData, offset))
+            inData: Retrievable, offset: Int, unpack: (Retrievable, Int) -> Packageable
+        ): StructType<Packageable> = StructType(unpack(inData, offset))
 
         public fun unfoldFromStream(
-            inStream: Readable, unpack: (Retrievable, Int) -> BlockPackageable
-        ): StructType<BlockPackageable> {
+            inStream: Readable, unpack: (Retrievable, Int) -> Packageable
+        ): StructType<Packageable> {
             val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
             return StructType(unpack(block, 0))
         }

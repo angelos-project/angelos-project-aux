@@ -14,10 +14,8 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.Bytes
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.*
+import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.NumberAware
 
 
@@ -37,3 +35,8 @@ public class ULongBuffer internal constructor(
         _segment.setLong(index * TypeSize.uLong, value.conv2L())
     }
 }
+
+public fun ULongBuffer.isNull(): Boolean = NullObject.uLongBuffer === this
+private val nullULongBuffer = ULongBuffer(NullObject.segment)
+public val NullObject.uLongBuffer: ULongBuffer
+    get() = nullULongBuffer

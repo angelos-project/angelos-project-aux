@@ -14,10 +14,8 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.Bytes
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.*
+import org.angproj.aux.util.NullObject
 
 
 public class IntBuffer internal constructor(
@@ -40,3 +38,8 @@ public class IntBuffer internal constructor(
 public fun IntArray.toIntBuffer(): IntBuffer = IntBuffer(this.size).also {
     this.forEachIndexed { index, v -> it[index] = v }
 }
+
+public fun IntBuffer.isNull(): Boolean = NullObject.intBuffer === this
+private val nullIntBuffer = IntBuffer(NullObject.segment)
+public val NullObject.intBuffer: IntBuffer
+    get() = nullIntBuffer
