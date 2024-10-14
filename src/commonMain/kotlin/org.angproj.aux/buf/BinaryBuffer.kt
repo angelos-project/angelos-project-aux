@@ -17,6 +17,7 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.*
 import org.angproj.aux.util.NumberAware
 
+
 public class BinaryBuffer internal constructor(
     segment: Segment, view: Boolean = false
 ): FlowBuffer(segment, view), BinaryReadable, BinaryWritable, NumberAware {
@@ -96,6 +97,9 @@ public class BinaryBuffer internal constructor(
 
     override fun writeDouble(value: Double): Unit = withinWriteLimit(TypeSize.long) {
         _segment.setLong(_position, value.conv2L()) }
-
-    public fun asBinary(): Binary = Binary(_segment, true)
 }
+
+/**
+ * For proper copying of a certain sequence of bytes, markAt() and limitAt() has to be set first.
+ * */
+public fun BinaryBuffer.toBinary(): Binary = Binary(segment.copyOfRange(mark, limit))

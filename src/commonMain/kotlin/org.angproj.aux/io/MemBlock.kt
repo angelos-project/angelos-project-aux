@@ -12,32 +12,45 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.buf
+package org.angproj.aux.io
 
-import org.angproj.aux.io.Memory
-import org.angproj.aux.io.Segment
 import org.angproj.aux.util.Auto
 
-public abstract class Buffer protected constructor(
-    internal val _segment: Segment, protected val view: Boolean = false
-): Auto {
 
-    internal abstract fun create(segment: Segment): Buffer
+public abstract class MemBlock internal constructor(
+    protected val _segment: Segment,
+    private val _view: Boolean
+) : Auto{
 
     public val segment: Segment
         get() = _segment
 
-    /**
-     * Gives the max capacity of the buffer
-     * */
-    public abstract val capacity: Int
+    public val limit: Int
+        get() = _segment.limit
+
+    public val capacity: Int
+        get() = _segment.size
 
     /**
-     * The current limit of the buffer as defined.
+     * The same as on Buffer with upper limit.
      * */
-    public abstract val limit: Int
+    public fun limitAt(newLimit: Int) {
+        require(newLimit in 0.._segment.size)
+        _segment.limit = newLimit
+    }
 
-    override fun isView(): Boolean = view
+    /**
+     * Reduced function compared to Buffer interface due to no rewind capability.
+     * */
+    public fun clear() {
+        _segment.limit = _segment.size
+    }
+
+    protected inline fun <reified R: Number> remaining(position: Int): Int = _segment.limit - position
+
+    public fun asBinary(): Binary = Binary(_segment, true)
+
+    override fun isView(): Boolean = _view
 
     override fun isMem(): Boolean = _segment is Memory
 
@@ -48,7 +61,7 @@ public abstract class Buffer protected constructor(
     public override fun equals(other: Any?): Boolean {
         if(this === other) return true
         if(other == null || this::class != other::class) return false
-        other as Buffer
+        other as MemBlock
         return _segment == other._segment
     }
 

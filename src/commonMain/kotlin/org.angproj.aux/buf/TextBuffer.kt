@@ -16,8 +16,9 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
 import org.angproj.aux.util.CodePoint
-import org.angproj.aux.util.Unicode
 import org.angproj.aux.util.withUnicodeAware
+import kotlin.math.max
+import kotlin.math.min
 
 
 public class TextBuffer internal constructor(
@@ -35,9 +36,26 @@ public class TextBuffer internal constructor(
 
     override fun writeGlyph(codePoint: CodePoint): Int = withUnicodeAware {
         writeGlyphBlk(codePoint, remaining) { segment.setByte(_position++, it) } }
+
+    public fun select(selection: IntRange = mark..limit): IntRange = withUnicodeAware {
+        require(selection.first in mark..limit && selection.last in mark..limit) {
+            "Selection outside mark and limit." }
+
+        val first = (selection.first .. max(selection.first - 6, mark)).find {
+            isGlyphStart(_segment.getByte(it)) }
+        val last = (selection.last .. min(selection.last + 6, limit)).findLast {
+            isGlyphStart(_segment.getByte(it)) }
+
+        check(first != null) { "Invalid beginning of start glyph" }
+        check(last != null) { "Invalid end of last glyph" }
+
+        first until (last+hasGlyphSize(_segment.getByte(last)))
+    }
 }
 
-
-public fun String.toTextBuffer(size: DataSize = DataSize._4K): TextBuffer = TextBuffer(size).also { tb ->
-    Unicode.importUnicode(this) { tb.writeGlyph(it) }
-}
+/**
+ * For proper copying of a certain field of characters, markAt() and limitAt() has to be set first.
+ * Make sure that the TextBuffer is flipped using flip() first.
+ * */
+public fun TextBuffer.toText(selection: IntRange = mark..limit): Text = with(select(selection)) {
+    Text(segment.copyOfRange(first, last)) }

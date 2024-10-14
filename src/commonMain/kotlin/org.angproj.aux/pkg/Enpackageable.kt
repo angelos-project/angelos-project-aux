@@ -78,52 +78,52 @@ public interface Enpackageable {
         type.enfoldToStream(this)
 
 
-    public fun Storable.saveByte(outData: Storable, offset: Int, value: Byte): Long = ByteType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveShort(outData: Storable, offset: Int, value: Short): Long = ShortType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveInt(outData: Storable, offset: Int, value: Int): Long = IntType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveLong(outData: Storable, offset: Int, value: Long): Long = LongType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveFloat(outData: Storable, offset: Int, value: Float): Long = FloatType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveDouble(outData: Storable, offset: Int, value: Double): Long = DoubleType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveUByte(outData: Storable, offset: Int, value: UByte): Long = UByteType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveUShort(outData: Storable, offset: Int, value: UShort): Long = UShortType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveUInt(outData: Storable, offset: Int, value: UInt): Long = UIntType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveULong(outData: Storable, offset: Int, value: ULong): Long = ULongType(
-        value).enfoldToBlock(outData, offset)
+    public fun Storable.saveByte(offset: Int, value: Byte): Long = ByteType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveShort(offset: Int, value: Short): Long = ShortType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveInt(offset: Int, value: Int): Long = IntType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveLong(offset: Int, value: Long): Long = LongType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveFloat(offset: Int, value: Float): Long = FloatType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveDouble(offset: Int, value: Double): Long = DoubleType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveUByte(offset: Int, value: UByte): Long = UByteType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveUShort(offset: Int, value: UShort): Long = UShortType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveUInt(offset: Int, value: UInt): Long = UIntType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveULong(offset: Int, value: ULong): Long = ULongType(
+        value).enfoldToBlock(this, offset)
 
 
-    public fun Storable.saveByteArray(outData: Storable, offset: Int, value: ByteBuffer): Long = ByteArrayType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveShortArray(outData: Storable, offset: Int, value: ShortBuffer): Long = ShortArrayType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveIntArray(outData: Storable, offset: Int, value: IntBuffer): Long = IntArrayType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveLongArray(outData: Storable, offset: Int, value: LongBuffer): Long = LongArrayType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveFloatArray(outData: Storable, offset: Int, value: FloatBuffer): Long = FloatArrayType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveDoubleArray(outData: Storable, offset: Int, value: DoubleBuffer): Long = DoubleArrayType(
-        value).enfoldToBlock(outData, offset)
-    public fun Storable.saveUByteArray(outData: Storable, offset: Int, value: UByteBuffer): Long =
-        UByteArrayType(value).enfoldToBlock(outData, offset)
-    public fun Storable.saveUShortArray(outData: Storable, offset: Int, value: UShortBuffer): Long =
-        UShortArrayType(value).enfoldToBlock(outData, offset)
-    public fun Storable.saveUIntArray(outData: Storable, offset: Int, value: UIntBuffer): Long =
-        UIntArrayType(value).enfoldToBlock(outData, offset)
-    public fun Storable.saveULongArray(outData: Storable, offset: Int, value: ULongBuffer): Long =
-        ULongArrayType(value).enfoldToBlock(outData, offset)
+    public fun Storable.saveByteArray(offset: Int, value: ByteBuffer): Long = ByteArrayType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveShortArray(offset: Int, value: ShortBuffer): Long = ShortArrayType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveIntArray(offset: Int, value: IntBuffer): Long = IntArrayType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveLongArray(offset: Int, value: LongBuffer): Long = LongArrayType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveFloatArray(offset: Int, value: FloatBuffer): Long = FloatArrayType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveDoubleArray(offset: Int, value: DoubleBuffer): Long = DoubleArrayType(
+        value).enfoldToBlock(this, offset)
+    public fun Storable.saveUByteArray(offset: Int, value: UByteBuffer): Long =
+        UByteArrayType(value).enfoldToBlock(this, offset)
+    public fun Storable.saveUShortArray(offset: Int, value: UShortBuffer): Long =
+        UShortArrayType(value).enfoldToBlock(this, offset)
+    public fun Storable.saveUIntArray(offset: Int, value: UIntBuffer): Long =
+        UIntArrayType(value).enfoldToBlock(this, offset)
+    public fun Storable.saveULongArray(offset: Int, value: ULongBuffer): Long =
+        ULongArrayType(value).enfoldToBlock(this, offset)
 
 
-    public fun Storable.saveUuid4(outData: Storable, offset: Int, value: Uuid4): Long =
-        Uuid4Type(value).enfoldToBlock(outData, offset)
+    public fun Storable.saveUuid4(offset: Int, value: Uuid4): Long =
+        Uuid4Type(value).enfoldToBlock(this, offset)
 
 
     /*public companion object {

@@ -105,4 +105,13 @@ class BinaryBufferTest: AbstractFlowBufferTest<BinaryBuffer>() {
         buf.flip()
         assertEquals(buf.readDouble(), TestInformationStub.refDouble)
     }
+
+    @Test
+    fun toBinary() {
+        val buf = setInput()
+        buf.flip()
+        val bin = buf.toBinary()
+
+        assertEquals(buf.segment, bin.segment)
+    }
 }

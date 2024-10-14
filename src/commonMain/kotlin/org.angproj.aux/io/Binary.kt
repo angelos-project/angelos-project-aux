@@ -16,47 +16,22 @@ package org.angproj.aux.io
 
 import org.angproj.aux.util.*
 
+
 public class Binary internal constructor(
-    internal val _segment: Segment, protected val view: Boolean = false
-) : Auto, Retrievable, Storable, NumberAware, BufferAware {
+    segment: Segment, view: Boolean = false
+) : MemBlock(segment, view), Retrievable, Storable, NumberAware, BufferAware {
 
     public constructor(size: Int) : this(Bytes(size))
 
     public constructor(size: DataSize = DataSize._4K) : this(size.size)
 
-    public val segment: Segment
-        get() = _segment
-
-    public val limit: Int
-        get() = _segment.limit
-
-    public val capacity: Int
-        get() = _segment.size
-
-    /**
-     * The same as on Buffer with upper limit.
-     * */
-    public fun limitAt(newLimit: Int) {
-        require(newLimit in 0.._segment.size)
-        _segment.limit = newLimit
-    }
-
-    /**
-     * Reduced function compared to Buffer interface due to no rewind capability.
-     * */
-    public fun clear() {
-        _segment.limit = _segment.size
-    }
-
-    private inline fun <reified E: Reifiable> remaining(position: Int): Int = _segment.limit - position
-
     private inline fun <reified E: Any> withinReadLimit(position: Int, length: Int, action: () -> E): E {
-        require(remaining<Reify>(position) >= length) { "Buffer overflow, limit reached." }
+        require(remaining<Int>(position) >= length) { "Buffer overflow, limit reached." }
         return action()
     }
 
     private inline fun <reified E: Any> withinWriteLimit(position: Int, length: Int, action: () -> E) {
-        require(remaining<Reify>(position) >= length) { "Buffer overflow, limit reached." }
+        require(remaining<Int>(position) >= length) { "Buffer overflow, limit reached." }
         action()
     }
 
@@ -119,16 +94,6 @@ public class Binary internal constructor(
 
     override fun storeDouble(position: Int, value: Double): Unit = withinWriteLimit(position, TypeSize.double) {
         _segment.setLong(position, value.conv2L()) }
-
-    override fun isView(): Boolean = view
-
-    override fun isMem(): Boolean = _segment is Memory
-
-    override fun close() {
-        _segment.close()
-    }
-
-    public fun asBinary(): Binary = Binary(_segment, true)
 }
 
 public fun ByteArray.toBinary(): Binary = withBufferAware(this){
@@ -152,3 +117,8 @@ public fun Binary.toByteArray(): ByteArray {
     }
     return byteArray
 }
+
+public fun Binary.isNull(): Boolean = NullObject.binary === this
+private val nullBinary = Binary(NullObject.segment)
+public val NullObject.binary: Binary
+    get() = nullBinary

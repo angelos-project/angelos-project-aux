@@ -183,6 +183,32 @@ public interface UnicodeAware {
         return octetWriteBlk<Int>(codePoint.value, remaining, writeOctet)
     }
 
+    public fun isGlyphStart(octet: Byte): Boolean {
+        val value = octet.toInt()
+        return when {
+            value and 0B1000_0000 == 0B0000_0000 ||
+            value and 0B1110_0000 == 0B1100_0000 ||
+            value and 0B1111_0000 == 0B1110_0000 ||
+            value and 0B1111_1000 == 0B1111_0000 ||
+            value and 0B1111_1100 == 0B1111_1000 ||
+            value and 0B1111_1110 == 0B1111_1100 -> true
+            else -> false
+        }
+    }
+
+    public fun hasGlyphSize(octet: Byte): Int {
+        val value = octet.toInt()
+        return when {
+            value and 0B1000_0000 == 0B0000_0000 -> 1
+            value and 0B1110_0000 == 0B1100_0000 -> 2
+            value and 0B1111_0000 == 0B1110_0000 -> 3
+            value and 0B1111_1000 == 0B1111_0000 -> 4
+            value and 0B1111_1100 == 0B1111_1000 -> 5
+            value and 0B1111_1110 == 0B1111_1100 -> 6
+            else -> 0
+        }
+    }
+
     public companion object {
         public const val REPLACEMENT_CHARACTER: Int = 0xFFFD
 

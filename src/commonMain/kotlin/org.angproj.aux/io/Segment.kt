@@ -51,6 +51,20 @@ public abstract class Segment(
 
     public inline fun <reified T: Reifiable> Short.reverse(): Short = (
             (this.toInt() shl 16) or (this.toInt() ushr 16)).toShort()
+
+    public override fun equals(other: Any?): Boolean {
+        if(this === other) return true
+        if(other == null || this::class != other::class) return false
+        other as Segment
+        if(other.limit != limit) return false
+        return (0 until limit).indexOfFirst { getByte(it) != other.getByte(it) } == -1
+    }
+
+    public override fun hashCode(): Int {
+        var result = limit
+        (0 until limit).forEach { result = 31 * result + getByte(it) }
+        return result
+    }
 }
 
 public fun<T: Segment> T.copyInto(

@@ -30,7 +30,7 @@ public value class ObjectType<P: Packageable>(public val value: P) : Enfoldable 
         Enfoldable.setType(outStream, conventionType)
         Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH)
         value.enfold(outStream)
-        Enfoldable.setType(outStream, conventionType)
+        Enfoldable.setEnd(outStream, conventionType)
         return foldSize(FoldFormat.STREAM)
     }
 
@@ -39,14 +39,15 @@ public value class ObjectType<P: Packageable>(public val value: P) : Enfoldable 
         override val conventionType: Convention = Convention.OBJECT
         override val atomicSize: Int = 0
 
-        public fun unfoldFromStream(
-            inStream: Readable, unpack: (Readable) -> Packageable
-        ): ObjectType<Packageable> {
+        @Suppress("UNCHECKED_CAST")
+        public fun <P: Packageable, O: ObjectType<P>> unfoldFromStream(
+            inStream: Readable, unpack: () -> P
+        ): O {
             require(Unfoldable.getType(inStream, conventionType))
             val length = Unfoldable.getLength(inStream)
-            val obj = ObjectType(unpack(inStream))
+            val obj = ObjectType(unpack().also { o -> o.unfold(inStream) })
             require(Unfoldable.getEnd(inStream, conventionType))
-            return obj
+            return obj as O
         }
     }
 }

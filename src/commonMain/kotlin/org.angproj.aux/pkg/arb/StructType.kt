@@ -19,6 +19,7 @@ import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.io.Writable
 import org.angproj.aux.pkg.*
+import org.angproj.aux.pkg.coll.ObjectType
 import org.angproj.aux.pkg.type.BlockType
 import kotlin.jvm.JvmInline
 
@@ -59,11 +60,13 @@ public value class StructType<P: Packageable>(public val value: P) : Enfoldable 
             inData: Retrievable, offset: Int, unpack: (Retrievable, Int) -> Packageable
         ): StructType<Packageable> = StructType(unpack(inData, offset))
 
-        public fun unfoldFromStream(
-            inStream: Readable, unpack: (Retrievable, Int) -> Packageable
-        ): StructType<Packageable> {
+        @Suppress("UNCHECKED_CAST")
+        public fun <P: Packageable, S: StructType<P>> unfoldFromStream(
+            inStream: Readable, unpack: () -> P
+        ): S {
             val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
-            return StructType(unpack(block, 0))
+            val strct = StructType(unpack().also { s -> s.unfold(block) })
+            return strct as S
         }
     }
 }

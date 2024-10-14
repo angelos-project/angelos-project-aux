@@ -75,59 +75,60 @@ public interface Unpackageable {
 
 
     public fun Retrievable.loadByte(
-        inData: Retrievable, offset: Int): Byte = ByteType.unfoldFromBlock(inData, offset).value
+        offset: Int): Byte = ByteType.unfoldFromBlock(this, offset).value
     public fun Retrievable.loadShort(
-        inData: Retrievable, offset: Int): Short = ShortType.unfoldFromBlock(inData, offset).value
+        offset: Int): Short = ShortType.unfoldFromBlock(this, offset).value
     public fun Retrievable.loadInt(
-        inData: Retrievable, offset: Int): Int = IntType.unfoldFromBlock(inData, offset).value
+        offset: Int): Int = IntType.unfoldFromBlock(this, offset).value
     public fun Retrievable.loadLong(
-        inData: Retrievable, offset: Int): Long = LongType.unfoldFromBlock(inData, offset).value
+        offset: Int): Long = LongType.unfoldFromBlock(this, offset).value
     public fun Retrievable.loadFloat(
-        inData: Retrievable, offset: Int): Float = FloatType.unfoldFromBlock(inData, offset).value
+        offset: Int): Float = FloatType.unfoldFromBlock(this, offset).value
     public fun Retrievable.loadDouble(
-        inData: Retrievable, offset: Int): Double = DoubleType.unfoldFromBlock(inData, offset).value
+        offset: Int): Double = DoubleType.unfoldFromBlock(this, offset).value
     public fun Retrievable.loadUByte(
-        inData: Retrievable, offset: Int): UByte = UByteType.unfoldFromBlock(inData, offset).value
+        offset: Int): UByte = UByteType.unfoldFromBlock(this, offset).value
     public fun Retrievable.loadUShort(
-        inData: Retrievable, offset: Int): UShort = UShortType.unfoldFromBlock(inData, offset).value
+        offset: Int): UShort = UShortType.unfoldFromBlock(this, offset).value
     public fun Retrievable.loadUInt(
-        inData: Retrievable, offset: Int): UInt = UIntType.unfoldFromBlock(inData, offset).value
+        offset: Int): UInt = UIntType.unfoldFromBlock(this, offset).value
     public fun Retrievable.loadULong(
-        inData: Retrievable, offset: Int): ULong = ULongType.unfoldFromBlock(inData, offset).value
+        offset: Int): ULong = ULongType.unfoldFromBlock(this, offset).value
 
 
     public fun Retrievable.loadByteArray(
-        inData: Retrievable, offset: Int, count: Int
-    ): ByteBuffer = ByteArrayType.unfoldFromBlock(inData, offset, count).value
+        offset: Int, count: Int
+    ): ByteBuffer = ByteArrayType.unfoldFromBlock(this, offset, count).value
     public fun Retrievable.loadShortArray(
-        inData: Retrievable, offset: Int, count: Int
-    ): ShortBuffer = ShortArrayType.unfoldFromBlock(inData, offset, count).value
-    public fun Retrievable.loadIntArray(inData: Retrievable, offset: Int, count: Int): IntArrayType =
-        IntArrayType.unfoldFromBlock(inData, offset, count)
+        offset: Int, count: Int
+    ): ShortBuffer = ShortArrayType.unfoldFromBlock(this, offset, count).value
+    public fun Retrievable.loadIntArray(
+        offset: Int, count: Int
+    ): IntBuffer = IntArrayType.unfoldFromBlock(this, offset, count).value
     public fun Retrievable.loadLongArray(
-        inData: Retrievable, offset: Int, count: Int
-    ): LongBuffer = LongArrayType.unfoldFromBlock(inData, offset, count).value
+        offset: Int, count: Int
+    ): LongBuffer = LongArrayType.unfoldFromBlock(this, offset, count).value
     public fun Retrievable.loadFloatArray(
-        inData: Retrievable, offset: Int, count: Int
-    ): FloatBuffer = FloatArrayType.unfoldFromBlock(inData, offset, count).value
+        offset: Int, count: Int
+    ): FloatBuffer = FloatArrayType.unfoldFromBlock(this, offset, count).value
     public fun Retrievable.loadDoubleArray(
-        inData: Retrievable, offset: Int, count: Int
-    ): DoubleBuffer = DoubleArrayType.unfoldFromBlock(inData, offset, count).value
+        offset: Int, count: Int
+    ): DoubleBuffer = DoubleArrayType.unfoldFromBlock(this, offset, count).value
     public fun Retrievable.loadUByteArray(
-        inData: Retrievable, offset: Int, count: Int
-    ): UByteBuffer = UByteArrayType.unfoldFromBlock(inData, offset, count).value
+        offset: Int, count: Int
+    ): UByteBuffer = UByteArrayType.unfoldFromBlock(this, offset, count).value
     public fun Retrievable.loadUShortArray(
-        inData: Retrievable, offset: Int, count: Int
-    ): UShortBuffer = UShortArrayType.unfoldFromBlock(inData, offset, count).value
+        offset: Int, count: Int
+    ): UShortBuffer = UShortArrayType.unfoldFromBlock(this, offset, count).value
     public fun Retrievable.loadUIntArray(
-        inData: Retrievable, offset: Int, count: Int
-    ): UIntBuffer = UIntArrayType.unfoldFromBlock(inData, offset, count).value
+        offset: Int, count: Int
+    ): UIntBuffer = UIntArrayType.unfoldFromBlock(this, offset, count).value
     public fun Retrievable.loadULongArray(
-        inData: Retrievable, offset: Int, count: Int
-    ): ULongBuffer = ULongArrayType.unfoldFromBlock(inData, offset, count).value
+        offset: Int, count: Int
+    ): ULongBuffer = ULongArrayType.unfoldFromBlock(this, offset, count).value
 
 
-    public fun Retrievable.loadUuid4(inData: Retrievable, offset: Int): Uuid4Type = Uuid4Type.unfoldFromBlock(inData, offset)
+    public fun Retrievable.loadUuid4(offset: Int): Uuid4 = Uuid4Type.unfoldFromBlock(this, offset).value
 
     /*public companion object {
         protected fun loadByte(inData: Retrievable, offset: Int): ByteType = ByteType.unfoldFromBlock(inData, offset)

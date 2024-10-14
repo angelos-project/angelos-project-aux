@@ -1,7 +1,7 @@
 package org.angproj.aux.codec
 
 import org.angproj.aux.TestInformationStub
-import org.angproj.aux.buf.toTextBuffer
+import org.angproj.aux.toTextBuffer
 import kotlin.test.Test
 
 

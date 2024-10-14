@@ -6,43 +6,11 @@ import org.angproj.aux.util.readGlyphAt
 import kotlin.test.*
 
 
-class TextTest {
+class TextTest: MemBlockTest<Text>() {
 
-    private val txtLen = TestInformationStub.lipsumMedium.length
+    override val txtLen = TestInformationStub.lipsumMedium.length
 
-    fun setInput(): Text = TestInformationStub.lipsumMedium.toText()
-
-    @Test
-    fun getSegment() { assertIs<Segment>(setInput().segment) }
-
-    @Test
-    fun getCapacity() { assertEquals(setInput().capacity, txtLen) }
-
-    @Test
-    fun getLimit() { assertEquals(setInput().limit, txtLen) }
-
-    @Test
-    fun limitAt() {
-        val buf = setInput()
-
-        assertFailsWith<IllegalArgumentException> { buf.limitAt(-1) }
-        assertFailsWith<IllegalArgumentException> { buf.limitAt(buf.limit+1) }
-
-        buf.limitAt(txtLen - 5)
-        assertEquals(buf.limit, txtLen - 5)
-    }
-
-    @Test
-    fun clear() {
-        val buf = setInput()
-        assertEquals(buf.limit, buf.capacity)
-
-        buf.limitAt(txtLen - 5)
-        assertEquals(buf.limit, txtLen - 5)
-
-        buf.clear()
-        assertEquals(buf.limit, txtLen)
-    }
+    override fun setInput(): Text = TestInformationStub.lipsumMedium.toText()
 
     private fun io(text: String) {
         val lipsum = text.encodeToByteArray()
@@ -69,24 +37,6 @@ class TextTest {
         io(TestInformationStub.latinLipsum)
         io(TestInformationStub.greekLipsum)
         io(TestInformationStub.chineseLipsum)
-    }
-
-    @Test
-    fun asBinary() { assertIs<Segment>(setInput().asBinary().segment) }
-
-    @Test
-    fun isView() {
-        assertEquals(setInput().isView(), false)
-    }
-
-    @Test
-    fun isMem() {
-        assertEquals(setInput().isMem(), false)
-    }
-
-    @Test
-    fun close() {
-        setInput().close()
     }
 
     @Test

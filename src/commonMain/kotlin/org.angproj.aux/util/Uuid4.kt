@@ -21,7 +21,7 @@ import org.angproj.aux.rand.AbstractSmallRandom
 import org.angproj.aux.rand.InitializationVector
 import kotlin.native.concurrent.ThreadLocal
 
-public class Uuid4 internal constructor(private val uuid: Binary) {
+public class Uuid4(private val uuid: Binary) {
 
     public constructor() : this(generateByteArray())
 
@@ -66,6 +66,15 @@ public class Uuid4 internal constructor(private val uuid: Binary) {
         hex += hex(10 until 16)
         return hex
     }
+
+    public override fun equals(other: Any?): Boolean {
+        if(this === other) return true
+        if(other == null || this::class != other::class) return false
+        other as Uuid4
+        return uuid == other.uuid
+    }
+
+    public override fun hashCode(): Int = uuid.hashCode()
 
     @ThreadLocal
     protected companion object : AbstractSmallRandom(
