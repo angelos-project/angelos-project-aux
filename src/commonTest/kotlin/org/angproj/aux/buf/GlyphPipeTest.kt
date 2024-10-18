@@ -17,6 +17,7 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.io.toText
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.Reify
 import org.angproj.aux.util.chunkLoop
@@ -152,18 +153,19 @@ const val chinese = """
 }*/
 
 class StringReader(text: String) : PumpReader {
-    val data = DataBuffer(text.encodeToByteArray())
+    val data = text.toText()
 
     override fun read(data: Segment): Int {
-        data.limit = min(data.limit, this.data.remaining)
+        data.limit = min(data.limit, this.data.limit)
+        this.data.segment.copyInto(data, 0, 0, data.limit)
 
-        var index = chunkLoop<Reify>(0, data.limit, TypeSize.long) {
+        /*var index = chunkLoop<Reify>(0, data.limit, TypeSize.long) {
             data.setLong(it, this.data.readLong())
         }
         index = chunkLoop<Reify>(index, data.limit, TypeSize.byte) {
             data.setByte(it, this.data.readByte())
-        }
-        return index
+        }*/
+        return data.limit //index
     }
 }
 

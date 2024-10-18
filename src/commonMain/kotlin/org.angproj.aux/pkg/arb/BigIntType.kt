@@ -14,8 +14,8 @@
  */
 package org.angproj.aux.pkg.arb
 
-import org.angproj.aux.io.Readable
-import org.angproj.aux.io.Writable
+import org.angproj.aux.io.BinaryReadable
+import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.io.toBinary
 import org.angproj.aux.io.toByteArray
 import org.angproj.aux.num.BigInt
@@ -30,15 +30,12 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class BigIntType(public val value: BigInt) : Enfoldable {
 
-    override val foldFormat: FoldFormat
-        get() = TODO("Not yet implemented")
-
     override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
         FoldFormat.BLOCK -> error("Unsupported fold format.")
         FoldFormat.STREAM -> value.getByteSize() + Enfoldable.OVERHEAD_LENGTH
     }
 
-    public fun enfoldToStream(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Long {
         val block = BlockType(value.toByteArray().toBinary())
         return block.enfoldToStreamByConvention(outStream, conventionType)
     }
@@ -48,7 +45,7 @@ public value class BigIntType(public val value: BigInt) : Enfoldable {
         override val conventionType: Convention = Convention.BIGINT
         override val atomicSize: Int = 0
 
-        public fun unfoldFromStream(inStream: Readable): BigIntType {
+        public fun unfoldFromStream(inStream: BinaryReadable): BigIntType {
             val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
             return BigIntType(bigIntOf(block.block.toByteArray()))
         }

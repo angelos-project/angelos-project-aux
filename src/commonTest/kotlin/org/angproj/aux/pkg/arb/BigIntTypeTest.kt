@@ -1,13 +1,13 @@
 package org.angproj.aux.pkg.arb
 
 import org.angproj.aux.TestInformationStub
+import org.angproj.aux.buf.BinaryBuffer
+import org.angproj.aux.num.bigIntOf
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.util.BinHex
-import org.angproj.aux.util.DataBuffer
-import org.angproj.aux.num.bigIntOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+
 
 class BigIntTypeTest {
 
@@ -18,17 +18,17 @@ class BigIntTypeTest {
             TestInformationStub.number2,
             TestInformationStub.number3
         )
-        val stream = DataBuffer()
+        val stream = BinaryBuffer()
 
         texts.forEach {
-            stream.reset()
+            stream.clear()
             val type = BigIntType(bigIntOf(BinHex.decodeToBin(it)))
             type.enfoldToStream(stream)
             stream.flip()
-            assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())
+            assertEquals(type.foldSize(FoldFormat.STREAM).toInt(), stream.limit)
 
             val retrieved = BigIntType.unfoldFromStream(stream)
-            assertTrue { type.value.equals(retrieved.value) }
+            assertEquals(type, retrieved)
         }
     }
 }

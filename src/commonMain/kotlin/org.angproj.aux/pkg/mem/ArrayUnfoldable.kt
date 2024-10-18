@@ -15,7 +15,7 @@
 package org.angproj.aux.pkg.mem
 
 import org.angproj.aux.buf.ArrayBuffer
-import org.angproj.aux.io.Readable
+import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Unfoldable
@@ -27,7 +27,18 @@ public interface ArrayUnfoldable<G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>
 
     public companion object {
 
-        internal fun <G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>>arrayUnfoldFromBlock(
+        internal fun <G, F: ArrayBuffer<G>>arrayUnfoldFromBlock(
+            inData: Retrievable,
+            offset: Int,
+            array: ArrayBuffer<G>,
+            atomicSize: Int,
+            retrieve: (inData: Retrievable, index: Int) -> G
+        ): Long = with(array) {
+            indices.forEach { this[it] = retrieve(inData, offset + it * atomicSize) }
+            return (limit * atomicSize).toLong()
+        }
+
+        /*internal fun <G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>>arrayUnfoldFromBlock(
             inData: Retrievable,
             offset: Int,
             count: Int,
@@ -38,13 +49,13 @@ public interface ArrayUnfoldable<G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>
             with(this.value){
                 indices.forEach { this[it] = retrieve(inData, offset + it * atomicSize) }
             }
-        }
+        }*/
 
         internal fun <G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>>arrayUnfoldFromStream(
-            inStream: Readable,
+            inStream: BinaryReadable,
             conventionType: Convention,
             factory: (Int) -> E,
-            stream: (inStream: Readable) -> G
+            stream: (inStream: BinaryReadable) -> G
         ): E {
             require(Unfoldable.getType(inStream, conventionType))
             return factory(Unfoldable.getCount(inStream)).apply {

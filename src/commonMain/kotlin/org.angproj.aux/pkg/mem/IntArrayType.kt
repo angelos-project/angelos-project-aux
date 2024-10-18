@@ -24,16 +24,13 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class IntArrayType(public override val value: IntBuffer): ArrayEnfoldable<Int, IntBuffer> {
 
-    override val foldFormat: FoldFormat
-        get() = TODO("Not yet implemented")
-
     override fun foldSize(foldFormat: FoldFormat): Long = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
     public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeInt(i, v) }
 
-    public fun enfoldToStream(outStream: Writable): Long = ArrayEnfoldable.arrayEnfoldToStream(
+    public fun enfoldToStream(outStream: BinaryWritable): Long = ArrayEnfoldable.arrayEnfoldToStream(
         value, atomicSize, conventionType, outStream) { o, v -> o.writeInt(v) }
 
     public companion object : ArrayUnfoldable<Int, IntBuffer, IntArrayType> {
@@ -45,6 +42,19 @@ public value class IntArrayType(public override val value: IntBuffer): ArrayEnfo
 
         public fun unfoldFromBlock(
             inData: Retrievable,
+            value: IntBuffer
+        ): Long = unfoldFromBlock(inData, 0, value)
+
+        public fun unfoldFromBlock(
+            inData: Retrievable,
+            offset: Int,
+            value: IntBuffer
+        ): Long = ArrayUnfoldable.arrayUnfoldFromBlock(
+            inData, offset, value, atomicSize
+        ) { d, i -> d.retrieveInt(i) }
+
+        /*public fun unfoldFromBlock(
+            inData: Retrievable,
             count: Int
         ): IntArrayType = unfoldFromBlock(inData, 0, count)
 
@@ -53,10 +63,10 @@ public value class IntArrayType(public override val value: IntBuffer): ArrayEnfo
             offset: Int,
             count: Int
         ): IntArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
-            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveInt(i) }
+            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveInt(i) }*/
 
         public fun unfoldFromStream(
-            inStream: Readable
+            inStream: BinaryReadable
         ): IntArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
             inStream, conventionType, factory) { s -> s.readInt() }
     }

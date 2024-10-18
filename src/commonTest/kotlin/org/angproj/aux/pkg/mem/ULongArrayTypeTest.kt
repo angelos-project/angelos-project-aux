@@ -1,10 +1,11 @@
 package org.angproj.aux.pkg.mem
 
+import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.buf.ULongBuffer
 import org.angproj.aux.buf.toLongBuffer
-import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
+
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -31,13 +32,14 @@ class ULongArrayTypeTest {
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block)
 
-        val retrieved = ULongArrayType.unfoldFromBlock(block, type.value.limit)
+        val retrieved = ULongArrayType(ULongBuffer(type.value.limit))
+        ULongArrayType.unfoldFromBlock(block, retrieved.value)
         assertContentEquals(type.value, retrieved.value)
     }
 
     protected fun enfoldArrayToStream(data: ULongBuffer) {
         val type = ULongArrayType(data)
-        val stream = DataBuffer()
+        val stream = BinaryBuffer()
         type.enfoldToStream(stream)
         stream.flip()
         assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())

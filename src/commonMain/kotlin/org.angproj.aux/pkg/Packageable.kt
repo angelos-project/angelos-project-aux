@@ -33,10 +33,10 @@ import org.angproj.aux.util.Uuid4
 
 public interface Packageable : Enpackageable, Unpackageable, EndianAware {
 
-    override fun enfold(outStream: Writable) { TODO("Not yet implemented") }
-    override fun enfold(outData: Storable, offset: Int) { TODO("Not yet implemented") }
-    override fun unfold(inStream: Readable) { TODO("Not yet implemented") }
-    override fun unfold(inData: Retrievable) { TODO("Not yet implemented") }
+    override fun enfold(outStream: BinaryWritable) { TODO("Not yet implemented") }
+    override fun enfold(outData: Storable, offset: Int): Long { TODO("Not yet implemented") }
+    override fun unfold(inStream: BinaryReadable) { TODO("Not yet implemented") }
+    override fun unfold(inData: Retrievable, offset: Int): Long { TODO("Not yet implemented") }
 
     public fun foldSize(foldFormat: FoldFormat): Long
 
@@ -78,5 +78,5 @@ public interface Packageable : Enpackageable, Unpackageable, EndianAware {
     public fun <P: Packageable>FoldFormat.sizeOf(type: DictType<P>): Long = type.foldSize(this)
     public fun <P: Packageable>FoldFormat.sizeOf(type: ListType<P>): Long = type.foldSize(this)
 
-    public val foldFormat: FoldFormat
+    public fun foldFormat(): FoldFormat
 }

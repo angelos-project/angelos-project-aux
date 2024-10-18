@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.pkg
 
-import org.angproj.aux.io.Readable
+import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.pkg.arb.StructType
 
@@ -35,7 +35,7 @@ public interface Unfoldable<E : Enfoldable> {
         throw UnsupportedOperationException()
     }
 
-    public fun unfoldStream(inStream: Readable): E {
+    public fun unfoldStream(inStream: BinaryReadable): E {
         throw UnsupportedOperationException()
     }
 
@@ -47,12 +47,14 @@ public interface Unfoldable<E : Enfoldable> {
 
     public companion object {
 
-        public fun getType(inStream: Readable, type: Convention): Boolean = inStream.readShort() == type.type
+        public fun getType(inStream: BinaryReadable, type: Convention): Boolean = inStream.readShort() == type.type
 
-        public fun getCount(inStream: Readable): Int = inStream.readInt()
+        public fun getContent(inStream: BinaryReadable): Byte = inStream.readByte()
 
-        public fun getLength(inStream: Readable): Long = inStream.readLong()
+        public fun getCount(inStream: BinaryReadable): Int = inStream.readInt()
 
-        public fun getEnd(inStream: Readable, end: Convention): Boolean = inStream.readByte() == end.end
+        public fun getLength(inStream: BinaryReadable): Long = inStream.readLong()
+
+        public fun getEnd(inStream: BinaryReadable, end: Convention): Boolean = inStream.readByte() == end.end
     }
 }

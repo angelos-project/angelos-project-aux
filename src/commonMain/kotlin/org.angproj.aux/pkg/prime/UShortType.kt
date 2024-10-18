@@ -14,10 +14,10 @@
  */
 package org.angproj.aux.pkg.prime
 
-import org.angproj.aux.io.Readable
+import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
-import org.angproj.aux.io.Writable
+import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
@@ -26,8 +26,6 @@ import kotlin.jvm.JvmInline
 
 @JvmInline
 public value class UShortType(public val value: UShort) : Enfoldable {
-    override val foldFormat: FoldFormat
-        get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long = atomicSize.toLong()
 
@@ -36,7 +34,7 @@ public value class UShortType(public val value: UShort) : Enfoldable {
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public fun enfoldToStream(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Long {
         outStream.writeUShort(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -48,6 +46,6 @@ public value class UShortType(public val value: UShort) : Enfoldable {
         public fun unfoldFromBlock(inData: Retrievable, offset: Int): UShortType =
             UShortType(inData.retrieveUShort(offset))
 
-        public fun unfoldFromStream(inStream: Readable): UShortType = UShortType(inStream.readUShort())
+        public fun unfoldFromStream(inStream: BinaryReadable): UShortType = UShortType(inStream.readUShort())
     }
 }

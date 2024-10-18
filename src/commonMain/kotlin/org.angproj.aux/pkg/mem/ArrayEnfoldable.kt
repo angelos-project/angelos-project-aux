@@ -16,7 +16,7 @@ package org.angproj.aux.pkg.mem
 
 import org.angproj.aux.buf.ArrayBuffer
 import org.angproj.aux.io.Storable
-import org.angproj.aux.io.Writable
+import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
@@ -51,8 +51,8 @@ public interface ArrayEnfoldable<G, E: ArrayBuffer<G>>: Enfoldable {
             value: E,
             atomicSize: Int,
             conventionType: Convention,
-            outStream: Writable,
-            stream: (outStream: Writable, v: G) -> Unit
+            outStream: BinaryWritable,
+            stream: (outStream: BinaryWritable, v: G) -> Unit
         ): Long {
             Enfoldable.setType(outStream, conventionType)
             Enfoldable.setCount(outStream, value.limit)

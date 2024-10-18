@@ -1,8 +1,9 @@
 package org.angproj.aux.pkg.prime
 
+import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
-import org.angproj.aux.util.DataBuffer
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -24,7 +25,7 @@ class UByteTypeTest {
     @Test
     fun enfoldToStream() {
         val type = UByteType(first)
-        val stream = DataBuffer()
+        val stream = BinaryBuffer()
         type.enfoldToStream(stream)
         stream.flip()
         assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())

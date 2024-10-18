@@ -1,9 +1,10 @@
 package org.angproj.aux.pkg.arb
 
 import org.angproj.aux.TestInformationStub
+import org.angproj.aux.buf.BinaryBuffer
+import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.toText
 import org.angproj.aux.pkg.FoldFormat
-import org.angproj.aux.util.DataBuffer
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -17,17 +18,17 @@ class StringTypeTest {
             TestInformationStub.lipsumMedium.toText(),
             TestInformationStub.lipsumLong.toText()
         )
-        val stream = DataBuffer()
+        val stream = BinaryBuffer()
 
         texts.forEach {
-            stream.reset()
+            stream.clear()
             val type = StringType(it)
             type.enfoldToStream(stream)
             stream.flip()
-            assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())
+            assertEquals(type.foldSize(FoldFormat.STREAM).toInt(), stream.limit)
 
             val retrieved = StringType.unfoldFromStream(stream)
-            assertContentEquals(type.value, retrieved.value)
+            assertEquals(type, retrieved)
         }
     }
 }

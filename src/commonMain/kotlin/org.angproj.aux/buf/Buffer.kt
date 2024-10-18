@@ -16,6 +16,7 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.Memory
 import org.angproj.aux.io.Segment
+import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.Auto
 
 public abstract class Buffer protected constructor(
@@ -54,3 +55,6 @@ public abstract class Buffer protected constructor(
 
     public override fun hashCode(): Int = _segment.hashCode()
 }
+
+
+public fun Buffer.securelyRandomize() { SecureRandom.read(segment) }

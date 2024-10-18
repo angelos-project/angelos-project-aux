@@ -18,6 +18,7 @@ import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Writable
 import org.angproj.aux.util.*
 
+@Deprecated("Seizes to exist.", ReplaceWith("Replace"))
 public abstract class AbstractBuffer: Readable, Writable, BufferAware {
 
     protected abstract val _data: ByteArray

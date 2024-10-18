@@ -1,7 +1,8 @@
+import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.prime.LongType
 import org.angproj.aux.pkg.type.BlockType
-import org.angproj.aux.util.DataBuffer
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -23,7 +24,7 @@ class LongTypeTest {
     @Test
     fun enfoldToStream() {
         val type = LongType(first)
-        val stream = DataBuffer()
+        val stream = BinaryBuffer()
         type.enfoldToStream(stream)
         stream.flip()
         assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())

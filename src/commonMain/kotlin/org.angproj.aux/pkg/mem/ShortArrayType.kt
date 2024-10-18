@@ -24,16 +24,13 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class ShortArrayType(public override val value: ShortBuffer): ArrayEnfoldable<Short, ShortBuffer> {
 
-    override val foldFormat: FoldFormat
-        get() = TODO("Not yet implemented")
-
     override fun foldSize(foldFormat: FoldFormat): Long = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
     public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeShort(i, v) }
 
-    public fun enfoldToStream(outStream: Writable): Long = ArrayEnfoldable.arrayEnfoldToStream(
+    public fun enfoldToStream(outStream: BinaryWritable): Long = ArrayEnfoldable.arrayEnfoldToStream(
         value, atomicSize, conventionType, outStream) { o, v -> o.writeShort(v) }
 
     public companion object : ArrayUnfoldable<Short, ShortBuffer, ShortArrayType> {
@@ -45,6 +42,19 @@ public value class ShortArrayType(public override val value: ShortBuffer): Array
 
         public fun unfoldFromBlock(
             inData: Retrievable,
+            value: ShortBuffer
+        ): Long = unfoldFromBlock(inData, 0, value)
+
+        public fun unfoldFromBlock(
+            inData: Retrievable,
+            offset: Int,
+            value: ShortBuffer
+        ): Long = ArrayUnfoldable.arrayUnfoldFromBlock(
+            inData, offset, value, atomicSize
+        ) { d, i -> d.retrieveShort(i) }
+
+        /*public fun unfoldFromBlock(
+            inData: Retrievable,
             count: Int
         ): ShortArrayType = unfoldFromBlock(inData, 0, count)
 
@@ -53,10 +63,10 @@ public value class ShortArrayType(public override val value: ShortBuffer): Array
             offset: Int,
             count: Int
         ): ShortArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
-            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveShort(i) }
+            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveShort(i) }*/
 
         public fun unfoldFromStream(
-            inStream: Readable
+            inStream: BinaryReadable
         ): ShortArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
             inStream, conventionType, factory) { s -> s.readShort() }
     }

@@ -14,19 +14,20 @@
  */
 package org.angproj.aux.pkg.coll
 
-import org.angproj.aux.io.Readable
-import org.angproj.aux.io.Writable
+import org.angproj.aux.io.BinaryReadable
+import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
 public value class ObjectType<P: Packageable>(public val value: P) : Enfoldable {
-    override val foldFormat: FoldFormat
-        get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long = value.foldSize(foldFormat) + Enfoldable.OVERHEAD_LENGTH
+    override fun foldSize(foldFormat: FoldFormat): Long =  when (foldFormat) {
+        FoldFormat.BLOCK -> error("Unsupported fold format.")
+        FoldFormat.STREAM -> value.foldSize(foldFormat) + Enfoldable.OVERHEAD_LENGTH
+    }
 
-    public fun enfoldToStream(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Long {
         Enfoldable.setType(outStream, conventionType)
         Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH)
         value.enfold(outStream)
@@ -41,7 +42,7 @@ public value class ObjectType<P: Packageable>(public val value: P) : Enfoldable 
 
         @Suppress("UNCHECKED_CAST")
         public fun <P: Packageable, O: ObjectType<P>> unfoldFromStream(
-            inStream: Readable, unpack: () -> P
+            inStream: BinaryReadable, unpack: () -> P
         ): O {
             require(Unfoldable.getType(inStream, conventionType))
             val length = Unfoldable.getLength(inStream)

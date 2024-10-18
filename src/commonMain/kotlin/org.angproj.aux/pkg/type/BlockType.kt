@@ -37,48 +37,16 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
     override fun retrieveFloat(position: Int): Float = block.retrieveFloat(position)
     override fun retrieveDouble(position: Int): Double = block.retrieveDouble(position)
 
-    override fun storeByte(position: Int, value: Byte) {
-        block.storeByte(position, value)
-    }
-
-    override fun storeUByte(position: Int, value: UByte) {
-        block.storeUByte(position, value)
-    }
-
-    override fun storeShort(position: Int, value: Short) {
-        block.storeShort(position, value)
-    }
-
-    override fun storeUShort(position: Int, value: UShort) {
-        block.storeUShort(position, value)
-    }
-
-    override fun storeInt(position: Int, value: Int) {
-        block.storeInt(position, value)
-    }
-
-    override fun storeUInt(position: Int, value: UInt) {
-        block.storeUInt(position, value)
-    }
-
-    override fun storeLong(position: Int, value: Long) {
-        block.storeLong(position, value)
-    }
-
-    override fun storeULong(position: Int, value: ULong) {
-        block.storeULong(position, value)
-    }
-
-    override fun storeFloat(position: Int, value: Float) {
-        block.storeFloat(position, value)
-    }
-
-    override fun storeDouble(position: Int, value: Double) {
-        block.storeDouble(position, value)
-    }
-
-    override val foldFormat: FoldFormat
-        get() = TODO("Not yet implemented")
+    override fun storeByte(position: Int, value: Byte): Unit = block.storeByte(position, value)
+    override fun storeUByte(position: Int, value: UByte): Unit = block.storeUByte(position, value)
+    override fun storeShort(position: Int, value: Short): Unit = block.storeShort(position, value)
+    override fun storeUShort(position: Int, value: UShort): Unit = block.storeUShort(position, value)
+    override fun storeInt(position: Int, value: Int): Unit = block.storeInt(position, value)
+    override fun storeUInt(position: Int, value: UInt): Unit = block.storeUInt(position, value)
+    override fun storeLong(position: Int, value: Long): Unit = block.storeLong(position, value)
+    override fun storeULong(position: Int, value: ULong): Unit = block.storeULong(position, value)
+    override fun storeFloat(position: Int, value: Float): Unit = block.storeFloat(position, value)
+    override fun storeDouble(position: Int, value: Double): Unit = block.storeDouble(position, value)
 
     override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
         FoldFormat.BLOCK -> block.limit.toLong()
@@ -100,9 +68,9 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
         }.toLong()
     }
 
-    public fun enfoldToStreamByConvention(outStream: Writable, type: Convention): Long {
+    public fun enfoldToStreamByConvention(outStream: BinaryWritable, type: Convention): Long {
         Enfoldable.setType(outStream, type)
-        Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH)
+        Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH) // FoldFormat.BLOCK ?
         var index = chunkLoop(0, block.limit, Long.SIZE_BYTES) {
             outStream.writeLong(block.retrieveLong(it))
         }
@@ -119,7 +87,7 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
         return foldSize(FoldFormat.STREAM)
     }
 
-    public fun enfoldToStream(outStream: Writable): Long = enfoldToStreamByConvention(outStream, conventionType)
+    public fun enfoldToStream(outStream: BinaryWritable): Long = enfoldToStreamByConvention(outStream, conventionType)
 
     public companion object : Unfoldable<BlockType> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
@@ -140,10 +108,27 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
             return index + size
         }
 
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int, block: Binary): Long {
+            var index = chunkLoop(0, block.limit, Long.SIZE_BYTES) {
+                block.storeLong(it, inData.retrieveLong(offset + it))
+            }
+            index = chunkSimple(index, block.limit, Int.SIZE_BYTES) {
+                block.storeInt(it, inData.retrieveInt(offset + it))
+            }
+            index = chunkSimple(index, block.limit, Short.SIZE_BYTES) {
+                block.storeShort(it, inData.retrieveShort(offset + it))
+            }
+            index = chunkSimple(index, block.limit, Byte.SIZE_BYTES) {
+                block.storeByte(it, inData.retrieveByte(offset + it))
+            }
+            return index.toLong()
+        }
+
         public fun unfoldFromBlock(inData: Retrievable, offset: Int, length: Long): BlockType {
             require(length <= Int.MAX_VALUE)
             val block = BlockType(length)
-            var index = chunkLoop(0, length.toInt(), Long.SIZE_BYTES) {
+            unfoldFromBlock(inData, offset, block.block)
+            /*var index = chunkLoop(0, length.toInt(), Long.SIZE_BYTES) {
                 block.storeLong(it, inData.retrieveLong(offset + it))
             }
             index = chunkSimple(index, length.toInt(), Int.SIZE_BYTES) {
@@ -154,11 +139,11 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
             }
             chunkSimple(index, length.toInt(), Byte.SIZE_BYTES) {
                 block.storeByte(it, inData.retrieveByte(offset + it))
-            }
+            }*/
             return block
         }
 
-        public fun unfoldFromStreamByConvention(inStream: Readable, type: Convention): BlockType {
+        public fun unfoldFromStreamByConvention(inStream: BinaryReadable, type: Convention): BlockType {
             require(Unfoldable.getType(inStream, type))
             val length = Unfoldable.getLength(inStream)
             require(length <= Int.MAX_VALUE)
@@ -172,14 +157,14 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
             index = chunkSimple(index, length.toInt(), Short.SIZE_BYTES) {
                 block.storeShort(it, inStream.readShort())
             }
-            chunkSimple(index, length.toInt(), Byte.SIZE_BYTES) {
+            index = chunkSimple(index, length.toInt(), Byte.SIZE_BYTES) {
                 block.storeByte(it, inStream.readByte())
             }
             require(Unfoldable.getEnd(inStream, type))
             return block
         }
 
-        public fun unfoldFromStream(inStream: Readable): BlockType =
+        public fun unfoldFromStream(inStream: BinaryReadable): BlockType =
             unfoldFromStreamByConvention(inStream, conventionType)
     }
 }

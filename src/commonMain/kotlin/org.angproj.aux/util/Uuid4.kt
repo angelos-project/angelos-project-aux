@@ -26,8 +26,9 @@ public class Uuid4(private val uuid: Binary) {
     public constructor() : this(generateByteArray())
 
     init {
-        require(uuid.capacity == 16) { "Wrong size of data!" }
-        require(uuid.retrieveByte(6).toInt() and 0xf0 == 64) { "Not UUID version 4!" }
+        require(uuid.limit == 16) { "Wrong size of data!" }
+        require(uuid.retrieveByte(6).toInt() and 0xf0 == 0x40) { "Not UUID version 4! Missing version" }
+        require(uuid.retrieveByte(8).toInt() and 0xc0 == 0x80) { "Not UUID version 4! Missing variant" }
     }
 
     private val hex: String by lazy {
@@ -39,7 +40,7 @@ public class Uuid4(private val uuid: Binary) {
         "$_1-$_2-$_3-$_4-$_5"
     }
 
-    public fun asBinary(): Binary = uuid.asBinary()
+    public fun asBinary(): Binary = if (!isNull()) uuid.asBinary() else error("Null object immutable")
 
     private fun hex(r: IntRange): String {
         var hex = ""
@@ -79,7 +80,7 @@ public class Uuid4(private val uuid: Binary) {
     @ThreadLocal
     protected companion object : AbstractSmallRandom(
         Binary(16).also { InitializationVector.realTimeGatedEntropy(it) }
-    ) {
+    ), EndianAware {
 
         private var counter: Int = 0
 
@@ -102,16 +103,9 @@ public class Uuid4(private val uuid: Binary) {
             val data = BufMgr.bin(16)
 
             data.storeInt(0, round())
-            data.storeInt(4, round())
-            data.storeInt(8, round())
+            data.storeInt(4, ((round().toLong() and 0xffff0fff) or 0x4000).toInt().asBig())
+            data.storeInt(8, ((round().toLong() and 0x3fffffff) or -0x80000000).toInt().asBig())
             data.storeInt(12, round())
-
-            var four = data.retrieveByte(6)
-            four = four.flipOffFlag7()
-            four = four.flipOnFlag6()
-            four = four.flipOffFlag5()
-            four = four.flipOffFlag4()
-            data.storeByte(6, four)
 
             return data
         }
@@ -127,7 +121,7 @@ public fun Uuid4.isNull(): Boolean = NullObject.uuid4 === this
 private val nullUuid4 = uuid4Of(byteArrayOf(
     0, 0, 0, 0,
     0, 0, 64, 0,
-    0, 0, 0, 0,
+    -128, 0, 0, 0,
     0, 0, 0, 0
 ).toBinary())
 public val NullObject.uuid4: Uuid4

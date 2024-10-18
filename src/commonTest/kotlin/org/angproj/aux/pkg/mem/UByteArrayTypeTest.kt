@@ -1,10 +1,11 @@
 package org.angproj.aux.pkg.mem
 
+import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.buf.UByteBuffer
 import org.angproj.aux.buf.toByteBuffer
-import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
+
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -31,13 +32,14 @@ class UByteArrayTypeTest {
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block)
 
-        val retrieved = UByteArrayType.unfoldFromBlock(block, type.value.limit)
+        val retrieved = UByteArrayType(UByteBuffer(type.value.limit))
+        UByteArrayType.unfoldFromBlock(block, retrieved.value)
         assertContentEquals(type.value, retrieved.value)
     }
 
     protected fun enfoldArrayToStream(data: UByteBuffer) {
         val type = UByteArrayType(data)
-        val stream = DataBuffer()
+        val stream = BinaryBuffer()
         type.enfoldToStream(stream)
         stream.flip()
         assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())

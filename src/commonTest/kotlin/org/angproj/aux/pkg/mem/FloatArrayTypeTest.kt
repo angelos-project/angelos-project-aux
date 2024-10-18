@@ -1,8 +1,8 @@
 package org.angproj.aux.pkg.mem
 
+import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.buf.FloatBuffer
 import org.angproj.aux.buf.toFloatBuffer
-import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
 import kotlin.test.Test
@@ -28,13 +28,14 @@ class FloatArrayTypeTest {
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block)
 
-        val retrieved = FloatArrayType.unfoldFromBlock(block, type.value.limit)
+        val retrieved = FloatArrayType(FloatBuffer(type.value.limit))
+        FloatArrayType.unfoldFromBlock(block, retrieved.value)
         assertContentEquals(type.value, retrieved.value)
     }
 
     protected fun enfoldArrayToStream(data: FloatBuffer) {
         val type = FloatArrayType(data)
-        val stream = DataBuffer()
+        val stream = BinaryBuffer()
         type.enfoldToStream(stream)
         stream.flip()
         assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())

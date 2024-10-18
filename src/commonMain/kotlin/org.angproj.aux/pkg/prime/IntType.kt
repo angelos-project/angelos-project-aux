@@ -14,10 +14,10 @@
  */
 package org.angproj.aux.pkg.prime
 
-import org.angproj.aux.io.Readable
+import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
-import org.angproj.aux.io.Writable
+import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
@@ -26,8 +26,6 @@ import kotlin.jvm.JvmInline
 
 @JvmInline
 public value class IntType(public val value: Int) : Enfoldable {
-    override val foldFormat: FoldFormat
-        get() = TODO("Not yet implemented")
 
     override fun foldSize(foldFormat: FoldFormat): Long = atomicSize.toLong()
 
@@ -36,7 +34,7 @@ public value class IntType(public val value: Int) : Enfoldable {
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public fun enfoldToStream(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Long {
         outStream.writeInt(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -48,6 +46,6 @@ public value class IntType(public val value: Int) : Enfoldable {
 
         public fun unfoldFromBlock(inData: Retrievable, offset: Int): IntType = IntType(inData.retrieveInt(offset))
 
-        public fun unfoldFromStream(inStream: Readable): IntType = IntType(inStream.readInt())
+        public fun unfoldFromStream(inStream: BinaryReadable): IntType = IntType(inStream.readInt())
     }
 }

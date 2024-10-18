@@ -24,16 +24,13 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class UIntArrayType(public override val value: UIntBuffer): ArrayEnfoldable<UInt, UIntBuffer> {
 
-    override val foldFormat: FoldFormat
-        get() = TODO("Not yet implemented")
-
     override fun foldSize(foldFormat: FoldFormat): Long = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
     public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeUInt(i, v) }
 
-    public fun enfoldToStream(outStream: Writable): Long = ArrayEnfoldable.arrayEnfoldToStream(
+    public fun enfoldToStream(outStream: BinaryWritable): Long = ArrayEnfoldable.arrayEnfoldToStream(
         value, atomicSize, conventionType, outStream) { o, v -> o.writeUInt(v) }
 
     public companion object : ArrayUnfoldable<UInt, UIntBuffer, UIntArrayType> {
@@ -45,6 +42,19 @@ public value class UIntArrayType(public override val value: UIntBuffer): ArrayEn
 
         public fun unfoldFromBlock(
             inData: Retrievable,
+            value: UIntBuffer
+        ): Long = unfoldFromBlock(inData, 0, value)
+
+        public fun unfoldFromBlock(
+            inData: Retrievable,
+            offset: Int,
+            value: UIntBuffer
+        ): Long = ArrayUnfoldable.arrayUnfoldFromBlock(
+            inData, offset, value, atomicSize
+        ) { d, i -> d.retrieveUInt(i) }
+
+       /* public fun unfoldFromBlock(
+            inData: Retrievable,
             count: Int
         ): UIntArrayType = unfoldFromBlock(inData, 0, count)
 
@@ -53,10 +63,10 @@ public value class UIntArrayType(public override val value: UIntBuffer): ArrayEn
             offset: Int,
             count: Int
         ): UIntArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
-            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveUInt(i) }
+            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveUInt(i) }*/
 
         public fun unfoldFromStream(
-            inStream: Readable
+            inStream: BinaryReadable
         ): UIntArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
             inStream, conventionType, factory) { s -> s.readUInt() }
     }

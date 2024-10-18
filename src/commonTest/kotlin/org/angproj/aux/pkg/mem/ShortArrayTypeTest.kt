@@ -1,10 +1,11 @@
 package org.angproj.aux.pkg.mem
 
+import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.buf.ShortBuffer
 import org.angproj.aux.buf.toShortBuffer
-import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
+
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -22,13 +23,14 @@ class ShortArrayTypeTest {
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block)
 
-        val retrieved = ShortArrayType.unfoldFromBlock(block, type.value.limit)
+        val retrieved = ShortArrayType(ShortBuffer(type.value.limit))
+        ShortArrayType.unfoldFromBlock(block, retrieved.value)
         assertContentEquals(type.value, retrieved.value)
     }
 
     protected fun enfoldArrayToStream(data: ShortBuffer) {
         val type = ShortArrayType(data)
-        val stream = DataBuffer()
+        val stream = BinaryBuffer()
         type.enfoldToStream(stream)
         stream.flip()
         assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())

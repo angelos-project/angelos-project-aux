@@ -24,16 +24,13 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class DoubleArrayType(public override val value: DoubleBuffer): ArrayEnfoldable<Double, DoubleBuffer> {
 
-    override val foldFormat: FoldFormat
-        get() = TODO("Not yet implemented")
-
     override fun foldSize(foldFormat: FoldFormat): Long = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
     public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeDouble(i, v) }
 
-    public fun enfoldToStream(outStream: Writable): Long = ArrayEnfoldable.arrayEnfoldToStream(
+    public fun enfoldToStream(outStream: BinaryWritable): Long = ArrayEnfoldable.arrayEnfoldToStream(
         value, atomicSize, conventionType, outStream) { o, v -> o.writeDouble(v) }
 
     public companion object : ArrayUnfoldable<Double, DoubleBuffer, DoubleArrayType> {
@@ -45,6 +42,19 @@ public value class DoubleArrayType(public override val value: DoubleBuffer): Arr
 
         public fun unfoldFromBlock(
             inData: Retrievable,
+            value: DoubleBuffer
+        ): Long = unfoldFromBlock(inData, 0, value)
+
+        public fun unfoldFromBlock(
+            inData: Retrievable,
+            offset: Int,
+            value: DoubleBuffer
+        ): Long = ArrayUnfoldable.arrayUnfoldFromBlock(
+            inData, offset, value, atomicSize
+        ) { d, i -> d.retrieveDouble(i) }
+
+        /*public fun unfoldFromBlock(
+            inData: Retrievable,
             count: Int
         ): DoubleArrayType = unfoldFromBlock(inData, 0, count)
 
@@ -53,10 +63,10 @@ public value class DoubleArrayType(public override val value: DoubleBuffer): Arr
             offset: Int,
             count: Int
         ): DoubleArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
-            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveDouble(i) }
+            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveDouble(i) }*/
 
         public fun unfoldFromStream(
-            inStream: Readable
+            inStream: BinaryReadable
         ): DoubleArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
             inStream, conventionType, factory) { s -> s.readDouble() }
     }

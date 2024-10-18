@@ -14,9 +14,6 @@
  */
 package org.angproj.aux.pkg
 
-import org.angproj.aux.utf.Ascii
-
-public enum class FoldFormat(public val format: Byte) {
-    BLOCK(Ascii.PRNT_B_UP.cp.toByte()),
-    STREAM(Ascii.PRNT_S_UP.cp.toByte())
+public interface Package: Packageable {
+    override fun foldFormat(): FoldFormat = FoldFormat.STREAM
 }

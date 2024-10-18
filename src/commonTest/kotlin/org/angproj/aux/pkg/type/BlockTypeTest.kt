@@ -1,11 +1,12 @@
 package org.angproj.aux.pkg.type
 
 import org.angproj.aux.TestInformationStub
-import org.angproj.aux.util.BinHex
+import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.toBinary
 import org.angproj.aux.io.toByteArray
-import org.angproj.aux.util.DataBuffer
+import org.angproj.aux.util.BinHex
+
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
@@ -28,11 +29,11 @@ class BlockTypeTest {
 
     @Test
     fun enfoldToStream() {
-        val stream = DataBuffer(DataSize._2K.size)
+        val stream = BinaryBuffer(DataSize._2K.size)
 
         (DataSize._1K.size until (DataSize._1K.size + 24)).forEach { size ->
-            stream.reset()
-            val block = BlockType(testData.sliceArray(0 until size).toBinary())
+            stream.clear()
+            val block = BlockType(testData.sliceArray(0 until  size).toBinary())
             block.enfoldToStream(stream)
             stream.flip()
             val retrieved = BlockType.unfoldFromStream(stream)

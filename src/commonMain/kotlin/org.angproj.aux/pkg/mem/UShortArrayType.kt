@@ -24,16 +24,13 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class UShortArrayType(public override val value: UShortBuffer): ArrayEnfoldable<UShort, UShortBuffer> {
 
-    override val foldFormat: FoldFormat
-        get() = TODO("Not yet implemented")
-
     override fun foldSize(foldFormat: FoldFormat): Long = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
     public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeUShort(i, v) }
 
-    public fun enfoldToStream(outStream: Writable): Long = ArrayEnfoldable.arrayEnfoldToStream(
+    public fun enfoldToStream(outStream: BinaryWritable): Long = ArrayEnfoldable.arrayEnfoldToStream(
         value, atomicSize, conventionType, outStream) { o, v -> o.writeUShort(v) }
 
     public companion object : ArrayUnfoldable<UShort, UShortBuffer, UShortArrayType> {
@@ -45,6 +42,19 @@ public value class UShortArrayType(public override val value: UShortBuffer): Arr
 
         public fun unfoldFromBlock(
             inData: Retrievable,
+            value: UShortBuffer
+        ): Long = unfoldFromBlock(inData, 0, value)
+
+        public fun unfoldFromBlock(
+            inData: Retrievable,
+            offset: Int,
+            value: UShortBuffer
+        ): Long = ArrayUnfoldable.arrayUnfoldFromBlock(
+            inData, offset, value, atomicSize
+        ) { d, i -> d.retrieveUShort(i) }
+
+        /*public fun unfoldFromBlock(
+            inData: Retrievable,
             count: Int
         ): UShortArrayType = unfoldFromBlock(inData, 0, count)
 
@@ -53,10 +63,10 @@ public value class UShortArrayType(public override val value: UShortBuffer): Arr
             offset: Int,
             count: Int
         ): UShortArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
-            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveUShort(i) }
+            inData, offset, count, atomicSize, factory) { d, i -> d.retrieveUShort(i) }*/
 
         public fun unfoldFromStream(
-            inStream: Readable
+            inStream: BinaryReadable
         ): UShortArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
             inStream, conventionType, factory) { s -> s.readUShort() }
     }

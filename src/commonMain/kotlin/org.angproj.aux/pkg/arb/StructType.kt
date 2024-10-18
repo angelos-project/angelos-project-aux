@@ -14,34 +14,28 @@
  */
 package org.angproj.aux.pkg.arb
 
-import org.angproj.aux.io.Readable
+import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
-import org.angproj.aux.io.Writable
+import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.pkg.*
-import org.angproj.aux.pkg.coll.ObjectType
 import org.angproj.aux.pkg.type.BlockType
 import kotlin.jvm.JvmInline
 
 @JvmInline
 public value class StructType<P: Packageable>(public val value: P) : Enfoldable {
-    override val foldFormat: FoldFormat
-        get() = TODO("Not yet implemented")
 
-    override fun foldSize(foldFormat: FoldFormat): Long {
-        val size = value.foldSize(foldFormat)
-        return when (foldFormat) {
-            FoldFormat.BLOCK -> size
-            FoldFormat.STREAM -> size + Enfoldable.OVERHEAD_LENGTH
-        }
-    }
+    /**
+     * StructType will always first package a Packageable as a block and then use stream by convention.
+     * Therefore, is the STREAM call to the Packageable unnecessary in this class.
+     * Only if the Packageable is directly streamed by itself its foldSize(STREAM) is needed.
+     * */
+    override fun foldSize(foldFormat: FoldFormat): Long = value.foldSize(
+        FoldFormat.BLOCK) + if(foldFormat == FoldFormat.STREAM) Enfoldable.OVERHEAD_LENGTH else 0
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long {
-        value.enfold(outData, offset)
-        return foldSize(FoldFormat.BLOCK)
-    }
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = value.enfold(outData, offset)
 
-    public fun enfoldToStream(outStream: Writable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Long {
         val block = BlockType(foldSize(FoldFormat.BLOCK))
         enfoldToBlock(block, 0)
         return block.enfoldToStreamByConvention(outStream, conventionType)
@@ -52,17 +46,18 @@ public value class StructType<P: Packageable>(public val value: P) : Enfoldable 
         override val conventionType: Convention = Convention.STRUCT
         override val atomicSize: Int = 0
 
-        public fun unfoldFromBlock(
-            inData: Retrievable, unpack: (Retrievable, Int) -> Packageable
-        ): StructType<Packageable> = unfoldFromBlock(inData, 0, unpack)
+        public fun <P: Packageable, S: StructType<P>> unfoldFromBlock(
+            inData: Retrievable, unpack: () -> P
+        ): S = unfoldFromBlock(inData, 0, unpack)
 
-        public fun unfoldFromBlock(
-            inData: Retrievable, offset: Int, unpack: (Retrievable, Int) -> Packageable
-        ): StructType<Packageable> = StructType(unpack(inData, offset))
+        @Suppress("UNCHECKED_CAST")
+        public fun <P: Packageable, S: StructType<P>> unfoldFromBlock(
+            inData: Retrievable, offset: Int, unpack: () -> P
+        ): S = StructType(unpack().also { s -> s.unfold(inData, offset) }) as S
 
         @Suppress("UNCHECKED_CAST")
         public fun <P: Packageable, S: StructType<P>> unfoldFromStream(
-            inStream: Readable, unpack: () -> P
+            inStream: BinaryReadable, unpack: () -> P
         ): S {
             val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
             val strct = StructType(unpack().also { s -> s.unfold(block) })

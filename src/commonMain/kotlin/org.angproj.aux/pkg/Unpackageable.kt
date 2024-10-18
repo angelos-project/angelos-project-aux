@@ -15,7 +15,7 @@
 package org.angproj.aux.pkg
 
 import org.angproj.aux.buf.*
-import org.angproj.aux.io.Readable
+import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Text
 import org.angproj.aux.num.BigInt
@@ -31,50 +31,56 @@ import org.angproj.aux.pkg.prime.*
 import org.angproj.aux.pkg.type.BlockType
 import org.angproj.aux.util.Uuid4
 
+
 public interface Unpackageable {
-    public fun unfold(inStream: Readable)
-    public fun unfold(inData: Retrievable)
+    public fun unfold(inStream: BinaryReadable)
+    public fun unfold(inData: Retrievable, offset: Int = 0): Long
 
-    public fun withUnfold(inStream: Readable, action: Readable.() -> Unit) : Unit = inStream.action()
-    public fun withUnfold(inData: Retrievable, action: Retrievable.() -> Unit) : Unit = inData.action()
+    public fun withUnfold(inStream: BinaryReadable, action: BinaryReadable.() -> Unit) : Unit = inStream.action()
+    //public fun withUnfold(inData: Retrievable, action: Retrievable.() -> Unit) : Unit = inData.action()
+    public fun withUnfold(inData: Retrievable, offset: Int = 0, action: RetrieveIter.() -> Unit): Long {
+        val retrieve = RetrieveIter(inData, offset.toLong())
+        retrieve.action()
+        return retrieve.index
+    }
 
-    public fun Readable.loadBlock(): BlockType = BlockType.unfoldFromStream(this)
+    public fun BinaryReadable.loadBlock(): BlockType = BlockType.unfoldFromStream(this)
 
-    public fun Readable.loadByte(): Byte = ByteType.unfoldFromStream(this).value
-    public fun Readable.loadShort(): Short = ShortType.unfoldFromStream(this).value
-    public fun Readable.loadInt(): Int = IntType.unfoldFromStream(this).value
-    public fun Readable.loadLong(): Long = LongType.unfoldFromStream(this).value
-    public fun Readable.loadFloat(): Float = FloatType.unfoldFromStream(this).value
-    public fun Readable.loadDouble(): Double = DoubleType.unfoldFromStream(this).value
-    public fun Readable.loadUByte(): UByte = UByteType.unfoldFromStream(this).value
-    public fun Readable.loadUShort(): UShort = UShortType.unfoldFromStream(this).value
-    public fun Readable.loadUInt(): UInt = UIntType.unfoldFromStream(this).value
-    public fun Readable.loadULong(): ULong = ULongType.unfoldFromStream(this).value
-
-
-    public fun Readable.loadByteArray(): ByteBuffer = ByteArrayType.unfoldFromStream(this).value
-    public fun Readable.loadShortArray(): ShortBuffer = ShortArrayType.unfoldFromStream(this).value
-    public fun Readable.loadIntArray(): IntBuffer = IntArrayType.unfoldFromStream(this).value
-    public fun Readable.loadLongArray(): LongBuffer = LongArrayType.unfoldFromStream(this).value
-    public fun Readable.loadFloatArray(): FloatBuffer = FloatArrayType.unfoldFromStream(this).value
-    public fun Readable.loadDoubleArray(): DoubleBuffer = DoubleArrayType.unfoldFromStream(this).value
-    public fun Readable.loadUByteArray(): UByteBuffer = UByteArrayType.unfoldFromStream(this).value
-    public fun Readable.loadUShortArray(): UShortBuffer = UShortArrayType.unfoldFromStream(this).value
-    public fun Readable.loadUIntArray(): UIntBuffer = UIntArrayType.unfoldFromStream(this).value
-    public fun Readable.loadULongArray(): ULongBuffer = ULongArrayType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadByte(): Byte = ByteType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadShort(): Short = ShortType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadInt(): Int = IntType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadLong(): Long = LongType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadFloat(): Float = FloatType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadDouble(): Double = DoubleType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadUByte(): UByte = UByteType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadUShort(): UShort = UShortType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadUInt(): UInt = UIntType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadULong(): ULong = ULongType.unfoldFromStream(this).value
 
 
-    public fun Readable.loadUuid4(): Uuid4 = Uuid4Type.unfoldFromStream(this).value
-    public fun Readable.loadString(): Text = StringType.unfoldFromStream(this).value
-    public fun Readable.loadBigInt(): BigInt = BigIntType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadByteArray(): ByteBuffer = ByteArrayType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadShortArray(): ShortBuffer = ShortArrayType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadIntArray(): IntBuffer = IntArrayType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadLongArray(): LongBuffer = LongArrayType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadFloatArray(): FloatBuffer = FloatArrayType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadDoubleArray(): DoubleBuffer = DoubleArrayType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadUByteArray(): UByteBuffer = UByteArrayType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadUShortArray(): UShortBuffer = UShortArrayType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadUIntArray(): UIntBuffer = UIntArrayType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadULongArray(): ULongBuffer = ULongArrayType.unfoldFromStream(this).value
 
-    public fun Readable.loadStruct(): StructType<*> = StructType.unfoldStream(this)
-    public fun Readable.loadObject(): ObjectType<*> = ObjectType.unfoldStream(this)
-    public fun Readable.loadDict(): DictType<*> = DictType.unfoldStream(this)
-    public fun Readable.loadList(): ListType<*> = ListType.unfoldStream(this)
+
+    public fun BinaryReadable.loadUuid4(): Uuid4 = Uuid4Type.unfoldFromStream(this).value
+    public fun BinaryReadable.loadString(): Text = StringType.unfoldFromStream(this).value
+    public fun BinaryReadable.loadBigInt(): BigInt = BigIntType.unfoldFromStream(this).value
+
+    public fun BinaryReadable.loadStruct(): StructType<*> = StructType.unfoldStream(this)
+    public fun BinaryReadable.loadObject(): ObjectType<*> = ObjectType.unfoldStream(this)
+    public fun BinaryReadable.loadDict(): DictType<*> = DictType.unfoldStream(this)
+    public fun BinaryReadable.loadList(): ListType<*> = ListType.unfoldStream(this)
 
 
-    public fun Retrievable.loadByte(
+    /*public fun Retrievable.loadByte(
         offset: Int): Byte = ByteType.unfoldFromBlock(this, offset).value
     public fun Retrievable.loadShort(
         offset: Int): Short = ShortType.unfoldFromBlock(this, offset).value
@@ -128,7 +134,68 @@ public interface Unpackageable {
     ): ULongBuffer = ULongArrayType.unfoldFromBlock(this, offset, count).value
 
 
-    public fun Retrievable.loadUuid4(offset: Int): Uuid4 = Uuid4Type.unfoldFromBlock(this, offset).value
+    public fun Retrievable.loadUuid4(offset: Int): Uuid4 = Uuid4Type.unfoldFromBlock(this, offset).value*/
+
+
+    public class RetrieveIter(public val retrieve: Retrievable, public var index: Long = 0)
+
+
+    public fun RetrieveIter.loadByte(): Byte = ByteType.unfoldFromBlock(
+        retrieve, index.toInt()).value.also { index += ByteType.atomicSize }
+    public fun RetrieveIter.loadShort(): Short = ShortType.unfoldFromBlock(
+        retrieve, index.toInt()).value.also { index += ShortType.atomicSize }
+    public fun RetrieveIter.loadInt(): Int = IntType.unfoldFromBlock(
+        retrieve, index.toInt()).value.also { index += IntType.atomicSize }
+    public fun RetrieveIter.loadLong(): Long = LongType.unfoldFromBlock(
+        retrieve, index.toInt()).value.also { index += LongType.atomicSize }
+    public fun RetrieveIter.loadFloat(): Float = FloatType.unfoldFromBlock(
+        retrieve, index.toInt()).value.also { index += FloatType.atomicSize }
+    public fun RetrieveIter.loadDouble(): Double = DoubleType.unfoldFromBlock(
+        retrieve, index.toInt()).value.also { index += DoubleType.atomicSize }
+    public fun RetrieveIter.loadUByte(): UByte = UByteType.unfoldFromBlock(
+        retrieve, index.toInt()).value.also { index += UByteType.atomicSize }
+    public fun RetrieveIter.loadUShort(): UShort = UShortType.unfoldFromBlock(
+        retrieve, index.toInt()).value.also { index += UShortType.atomicSize }
+    public fun RetrieveIter.loadUInt(): UInt = UIntType.unfoldFromBlock(
+        retrieve, index.toInt()).value.also { index += UIntType.atomicSize }
+    public fun RetrieveIter.loadULong(): ULong = ULongType.unfoldFromBlock(
+        retrieve, index.toInt()).value.also { index += ULongType.atomicSize }
+
+
+    public fun RetrieveIter.loadByteArray(
+        value: ByteBuffer
+    ): Long = ByteArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    public fun RetrieveIter.loadShortArray(
+        value: ShortBuffer
+    ): Long = ShortArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    public fun RetrieveIter.loadIntArray(
+        value: IntBuffer
+    ): Long = IntArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    public fun RetrieveIter.loadLongArray(
+        value: LongBuffer
+    ): Long = LongArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    public fun RetrieveIter.loadFloatArray(
+        value: FloatBuffer
+    ): Long = FloatArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    public fun RetrieveIter.loadDoubleArray(
+        value: DoubleBuffer
+    ): Long = DoubleArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    public fun RetrieveIter.loadUByteArray(
+        value: UByteBuffer
+    ): Long = UByteArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    public fun RetrieveIter.loadUShortArray(
+        value: UShortBuffer
+    ): Long = UShortArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    public fun RetrieveIter.loadUIntArray(
+        value: UIntBuffer
+    ): Long = UIntArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    public fun RetrieveIter.loadULongArray(
+        value: ULongBuffer
+    ): Long = ULongArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+
+
+    public fun RetrieveIter.loadUuid4(value: Uuid4): Long = Uuid4Type.unfoldFromBlock(
+        retrieve, index.toInt(), value).also { index += it }
 
     /*public companion object {
         protected fun loadByte(inData: Retrievable, offset: Int): ByteType = ByteType.unfoldFromBlock(inData, offset)
