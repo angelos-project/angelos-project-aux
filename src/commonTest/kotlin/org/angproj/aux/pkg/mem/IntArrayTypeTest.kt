@@ -3,6 +3,7 @@ package org.angproj.aux.pkg.mem
 import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.buf.IntBuffer
 import org.angproj.aux.buf.toIntBuffer
+import org.angproj.aux.io.binOf
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
 import kotlin.test.Test
@@ -19,7 +20,7 @@ class IntArrayTypeTest {
 
     protected fun enfoldArrayToBlock(data: IntBuffer) {
         val type = IntArrayType(data)
-        val block = BlockType(type.foldSize(FoldFormat.BLOCK))
+        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK).toInt()))
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block)
 

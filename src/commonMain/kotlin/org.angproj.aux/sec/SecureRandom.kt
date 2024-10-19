@@ -15,6 +15,7 @@
 package org.angproj.aux.sec
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.mem.Default
 import org.angproj.aux.pipe.*
 import org.angproj.aux.util.*
@@ -24,7 +25,7 @@ import kotlin.native.concurrent.ThreadLocal
  * Portions a secure feed of random into a serviceable format of data for cryptographically secure use.
  * */
 @ThreadLocal
-public object SecureRandom : BinaryReadable, Reader {
+public object SecureRandom : BinaryReadable, PumpReader {
 
     private val sink: BinarySink = PullPipe<BinaryType>(
         Default,
@@ -44,13 +45,12 @@ public object SecureRandom : BinaryReadable, Reader {
     override fun readFloat(): Float = sink.readFloat()
     override fun readDouble(): Double = sink.readDouble()
 
-    override fun read(data: Segment): Int {
-        val binary = Binary(data)
-        val index = chunkLoop<Reify>(0, binary.limit, Long.SIZE_BYTES) {
-            binary.storeLong(it, readLong())
+    override fun read(data: Segment): Int = BufMgr.asWrap(data) {
+        val index = chunkLoop<Reify>(0, limit, Long.SIZE_BYTES) {
+            storeLong(it, readLong())
         }
-        return chunkLoop<Reify>(index, binary.limit, Byte.SIZE_BYTES) {
-            binary.storeByte(it, readByte())
+        chunkLoop<Reify>(index, limit, Byte.SIZE_BYTES) {
+            storeByte(it, readByte())
         }
     }
 }

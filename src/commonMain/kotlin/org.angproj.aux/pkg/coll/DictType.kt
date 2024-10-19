@@ -30,16 +30,16 @@ public value class DictType<P: Packageable>(public val value: Map<Text, P>) : En
         if (value.isEmpty()) Enfoldable.OVERHEAD_COUNT
         else {
             var length = 0L
-            val foldFormat = value.getValue(value.keys.first()).foldFormat()
+            val contentFoldFormat = value.getValue(value.keys.first()).foldFormat()
 
-            when (foldFormat) {
+            when (contentFoldFormat) {
                 FoldFormat.BLOCK -> value.forEach {
                     length += StringType(it.key).foldSize(FoldFormat.STREAM)
                     length += StructType(it.value).foldSize(FoldFormat.STREAM)
                 }
                 FoldFormat.STREAM -> value.forEach {
-                    length += StringType(it.key).foldSize(foldFormat)
-                    length += ObjectType(it.value).foldSize(foldFormat)
+                    length += StringType(it.key).foldSize(FoldFormat.STREAM)
+                    length += ObjectType(it.value).foldSize(FoldFormat.STREAM)
                 }
             }
             length + Enfoldable.OVERHEAD_COUNT + Enfoldable.CONTENT_SIZE

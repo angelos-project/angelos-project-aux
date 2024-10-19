@@ -14,8 +14,9 @@
  */
 package org.angproj.aux.io
 
-public interface PumpReader: Reader {
+public interface PumpReader {
     /**
      * The read segments limit will be forcefully updated to that of the returned value of read bytes.
      * */
+    public fun read(data: Segment): Int
 }

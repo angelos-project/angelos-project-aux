@@ -15,6 +15,7 @@
 package org.angproj.aux.pkg.type
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
@@ -24,7 +25,7 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class BlockType(public val block: Binary) : Storable, Retrievable, Enfoldable {
 
-    public constructor(size: Long) : this(Binary(size.toInt()))
+    //public constructor(size: Long) : this(binOf(size.toInt()))
 
     override fun retrieveByte(position: Int): Byte = block.retrieveByte(position)
     override fun retrieveUByte(position: Int): UByte = block.retrieveUByte(position)
@@ -126,7 +127,7 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
 
         public fun unfoldFromBlock(inData: Retrievable, offset: Int, length: Long): BlockType {
             require(length <= Int.MAX_VALUE)
-            val block = BlockType(length)
+            val block = BlockType(binOf(length.toInt()))
             unfoldFromBlock(inData, offset, block.block)
             /*var index = chunkLoop(0, length.toInt(), Long.SIZE_BYTES) {
                 block.storeLong(it, inData.retrieveLong(offset + it))
@@ -147,7 +148,7 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
             require(Unfoldable.getType(inStream, type))
             val length = Unfoldable.getLength(inStream)
             require(length <= Int.MAX_VALUE)
-            val block = BlockType(length)
+            val block = BlockType(binOf(length.toInt()))
             var index = chunkLoop(0, length.toInt(), Long.SIZE_BYTES) {
                 block.storeLong(it, inStream.readLong())
             }

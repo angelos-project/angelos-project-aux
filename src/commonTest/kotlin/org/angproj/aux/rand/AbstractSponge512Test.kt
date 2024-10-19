@@ -1,8 +1,9 @@
 package org.angproj.aux.rand
 
 import org.angproj.aux.buf.BinaryBuffer
+import org.angproj.aux.buf.asBinary
+import org.angproj.aux.io.Binary
 import org.angproj.aux.io.Reader
-import org.angproj.aux.io.Segment
 import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.Benchmark
 import org.angproj.aux.util.floorMod
@@ -18,10 +19,10 @@ class TestRandom512(iv: LongArray = LongArray(8)): AbstractSponge512(), Reader {
         scramble()
     }
 
-    override fun read(data: Segment): Int {
-        require(data.size.floorMod(byteSize) == 0)
-        fill(data) { round() }
-        return data.size
+    override fun read(bin: Binary): Int {
+        require(bin.limit.floorMod(byteSize) == 0)
+        fill(bin._segment) { round() }
+        return bin.limit
     }
 }
 
@@ -34,7 +35,7 @@ class AbstractSponge512Test {
         repeat(10_000_000) {
             if(buffer.remaining == 0) {
                 buffer.reset()
-                random.read(buffer.segment)
+                random.read(buffer.asBinary())
             }
             monteCarlo.scatterPoint(buffer.readLong(), buffer.readLong())
         }

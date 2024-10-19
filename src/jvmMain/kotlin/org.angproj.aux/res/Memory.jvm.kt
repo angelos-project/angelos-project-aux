@@ -15,12 +15,12 @@
 package org.angproj.aux.res
 
 import org.angproj.aux.util.Reifiable
-import org.angproj.aux.util.SpeedCopy
+import org.angproj.aux.util.Speed
 import sun.misc.Unsafe
 import java.lang.reflect.Field
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class Memory(public actual val size: Int, public actual val ptr: Long): SpeedCopy, Cleanable {
+public actual class Memory(public actual val size: Int, public actual val ptr: Long): Speed, Cleanable {
 
     public override fun dispose() {
         unsafe.freeMemory(ptr)

@@ -14,5 +14,6 @@
  */
 package org.angproj.aux.io
 
-public interface PumpWriter: Writer {
+public interface PumpWriter {
+    public fun write(data: Segment): Int
 }

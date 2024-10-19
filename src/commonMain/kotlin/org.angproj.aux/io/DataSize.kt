@@ -14,7 +14,9 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.util.Reifiable
+import kotlin.math.max
+import kotlin.math.min
+
 
 public enum class DataSize(public val size: Int) {
     UNKNOWN(-1),
@@ -44,12 +46,12 @@ public enum class DataSize(public val size: Int) {
     _256M(_128M.size * 2),
     _512M(_256M.size * 2),
     _1G(_512M.size * 2);
+
+    public companion object {
+        public fun findLowestAbove(size: Int): DataSize {
+            require(size in 0.._1G.size) { "Invalid range" }
+            val real = if(size.countOneBits() == 1 && size > 17) size else 1 shl(32 - max(size, 31).countLeadingZeroBits())
+            return entries.find { it.size == real } ?: error("Invalid")
+        }
+    }
 }
-
-/*private inline operator fun<reified R: Reifiable> Int.plusAssign(other: DataSize): Unit = this += other.size
-
-private operator fun Int.plusAssign(size: Int) {
-
-}
-
-public fun Array<DataSize>.sum()*/

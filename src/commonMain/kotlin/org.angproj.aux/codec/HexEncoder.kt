@@ -15,10 +15,8 @@
 package org.angproj.aux.codec
 
 import org.angproj.aux.buf.TextBuffer
-import org.angproj.aux.io.Binary
-import org.angproj.aux.io.PumpReader
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.copyInto
+import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.pipe.Pipe
 import org.angproj.aux.util.Hex
 import org.angproj.aux.util.toCodePoint
@@ -33,7 +31,7 @@ public class HexEncoder : Encoder<Binary, TextBuffer> {
 
         override fun read(data: Segment): Int {
             val length = min(limit - mark, data.limit)
-            buffer.segment.copyInto(data, 0, mark, mark + length)
+            buffer.asBinary().copyInto(data, 0, mark, mark + length)
             mark += length
             return length
         }
@@ -41,14 +39,14 @@ public class HexEncoder : Encoder<Binary, TextBuffer> {
 
     override fun encode(data: Binary): TextBuffer {
         val limit = data.limit
-        val tb = TextBuffer(limit * 2)
+        val tb = BufMgr.text(limit * 2)
         val pipe = Pipe.buildBinaryPullPipe(BinaryBufferReader(data))
 
         do {
             with(Hex) {
                 val octet = pipe.readByte()
                 tb.writeGlyph(octet.upperToHex<Int>().toCodePoint())
-                tb.writeGlyph(octet.upperToHex<Int>().toCodePoint())
+                tb.writeGlyph(octet.lowerToHex<Int>().toCodePoint())
             }
         } while(pipe.eofReached())
         pipe.close()

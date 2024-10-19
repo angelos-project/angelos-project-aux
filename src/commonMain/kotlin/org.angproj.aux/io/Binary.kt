@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.buf.copyInto
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.util.*
 
 
@@ -21,9 +23,9 @@ public class Binary internal constructor(
     segment: Segment, view: Boolean = false
 ) : MemBlock(segment, view), Retrievable, Storable, NumberAware, BufferAware {
 
-    public constructor(size: Int) : this(Bytes(size))
+    //public constructor(size: Int) : this(Bytes(size))
 
-    public constructor(size: DataSize = DataSize._4K) : this(size.size)
+    //public constructor(size: DataSize = DataSize._4K) : this(size.size)
 
     private inline fun <reified E: Any> withinReadLimit(position: Int, length: Int, action: () -> E): E {
         require(remaining<Int>(position) >= length) { "Buffer overflow, limit reached." }
@@ -96,8 +98,10 @@ public class Binary internal constructor(
         _segment.setLong(position, value.conv2L()) }
 }
 
+public fun binOf(capacity: Int): Binary = BufMgr.bin(capacity)
+
 public fun ByteArray.toBinary(): Binary = withBufferAware(this){
-    val binary = Binary(it.size)
+    val binary = binOf(it.size)
     val index = chunkLoop<Reify>(0, binary.limit, TypeSize.long) { v ->
         binary.storeLong(v, it.readLongAt(v))
     }
@@ -118,7 +122,15 @@ public fun Binary.toByteArray(): ByteArray {
     return byteArray
 }
 
+public fun<C: Segment> Binary.copyInto(destination: C, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
+    check(_segment.isOpen && destination.isOpen) { "Closed memory" }
+    _segment.copyInto(destination, destinationOffset, fromIndex, toIndex)
+}
+
+/**
+ * It is hereby prohibited to use NullObject.binary for explicit use.
+ * */
 public fun Binary.isNull(): Boolean = NullObject.binary === this
 private val nullBinary = Binary(NullObject.segment)
 public val NullObject.binary: Binary
-    get() = nullBinary
+    get() = throw UnsupportedOperationException("Hereby prohibited to use!")

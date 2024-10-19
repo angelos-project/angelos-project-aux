@@ -17,10 +17,10 @@ package org.angproj.aux.pipe
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.util.writeGlyphAt
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.Reify
 import org.angproj.aux.util.chunkLoop
+import org.angproj.aux.util.writeGlyphAt
 import kotlin.math.min
 import kotlin.test.Test
 import kotlin.test.assertContentEquals

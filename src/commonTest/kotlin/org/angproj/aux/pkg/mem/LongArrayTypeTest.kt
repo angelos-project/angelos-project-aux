@@ -3,9 +3,9 @@ package org.angproj.aux.pkg.mem
 import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.buf.LongBuffer
 import org.angproj.aux.buf.toLongBuffer
+import org.angproj.aux.io.binOf
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
-
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -28,7 +28,7 @@ class LongArrayTypeTest {
 
     protected fun enfoldArrayToBlock(data: LongBuffer) {
         val type = LongArrayType(data)
-        val block = BlockType(type.foldSize(FoldFormat.BLOCK))
+        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK).toInt()))
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block)
 

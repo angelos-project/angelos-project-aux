@@ -15,8 +15,8 @@
 package org.angproj.aux.util
 
 import org.angproj.aux.io.Binary
+import org.angproj.aux.io.binOf
 import org.angproj.aux.io.toBinary
-import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.rand.AbstractSmallRandom
 import org.angproj.aux.rand.InitializationVector
 import kotlin.native.concurrent.ThreadLocal
@@ -40,7 +40,7 @@ public class Uuid4(private val uuid: Binary) {
         "$_1-$_2-$_3-$_4-$_5"
     }
 
-    public fun asBinary(): Binary = if (!isNull()) uuid.asBinary() else error("Null object immutable")
+    public fun asBinary(): Binary = if (!isNull()) uuid else error("Null object immutable")
 
     private fun hex(r: IntRange): String {
         var hex = ""
@@ -79,7 +79,7 @@ public class Uuid4(private val uuid: Binary) {
 
     @ThreadLocal
     protected companion object : AbstractSmallRandom(
-        Binary(16).also { InitializationVector.realTimeGatedEntropy(it) }
+        binOf(16).also { InitializationVector.realTimeGatedEntropy(it) }
     ), EndianAware {
 
         private var counter: Int = 0
@@ -89,7 +89,7 @@ public class Uuid4(private val uuid: Binary) {
         }
 
         private fun revitalize() {
-            BufMgr.bin(16).useWith {
+            binOf(16).useWith {
                 InitializationVector.realTimeGatedEntropy(it)
                 reseed(it)
                 counter = 0
@@ -100,7 +100,7 @@ public class Uuid4(private val uuid: Binary) {
             if (counter.floorMod(Int.MAX_VALUE) == 0) revitalize()
             else counter++
 
-            val data = BufMgr.bin(16)
+            val data = binOf(16)
 
             data.storeInt(0, round())
             data.storeInt(4, ((round().toLong() and 0xffff0fff) or 0x4000).toInt().asBig())

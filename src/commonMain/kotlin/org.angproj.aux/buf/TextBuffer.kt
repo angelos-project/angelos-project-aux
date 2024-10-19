@@ -15,6 +15,7 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.util.CodePoint
 import org.angproj.aux.util.withUnicodeAware
 import kotlin.math.max
@@ -32,10 +33,10 @@ public class TextBuffer internal constructor(
     override fun create(segment: Segment): TextBuffer = TextBuffer(segment)
 
     override fun readGlyph(): CodePoint = withUnicodeAware {
-        readGlyphBlk(remaining) { segment.getByte(_position++) } }
+        readGlyphBlk(remaining) { _segment.getByte(_position++) } }
 
     override fun writeGlyph(codePoint: CodePoint): Int = withUnicodeAware {
-        writeGlyphBlk(codePoint, remaining) { segment.setByte(_position++, it) } }
+        writeGlyphBlk(codePoint, remaining) { _segment.setByte(_position++, it) } }
 
     public fun select(selection: IntRange = mark..limit): IntRange = withUnicodeAware {
         require(selection.first in mark..limit && selection.last in mark..limit) {
@@ -58,4 +59,5 @@ public class TextBuffer internal constructor(
  * Make sure that the TextBuffer is flipped using flip() first.
  * */
 public fun TextBuffer.toText(selection: IntRange = mark..limit): Text = with(select(selection)) {
-    Text(segment.copyOfRange(first, last)) }
+    BufMgr.txt(last - first).apply { this@toText.copyInto(this, 0, first, last) }
+}

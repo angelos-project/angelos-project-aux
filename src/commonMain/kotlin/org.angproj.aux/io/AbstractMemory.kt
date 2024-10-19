@@ -30,6 +30,7 @@ public abstract class AbstractMemory protected constructor(
     @PublishedApi
     internal abstract val data: Chunk
 
+    @Deprecated("Not to be used with memory manager")
     abstract override fun create(size: Int, idxLimit: Int): AbstractMemory
 
     abstract override fun getByte(index: Int): Byte

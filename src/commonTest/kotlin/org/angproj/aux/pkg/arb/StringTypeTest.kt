@@ -2,11 +2,9 @@ package org.angproj.aux.pkg.arb
 
 import org.angproj.aux.TestInformationStub
 import org.angproj.aux.buf.BinaryBuffer
-import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.toText
 import org.angproj.aux.pkg.FoldFormat
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class StringTypeTest {

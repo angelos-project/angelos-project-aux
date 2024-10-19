@@ -14,12 +14,8 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertIs
 
 abstract class AbstractBufferTest<E: Buffer> {
 

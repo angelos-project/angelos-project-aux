@@ -15,7 +15,7 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.buf.AbstractSpeedCopy
-import org.angproj.aux.buf.SpeedCopy
+import org.angproj.aux.buf.SpeedCpy
 import org.angproj.aux.buf.copyInto
 import org.angproj.aux.buf.copyOf
 import org.angproj.aux.util.NullObject
@@ -26,8 +26,8 @@ public abstract class Segment(
     size: Int, idxSize: TypeSize, idxLimit: Int
 ): AbstractSpeedCopy(size, idxSize, idxLimit), ByteString {
 
-    final override val length: Int = SpeedCopy.addMarginInTotalBytes(idxLimit, idxSize)
-    final override val marginSized: Int = SpeedCopy.addMarginByIndexType(idxLimit, idxSize)
+    final override val length: Int = SpeedCpy.addMarginInTotalBytes(idxLimit, idxSize)
+    final override val marginSized: Int = SpeedCpy.addMarginByIndexType(idxLimit, idxSize)
 
     private var _limit: Int = size
     override var limit: Int
@@ -41,6 +41,26 @@ public abstract class Segment(
         limit = newLimit
     }
 
+    /*public inline fun <reified R: Number> Int.checkRangeByte(): Unit = when(this) {
+        !in 0..<limit -> throw IllegalArgumentException("Out of bounds.")
+        else -> Unit
+    }
+
+    public inline fun <reified R: Number> Int.checkRangeShort(): Unit = when(this) {
+        !in 0..<limit-1 -> throw IllegalArgumentException("Out of bounds.")
+        else -> Unit
+    }
+
+    public inline fun <reified R: Number> Int.checkRangeInt(): Unit = when(this) {
+        !in 0..<limit-3 -> throw IllegalArgumentException("Out of bounds.")
+        else -> Unit
+    }
+
+    public inline fun <reified R: Number> Int.checkRangeLong(): Unit = when(this) {
+        !in 0..<limit-7 -> throw IllegalArgumentException("Out of bounds.")
+        else -> Unit
+    }*/
+
     public inline fun <reified T: Reifiable> Long.reverse(): Long = (
             this.toInt().reverse<Reify>().toLong() shl 32) or (
             this ushr 32).toInt().reverse<Reify>().toLong()
@@ -51,6 +71,9 @@ public abstract class Segment(
 
     public inline fun <reified T: Reifiable> Short.reverse(): Short = (
             (this.toInt() shl 16) or (this.toInt() ushr 16)).toShort()
+
+    public open val isOpen: Boolean
+        get() = true
 
     public override fun equals(other: Any?): Boolean {
         if(this === other) return true

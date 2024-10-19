@@ -26,8 +26,7 @@ public class Entropy(
 ) {
 
     init {
-        require(bufSize.size >= DataSize._256B.size)
-        require(bufSize.size <= DataSize._128K.size)
+        require(bufSize.size in DataSize._256B.size..DataSize._128K.size)
     }
 
     private var buffer = DataBuffer(bufSize)

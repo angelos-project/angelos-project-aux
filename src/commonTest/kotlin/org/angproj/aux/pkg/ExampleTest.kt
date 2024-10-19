@@ -4,7 +4,6 @@ import org.angproj.aux.buf.*
 import org.angproj.aux.io.*
 import org.angproj.aux.pkg.arb.StructType
 import org.angproj.aux.pkg.coll.ObjectType
-import org.angproj.aux.sec.SecureFeed
 import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.Uuid4
@@ -217,15 +216,15 @@ data class TestStruct(
             uInt = SecureRandom.readUInt()
             uLong = SecureRandom.readULong()
             byteArray.securelyRandomize()
-            SecureRandom.read(shortArray.segment)
-            SecureRandom.read(intArray.segment)
-            SecureRandom.read(longArray.segment)
-            SecureRandom.read(floatArray.segment)
-            SecureRandom.read(doubleArray.segment)
-            SecureRandom.read(uByteArray.segment)
-            SecureRandom.read(uShortArray.segment)
-            SecureRandom.read(uIntArray.segment)
-            SecureRandom.read(uLongArray.segment)
+            shortArray.securelyRandomize()
+            intArray.securelyRandomize()
+            longArray.securelyRandomize()
+            floatArray.securelyRandomize()
+            doubleArray.securelyRandomize()
+            uByteArray.securelyRandomize()
+            uShortArray.securelyRandomize()
+            uIntArray.securelyRandomize()
+            uLongArray.securelyRandomize()
         }
     }
 }

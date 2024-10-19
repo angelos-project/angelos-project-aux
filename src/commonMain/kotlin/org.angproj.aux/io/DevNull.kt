@@ -16,7 +16,7 @@ package org.angproj.aux.io
 
 import org.angproj.aux.util.CodePoint
 
-public object DevNull : BinaryWritable, TextWritable, Writer {
+public object DevNull : BinaryWritable, TextWritable, PumpWriter {
 
     override fun writeByte(value: Byte) {}
     override fun writeUByte(value: UByte) {}

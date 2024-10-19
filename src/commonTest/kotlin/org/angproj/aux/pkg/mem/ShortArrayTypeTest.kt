@@ -3,9 +3,9 @@ package org.angproj.aux.pkg.mem
 import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.buf.ShortBuffer
 import org.angproj.aux.buf.toShortBuffer
+import org.angproj.aux.io.binOf
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
-
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -19,7 +19,7 @@ class ShortArrayTypeTest {
 
     protected fun enfoldArrayToBlock(data: ShortBuffer) {
         val type = ShortArrayType(data)
-        val block = BlockType(type.foldSize(FoldFormat.BLOCK))
+        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK).toInt()))
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block)
 

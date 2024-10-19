@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.util.*
 
 
@@ -21,9 +22,9 @@ public class Text internal constructor(
      segment: Segment, view: Boolean = false
 ) : MemBlock(segment, view), TextRetrievable, TextStorable, Iterable<CodePoint> {
 
-    public constructor(size: Int) : this(Bytes(size))
+    //public constructor(size: Int) : this(Bytes(size))
 
-    public constructor(size: DataSize = DataSize._4K) : this(size.size)
+    //public constructor(size: DataSize = DataSize._4K) : this(size.size)
 
     override fun iterator(): Iterator<CodePoint> = object: Iterator<CodePoint> {
         private var position = 0
@@ -40,7 +41,7 @@ public class Text internal constructor(
         writeGlyphBlk(codePoint, remaining<Int>(offset)) { _segment.setByte(offset++, it) } }
 }
 
-public fun String.toText(): Text = Text(Unicode.importByteSize(this)).also { tb ->
+public fun String.toText(): Text = BufMgr.txt(Unicode.importByteSize(this)).also { tb ->
     var offset = 0
     Unicode.importUnicode(this) { offset += tb.storeGlyph(offset, it) }
 }

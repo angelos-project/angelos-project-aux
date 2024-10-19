@@ -14,36 +14,34 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.Binary
 import org.angproj.aux.io.Memory
 import org.angproj.aux.io.Segment
 import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.Auto
 
 public abstract class Buffer protected constructor(
-    internal val _segment: Segment, protected val view: Boolean = false
-): Auto {
+    segment: Segment, protected val view: Boolean = false
+): SpeedCopy(segment), Auto {
 
     internal abstract fun create(segment: Segment): Buffer
-
-    public val segment: Segment
-        get() = _segment
 
     /**
      * Gives the max capacity of the buffer
      * */
-    public abstract val capacity: Int
+    public abstract override val capacity: Int
 
     /**
      * The current limit of the buffer as defined.
      * */
-    public abstract val limit: Int
+    public abstract override val limit: Int
 
     override fun isView(): Boolean = view
 
     override fun isMem(): Boolean = _segment is Memory
 
     override fun close() {
-        _segment.close()
+        if(!isView()) _segment.close()
     }
 
     public override fun equals(other: Any?): Boolean {
@@ -56,5 +54,6 @@ public abstract class Buffer protected constructor(
     public override fun hashCode(): Int = _segment.hashCode()
 }
 
+public fun Buffer.securelyRandomize() { SecureRandom.read(_segment) }
 
-public fun Buffer.securelyRandomize() { SecureRandom.read(segment) }
+public fun <E: Buffer>E.asBinary(): Binary = Binary(this._segment, true)

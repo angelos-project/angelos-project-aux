@@ -14,7 +14,9 @@
  */
 package org.angproj.aux.pkg.arb
 
+import org.angproj.aux.buf.copyInto
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
@@ -42,7 +44,9 @@ public value class StringType(public val value: Text) : Enfoldable {
 
         public fun unfoldFromStream(inStream: BinaryReadable): StringType {
             val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
-            return StringType(Text(block.block.segment))
+            val txt = BufMgr.txt(block.block.limit).apply {
+                block.block.copyInto(this, 0, 0, limit) }
+            return StringType(txt)
         }
     }
 }

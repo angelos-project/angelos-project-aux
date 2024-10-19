@@ -3,10 +3,10 @@ package org.angproj.aux.pkg.type
 import org.angproj.aux.TestInformationStub
 import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.binOf
 import org.angproj.aux.io.toBinary
 import org.angproj.aux.io.toByteArray
 import org.angproj.aux.util.BinHex
-
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 
@@ -16,7 +16,7 @@ class BlockTypeTest {
 
     @Test
     fun enfoldToBlock() {
-        val storage = BlockType(DataSize._2K.size.toLong())
+        val storage = BlockType(binOf(DataSize._2K.size))
 
         (DataSize._1K.size until (DataSize._1K.size + 24)).forEach { size ->
             val block = BlockType(testData.sliceArray(0 until size).toBinary())

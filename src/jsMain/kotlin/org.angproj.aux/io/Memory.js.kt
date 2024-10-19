@@ -18,10 +18,16 @@ import org.angproj.aux.buf.AbstractSpeedCopy
 import org.angproj.aux.res.allocateMemory
 import org.angproj.aux.res.Memory as Chunk
 
+// throw UnsupportedOperationException("No access to native memory.")
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual open class Memory actual constructor(size: Int) : Segment(size, typeSize) {
+public actual open class Memory actual constructor(
+    size: Int, idxLimit: Int
+) : AbstractMemory(size, idxLimit) {
+    public actual constructor(size: Int) : this(size, size)
 
-    protected actual val data: Chunk = allocateMemory(size)
+    actual final override val data: Chunk = allocateMemory(length)
+
+    public override fun close() { throw UnsupportedOperationException("No access to native memory.") }
 
     actual override fun getByte(index: Int): Byte {
         throw UnsupportedOperationException("No access to native memory.")
@@ -55,27 +61,9 @@ public actual open class Memory actual constructor(size: Int) : Segment(size, ty
         throw UnsupportedOperationException("No access to native memory.")
     }
 
-    override fun close() {}
+    actual override fun create(size: Int, idxLimit: Int): Memory = Memory(size, idxLimit)
 
-    public actual companion object {
-        public actual val typeSize: TypeSize = TypeSize.BYTE
+    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+        innerCopy(dest as Memory, destOff, idxFrom, idxTo)
     }
-
-    override val marginSized: Int
-        get() = TODO("Not yet implemented")
-
-    override fun create(size: Int): AbstractSpeedCopy {
-        TODO("Not yet implemented")
-    }
-
-    override val length: Int
-        get() = TODO("Not yet implemented")
-}
-
-internal actual inline fun <reified T : Memory> T.longCopy(
-    basePtr: Long,
-    copyPtr: Long,
-    offset: Int
-) {
-    throw UnsupportedOperationException()
 }

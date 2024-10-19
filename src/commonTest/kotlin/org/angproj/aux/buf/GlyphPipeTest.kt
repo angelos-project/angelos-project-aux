@@ -14,13 +14,7 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.PumpReader
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.TypeSize
-import org.angproj.aux.io.toText
-import org.angproj.aux.util.DataBuffer
-import org.angproj.aux.util.Reify
-import org.angproj.aux.util.chunkLoop
+import org.angproj.aux.io.*
 import kotlin.math.min
 
 const val latin = """
@@ -157,7 +151,7 @@ class StringReader(text: String) : PumpReader {
 
     override fun read(data: Segment): Int {
         data.limit = min(data.limit, this.data.limit)
-        this.data.segment.copyInto(data, 0, 0, data.limit)
+        this.data.asBinary().copyInto(data, 0, 0, data.limit)
 
         /*var index = chunkLoop<Reify>(0, data.limit, TypeSize.long) {
             data.setLong(it, this.data.readLong())

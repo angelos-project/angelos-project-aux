@@ -16,11 +16,11 @@ package org.angproj.aux.res
 
 import kotlinx.cinterop.*
 import org.angproj.aux.util.Reifiable
-import org.angproj.aux.util.SpeedCopy
+import org.angproj.aux.util.Speed
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
-public actual class Memory(public actual val size: Int, public actual val ptr: Long): SpeedCopy, Cleanable {
+public actual class Memory(public actual val size: Int, public actual val ptr: Long): Speed, Cleanable {
 
     public override fun dispose() {
         nativeHeap.free(ptr.toCPointer<ByteVar>()!!)

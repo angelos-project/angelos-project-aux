@@ -12,7 +12,7 @@ object Combinator {
     fun numberGenerator(range: IntRange, action: (num: ByteArray) -> Unit) {
         range.forEach {
             BufMgr.bin(it.absoluteValue + 1).useWith { bin ->
-                SecureRandom.read(bin.segment)
+                SecureRandom.read(bin._segment)
                 bin.storeByte(0, if(it < 0) BigSigned.NEGATIVE.signed.toByte() else BigSigned.POSITIVE.signed.toByte())
                 action(bin.toByteArray())
             }
@@ -22,7 +22,7 @@ object Combinator {
     fun innerNumberGenerator(range: IntRange, action: (num: ByteArray) -> Unit) {
         range.forEach {
             BufMgr.bin(it.absoluteValue + 1).useWith { bin ->
-                SecureRandom.read(bin.segment)
+                SecureRandom.read(bin._segment)
                 bin.storeByte(0, if (it < 0) BigSigned.NEGATIVE.signed.toByte() else BigSigned.POSITIVE.signed.toByte())
                 action(bin.toByteArray())
             }

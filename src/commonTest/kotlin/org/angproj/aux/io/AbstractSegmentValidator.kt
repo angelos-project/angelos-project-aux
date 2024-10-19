@@ -16,8 +16,9 @@ package org.angproj.aux.io
 
 import org.angproj.aux.buf.copyInto
 import org.angproj.aux.buf.copyOfRange
+import org.angproj.aux.util.BinHex
+import org.angproj.aux.util.BufferAware
 import kotlin.test.assertEquals
-import org.angproj.aux.util.*
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 

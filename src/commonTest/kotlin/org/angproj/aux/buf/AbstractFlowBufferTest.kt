@@ -15,11 +15,9 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.Segment
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertIs
 
 abstract class AbstractFlowBufferTest<E: FlowBuffer>: AbstractBufferTest<E>() {
 
@@ -74,11 +72,6 @@ abstract class AbstractFlowBufferTest<E: FlowBuffer>: AbstractBufferTest<E>() {
 
     @Test
     abstract fun close() */
-
-    @Test
-    fun getSegment() {
-        assertIs<Segment>(setInput().segment)
-    }
 
     @Test
     fun getCapacity() {

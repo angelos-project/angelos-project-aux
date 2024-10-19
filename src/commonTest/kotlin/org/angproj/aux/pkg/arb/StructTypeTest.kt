@@ -1,7 +1,7 @@
 package org.angproj.aux.pkg.arb
 
 import org.angproj.aux.buf.BinaryBuffer
-import org.angproj.aux.io.Binary
+import org.angproj.aux.io.binOf
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.TestStruct
 import kotlin.test.Test
@@ -16,7 +16,7 @@ class StructTypeTest {
     fun enfoldUnfoldBlock() {
         val pl1 = setInputTestStruct()
         val lt = StructType(pl1)
-        val buf = Binary(lt.foldSize(FoldFormat.BLOCK).toInt())
+        val buf = binOf(lt.foldSize(FoldFormat.BLOCK).toInt())
         val length = lt.enfoldToBlock(buf)
 
         assertEquals(length.toInt(), buf.limit)
@@ -29,6 +29,9 @@ class StructTypeTest {
 
     @Test
     fun enfoldUnfoldStream() {
+        /**
+         * Unknown error related to unpacking and assertEquals arises randomly
+         * */
         val pl1 = setInputTestStruct()
         val buf = BinaryBuffer()
         val lt = StructType(pl1)

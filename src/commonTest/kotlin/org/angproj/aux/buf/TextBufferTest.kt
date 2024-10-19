@@ -93,7 +93,7 @@ class TextBufferTest : AbstractFlowBufferTest<TextBuffer>() {
 手新市要所由州時青拳数子。党詳半前象写鐘木亡情強万構図天報。🤪""".toTextBuffer()
 
         val txt = buf.toText()
-        assertEquals(buf.segment, txt.segment)
+        assertEquals(buf._segment, txt._segment)
     }
 
     @Test
@@ -102,6 +102,6 @@ class TextBufferTest : AbstractFlowBufferTest<TextBuffer>() {
         buf.flip()
         val txt = buf.toText()
 
-        assertEquals(buf.segment, txt.segment)
+        assertEquals(buf._segment, txt._segment)
     }
 }

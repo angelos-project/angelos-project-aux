@@ -16,7 +16,10 @@ package org.angproj.aux.util
 
 import kotlin.math.PI
 import kotlin.math.absoluteValue
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class Uuid4Test {
     @Test

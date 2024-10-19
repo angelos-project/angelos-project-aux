@@ -15,5 +15,5 @@
 package org.angproj.aux.io
 
 public interface Writer {
-    public fun write(data: Segment): Int
+    public fun write(bin: Binary): Int
 }

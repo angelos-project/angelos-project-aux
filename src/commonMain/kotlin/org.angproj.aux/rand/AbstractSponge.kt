@@ -14,8 +14,9 @@
  */
 package org.angproj.aux.rand
 
-import org.angproj.aux.buf.BinaryBuffer
+import org.angproj.aux.buf.asWrapped
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.util.EndianAware
 import org.angproj.aux.util.floorMod
 
@@ -49,10 +50,10 @@ public abstract class AbstractSponge(spongeSize: Int = 0, public val visibleSize
         repeat(sponge.size) { round() }
     }
 
-    protected fun fill(data: Segment, cycle: () -> Unit) {
-        val buffer = BinaryBuffer(data)
+    protected fun fill(data: Segment, cycle: () -> Unit): Unit = BufMgr.asWrap(data) {
+        val writable = asWrapped()
         repeat(data.limit / byteSize) {
-            squeeze(buffer)
+            squeeze(writable)
             cycle()
         }
     }

@@ -15,6 +15,7 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.util.NumberAware
 
 
@@ -102,4 +103,5 @@ public class BinaryBuffer internal constructor(
 /**
  * For proper copying of a certain sequence of bytes, markAt() and limitAt() has to be set first.
  * */
-public fun BinaryBuffer.toBinary(): Binary = Binary(segment.copyOfRange(mark, limit))
+public fun BinaryBuffer.toBinary(): Binary = binOf(limit - mark).apply {
+    this@toBinary.copyInto(this, 0, mark, limit) }

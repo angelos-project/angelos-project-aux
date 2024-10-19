@@ -1,10 +1,6 @@
 package org.angproj.aux.util
 
-import org.angproj.aux.rand.InitializationVector
-import org.angproj.aux.sec.SecureRandom
-import org.angproj.aux.utf.*
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 /*class Glyph2279Iterator : Iterator<Glyph> {
     private val iv: Int = InitializationVector.IV_CA53.iv.toInt() and MASK

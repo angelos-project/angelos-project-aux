@@ -1,7 +1,7 @@
 package org.angproj.aux.pkg.arb
 
 import org.angproj.aux.buf.BinaryBuffer
-import org.angproj.aux.io.toByteArray
+import org.angproj.aux.io.binOf
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
 import org.angproj.aux.util.uuid4
@@ -14,7 +14,7 @@ class Uuid4TypeTest {
     @Test
     fun enfoldToBlock() {
         val type = Uuid4Type(uuid4())
-        val block = BlockType(type.foldSize(FoldFormat.BLOCK))
+        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK).toInt()))
 
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block)

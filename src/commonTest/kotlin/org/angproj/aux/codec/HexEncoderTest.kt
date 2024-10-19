@@ -1,6 +1,6 @@
 package org.angproj.aux.codec
 
-import org.angproj.aux.io.Binary
+import org.angproj.aux.io.binOf
 import org.angproj.aux.sec.SecureRandom
 import kotlin.test.Test
 
@@ -8,8 +8,8 @@ import kotlin.test.Test
 class HexEncoderTest {
     @Test
     fun testStreamPullClose() {
-        val bin = Binary(2048)
-        SecureRandom.read(bin.segment)
+        val bin = binOf(2048)
+        SecureRandom.read(bin._segment)
         println(HexEncoder().encode(bin).limit)
     }
 }

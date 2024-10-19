@@ -1,9 +1,13 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.TestInformationStub
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.readGlyphAt
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 
 class TextTest: MemBlockTest<Text>() {
@@ -42,6 +46,6 @@ class TextTest: MemBlockTest<Text>() {
     @Test
     fun testNullText() {
         assertTrue(NullObject.text.isNull())
-        assertFalse(Text().isNull())
+        assertFalse(BufMgr.txt(0).isNull())
     }
 }

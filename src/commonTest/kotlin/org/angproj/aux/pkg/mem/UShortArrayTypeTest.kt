@@ -3,9 +3,9 @@ package org.angproj.aux.pkg.mem
 import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.buf.UShortBuffer
 import org.angproj.aux.buf.toShortBuffer
+import org.angproj.aux.io.binOf
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.type.BlockType
-
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -13,13 +13,13 @@ import kotlin.test.assertEquals
 
 class UShortArrayTypeTest {
 
-    val first = UShortBuffer(shortArrayOf(-31123, -25444, 9662).toShortBuffer().segment)
-    val second = UShortBuffer(shortArrayOf(12959, 28616, 2619, 17090, -31423).toShortBuffer().segment)
-    val third = UShortBuffer(shortArrayOf(20417, 11571, 30775, 2691, 26005, -28863, -1299).toShortBuffer().segment)
+    val first = UShortBuffer(shortArrayOf(-31123, -25444, 9662).toShortBuffer()._segment)
+    val second = UShortBuffer(shortArrayOf(12959, 28616, 2619, 17090, -31423).toShortBuffer()._segment)
+    val third = UShortBuffer(shortArrayOf(20417, 11571, 30775, 2691, 26005, -28863, -1299).toShortBuffer()._segment)
 
     protected fun enfoldArrayToBlock(data: UShortBuffer) {
         val type = UShortArrayType(data)
-        val block = BlockType(type.foldSize(FoldFormat.BLOCK))
+        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK).toInt()))
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block)
 

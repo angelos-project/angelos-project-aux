@@ -15,20 +15,17 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.util.Auto
+import org.angproj.aux.buf.SpeedCopy
 
 
 public abstract class MemBlock internal constructor(
-    protected val _segment: Segment,
-    private val _view: Boolean
-) : Auto{
+    segment: Segment, private val _view: Boolean
+) : SpeedCopy(segment), Auto {
 
-    public val segment: Segment
-        get() = _segment
-
-    public val limit: Int
+    public override val limit: Int
         get() = _segment.limit
 
-    public val capacity: Int
+    public override val capacity: Int
         get() = _segment.size
 
     /**
@@ -46,16 +43,14 @@ public abstract class MemBlock internal constructor(
         _segment.limit = _segment.size
     }
 
-    protected inline fun <reified R: Number> remaining(position: Int): Int = _segment.limit - position
-
-    public fun asBinary(): Binary = Binary(_segment, true)
+    internal inline fun <reified E: Any> remaining(position: Int): Int = _segment.limit - position
 
     override fun isView(): Boolean = _view
 
     override fun isMem(): Boolean = _segment is Memory
 
     override fun close() {
-        _segment.close()
+        if(!isView()) _segment.close()
     }
 
     public override fun equals(other: Any?): Boolean {
@@ -67,3 +62,5 @@ public abstract class MemBlock internal constructor(
 
     public override fun hashCode(): Int = _segment.hashCode()
 }
+
+public fun <E: MemBlock>E.asBinary(): Binary = Binary(this._segment, true)

@@ -16,6 +16,8 @@ package org.angproj.aux.util
 
 import org.angproj.aux.io.TypeSize
 
+
+
 public interface Copyable {
     public val limit: Int
 
@@ -87,7 +89,7 @@ public interface Copy {
 }
 
 
-public interface SpeedCopy: Copy, Copyable {
+public interface Speed: Copy, Copyable {
     public fun speed(
         idxFrom: Int, idxTo: Int, dstOff: Int, src: Copyable, dst: Copyable
     ): Int = innerCopy(idxFrom, idxTo, dstOff, src, dst)

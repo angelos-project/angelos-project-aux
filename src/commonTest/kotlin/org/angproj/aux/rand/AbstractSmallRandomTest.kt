@@ -1,16 +1,14 @@
 package org.angproj.aux.rand
 
-import org.angproj.aux.io.Binary
 import org.angproj.aux.io.OldReader
-import org.angproj.aux.io.toByteArray
+import org.angproj.aux.io.binOf
 import org.angproj.aux.util.*
-import org.angproj.aux.util.writeIntAt
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.test.Test
 
 class TestSmallRandom: AbstractSmallRandom(
-    Binary(16).also { InitializationVector.realTimeGatedEntropy(it) }
+    binOf(16).also { InitializationVector.realTimeGatedEntropy(it) }
 ), OldReader, BufferAware {
 
     override fun read(data: ByteArray): Int {

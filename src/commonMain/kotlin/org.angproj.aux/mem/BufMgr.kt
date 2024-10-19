@@ -14,11 +14,19 @@
  */
 package org.angproj.aux.mem
 
+import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.buf.TextBuffer
-import org.angproj.aux.io.Binary
+import org.angproj.aux.io.*
 
 public object BufMgr {
-    public fun txt(size: Int): TextBuffer = TextBuffer(size)
+    public fun txt(size: Int): Text = Text(Bytes(size))
 
-    public fun bin(size: Int): Binary = Binary(size)
+    public fun bin(size: Int): Binary = Binary(Bytes(size))
+
+    public fun text(size: Int): TextBuffer = TextBuffer(Default.allocate(DataSize.findLowestAbove(size)))
+
+    public fun binary(size: Int): BinaryBuffer = BinaryBuffer(Default.allocate(DataSize.findLowestAbove(size)))
+
+    public fun<E: Any> asWrap(segment: Segment, block: Binary.() -> E): E = Binary(segment, true).block()
+
 }

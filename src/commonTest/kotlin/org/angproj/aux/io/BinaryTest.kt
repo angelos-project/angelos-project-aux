@@ -2,7 +2,9 @@ package org.angproj.aux.io
 
 import org.angproj.aux.TestInformationStub
 import org.angproj.aux.util.NullObject
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 
 class BinaryTest: MemBlockTest<Binary>() {
@@ -83,7 +85,7 @@ class BinaryTest: MemBlockTest<Binary>() {
 
     @Test
     fun testNullBinary() {
-        assertTrue(NullObject.binary.isNull())
-        assertFalse(Binary().isNull())
+        assertFailsWith<UnsupportedOperationException> { NullObject.binary.isNull() }
+        assertFailsWith<UnsupportedOperationException> { binOf(0).isNull() }
     }
 }

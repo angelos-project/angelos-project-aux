@@ -1,8 +1,8 @@
 import org.angproj.aux.buf.BinaryBuffer
+import org.angproj.aux.io.binOf
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.prime.LongType
 import org.angproj.aux.pkg.type.BlockType
-
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -13,7 +13,7 @@ class LongTypeTest {
     @Test
     fun enfoldToBlock() {
         val type = LongType(first)
-        val block = BlockType(type.foldSize(FoldFormat.BLOCK))
+        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK).toInt()))
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
         type.enfoldToBlock(block, 0)
 

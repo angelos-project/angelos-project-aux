@@ -18,7 +18,7 @@ import org.angproj.aux.io.DataSize
 import org.angproj.aux.util.*
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class Memory: SpeedCopy, Cleanable {
+public expect class Memory: Speed, Cleanable {
     public val size: Int
     public val ptr: Long
 }

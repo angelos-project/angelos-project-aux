@@ -22,13 +22,14 @@ public abstract class AbstractSpeedCopy internal constructor(
     public final override val size: Int,
     public val idxSize: TypeSize,
     @PublishedApi internal val idxLimit: Int = size
-): SpeedCopy {
+): SpeedCpy {
 
     public inline val lastIndex: Int
         get() = size-1
 
     public inline fun <reified T: Reifiable> Int.checkRange(): Unit = checkRangeByte<Reify>()
 
+    // Check inside the Segment class for new alternative
     public inline fun <reified T: Reifiable> Int.checkRangeByte(): Unit = when(this) {
         !in 0..<size -> throw IllegalArgumentException("Out of bounds.")
         else -> Unit

@@ -14,10 +14,7 @@
  */
 package org.angproj.aux.pkg.arb
 
-import org.angproj.aux.io.BinaryReadable
-import org.angproj.aux.io.Retrievable
-import org.angproj.aux.io.Storable
-import org.angproj.aux.io.BinaryWritable
+import org.angproj.aux.io.*
 import org.angproj.aux.pkg.*
 import org.angproj.aux.pkg.type.BlockType
 import kotlin.jvm.JvmInline
@@ -36,7 +33,7 @@ public value class StructType<P: Packageable>(public val value: P) : Enfoldable 
     public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = value.enfold(outData, offset)
 
     public fun enfoldToStream(outStream: BinaryWritable): Long {
-        val block = BlockType(foldSize(FoldFormat.BLOCK))
+        val block = BlockType(binOf(foldSize(FoldFormat.BLOCK).toInt()))
         enfoldToBlock(block, 0)
         return block.enfoldToStreamByConvention(outStream, conventionType)
     }

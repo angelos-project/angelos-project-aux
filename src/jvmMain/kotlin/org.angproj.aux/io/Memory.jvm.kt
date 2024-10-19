@@ -32,11 +32,21 @@ public actual open class Memory actual constructor(
 
     public actual constructor(size: Int) : this(size, size)
 
+    private var _closed = false
+
+    override val isOpen: Boolean
+        get() = !_closed
+
     actual final override val data: Chunk = allocateMemory(length)
     protected val ptr: Long = data.ptr
 
     private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }
-    public override fun close() { cleanable.clean() }
+    override fun close() {
+        if(isOpen) {
+            cleanable.clean()
+            _closed = true
+        }
+    }
 
     actual override fun getByte(index: Int): Byte {
         index.checkRangeByte<Reify>()

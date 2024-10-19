@@ -15,9 +15,5 @@
 package org.angproj.aux.io
 
 public interface Reader {
-
-    /**
-     * The implementation must set the segments limit value to the same as the returning value.
-     * */
-    public fun read(data: Segment): Int
+    public fun read(bin: Binary): Int
 }

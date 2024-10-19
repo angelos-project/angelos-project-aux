@@ -12,13 +12,10 @@ abstract class MemBlockTest<E: MemBlock> {
     @Test
     fun testEquals() {
         val diff = setInput()
-        diff.segment.setByte(txtLen-1, 0x21)
+        diff._segment.setByte(txtLen-1, 0x21)
         assertNotEquals(diff, setInput())
         assertEquals(setInput(), setInput())
     }
-
-    @Test
-    fun getSegment() { assertIs<Segment>(setInput().segment) }
 
     @Test
     fun getCapacity() { assertEquals(setInput().capacity, txtLen) }
@@ -50,7 +47,7 @@ abstract class MemBlockTest<E: MemBlock> {
     }
 
     @Test
-    fun asBinary() { assertIs<Segment>(setInput().asBinary().segment) }
+    fun asBinary() { assertIs<Binary>(setInput().asBinary()) }
 
     @Test
     fun isView() {

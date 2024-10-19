@@ -1,8 +1,8 @@
 package org.angproj.aux.sec
 
 import org.angproj.aux.buf.BinaryBuffer
-import org.angproj.aux.util.Benchmark
 import org.angproj.aux.io.DataSize
+import org.angproj.aux.util.Benchmark
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.test.Test
@@ -14,7 +14,7 @@ class SecureFeedTest {
     fun read() {
         val count = DataSize._8K.size / Long.SIZE_BYTES
         val buffer = BinaryBuffer(DataSize._8K)
-        SecureFeed.read(buffer.segment)
+        SecureFeed.read(buffer._segment)
         val values = LongArray(count) { buffer.readLong() }
         assertEquals(values.toSet().size, count)
     }
@@ -26,7 +26,7 @@ class SecureFeedTest {
         repeat(10_000_000) {
             if(buffer.remaining == 0) {
                 buffer.reset()
-                SecureFeed.read(buffer.segment)
+                SecureFeed.read(buffer._segment)
             }
             monteCarlo.scatterPoint(buffer.readLong(), buffer.readLong())
         }

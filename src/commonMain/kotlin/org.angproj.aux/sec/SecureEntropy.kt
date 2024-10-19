@@ -34,7 +34,7 @@ public object SecureEntropy : AbstractSponge256(), PumpReader {
     }
 
     private fun revitalize() {
-        BufMgr.bin(visibleSize * TypeSize.long).useWith { bin ->
+        binOf(visibleSize * TypeSize.long).useWith { bin ->
             InitializationVector.realTimeGatedEntropy(bin)
             (0 until visibleSize).forEach {
                 absorb(bin.retrieveLong(it * TypeSize.long), it)

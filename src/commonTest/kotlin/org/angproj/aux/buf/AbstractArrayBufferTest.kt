@@ -14,11 +14,9 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.Segment
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertIs
 
 abstract class AbstractArrayBufferTest<T>: AbstractBufferTest<ArrayBuffer<T>>() {
 
@@ -26,9 +24,6 @@ abstract class AbstractArrayBufferTest<T>: AbstractBufferTest<ArrayBuffer<T>>() 
     protected abstract val refValue: T
 
     abstract override fun setInput(): ArrayBuffer<T>
-
-    @Test
-    fun getSegment() { assertIs<Segment>(setInput().segment) }
 
     @Test
     fun getCapacity() { assertEquals(setInput().capacity, capValue) }
