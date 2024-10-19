@@ -14,8 +14,6 @@
  */
 package org.angproj.aux.util
 
-import org.angproj.aux.util.withNumeral.convB2UB
-
 
 /**
  * Imported from angelos-project-buffer package.

@@ -15,7 +15,8 @@
 package org.angproj.aux.res
 
 import org.angproj.aux.io.DataSize
-import org.angproj.aux.util.*
+import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.Speed
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class Memory: Speed, Cleanable {

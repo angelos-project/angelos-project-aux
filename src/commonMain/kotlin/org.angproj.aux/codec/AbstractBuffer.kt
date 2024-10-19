@@ -16,7 +16,9 @@ package org.angproj.aux.codec
 
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Writable
-import org.angproj.aux.util.*
+import org.angproj.aux.util.BufferAware
+import org.angproj.aux.util.readCharAt
+import org.angproj.aux.util.writeCharAt
 
 @Deprecated("Seizes to exist.", ReplaceWith("Replace"))
 public abstract class AbstractBuffer: Readable, Writable, BufferAware {

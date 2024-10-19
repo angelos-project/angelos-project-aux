@@ -15,8 +15,8 @@
 package org.angproj.aux.pkg.coll
 
 import org.angproj.aux.io.BinaryReadable
-import org.angproj.aux.io.Text
 import org.angproj.aux.io.BinaryWritable
+import org.angproj.aux.io.Text
 import org.angproj.aux.pkg.*
 import org.angproj.aux.pkg.arb.StringType
 import org.angproj.aux.pkg.arb.StructType

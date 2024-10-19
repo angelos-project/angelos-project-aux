@@ -15,8 +15,8 @@
 package org.angproj.aux.pkg.mem
 
 import org.angproj.aux.buf.ArrayBuffer
-import org.angproj.aux.io.Storable
 import org.angproj.aux.io.BinaryWritable
+import org.angproj.aux.io.Storable
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat

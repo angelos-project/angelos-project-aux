@@ -14,8 +14,6 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.util.Reifiable
-
 public object Io {
     public val getByte: GetByte = GetByte{ 0x2.toByte() }
 }

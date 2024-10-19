@@ -14,7 +14,8 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.io.*
+import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.Segment
 import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify

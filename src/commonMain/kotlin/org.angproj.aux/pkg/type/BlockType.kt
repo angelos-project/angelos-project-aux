@@ -15,7 +15,6 @@
 package org.angproj.aux.pkg.type
 
 import org.angproj.aux.io.*
-import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat

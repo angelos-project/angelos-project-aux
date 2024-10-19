@@ -14,7 +14,9 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.io.*
+import org.angproj.aux.io.Segment
+import org.angproj.aux.io.isNull
+import org.angproj.aux.io.segment
 import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify

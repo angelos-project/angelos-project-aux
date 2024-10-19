@@ -100,6 +100,8 @@ public class BinaryBuffer internal constructor(
         _segment.setLong(_position, value.conv2L()) }
 }
 
+public fun binaryOf(capacity: Int): BinaryBuffer = BufMgr.binary(capacity)
+
 /**
  * For proper copying of a certain sequence of bytes, markAt() and limitAt() has to be set first.
  * */

@@ -15,7 +15,6 @@
 package org.angproj.aux.sec
 
 import org.angproj.aux.io.*
-import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.rand.AbstractSponge256
 import org.angproj.aux.rand.InitializationVector
 import org.angproj.aux.util.floorMod

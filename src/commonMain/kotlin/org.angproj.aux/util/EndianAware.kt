@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2023-2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -14,7 +14,7 @@
  */
 package org.angproj.aux.util
 
-public interface EndianAware {
+public interface EndianAware: NumberAware {
 
     public fun Short.asBig(): Short = if (bigEndian) this else swapEndian()
     public fun ShortArray.asBigByteArray(): ByteArray = ByteArray(Short.SIZE_BYTES * this.size).also {

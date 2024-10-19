@@ -15,7 +15,6 @@
 package org.angproj.aux.rand
 
 import org.angproj.aux.io.BinaryWritable
-import org.angproj.aux.util.DataBuffer
 
 /**
  * Qualifies both using ent for a balanced natural random, and with die-harder on a high level when running:

@@ -21,7 +21,7 @@ import org.angproj.aux.util.*
 
 public class Binary internal constructor(
     segment: Segment, view: Boolean = false
-) : MemBlock(segment, view), Retrievable, Storable, NumberAware, BufferAware {
+) : MemBlock(segment, view), Retrievable, Storable, NumberAware/*, BufferAware*/ {
 
     //public constructor(size: Int) : this(Bytes(size))
 

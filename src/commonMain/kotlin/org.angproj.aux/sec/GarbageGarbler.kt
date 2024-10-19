@@ -14,7 +14,9 @@
  */
 package org.angproj.aux.sec
 
-import org.angproj.aux.io.*
+import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.OldReader
+import org.angproj.aux.io.OldWriter
 import org.angproj.aux.rand.AbstractSponge1024
 import org.angproj.aux.util.DataBuffer
 import org.angproj.aux.util.NullObject

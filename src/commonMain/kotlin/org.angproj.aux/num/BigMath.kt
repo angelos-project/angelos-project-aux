@@ -14,7 +14,9 @@
  */
 package org.angproj.aux.num
 
-import org.angproj.aux.util.*
+import org.angproj.aux.util.BufferAware
+import org.angproj.aux.util.ExcHelper
+import org.angproj.aux.util.swapEndian
 
 public interface BigMath<E : List<Int>>: BigScope {
     public val mag: E

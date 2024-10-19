@@ -25,6 +25,7 @@ class Uuid4Test {
     @Test
     fun testUuid4() {
         assertEquals(uuid4().asBinary().retrieveByte(6).toInt() and 0xf0,0x40)
+        assertEquals(uuid4().toString()[14], '4')
         assertEquals(uuid4().asBinary().retrieveByte(8).toInt() and 0xc0, 0x80)
         assertEquals(uuid4().toString().length, 36)
     }
@@ -37,7 +38,7 @@ class Uuid4Test {
 
     //@Test
     fun testPrintUuid4() {
-        repeat(100) { println(uuid4()) }
+        repeat(128) { println(uuid4()) }
     }
 
     //@Test

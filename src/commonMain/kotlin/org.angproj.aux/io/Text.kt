@@ -15,7 +15,10 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.mem.BufMgr
-import org.angproj.aux.util.*
+import org.angproj.aux.util.CodePoint
+import org.angproj.aux.util.NullObject
+import org.angproj.aux.util.Unicode
+import org.angproj.aux.util.withUnicodeAware
 
 
 public class Text internal constructor(

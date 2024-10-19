@@ -14,7 +14,8 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.io.*
+import org.angproj.aux.io.PumpReader
+import org.angproj.aux.io.Segment
 import org.angproj.aux.util.Reifiable
 
 public class PumpSource<T: PipeType>(

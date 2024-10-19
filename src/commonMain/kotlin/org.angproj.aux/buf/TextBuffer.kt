@@ -54,6 +54,8 @@ public class TextBuffer internal constructor(
     }
 }
 
+public fun textOf(capacity: Int): TextBuffer = BufMgr.text(capacity)
+
 /**
  * For proper copying of a certain field of characters, markAt() and limitAt() has to be set first.
  * Make sure that the TextBuffer is flipped using flip() first.

@@ -14,9 +14,9 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.util.chunkLoop
 import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
+import org.angproj.aux.util.chunkLoop
 
 public abstract class AbstractModel protected constructor(
     size: Int, idxLimit: Int

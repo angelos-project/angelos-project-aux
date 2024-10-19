@@ -15,14 +15,14 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
-import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.util.CodePoint
+import org.angproj.aux.util.EndianAware
 import org.angproj.aux.util.withUnicodeAware
 
 public class BinaryWrapper(
     private val bin: Binary,
     private val offset: Int = 0
-): BinaryReadable, BinaryWritable, TextReadable, TextWritable {
+): EndianAware, BinaryReadable, BinaryWritable, TextReadable, TextWritable {
 
     init { positionAt(offset) }
 
@@ -34,6 +34,8 @@ public class BinaryWrapper(
         require(newPos in 0..bin.limit)
         _position = newPos
     }
+
+    public val indices: IntRange by lazy { offset until bin.limit }
 
     public fun flip() {
         bin.limitAt(_position)
@@ -75,5 +77,6 @@ public class BinaryWrapper(
 
 public fun Binary.asWrapped(offset: Int = 0): BinaryWrapper = BinaryWrapper(this, offset)
 public fun<E: Any> Binary.wrap(offset: Int = 0, block: BinaryWrapper.() -> E): E = BinaryWrapper(this, offset).block()
+public fun Binary.wrap(offset: Int = 0, block: BinaryWrapper.() -> Unit): Binary = also { BinaryWrapper(this, offset).block() }
 //public fun BinaryWrapper.asText(): Text = BufMgr
 

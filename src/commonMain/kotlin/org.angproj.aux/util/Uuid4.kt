@@ -14,16 +14,20 @@
  */
 package org.angproj.aux.util
 
-import org.angproj.aux.io.Binary
-import org.angproj.aux.io.binOf
-import org.angproj.aux.io.toBinary
+import org.angproj.aux.buf.asWrapped
+import org.angproj.aux.buf.wrap
+import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.rand.AbstractSmallRandom
 import org.angproj.aux.rand.InitializationVector
+import org.angproj.aux.utf.Ascii
+import org.angproj.aux.util.Hex.lowerToHex
+import org.angproj.aux.util.Hex.upperToHex
 import kotlin.native.concurrent.ThreadLocal
 
 public class Uuid4(private val uuid: Binary) {
 
-    public constructor() : this(generateByteArray())
+    public constructor() : this(generate())
 
     init {
         require(uuid.limit == 16) { "Wrong size of data!" }
@@ -31,46 +35,31 @@ public class Uuid4(private val uuid: Binary) {
         require(uuid.retrieveByte(8).toInt() and 0xc0 == 0x80) { "Not UUID version 4! Missing variant" }
     }
 
-    private val hex: String by lazy {
-        val _1 = uuid.retrieveInt(0).toUInt().toString(16)// BinHex.encodeToHex(arr.sliceArray(0 until 4))
-        val _2 = uuid.retrieveShort(4).toUShort().toString(16) // BinHex.encodeToHex(arr.sliceArray(4 until 6))
-        val _3 = uuid.retrieveShort(6).toUShort().toString(16) //BinHex.encodeToHex(arr.sliceArray(6 until 8))
-        val _4 = uuid.retrieveShort(8).toUShort().toString(16) //BinHex.encodeToHex(arr.sliceArray(8 until 10))
-        val _5 = (uuid.retrieveLong(8) and 0xffffff).toULong().toString(16) //BinHex.encodeToHex(arr.sliceArray(10 until 16))
-        "$_1-$_2-$_3-$_4-$_5"
+    private val hex: Text by lazy {
+        BufMgr.txt(36).apply {
+            val text = asBinary().asWrapped()
+            val data = uuid.asWrapped()
+            val hyphen = Ascii.PRNT_HYPHEN.cp.toCodePoint()
+            var octet: Byte = 0
+            "10101010-1010-1010-1010-101010101010".forEach {
+                when (it) {
+                    '1' -> { octet = data.readByte(); text.writeGlyph(octet.upperToHex<Int>().toCodePoint()) }
+                    '0' -> text.writeGlyph(octet.lowerToHex<Int>().toCodePoint())
+                    else -> text.writeGlyph(hyphen)
+                }
+            }
+        }
     }
 
     public fun asBinary(): Binary = if (!isNull()) uuid else error("Null object immutable")
 
-    private fun hex(r: IntRange): String {
-        var hex = ""
-        r.forEach {
-            with(Hex) {
-                val octet = uuid.retrieveByte(it)
-                hex += octet.upperToHex<Int>().toChar()
-                hex += octet.lowerToHex<Int>().toChar()
-            }
-        }
-        return hex
-    }
+    public fun toText(): Text = hex
 
-    override fun toString(): String {
-        var hex = ""
-        hex += hex(0 until 4)
-        hex += '-'
-        hex += hex(4 until 6)
-        hex += '-'
-        hex += hex(6 until 8)
-        hex += '-'
-        hex += hex(8 until 10)
-        hex += '-'
-        hex += hex(10 until 16)
-        return hex
-    }
+    override fun toString(): String = hex.asBinary().toByteArray().decodeToString().uppercase()
 
     public override fun equals(other: Any?): Boolean {
-        if(this === other) return true
-        if(other == null || this::class != other::class) return false
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
         other as Uuid4
         return uuid == other.uuid
     }
@@ -80,7 +69,7 @@ public class Uuid4(private val uuid: Binary) {
     @ThreadLocal
     protected companion object : AbstractSmallRandom(
         binOf(16).also { InitializationVector.realTimeGatedEntropy(it) }
-    ), EndianAware {
+    ) {
 
         private var counter: Int = 0
 
@@ -96,18 +85,16 @@ public class Uuid4(private val uuid: Binary) {
             }
         }
 
-        private fun generateByteArray(): Binary {
+        private fun generate(): Binary {
             if (counter.floorMod(Int.MAX_VALUE) == 0) revitalize()
             else counter++
 
-            val data = binOf(16)
-
-            data.storeInt(0, round())
-            data.storeInt(4, ((round().toLong() and 0xffff0fff) or 0x4000).toInt().asBig())
-            data.storeInt(8, ((round().toLong() and 0x3fffffff) or -0x80000000).toInt().asBig())
-            data.storeInt(12, round())
-
-            return data
+            return binOf(16).wrap {
+                writeInt(round())
+                writeInt(((round().toLong() and 0xffff0fff) or 0x4000).toInt().asBig())
+                writeInt(((round().toLong() and 0x3fffffff) or -0x80000000).toInt().asBig())
+                writeInt(round())
+            }
         }
     }
 }
@@ -118,11 +105,13 @@ public fun uuid4Of(data: Binary): Uuid4 = Uuid4(data)
 
 public fun Uuid4.isNull(): Boolean = NullObject.uuid4 === this
 
-private val nullUuid4 = uuid4Of(byteArrayOf(
-    0, 0, 0, 0,
-    0, 0, 64, 0,
-    -128, 0, 0, 0,
-    0, 0, 0, 0
-).toBinary())
+private val nullUuid4 = uuid4Of(
+    byteArrayOf(
+        0, 0, 0, 0,
+        0, 0, 64, 0,
+        -128, 0, 0, 0,
+        0, 0, 0, 0
+    ).toBinary()
+)
 public val NullObject.uuid4: Uuid4
     get() = nullUuid4

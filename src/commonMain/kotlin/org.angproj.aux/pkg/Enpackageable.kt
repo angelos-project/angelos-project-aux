@@ -15,9 +15,9 @@
 package org.angproj.aux.pkg
 
 import org.angproj.aux.buf.*
+import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.io.Text
-import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.num.BigInt
 import org.angproj.aux.pkg.arb.BigIntType
 import org.angproj.aux.pkg.arb.StringType
