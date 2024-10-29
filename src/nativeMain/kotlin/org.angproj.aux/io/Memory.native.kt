@@ -15,8 +15,7 @@
 package org.angproj.aux.io
 
 import kotlinx.cinterop.*
-import org.angproj.aux.buf.AbstractSpeedCopy
-import org.angproj.aux.util.Reify
+import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.res.allocateMemory
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.Cleaner
@@ -27,71 +26,73 @@ import org.angproj.aux.res.Memory as Chunk
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"
 )
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-public actual open class Memory actual constructor(
-    size: Int, idxLimit: Int
-) : AbstractMemory(size, idxLimit) {
+public actual open class Memory internal actual constructor(
+    size: Int, mem: MemoryManager<Memory>
+) : AbstractMemory(size, mem) {
 
-    public actual constructor(size: Int) : this(size, size)
-
-    private var _closed = false
+    /*private var _closed = false
 
     override val isOpen: Boolean
-        get() = !_closed
+        get() = !_closed*/
 
-    actual final override val data: Chunk = allocateMemory(length)
+    actual final override val data: Chunk = allocateMemory(size)
     protected val ptr: Long = data.ptr
 
     private val cleaner: Cleaner = createCleaner(data) { data.dispose() }
     override fun close() {
+        super.close {
+            data.dispose()
+            memCtx.recycle(this)
+        }
+    }
+
+    /*override fun close() {
         if(isOpen) {
             data.dispose()
             _closed = true
         }
-    }
+    }*/
 
     actual override fun getByte(index: Int): Byte {
-        index.checkRangeByte<Reify>()
+        index.checkRangeByte<Unit>()
         return (ptr + index).toCPointer<ByteVar>()!!.pointed.value
     }
 
     actual override fun getShort(index: Int): Short {
-        index.checkRangeShort<Reify>()
+        index.checkRangeShort<Unit>()
         return (ptr + index).toCPointer<ShortVar>()!!.pointed.value
     }
 
     actual override fun getInt(index: Int): Int {
-        index.checkRangeInt<Reify>()
+        index.checkRangeInt<Unit>()
         return (ptr + index).toCPointer<IntVar>()!!.pointed.value
     }
 
     actual override fun getLong(index: Int): Long {
-        index.checkRangeLong<Reify>()
+        index.checkRangeLong<Unit>()
         return (ptr + index).toCPointer<LongVar>()!!.pointed.value
     }
 
     actual override fun setByte(index: Int, value: Byte) {
-        index.checkRangeByte<Reify>()
+        index.checkRangeByte<Unit>()
         (ptr + index).toCPointer<ByteVar>()!!.pointed.value = value
     }
 
     actual override fun setShort(index: Int, value: Short) {
-        index.checkRangeShort<Reify>()
+        index.checkRangeShort<Unit>()
         (ptr + index).toCPointer<ShortVar>()!!.pointed.value = value
     }
 
     actual override fun setInt(index: Int, value: Int) {
-        index.checkRangeInt<Reify>()
+        index.checkRangeInt<Unit>()
         (ptr + index).toCPointer<IntVar>()!!.pointed.value = value
     }
 
     actual override fun setLong(index: Int, value: Long) {
-        index.checkRangeLong<Reify>()
+        index.checkRangeLong<Unit>()
         (ptr + index).toCPointer<LongVar>()!!.pointed.value = value
     }
 
-    actual override fun create(size: Int, idxLimit: Int): Memory = Memory(size, idxLimit)
-
-    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
-        innerCopy(dest as Memory, destOff, idxFrom, idxTo)
-    }
+    @Deprecated("Not to be used with memory manager")
+    actual override fun create(size: Int, idxLimit: Int): Memory = memCtx.allocate(DataSize.findLowestAbove(size))
 }

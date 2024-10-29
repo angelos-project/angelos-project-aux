@@ -14,11 +14,12 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.mem.MemoryFree
 import kotlin.test.Test
 
 class MemoryTest: AbstractSegmentValidator() {
 
-    private val createNew: (size: Int) -> Memory = { Memory(it) }
+    private val createNew: (size: Int) -> Memory = { MemoryFree.allocate(it) }
 
     @Test
     fun testByteWriteReadSync() = byteWriteReadSync(createNew)
@@ -64,9 +65,8 @@ class MemoryTest: AbstractSegmentValidator() {
 
     @Test
     fun testOneSize() {
-        val seg = Memory(9)
+        val seg = MemoryFree.allocate(9)
         println(seg.size)
-        println(seg.length)
         println(seg.limit)
         seg.close()
     }

@@ -16,17 +16,18 @@ package org.angproj.aux.pipe
 
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.PumpWriter
+import org.angproj.aux.mem.MemoryManager
 
 public interface PipeBuilder {
-    public fun buildTextPullPipe(reader: PumpReader): TextSink
+    public fun buildTextPullPipe(reader: PumpReader, memCtx: MemoryManager<*>): TextSink
 
-    public fun buildBinaryPullPipe(reader: PumpReader): BinarySink
+    public fun buildBinaryPullPipe(reader: PumpReader, memCtx: MemoryManager<*>): BinarySink
 
-    public fun buildPackagePullPipe(reader: PumpReader): PackageSink
+    public fun buildPackagePullPipe(reader: PumpReader, memCtx: MemoryManager<*>): PackageSink
 
-    public fun buildTextPushPipe(writer: PumpWriter): TextSource
+    public fun buildTextPushPipe(writer: PumpWriter, memCtx: MemoryManager<*>): TextSource
 
-    public fun buildBinaryPushPipe(writer: PumpWriter): BinarySource
+    public fun buildBinaryPushPipe(writer: PumpWriter, memCtx: MemoryManager<*>): BinarySource
 
-    public fun buildPackagePushPipe(writer: PumpWriter): PackageSource
+    public fun buildPackagePushPipe(writer: PumpWriter, memCtx: MemoryManager<*>): PackageSource
 }

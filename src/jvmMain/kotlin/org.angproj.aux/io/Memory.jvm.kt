@@ -14,8 +14,7 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.AbstractSpeedCopy
-import org.angproj.aux.util.Reify
+import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.res.Manager
 import org.angproj.aux.res.allocateMemory
 import org.angproj.aux.res.Memory as Chunk
@@ -26,75 +25,79 @@ import java.lang.ref.Cleaner.Cleanable
 @Suppress(
     "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
 )
-public actual open class Memory actual constructor(
-    size: Int, idxLimit: Int
-) : AbstractMemory(size, idxLimit) {
+public actual open class Memory internal actual constructor(
+    size: Int, mem: MemoryManager<Memory>
+) : AbstractMemory(size, mem) {
 
-    public actual constructor(size: Int) : this(size, size)
-
-    private var _closed = false
+    /*private var _closed = false
 
     override val isOpen: Boolean
-        get() = !_closed
+        get() = !_closed*/
 
-    actual final override val data: Chunk = allocateMemory(length)
+    actual final override val data: Chunk = allocateMemory(size)
     protected val ptr: Long = data.ptr
 
     private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }
     override fun close() {
+        super.close {
+            cleanable.clean()
+            memCtx.recycle(this)
+        }
+    }
+
+    /*override fun close() {
         if(isOpen) {
             cleanable.clean()
             _closed = true
         }
-    }
+    }*/
 
     actual override fun getByte(index: Int): Byte {
-        index.checkRangeByte<Reify>()
+        index.checkRangeByte<Unit>()
         return unsafe.getByte(ptr + index)
     }
 
     actual override fun getShort(index: Int): Short {
-        index.checkRangeShort<Reify>()
+        index.checkRangeShort<Unit>()
         return unsafe.getShort(ptr + index)
     }
 
     actual override fun getInt(index: Int): Int {
-        index.checkRangeInt<Reify>()
+        index.checkRangeInt<Unit>()
         return unsafe.getInt(ptr + index)
     }
 
     actual override fun getLong(index: Int): Long {
-        index.checkRangeLong<Reify>()
+        index.checkRangeLong<Unit>()
         return unsafe.getLong(ptr + index)
     }
 
     actual override fun setByte(index: Int, value: Byte) {
-        index.checkRangeByte<Reify>()
+        index.checkRangeByte<Unit>()
         unsafe.putByte(ptr + index, value)
     }
 
     actual override fun setShort(index: Int, value: Short) {
-        index.checkRangeShort<Reify>()
+        index.checkRangeShort<Unit>()
         unsafe.putShort(ptr + index, value)
     }
 
     actual override fun setInt(index: Int, value: Int) {
-        index.checkRangeInt<Reify>()
+        index.checkRangeInt<Unit>()
         unsafe.putInt(ptr + index, value)
     }
 
     actual override fun setLong(index: Int, value: Long) {
-        index.checkRangeLong<Reify>()
+        index.checkRangeLong<Unit>()
         unsafe.putLong(ptr + index, value)
     }
 
-    actual override fun create(size: Int, idxLimit: Int): Memory = Memory(size, idxLimit)
-
-    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
-        innerCopy(dest as Memory, destOff, idxFrom, idxTo)
-    }
+    @Deprecated("Not to be used with memory manager")
+    actual override fun create(size: Int, idxLimit: Int): Memory = memCtx.allocate(DataSize.findLowestAbove(size))
 
     public companion object {
         internal val unsafe: Unsafe = Chunk.unsafe
     }
+
+    //override val size: Int = size
 }

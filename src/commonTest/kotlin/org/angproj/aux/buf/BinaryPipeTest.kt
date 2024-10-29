@@ -62,8 +62,8 @@ Fusce volutpat hendrerit sapien ut mollis.
 class BinaryReader(data: ByteArray) : PumpReader {
     val data = DataBuffer(data)
 
-    override fun read(data: Segment): Int {
-        data.limit = min(data.limit, this.data.remaining)
+    override fun read(data: Segment<*>): Int {
+        data.limitAt(min(data.limit, this.data.remaining))
 
         var index = chunkLoop<Reify>(0, data.limit, TypeSize.long) {
             data.setLong(it, this.data.readLong())

@@ -14,10 +14,9 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.copyInto
-import org.angproj.aux.buf.copyOfRange
 import org.angproj.aux.util.BinHex
 import org.angproj.aux.util.BufferAware
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
@@ -30,7 +29,7 @@ abstract class AbstractSegmentValidator: BufferAware {
     val testInt: Int = 0x11223344
     val testLong: Long = 0x1122334455667711
 
-    fun <E: Segment>byteWriteReadSync(prep: (size: Int) -> E) {
+    fun <E: Segment<E>>byteWriteReadSync(prep: (size: Int) -> E) {
         val b = arr1.copyOf()
         val m = prep(arr1.size)
 
@@ -38,7 +37,7 @@ abstract class AbstractSegmentValidator: BufferAware {
         b.forEachIndexed { index, byte -> assertEquals(m.getByte(index), byte) }
     }
 
-    fun <E: Segment>shortReadAsync(prep: (size: Int) -> E) {
+    fun <E: Segment<E>>shortReadAsync(prep: (size: Int) -> E) {
         val b = arr1.copyOf()
         val m = prep(arr1.size)
 
@@ -46,7 +45,7 @@ abstract class AbstractSegmentValidator: BufferAware {
         (0 until b.size-1).forEach { index-> assertEquals(m.getShort(index), b.readShortAt(index)) }
     }
 
-    fun <E: Segment>shortWriteAsync(prep: (size: Int) -> E) {
+    fun <E: Segment<E>>shortWriteAsync(prep: (size: Int) -> E) {
         val b = arr1.copyOf()
         val m = prep(arr1.size)
 
@@ -60,7 +59,7 @@ abstract class AbstractSegmentValidator: BufferAware {
         }
     }
 
-    fun <E: Segment>intReadAsync(prep: (size: Int) -> E) {
+    fun <E: Segment<E>>intReadAsync(prep: (size: Int) -> E) {
         val b = arr1.copyOf()
         val m = prep(arr1.size)
 
@@ -68,7 +67,7 @@ abstract class AbstractSegmentValidator: BufferAware {
         (0 until b.size-3).forEach{ index-> assertEquals(m.getInt(index), b.readIntAt(index)) }
     }
 
-    fun <E: Segment>intWriteAsync(prep: (size: Int) -> E) {
+    fun <E: Segment<E>>intWriteAsync(prep: (size: Int) -> E) {
         val b = arr1.copyOf()
         val m = prep(arr1.size)
 
@@ -82,7 +81,7 @@ abstract class AbstractSegmentValidator: BufferAware {
         }
     }
 
-    fun <E: Segment>longReadAsync(prep: (size: Int) -> E) {
+    fun <E: Segment<E>>longReadAsync(prep: (size: Int) -> E) {
         val b = arr1.copyOf()
         val m = prep(arr1.size)
 
@@ -90,7 +89,7 @@ abstract class AbstractSegmentValidator: BufferAware {
         (0 until b.size-7).forEach{ index-> assertEquals(m.getLong(index), b.readLongAt(index)) }
     }
 
-    fun <E: Segment>longWriteAsync(prep: (size: Int) -> E) {
+    fun <E: Segment<E>>longWriteAsync(prep: (size: Int) -> E) {
         val b = arr1.copyOf()
         val m = prep(arr1.size)
 
@@ -104,7 +103,7 @@ abstract class AbstractSegmentValidator: BufferAware {
         }
     }
 
-    fun debug(b: ByteArray, c: ByteArray, m: Segment, block: () -> Unit) {
+    fun debug(b: ByteArray, c: ByteArray, m: Segment<*>, block: () -> Unit) {
         try {
             block()
         } catch (e: AssertionError) {
@@ -122,7 +121,7 @@ abstract class AbstractSegmentValidator: BufferAware {
         }
     }
 
-    fun <E: Segment>byteRWOutbound(prep: (size: Int) -> E) {
+    fun <E: Segment<E>>byteRWOutbound(prep: (size: Int) -> E) {
         val m = prep(arr1.size)
 
         m.getByte(0)
@@ -130,9 +129,9 @@ abstract class AbstractSegmentValidator: BufferAware {
             m.getByte(-1)
         }
 
-        m.getByte(m.size-TypeSize.byte) // Won't crash
+        m.getByte(m.limit-TypeSize.byte) // Won't crash
         assertFailsWith<IllegalArgumentException> {
-            m.getByte(m.size) // Must throw
+            m.getByte(m.limit) // Must throw
         }
 
         m.setByte(0, 1)
@@ -140,13 +139,13 @@ abstract class AbstractSegmentValidator: BufferAware {
             m.setByte(-1, 1)
         }
 
-        m.setByte(m.size-TypeSize.byte, 0) // Won't crash
+        m.setByte(m.limit-TypeSize.byte, 0) // Won't crash
         assertFailsWith<IllegalArgumentException> {
-            m.setByte(m.size, 1) // Must throw
+            m.setByte(m.limit, 1) // Must throw
         }
     }
 
-    fun <E: Segment>shortRWOutbound(prep: (size: Int) -> E) {
+    fun <E: Segment<E>>shortRWOutbound(prep: (size: Int) -> E) {
         val m = prep(arr1.size)
 
         m.getShort(0)
@@ -154,9 +153,9 @@ abstract class AbstractSegmentValidator: BufferAware {
             m.getShort(-1)
         }
 
-        m.getShort(m.size-TypeSize.short) // Won't crash
+        m.getShort(m.limit-TypeSize.short) // Won't crash
         assertFailsWith<IllegalArgumentException> {
-            m.getShort(m.size-1) // Must throw
+            m.getShort(m.limit-1) // Must throw
         }
 
         m.setShort(0, 1)
@@ -164,13 +163,13 @@ abstract class AbstractSegmentValidator: BufferAware {
             m.setShort(-1, 1)
         }
 
-        m.setShort(m.size-TypeSize.short, 0) // Won't crash
+        m.setShort(m.limit-TypeSize.short, 0) // Won't crash
         assertFailsWith<IllegalArgumentException> {
-            m.setShort(m.size-1, 1) // Must throw
+            m.setShort(m.limit-1, 1) // Must throw
         }
     }
 
-    fun <E: Segment>intRWOutbound(prep: (size: Int) -> E) {
+    fun <E: Segment<E>>intRWOutbound(prep: (size: Int) -> E) {
         val m = prep(arr1.size)
 
         m.getInt(0)
@@ -178,9 +177,9 @@ abstract class AbstractSegmentValidator: BufferAware {
             m.getInt(-1)
         }
 
-        m.getInt(m.size-TypeSize.int) // Won't crash
+        m.getInt(m.limit-TypeSize.int) // Won't crash
         assertFailsWith<IllegalArgumentException> {
-            m.getInt(m.size-3) // Must throw
+            m.getInt(m.limit-3) // Must throw
         }
 
         m.setInt(0, 1)
@@ -188,13 +187,13 @@ abstract class AbstractSegmentValidator: BufferAware {
             m.setInt(-1, 1)
         }
 
-        m.setInt(m.size-TypeSize.int, 0) // Won't crash
+        m.setInt(m.limit-TypeSize.int, 0) // Won't crash
         assertFailsWith<IllegalArgumentException> {
-            m.setInt(m.size-3, 1) // Must throw
+            m.setInt(m.limit-3, 1) // Must throw
         }
     }
 
-    fun <E: Segment>longRWOutbound(prep: (size: Int) -> E) {
+    fun <E: Segment<E>>longRWOutbound(prep: (size: Int) -> E) {
         val m = prep(arr1.size)
 
         m.getLong(0)
@@ -202,9 +201,9 @@ abstract class AbstractSegmentValidator: BufferAware {
             m.getLong(-1)
         }
 
-        m.getLong(m.size-TypeSize.long) // Won't crash
+        m.getLong(m.limit-TypeSize.long) // Won't crash
         assertFailsWith<IllegalArgumentException> {
-            m.getLong(m.size-7) // Must throw
+            m.getLong(m.limit-7) // Must throw
         }
 
         m.setLong(0, 1)
@@ -212,13 +211,13 @@ abstract class AbstractSegmentValidator: BufferAware {
             m.setLong(-1, 1)
         }
 
-        m.setLong(m.size-TypeSize.long, 0) // Won't crash
+        m.setLong(m.limit-TypeSize.long, 0) // Won't crash
         assertFailsWith<IllegalArgumentException> {
-            m.setLong(m.size-7, 1) // Must throw
+            m.setLong(m.limit-7, 1) // Must throw
         }
     }
 
-    inline fun <reified E: Segment>tryCopyInto(prep: (size: Int) -> E) {
+    inline fun <reified E: Segment<E>>tryCopyInto(prep: (size: Int) -> E) {
         val seg1 = prep(arr1.size)
         val seg2 = prep(arr2.size)
 
@@ -256,7 +255,7 @@ abstract class AbstractSegmentValidator: BufferAware {
         seg2.close()
     }
 
-    inline fun <reified E: Segment>tryCopyOfRange(prep: (size: Int) -> E) {
+    inline fun <reified E: Segment<E>>tryCopyOfRange(prep: (size: Int) -> E) {
         val seg1 = prep(arr1.size)
         (0 until seg1.size).forEach { seg1.setByte(it, arr1[it]) }
 
@@ -270,7 +269,7 @@ abstract class AbstractSegmentValidator: BufferAware {
         seg2.close()
     }
 
-    inline fun <reified E: Segment>tryCopyOf(prep: (size: Int) -> E) {
+    inline fun <reified E: Segment<E>>tryCopyOf(prep: (size: Int) -> E) {
         val seg1 = prep(arr1.size)
         (0 until seg1.size).forEach { seg1.setByte(it, arr1[it]) }
 

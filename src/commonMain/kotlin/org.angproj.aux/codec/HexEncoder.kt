@@ -29,9 +29,9 @@ public class HexEncoder : Encoder<Binary, TextBuffer> {
         private var mark = 0
         private val limit = buffer.limit
 
-        override fun read(data: Segment): Int {
-            val length = min(limit - mark, data.limit)
-            buffer.asBinary().copyInto(data, 0, mark, mark + length)
+        override fun read(data: Segment<*>): Int {
+            val length = min(limit - mark, data.limit-1)
+            buffer.copyInto(data, 0, mark, mark + length)
             mark += length
             return length
         }

@@ -17,8 +17,8 @@ package org.angproj.aux.mem
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Segment
 
-public interface MemoryManager {
-    public fun allocate(dataSize: DataSize): Segment
+public interface MemoryManager<S: Segment<S>>{
+    public fun allocate(dataSize: DataSize): S
 
-    public fun recycle(segment: Segment)
+    public fun recycle(segment: S)
 }

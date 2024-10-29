@@ -14,11 +14,12 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.mem.Default
 import kotlin.test.Test
 
 class BytesTest: AbstractSegmentValidator() {
 
-    private val createNew: (size: Int) -> Bytes = { Bytes(it) }
+    private val createNew: (size: Int) -> Bytes = { Default.allocate(it) }
 
     @Test
     fun testByteWriteReadSync() = byteWriteReadSync(createNew)
@@ -64,9 +65,8 @@ class BytesTest: AbstractSegmentValidator() {
 
     @Test
     fun testOneSize() {
-        val seg = Bytes(9)
+        val seg = Default.allocate(9)
         println(seg.size)
-        println(seg.length)
         println(seg.limit)
         seg.close()
     }

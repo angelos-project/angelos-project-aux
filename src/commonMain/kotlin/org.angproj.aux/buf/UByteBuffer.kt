@@ -15,19 +15,20 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.Default
 import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.NumberAware
 
 
 public class UByteBuffer internal constructor(
-    segment: Segment, view: Boolean = false
+    segment: Segment<*>, view: Boolean = false
 ): ArrayBuffer<UByte>(segment, view, TypeSize.U_BYTE), NumberAware{
 
-    public constructor(size: Int) : this(Bytes(size * TypeSize.uByte))
+    public constructor(size: Int) : this(Default.allocate(size * TypeSize.uByte))
 
     public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.uByte)
 
-    override fun create(segment: Segment): UByteBuffer = UByteBuffer(segment)
+    override fun create(segment: Segment<*>): UByteBuffer = UByteBuffer(segment)
 
     override fun get(index: Int): UByte = _segment.getByte(index).conv2uB()
 

@@ -63,6 +63,24 @@ public interface BigMath<E : List<Int>>: BigScope {
     public fun asMutableBigInt(): MutableBigInt
     public fun toBigInt(): BigInt
 
+
+    /**
+     * Unknown partial error
+     *
+     * Vx: ffff
+     * Jx: ff
+     * Kx: ff
+     * Rj: 0
+     * Rk: 1
+     * kM 1
+     * kS -1
+     *
+     *
+     * Expected :1
+     * Actual   :0
+     *
+     * fun testToSize()
+     * */
     public fun getByteSize(): Int {
         if (sigNum.isZero()) return 1
 

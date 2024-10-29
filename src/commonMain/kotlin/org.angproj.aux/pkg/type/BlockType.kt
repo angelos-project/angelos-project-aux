@@ -48,12 +48,12 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
     override fun storeFloat(position: Int, value: Float): Unit = block.storeFloat(position, value)
     override fun storeDouble(position: Int, value: Double): Unit = block.storeDouble(position, value)
 
-    override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
-        FoldFormat.BLOCK -> block.limit.toLong()
+    override fun foldSize(foldFormat: FoldFormat): Int = when (foldFormat) {
+        FoldFormat.BLOCK -> block.limit
         FoldFormat.STREAM -> block.limit + Enfoldable.OVERHEAD_LENGTH
     }
 
-    public fun enfoldToBlock(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int): Int {
         var index = chunkLoop(0, block.limit, Long.SIZE_BYTES) {
             outData.storeLong(offset + it, block.retrieveLong(it))
         }
@@ -65,12 +65,12 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
         }
         return chunkSimple(index, block.limit, Byte.SIZE_BYTES) {
             outData.storeByte(offset + it, block.retrieveByte(it))
-        }.toLong()
+        }
     }
 
-    public fun enfoldToStreamByConvention(outStream: BinaryWritable, type: Convention): Long {
+    public fun enfoldToStreamByConvention(outStream: BinaryWritable, type: Convention): Int {
         Enfoldable.setType(outStream, type)
-        Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH) // FoldFormat.BLOCK ?
+        Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH.toLong()) // FoldFormat.BLOCK ?
         var index = chunkLoop(0, block.limit, Long.SIZE_BYTES) {
             outStream.writeLong(block.retrieveLong(it))
         }
@@ -82,12 +82,12 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
         }
         chunkSimple(index, block.limit, Byte.SIZE_BYTES) {
             outStream.writeByte(block.retrieveByte(it))
-        }.toLong()
+        }
         Enfoldable.setEnd(outStream, type)
         return foldSize(FoldFormat.STREAM)
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long = enfoldToStreamByConvention(outStream, conventionType)
+    public fun enfoldToStream(outStream: BinaryWritable): Int = enfoldToStreamByConvention(outStream, conventionType)
 
     public companion object : Unfoldable<BlockType> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
@@ -108,7 +108,7 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
             return index + size
         }
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int, block: Binary): Long {
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int, block: Binary): Int {
             var index = chunkLoop(0, block.limit, Long.SIZE_BYTES) {
                 block.storeLong(it, inData.retrieveLong(offset + it))
             }
@@ -121,7 +121,7 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
             index = chunkSimple(index, block.limit, Byte.SIZE_BYTES) {
                 block.storeByte(it, inData.retrieveByte(offset + it))
             }
-            return index.toLong()
+            return index
         }
 
         public fun unfoldFromBlock(inData: Retrievable, offset: Int, length: Long): BlockType {
@@ -157,7 +157,7 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
             index = chunkSimple(index, length.toInt(), Short.SIZE_BYTES) {
                 block.storeShort(it, inStream.readShort())
             }
-            index = chunkSimple(index, length.toInt(), Byte.SIZE_BYTES) {
+            chunkSimple(index, length.toInt(), Byte.SIZE_BYTES) {
                 block.storeByte(it, inStream.readByte())
             }
             require(Unfoldable.getEnd(inStream, type))

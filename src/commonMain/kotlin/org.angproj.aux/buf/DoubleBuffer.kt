@@ -15,19 +15,20 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.Default
 import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.NumberAware
 
 
 public class DoubleBuffer internal constructor(
-    segment: Segment, view: Boolean = false
+    segment: Segment<*>, view: Boolean = false
 ): ArrayBuffer<Double>(segment, view, TypeSize.DOUBLE), NumberAware {
 
-    public constructor(size: Int) : this(Bytes(size * TypeSize.double))
+    public constructor(size: Int) : this(Default.allocate(size * TypeSize.double))
 
     public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.double)
 
-    override fun create(segment: Segment): DoubleBuffer = DoubleBuffer(segment)
+    override fun create(segment: Segment<*>): DoubleBuffer = DoubleBuffer(segment)
 
     override fun get(index: Int): Double = _segment.getLong(index * TypeSize.long).conv2D()
 

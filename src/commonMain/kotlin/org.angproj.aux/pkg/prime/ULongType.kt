@@ -27,14 +27,14 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class ULongType(public val value: ULong) : Enfoldable {
 
-    override fun foldSize(foldFormat: FoldFormat): Long = atomicSize.toLong()
+    override fun foldSize(foldFormat: FoldFormat): Int = atomicSize
 
-    public fun enfoldToBlock(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int): Int {
         outData.storeULong(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Int {
         outStream.writeULong(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -43,6 +43,7 @@ public value class ULongType(public val value: ULong) : Enfoldable {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.ULONG
         override val atomicSize: Int = ULong.SIZE_BYTES
+
         public fun unfoldFromBlock(inData: Retrievable, offset: Int): ULongType =
             ULongType(inData.retrieveULong(offset))
 

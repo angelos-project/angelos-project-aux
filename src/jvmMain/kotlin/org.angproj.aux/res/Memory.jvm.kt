@@ -14,13 +14,14 @@
  */
 package org.angproj.aux.res
 
+import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.Copyable
 import org.angproj.aux.util.Reifiable
-import org.angproj.aux.util.Speed
 import sun.misc.Unsafe
 import java.lang.reflect.Field
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual class Memory(public actual val size: Int, public actual val ptr: Long): Speed, Cleanable {
+public actual class Memory(public actual val size: Int, public actual val ptr: Long): Copyable, Cleanable {
 
     public override fun dispose() {
         unsafe.freeMemory(ptr)
@@ -45,13 +46,13 @@ public actual class Memory(public actual val size: Int, public actual val ptr: L
     private inline fun <reified T: Number> speedByteGet(index: Int): Byte = unsafe.getByte(ptr + index)
     private inline fun <reified T: Number> speedByteSet(index: Int, value: Byte): Unit = unsafe.putByte(ptr + index, value)
 
-    override fun getLong(pos: Int): Long = speedLongGet<Int>(pos)
+    override fun getLong(index: Int): Long = speedLongGet<Int>(index)
 
-    override fun getByte(pos: Int): Byte = speedByteGet<Int>(pos)
+    override fun getByte(index: Int): Byte = speedByteGet<Int>(index)
 
-    override fun setLong(pos: Int, value: Long): Unit = speedLongSet<Int>(pos, value)
+    override fun setLong(index: Int, value: Long): Unit = speedLongSet<Int>(index, value)
 
-    override fun setByte(pos: Int, value: Byte): Unit = speedByteSet<Int>(pos, value)
+    override fun setByte(index: Int, value: Byte): Unit = speedByteSet<Int>(index, value)
 }
 
 public actual fun allocateMemory(size: Int): Memory {
@@ -60,10 +61,20 @@ public actual fun allocateMemory(size: Int): Memory {
 }
 
 @PublishedApi
-internal actual inline fun <reified T: Reifiable> Memory.speedLongGet(index: Long): Long = Memory.unsafe.getLong(ptr + index)
-@PublishedApi
-internal actual inline fun <reified T: Reifiable> Memory.speedLongSet(index: Long, value: Long): Unit = Memory.unsafe.putLong(ptr + index, value)
-@PublishedApi
-internal actual inline fun <reified T: Reifiable> Memory.speedByteGet(index: Long): Byte = Memory.unsafe.getByte(ptr + index)
-@PublishedApi
-internal actual inline fun <reified T: Reifiable> Memory.speedByteSet(index: Long, value: Byte): Unit = Memory.unsafe.putByte(ptr + index, value)
+internal actual fun speedMemCpy(idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long): Int {
+    val offset = idxFrom
+    val length = idxTo - idxFrom
+    var steps = length / TypeSize.long
+    val size = steps * TypeSize.long
+
+    var source: Long = (src + offset)
+    var dest: Long = (dst + dstOff)
+
+    Memory.unsafe.copyMemory(null, source, null, dest, size.toLong())
+
+    var sourceShort: Long = (src + offset + size)
+    var destShort: Long = (src + dstOff + size)
+    Memory.unsafe.copyMemory(sourceShort, destShort, (length - size).toLong())
+
+    return length
+}

@@ -23,7 +23,7 @@ public class PumpSink<T: PipeType>(
 ): Sink, PipeType  {
     private var _open: Boolean = true
 
-    public fun<reified : Reifiable> absorb(seg: Segment): Int {
+    public fun<reified : Reifiable> absorb(seg: Segment<*>): Int {
         val size = seg.limit
         return pump.write(seg).also { if (it < size || it == 0) close() }
     }

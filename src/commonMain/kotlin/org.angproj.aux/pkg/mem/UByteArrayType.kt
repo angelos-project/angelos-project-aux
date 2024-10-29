@@ -15,6 +15,7 @@
 package org.angproj.aux.pkg.mem
 
 import org.angproj.aux.buf.UByteBuffer
+import org.angproj.aux.buf.isNull
 import org.angproj.aux.io.*
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.FoldFormat
@@ -24,17 +25,17 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class UByteArrayType(public override val value: UByteBuffer): ArrayEnfoldable<UByte,UByteBuffer> {
 
-    override fun foldSize(foldFormat: FoldFormat): Long = ArrayEnfoldable.arrayFoldSize(
+    override fun foldSize(foldFormat: FoldFormat): Int = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Int = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeUByte(i, v) }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long = ArrayEnfoldable.arrayEnfoldToStream(
+    public fun enfoldToStream(outStream: BinaryWritable): Int = ArrayEnfoldable.arrayEnfoldToStream(
         value, atomicSize, conventionType, outStream) { o, v -> o.writeUByte(v) }
 
     public companion object : ArrayUnfoldable<UByte, UByteBuffer, UByteArrayType> {
-        override val factory: (count: Int) -> UByteArrayType = { c -> UByteArrayType(UByteBuffer(c)) }
+        override val factory: (count: Int) -> UByteBuffer = { c -> UByteBuffer(c) }
 
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.ARRAY_UBYTE
@@ -43,15 +44,18 @@ public value class UByteArrayType(public override val value: UByteBuffer): Array
         public fun unfoldFromBlock(
             inData: Retrievable,
             value: UByteBuffer
-        ): Long = unfoldFromBlock(inData, 0, value)
+        ): Int = unfoldFromBlock(inData, 0, value)
 
         public fun unfoldFromBlock(
             inData: Retrievable,
             offset: Int,
             value: UByteBuffer
-        ): Long = ArrayUnfoldable.arrayUnfoldFromBlock(
-            inData, offset, value, atomicSize
-        ) { d, i -> d.retrieveUByte(i) }
+        ): Int {
+            require(!value.isNull()) { "Null Array!" }
+            return ArrayUnfoldable.arrayUnfoldFromBlock(
+                inData, offset, value, atomicSize
+            ) { d, i -> d.retrieveUByte(i) }
+        }
 
         /*public fun unfoldFromBlock(
             inData: Retrievable,
@@ -65,9 +69,17 @@ public value class UByteArrayType(public override val value: UByteBuffer): Array
         ): UByteArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
             inData, offset, count, atomicSize, factory) { d, i -> d.retrieveUByte(i) }*/
 
-        public fun unfoldFromStream(
+        public override fun unfoldFromStream(
             inStream: BinaryReadable
-        ): UByteArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
-            inStream, conventionType, factory) { s -> s.readUByte() }
+        ): UByteArrayType = UByteArrayType(ArrayUnfoldable.arrayUnfoldFromStream(
+            inStream, conventionType, factory) { s -> s.readUByte() })
+
+        public override fun unfoldFromStream(
+            inStream: BinaryReadable,
+            value: UByteBuffer
+        ) {
+            require(!value.isNull()) { "Null Array!" }
+            ArrayUnfoldable.arrayUnfoldFromStream(inStream, conventionType, value) { s -> s.readUByte() }
+        }
     }
 }

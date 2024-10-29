@@ -22,10 +22,10 @@ import org.angproj.aux.util.Reify
 import kotlin.math.min
 
 public class PullPipe<T: PipeType>(
-    memMgr: MemoryManager,
+    memMgr: MemoryManager<*>,
     private val src: PumpSource<T>,
-    segSize: DataSize = DataSize._1K,
-    bufSize: DataSize = DataSize._4K
+    segSize: DataSize = DataSize._2K,
+    bufSize: DataSize = DataSize._32K
 ): AbstractPipe<T>(segSize, bufSize, memMgr) {
 
     public fun<reified : Reifiable> isExhausted(): Boolean = buf.isEmpty()
@@ -38,14 +38,14 @@ public class PullPipe<T: PipeType>(
         if(leftover > 0) do {
             //val seg = allocate<Reify>(min(segSize.size, leftover))
             val seg = allocate<Reify>(segSize) // Exchanged for above
-            seg.limit = min(segSize.size, leftover) // Exchanged for above
+            seg.limitAt(min(segSize.size, leftover)) // Exchanged for above
             src.squeeze<Reify>(seg)
             leftover -= seg.limit
             buf.push<Reify>(seg)
         } while(seg.limit == seg.size && leftover > 0)
     }
 
-    public fun<reified : Reifiable> pop(): Segment = buf.pop<Reify>()
+    public fun<reified : Reifiable> pop(): Segment<*> = buf.pop<Reify>()
 
     public fun<reified : Reifiable> isSourceOpen(): Boolean = src.isOpen()
 

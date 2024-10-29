@@ -27,14 +27,14 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class FloatType(public val value: Float) : Enfoldable {
 
-    override fun foldSize(foldFormat: FoldFormat): Long = atomicSize.toLong()
+    override fun foldSize(foldFormat: FoldFormat): Int = atomicSize
 
-    public fun enfoldToBlock(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int): Int {
         outData.storeFloat(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Int {
         outStream.writeFloat(value)
         return foldSize(FoldFormat.STREAM)
     }

@@ -27,10 +27,10 @@ public class PumpSource<T: PipeType>(
      * This function forcefully sets the limit of the segment to the returned value
      * to avoid programming mistakes.
      * */
-    public fun<reified : Reifiable> squeeze(seg: Segment): Int {
+    public fun<reified : Reifiable> squeeze(seg: Segment<*>): Int {
         val size = seg.limit
         return pump.read(seg).also {
-            seg.limit = it
+            seg.limitAt(it)
             if (it < size || it == 0) close()
         }
     }

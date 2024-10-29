@@ -21,7 +21,7 @@ import org.angproj.aux.util.Reifiable
 import org.angproj.aux.util.Reify
 
 public class PushPipe<T: PipeType>(
-    memMgr: MemoryManager,
+    memMgr: MemoryManager<*>,
     private val sink: PumpSink<T>,
     segSize: DataSize = DataSize._1K,
     bufSize: DataSize = DataSize._4K
@@ -40,7 +40,7 @@ public class PushPipe<T: PipeType>(
         } while(buf.isNotEmpty() && sink.isOpen())
     }
 
-    public fun<reified : Reifiable> push(seg: Segment): Unit = buf.push<Reify>(seg)
+    public fun<reified : Reifiable> push(seg: Segment<*>): Unit = buf.push<Reify>(seg)
 
     public fun<reified : Reifiable> isSinkOpen(): Boolean = sink.isOpen()
 }

@@ -15,38 +15,101 @@ import kotlin.test.assertEquals
 data class TestObject(
     var uuid: Uuid4 = NullObject.uuid4,
     var text: Text = "Hello, world!".toText(),
+    val byteArray: ByteBuffer = ByteBuffer(DataSize._32B), // Fixed size array
+    var byteArray2: ByteBuffer = NullObject.byteBuffer, // Variable size uninitialized array (OBSERVE! var)
+    val shortArray: ShortBuffer = ShortBuffer(DataSize._32B),
+    var shortArray2: ShortBuffer = NullObject.shortBuffer,
+    val intArray: IntBuffer = IntBuffer(DataSize._32B),
+    var intArray2: IntBuffer = NullObject.intBuffer,
+    val longArray: LongBuffer = LongBuffer(DataSize._32B),
+    var longArray2: LongBuffer = NullObject.longBuffer,
+    val floatArray: FloatBuffer = FloatBuffer(DataSize._32B),
+    var floatArray2: FloatBuffer = NullObject.floatBuffer,
+    val doubleArray: DoubleBuffer = DoubleBuffer(DataSize._32B),
+    var doubleArray2: DoubleBuffer = NullObject.doubleBuffer,
+    val uByteArray: UByteBuffer = UByteBuffer(DataSize._32B),
+    var uByteArray2: UByteBuffer = NullObject.uByteBuffer,
+    val uShortArray: UShortBuffer = UShortBuffer(DataSize._32B),
+    var uShortArray2: UShortBuffer = NullObject.uShortBuffer,
+    val uIntArray: UIntBuffer = UIntBuffer(DataSize._32B),
+    var uIntArray2: UIntBuffer = NullObject.uIntBuffer,
+    val uLongArray: ULongBuffer = ULongBuffer(DataSize._32B),
+    var uLongArray2: ULongBuffer = NullObject.uLongBuffer
 ): Package {
 
-    override fun foldSize(foldFormat: FoldFormat): Long = withFoldSize(foldFormat) { listOf(
+    override fun foldSize(foldFormat: FoldFormat): Int = withFoldSize(foldFormat) { listOf(
         sizeOf(uuid),
         sizeOf(text),
+        sizeOf(byteArray),
+        sizeOf(byteArray2),
+        sizeOf(shortArray),
+        sizeOf(shortArray2),
+        sizeOf(intArray),
+        sizeOf(intArray2),
+        sizeOf(longArray),
+        sizeOf(longArray2),
+        sizeOf(floatArray),
+        sizeOf(floatArray2),
+        sizeOf(doubleArray),
+        sizeOf(doubleArray2),
+        sizeOf(uByteArray),
+        sizeOf(uByteArray2),
+        sizeOf(uShortArray),
+        sizeOf(uShortArray2),
+        sizeOf(uIntArray),
+        sizeOf(uIntArray2),
+        sizeOf(uLongArray),
+        sizeOf(uLongArray2)
     ).sum() }
 
     override fun enfold(outStream: BinaryWritable): Unit = withEnfold(outStream) {
         saveUuid4(uuid)
         saveString(text)
+        saveByteArray(byteArray)
+        saveByteArray(byteArray2)
+        saveShortArray(shortArray)
+        saveShortArray(shortArray2)
+        saveIntArray(intArray)
+        saveIntArray(intArray2)
+        saveLongArray(longArray)
+        saveLongArray(longArray2)
+        saveFloatArray(floatArray)
+        saveFloatArray(floatArray2)
+        saveDoubleArray(doubleArray)
+        saveDoubleArray(doubleArray2)
+        saveUByteArray(uByteArray)
+        saveUByteArray(uByteArray2)
+        saveUShortArray(uShortArray)
+        saveUShortArray(uShortArray2)
+        saveUIntArray(uIntArray)
+        saveUIntArray(uIntArray2)
+        saveULongArray(uLongArray)
+        saveULongArray(uLongArray2)
     }
 
     override fun unfold(inStream: BinaryReadable): Unit = withUnfold(inStream) {
         uuid = loadUuid4()
         text = loadString()
-    }
-
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is TestObject) return false
-
-        if (uuid != other.uuid) return false
-        if (text != other.text) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = uuid.hashCode()
-        result = 31 * result + text.hashCode()
-        return result
+        loadByteArray(byteArray)
+        byteArray2 = loadByteArray()
+        loadShortArray(shortArray)
+        shortArray2 = loadShortArray()
+        loadIntArray(intArray)
+        intArray2 = loadIntArray()
+        loadLongArray(longArray)
+        longArray2 = loadLongArray()
+        loadFloatArray(floatArray)
+        floatArray2 = loadFloatArray()
+        loadDoubleArray(doubleArray)
+        doubleArray2 = loadDoubleArray()
+        loadUByteArray(uByteArray)
+        uByteArray2 = loadUByteArray()
+        loadUShortArray(uShortArray)
+        uShortArray2 = loadUShortArray()
+        loadUIntArray(uIntArray)
+        uIntArray2 = loadUIntArray()
+        loadULongArray(uLongArray)
+        uLongArray2 = loadULongArray()
     }
 }
 
@@ -77,7 +140,7 @@ data class TestStruct(
 
     override fun foldFormat(): FoldFormat = FoldFormat.BLOCK
 
-    override fun foldSize(foldFormat: FoldFormat): Long = withFoldSize(foldFormat){ listOf(
+    override fun foldSize(foldFormat: FoldFormat): Int = withFoldSize(foldFormat){ listOf(
         sizeOf(uuid),
         sizeOf(byte),
         sizeOf(short),
@@ -101,7 +164,7 @@ data class TestStruct(
         sizeOf(uLongArray)
     ).sum() }
 
-    override fun enfold(outData: Storable, offset: Int): Long = withEnfold(outData) {
+    override fun enfold(outData: Storable, offset: Int): Int = withEnfold(outData) {
         saveUuid4(uuid)
         saveByte(byte)
         saveShort(short)
@@ -125,7 +188,7 @@ data class TestStruct(
         saveULongArray(uLongArray)
     }
 
-    override fun unfold(inData: Retrievable, offset: Int): Long = withUnfold(inData, offset) {
+    override fun unfold(inData: Retrievable, offset: Int): Int = withUnfold(inData, offset) {
         loadUuid4(uuid)
         byte = loadByte()
         short = loadShort()
@@ -147,60 +210,6 @@ data class TestStruct(
         loadUShortArray(uShortArray)
         loadUIntArray(uIntArray)
         loadULongArray(uLongArray)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is TestStruct) return false
-
-        if (uuid != other.uuid) return false
-        if (byte != other.byte) return false
-        if (short != other.short) return false
-        if (int != other.int) return false
-        if (long != other.long) return false
-        if (float != other.float) return false
-        if (double != other.double) return false
-        if (uByte != other.uByte) return false
-        if (uShort != other.uShort) return false
-        if (uInt != other.uInt) return false
-        if (uLong != other.uLong) return false
-        if (byteArray != other.byteArray) return false
-        if (shortArray != other.shortArray) return false
-        if (intArray != other.intArray) return false
-        if (longArray != other.longArray) return false
-        if (floatArray != other.floatArray) return false
-        if (doubleArray != other.doubleArray) return false
-        if (uByteArray != other.uByteArray) return false
-        if (uShortArray != other.uShortArray) return false
-        if (uIntArray != other.uIntArray) return false
-        if (uLongArray != other.uLongArray) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = uuid.hashCode()
-        result = 31 * result + byte
-        result = 31 * result + short
-        result = 31 * result + int
-        result = 31 * result + long.hashCode()
-        result = 31 * result + float.hashCode()
-        result = 31 * result + double.hashCode()
-        result = 31 * result + uByte.hashCode()
-        result = 31 * result + uShort.hashCode()
-        result = 31 * result + uInt.hashCode()
-        result = 31 * result + uLong.hashCode()
-        result = 31 * result + byteArray.hashCode()
-        result = 31 * result + shortArray.hashCode()
-        result = 31 * result + intArray.hashCode()
-        result = 31 * result + longArray.hashCode()
-        result = 31 * result + floatArray.hashCode()
-        result = 31 * result + doubleArray.hashCode()
-        result = 31 * result + uByteArray.hashCode()
-        result = 31 * result + uShortArray.hashCode()
-        result = 31 * result + uIntArray.hashCode()
-        result = 31 * result + uLongArray.hashCode()
-        return result
     }
 
     companion object {

@@ -15,6 +15,7 @@
 package org.angproj.aux.pkg.mem
 
 import org.angproj.aux.buf.ArrayBuffer
+import org.angproj.aux.buf.isNull
 import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.pkg.Convention
@@ -23,7 +24,11 @@ import org.angproj.aux.pkg.Unfoldable
 
 public interface ArrayUnfoldable<G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>>: Unfoldable<E> {
 
-    public val factory: (count: Int) -> E
+    public val factory: (count: Int) -> F
+
+    public fun unfoldFromStream(inStream: BinaryReadable): E
+
+    public fun unfoldFromStream(inStream: BinaryReadable, value: F)
 
     public companion object {
 
@@ -33,9 +38,10 @@ public interface ArrayUnfoldable<G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>
             array: ArrayBuffer<G>,
             atomicSize: Int,
             retrieve: (inData: Retrievable, index: Int) -> G
-        ): Long = with(array) {
+        ): Int = with(array) {
+            require(!array.isNull()) { "Null Array!" }
             indices.forEach { this[it] = retrieve(inData, offset + it * atomicSize) }
-            return (limit * atomicSize).toLong()
+            return (limit * atomicSize)
         }
 
         /*internal fun <G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>>arrayUnfoldFromBlock(
@@ -54,16 +60,29 @@ public interface ArrayUnfoldable<G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>
         internal fun <G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>>arrayUnfoldFromStream(
             inStream: BinaryReadable,
             conventionType: Convention,
-            factory: (Int) -> E,
+            factory: (Int) -> F,
             stream: (inStream: BinaryReadable) -> G
-        ): E {
+        ): F {
             require(Unfoldable.getType(inStream, conventionType))
             return factory(Unfoldable.getCount(inStream)).apply {
-                with(this.value) {
-                    indices.forEach { this[it] = stream(inStream) }
+                with(this) {
+                    (0 until limit).forEach { set(it, stream(inStream)) }
                 }
                 require(Unfoldable.getEnd(inStream, conventionType))
             }
+        }
+
+        internal fun <G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>>arrayUnfoldFromStream(
+            inStream: BinaryReadable,
+            conventionType: Convention,
+            array: F,
+            stream: (inStream: BinaryReadable) -> G
+        ) {
+            require(!array.isNull()) { "Null Array!" }
+            require(Unfoldable.getType(inStream, conventionType))
+            require(Unfoldable.getCount(inStream) == array.limit)
+            with(array) { indices.forEach { set(it, stream(inStream)) } }
+            require(Unfoldable.getEnd(inStream, conventionType))
         }
     }
 }

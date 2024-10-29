@@ -22,14 +22,14 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class ObjectType<P: Packageable>(public val value: P) : Enfoldable {
 
-    override fun foldSize(foldFormat: FoldFormat): Long =  when (foldFormat) {
+    override fun foldSize(foldFormat: FoldFormat): Int =  when (foldFormat) {
         FoldFormat.BLOCK -> error("Unsupported fold format.")
         FoldFormat.STREAM -> value.foldSize(foldFormat) + Enfoldable.OVERHEAD_LENGTH
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Int {
         Enfoldable.setType(outStream, conventionType)
-        Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH)
+        Enfoldable.setLength(outStream, (foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH).toLong())
         value.enfold(outStream)
         Enfoldable.setEnd(outStream, conventionType)
         return foldSize(FoldFormat.STREAM)

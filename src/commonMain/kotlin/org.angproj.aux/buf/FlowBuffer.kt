@@ -14,12 +14,14 @@
  */
 package org.angproj.aux.buf
 
-import org.angproj.aux.io.Memory
-import org.angproj.aux.io.Segment
+import org.angproj.aux.io.*
+import org.angproj.aux.util.BufferAware
+import org.angproj.aux.util.Copy
+import org.angproj.aux.util.Copyable
 
 
 public abstract class FlowBuffer protected constructor(
-    segment: Segment, view: Boolean = false
+    segment: Segment<*>, view: Boolean = false
 ): Buffer(segment, view) {
 
     /**
@@ -57,7 +59,7 @@ public abstract class FlowBuffer protected constructor(
      * */
     public fun limitAt(newLimit: Int) {
         require(newLimit in _mark.._segment.size)
-        _segment.limit = newLimit
+        _segment.limitAt(newLimit)
         if(_position > newLimit) _position = newLimit
     }
 
@@ -87,7 +89,7 @@ public abstract class FlowBuffer protected constructor(
      * */
     public fun clear() {
         rewind()
-        _segment.limit = _segment.size
+        _segment.limitAt(_segment.size)
     }
 
     /**
@@ -95,7 +97,7 @@ public abstract class FlowBuffer protected constructor(
      *  and secondly rewinds.
      * */
     public fun flip() {
-        _segment.limit = _position
+        _segment.limitAt(_position)
         rewind()
     }
 
@@ -122,21 +124,40 @@ public abstract class FlowBuffer protected constructor(
     }
 }
 
+public fun FlowBuffer.toByteArray(): ByteArray = object : Copy {
+    operator fun invoke(): ByteArray {
+        check(_segment.isOpen) { "Closed memory" }
+        val dst = object : Copyable, BufferAware {
+            override val limit: Int = this@toByteArray.limit - this@toByteArray.mark
+            val outArr = ByteArray(limit)
+
+            override fun getLong(index: Int): Long = outArr.readLongAt(index)
+            override fun getByte(index: Int): Byte = outArr.get(index)
+            override fun setLong(index: Int, value: Long) { outArr.writeLongAt(index, value) }
+            override fun setByte(index: Int, value: Byte) { outArr.set(index, value)}
+        }
+        require(0, limit, 0, _segment, dst)
+        innerCopy(0, limit, 0, _segment, dst)
+        return dst.outArr
+    }
+}()
+
 
 /**
  * Copy the current buffer from between mark and limit into the position of the destination buffer.
  * */
-public fun<T: FlowBuffer> T.copyInto(destination: T) {
-    _segment.calculateInto(destination._segment, destination.position, mark, limit) }
+/*public fun<T: FlowBuffer> T.copyInto(destination: T) {
+    _segment.copyInto(destination._segment, destination.position, mark, limit)
+}*/
 
 /**
  * Make a new copy buffer of the current buffer between mark and limit.
  * */
-@Suppress("UNCHECKED_CAST")
-public fun<T: FlowBuffer> T.copyOfRange(): T = create(_segment.copyOfRange(mark, limit)) as T
+//@Suppress("UNCHECKED_CAST")
+//public fun<T: FlowBuffer> T.copyOfRange(): T = create(_segment.copyOfRange(mark, limit)) as T
 
 /**
  * Make a full buffer copy.
  * */
-@Suppress("UNCHECKED_CAST")
-public fun<T: FlowBuffer> T.copyOf(): T = create(_segment.copyOf()) as T
+//@Suppress("UNCHECKED_CAST")
+//public fun<T: FlowBuffer> T.copyOf(): T = create(_segment.copyOf()) as T

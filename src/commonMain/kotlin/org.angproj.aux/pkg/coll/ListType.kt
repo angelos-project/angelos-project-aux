@@ -23,10 +23,10 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class ListType<P : Packageable>(public val value: List<P>) : Enfoldable {
 
-    override fun foldSize(foldFormat: FoldFormat): Long =
+    override fun foldSize(foldFormat: FoldFormat): Int =
         if (value.isEmpty()) Enfoldable.OVERHEAD_COUNT
         else with(value.first()) {
-            var length: Long = 0
+            var length = 0
             when (foldFormat) {
                 FoldFormat.BLOCK -> value.forEach { length += StructType(it).foldSize(FoldFormat.STREAM) }
                 FoldFormat.STREAM -> value.forEach { length += ObjectType(it).foldSize(FoldFormat.STREAM) }
@@ -34,10 +34,10 @@ public value class ListType<P : Packageable>(public val value: List<P>) : Enfold
             length + Enfoldable.OVERHEAD_CONTENT
         }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Int {
         Enfoldable.setType(outStream, conventionType)
         Enfoldable.setCount(outStream, value.size)
-        var length = 0L
+        var length = 0
 
         if (value.isNotEmpty()) with(value.first()) {
             val foldFormat = foldFormat()

@@ -31,52 +31,55 @@ import org.angproj.aux.util.EndianAware
 import org.angproj.aux.util.Uuid4
 
 
-public interface Packageable : Enpackageable, Unpackageable, EndianAware {
+public interface Packageable : Enpackageable, Unpackageable, EndianAware, Comparable<Packageable> {
 
     override fun enfold(outStream: BinaryWritable) { TODO("Not yet implemented") }
-    override fun enfold(outData: Storable, offset: Int): Long { TODO("Not yet implemented") }
+    override fun enfold(outData: Storable, offset: Int): Int { TODO("Not yet implemented") }
     override fun unfold(inStream: BinaryReadable) { TODO("Not yet implemented") }
-    override fun unfold(inData: Retrievable, offset: Int): Long { TODO("Not yet implemented") }
+    override fun unfold(inData: Retrievable, offset: Int): Int { TODO("Not yet implemented") }
 
-    public fun foldSize(foldFormat: FoldFormat): Long
+    public fun foldSize(foldFormat: FoldFormat): Int
 
-    public fun withFoldSize(foldFormat: FoldFormat, action: FoldFormat.() -> Long): Long = foldFormat.action()
-
-
-    public fun FoldFormat.sizeOf(type: BlockType): Long = type.foldSize(this)
-
-    public fun FoldFormat.sizeOf(value: Byte): Long = ByteType.atomicSize.toLong()
-    public fun FoldFormat.sizeOf(value: Short): Long = ShortType.atomicSize.toLong()
-    public fun FoldFormat.sizeOf(value: Int): Long = IntType.atomicSize.toLong()
-    public fun FoldFormat.sizeOf(value: Long): Long = LongType.atomicSize.toLong()
-    public fun FoldFormat.sizeOf(value: Float): Long = FloatType.atomicSize.toLong()
-    public fun FoldFormat.sizeOf(value: Double): Long = DoubleType.atomicSize.toLong()
-    public fun FoldFormat.sizeOf(value: UByte): Long = UByteType.atomicSize.toLong()
-    public fun FoldFormat.sizeOf(value: UShort): Long = UShortType.atomicSize.toLong()
-    public fun FoldFormat.sizeOf(value: UInt): Long = UIntType.atomicSize.toLong()
-    public fun FoldFormat.sizeOf(value: ULong): Long = ULongType.atomicSize.toLong()
+    public fun withFoldSize(foldFormat: FoldFormat, action: FoldFormat.() -> Int): Int = foldFormat.action()
 
 
-    public fun FoldFormat.sizeOf(value: ByteBuffer): Long = ByteArrayType(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: ShortBuffer): Long = ShortArrayType(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: IntBuffer): Long = IntArrayType(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: LongBuffer): Long = LongArrayType(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: FloatBuffer): Long = FloatArrayType(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: DoubleBuffer): Long = DoubleArrayType(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: UByteBuffer): Long = UByteArrayType(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: UShortBuffer): Long = UShortArrayType(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: UIntBuffer): Long = UIntArrayType(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: ULongBuffer): Long = ULongArrayType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(type: BlockType): Int = type.foldSize(this)
+
+    public fun FoldFormat.sizeOf(value: Byte): Int = ByteType.atomicSize
+    public fun FoldFormat.sizeOf(value: Short): Int = ShortType.atomicSize
+    public fun FoldFormat.sizeOf(value: Int): Int = IntType.atomicSize
+    public fun FoldFormat.sizeOf(value: Long): Int = LongType.atomicSize
+    public fun FoldFormat.sizeOf(value: Float): Int = FloatType.atomicSize
+    public fun FoldFormat.sizeOf(value: Double): Int = DoubleType.atomicSize
+    public fun FoldFormat.sizeOf(value: UByte): Int = UByteType.atomicSize
+    public fun FoldFormat.sizeOf(value: UShort): Int = UShortType.atomicSize
+    public fun FoldFormat.sizeOf(value: UInt): Int = UIntType.atomicSize
+    public fun FoldFormat.sizeOf(value: ULong): Int = ULongType.atomicSize
 
 
-    public fun FoldFormat.sizeOf(value: Uuid4): Long = Uuid4Type(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: Text): Long = StringType(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: BigInt): Long = BigIntType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: ByteBuffer): Int = ByteArrayType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: ShortBuffer): Int = ShortArrayType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: IntBuffer): Int = IntArrayType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: LongBuffer): Int = LongArrayType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: FloatBuffer): Int = FloatArrayType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: DoubleBuffer): Int = DoubleArrayType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: UByteBuffer): Int = UByteArrayType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: UShortBuffer): Int = UShortArrayType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: UIntBuffer): Int = UIntArrayType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: ULongBuffer): Int = ULongArrayType(value).foldSize(this)
 
-    public fun <P: Packageable>FoldFormat.sizeOf(type: StructType<P>): Long = type.foldSize(this)
-    public fun <P: Packageable>FoldFormat.sizeOf(type: ObjectType<P>): Long = type.foldSize(this)
-    public fun <P: Packageable>FoldFormat.sizeOf(type: DictType<P>): Long = type.foldSize(this)
-    public fun <P: Packageable>FoldFormat.sizeOf(type: ListType<P>): Long = type.foldSize(this)
+
+    public fun FoldFormat.sizeOf(value: Uuid4): Int = Uuid4Type(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: Text): Int = StringType(value).foldSize(this)
+    public fun FoldFormat.sizeOf(value: BigInt): Int = BigIntType(value).foldSize(this)
+
+    public fun <P: Packageable>FoldFormat.sizeOf(type: StructType<P>): Int = type.foldSize(this)
+    public fun <P: Packageable>FoldFormat.sizeOf(type: ObjectType<P>): Int = type.foldSize(this)
+    public fun <P: Packageable>FoldFormat.sizeOf(type: DictType<P>): Int = type.foldSize(this)
+    public fun <P: Packageable>FoldFormat.sizeOf(type: ListType<P>): Int = type.foldSize(this)
 
     public fun foldFormat(): FoldFormat
+
+    public override operator fun compareTo(other: Packageable): Int { return hashCode() - other.hashCode() }
 }
+

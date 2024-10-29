@@ -15,18 +15,19 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.Default
 import org.angproj.aux.util.NullObject
 
 
 public class ShortBuffer internal constructor(
-    segment: Segment, view: Boolean = false
+    segment: Segment<*>, view: Boolean = false
 ): ArrayBuffer<Short>(segment, view, TypeSize.SHORT) {
 
-    public constructor(size: Int) : this(Bytes(size * TypeSize.short))
+    public constructor(size: Int) : this(Default.allocate(size * TypeSize.short))
 
     public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.short)
 
-    override fun create(segment: Segment): ShortBuffer = ShortBuffer(segment)
+    override fun create(segment: Segment<*>): ShortBuffer = ShortBuffer(segment)
 
     override fun get(index: Int): Short = _segment.getShort(index * TypeSize.short)
 

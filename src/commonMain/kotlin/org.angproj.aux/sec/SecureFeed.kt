@@ -67,7 +67,7 @@ public object SecureFeed : AbstractSponge512(), PumpReader {
         require(length <= DataSize._8K.size) { "Length must not surpass 8 Kilobyte." }
     }
 
-    override fun read(data: Segment): Int {
+    override fun read(data: Segment<*>): Int {
         require(data.limit)
         revitalize()
         fill(data) { cycle() }

@@ -30,12 +30,12 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class StringType(public val value: Text) : Enfoldable {
 
-    override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
+    override fun foldSize(foldFormat: FoldFormat): Int = when (foldFormat) {
         FoldFormat.BLOCK -> error("Unsupported fold format.")
         FoldFormat.STREAM -> value.limit + Enfoldable.OVERHEAD_LENGTH
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Int {
         val block = BlockType(value.asBinary())
         return block.enfoldToStreamByConvention(outStream, conventionType)
     }

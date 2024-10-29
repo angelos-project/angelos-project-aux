@@ -14,80 +14,75 @@
  */
 package org.angproj.aux.pipe
 
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.PumpReader
-import org.angproj.aux.io.Segment
-import org.angproj.aux.io.TypeSize
-import org.angproj.aux.mem.Default
-import org.angproj.aux.util.Reify
-import org.angproj.aux.util.chunkLoop
-import org.angproj.aux.util.writeGlyphAt
-import kotlin.random.Random
+import org.angproj.aux.buf.wrap
+import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.time.measureTime
-
-class BinaryReader(private val half: Boolean = false) : PumpReader {
-
-    override fun read(data: Segment): Int {
-
-        //if(half) if (this.data.remaining < (this.data.size / 2)) data.limit /= 2
-
-        var index = chunkLoop<Reify>(0, data.limit, TypeSize.long) {
-            data.setLong(it, Random.nextLong())
-        }
-        index = chunkLoop<Reify>(index, data.limit, TypeSize.byte) {
-            data.setByte(it, Random.nextInt().toByte())
-        }
-        return index
-    }
-}
 
 class PullBinaryTest {
 
     /**
-     * The goal is to pull all data from the TextSource.
+     * The goal is to pull all data from the BinarySource.
      * */
     @Test
     fun testStreamPull() {
-        val readable = PullPipe<BinaryType>(
-            Default,
-            PumpSource(BinaryReader()),
-            DataSize._1K,
-            DataSize._1K
-        ).getSink()
-        var count = 0
-        readable.readByte()
-        val time = measureTime {
-            do {
-                val cp = readable.readLong()
-                count += 8
-            } while(count < 3000)
-        }
-        println(time)
-        //assertContentEquals(copy, canvas)
-        //assertFailsWith<UnsupportedOperationException> { readable.readGlyph() }
-        TODO("Make correctly.")
 
+        val len = 42 * 100
+
+        val rand = BufMgr.bin(len).apply { securelyRandomize() }
+        val canvas = BufMgr.bin(rand.capacity)
+
+        val readable = Pipe.buildBinaryPullPipe(TestPumpReader(rand))
+        val time = measureTime {
+            canvas.wrap {
+                do {
+                    writeByte(readable.readByte()) // 1
+                    writeShort(readable.readShort()) // 2, 3
+                    writeInt(readable.readInt()) // 4, 7
+                    writeLong(readable.readLong()) // 8, 15
+                    writeFloat(readable.readFloat()) // 4, 19
+                    writeDouble(readable.readDouble()) // 8, 27
+                    writeUByte(readable.readUByte()) // 1, 28
+                    writeUShort(readable.readUShort()) // 2, 30
+                    writeUInt(readable.readUInt()) // 4, 34
+                    writeULong(readable.readULong()) // 8, 42
+                } while(position < limit)
+            }
+        }
+
+        println(time)
+        assertEquals(rand, canvas)
+        assertFailsWith<UnsupportedOperationException> { readable.readByte() }
     }
 
     @Test
     fun testStreamPullClose() {
 
-        val text = latinLL + greekLL + chineseLL
-        val copy = text.encodeToByteArray()
-        val canvas = ByteArray(copy.size)
-        var pos = 0
+        val len = 42 * 100
 
-        val readable = Pipe.buildTextPullPipe(StringReader(text)) // PullPipe(Default, PumpSource<TextType>(StringReader(text))).getSink()
-        do {
-            val cp = readable.readGlyph()
-            pos += canvas.writeGlyphAt(pos, cp)
-        } while(pos < canvas.size / 2)
+        val rand = BufMgr.bin(len).apply { securelyRandomize() }
+        val canvas = BufMgr.bin(rand.capacity)
+
+        val readable = Pipe.buildBinaryPullPipe(TestPumpReader(rand))
+        canvas.wrap {
+            do {
+                writeByte(readable.readByte()) // 1
+                writeShort(readable.readShort()) // 2, 3
+                writeInt(readable.readInt()) // 4, 7
+                writeLong(readable.readLong()) // 8, 15
+                writeFloat(readable.readFloat()) // 4, 19
+                writeDouble(readable.readDouble()) // 8, 27
+                writeUByte(readable.readUByte()) // 1, 28
+                writeUShort(readable.readUShort()) // 2, 30
+                writeUInt(readable.readUInt()) // 4, 34
+                writeULong(readable.readULong()) // 8, 42
+            } while(position < limit)
+        }
 
         readable.close()
-        assertFailsWith<UnsupportedOperationException> { readable.readGlyph() }
-        TODO("Make correctly.")
-
+        assertFailsWith<UnsupportedOperationException> { readable.readByte() }
     }
 }

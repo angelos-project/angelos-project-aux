@@ -25,7 +25,7 @@ public abstract class AbstractSink<T: PipeType>(
     protected val pipe: PullPipe<T>
 ) : Sink, PipeType {
     protected var pos: Int = 0
-    protected var seg: Segment = NullObject.segment
+    protected var seg: Segment<*> = NullObject.segment
 
     protected var _open: Boolean = true
 

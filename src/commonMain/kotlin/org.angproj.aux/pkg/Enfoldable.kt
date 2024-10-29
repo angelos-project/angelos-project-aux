@@ -20,28 +20,28 @@ import org.angproj.aux.io.TypeSize
 
 public interface Enfoldable {
 
-    public fun foldSize(foldFormat: FoldFormat): Long
+    public fun foldSize(foldFormat: FoldFormat): Int
 
-    public fun enfoldBlock(outData: Storable, offset: Int): Long {
+    public fun enfoldBlock(outData: Storable, offset: Int): Int {
         throw UnsupportedOperationException()
     }
 
-    public fun enfoldStream(outStream: BinaryWritable): Long {
+    public fun enfoldStream(outStream: BinaryWritable): Int {
         throw UnsupportedOperationException()
     }
 
     public companion object {
-        public const val TYPE_SIZE: Long = TypeSize.short.toLong()
-        public const val CONTENT_SIZE: Long = TypeSize.byte.toLong()
-        public const val COUNT_SIZE: Long = TypeSize.int.toLong()
-        public const val LENGTH_SIZE: Long = TypeSize.long.toLong()
-        public const val END_SIZE: Long = TypeSize.byte.toLong()
+        public const val TYPE_SIZE: Int = TypeSize.short
+        public const val CONTENT_SIZE: Int = TypeSize.byte
+        public const val COUNT_SIZE: Int = TypeSize.int
+        public const val LENGTH_SIZE: Int = TypeSize.long
+        public const val END_SIZE: Int = TypeSize.byte
 
 
-        public const val OVERHEAD_BASIC: Long = TYPE_SIZE + END_SIZE
-        public const val OVERHEAD_LENGTH: Long = LENGTH_SIZE + OVERHEAD_BASIC
-        public const val OVERHEAD_COUNT: Long = COUNT_SIZE + OVERHEAD_BASIC
-        public const val OVERHEAD_CONTENT: Long = CONTENT_SIZE + OVERHEAD_COUNT
+        public const val OVERHEAD_BASIC: Int = TYPE_SIZE + END_SIZE
+        public const val OVERHEAD_LENGTH: Int = LENGTH_SIZE + OVERHEAD_BASIC
+        public const val OVERHEAD_COUNT: Int = COUNT_SIZE + OVERHEAD_BASIC
+        public const val OVERHEAD_CONTENT: Int = CONTENT_SIZE + OVERHEAD_COUNT
 
 
         public fun setType(outStream: BinaryWritable, type: Convention) {

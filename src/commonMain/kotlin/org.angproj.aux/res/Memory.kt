@@ -15,24 +15,15 @@
 package org.angproj.aux.res
 
 import org.angproj.aux.io.DataSize
-import org.angproj.aux.util.Reifiable
-import org.angproj.aux.util.Speed
+import org.angproj.aux.util.*
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect class Memory: Speed, Cleanable {
+public expect class Memory: Copyable, Cleanable {
     public val size: Int
     public val ptr: Long
 }
 
 public expect fun allocateMemory(size: Int): Memory
-@PublishedApi
-internal expect inline fun <reified T: Reifiable> Memory.speedLongGet(index: Long): Long
-@PublishedApi
-internal expect inline fun <reified T: Reifiable> Memory.speedLongSet(index: Long, value: Long)
-@PublishedApi
-internal expect inline fun <reified T: Reifiable> Memory.speedByteGet(index: Long): Byte
-@PublishedApi
-internal expect inline fun <reified T: Reifiable> Memory.speedByteSet(index: Long, value: Byte)
 
 internal fun validateAskedMemorySize(size: Int) = require(size in 1..DataSize._1G.size) {
     "Tried to allocate an illegal amount ($size) of memory" }
@@ -40,32 +31,13 @@ internal fun validateAskedMemorySize(size: Int) = require(size in 1..DataSize._1
 @PublishedApi
 internal inline fun <reified T: Reifiable> Memory.copyInto(
     destination: Memory, destinationOffset: Int, idxFrom: Int, idxTo: Int
-): Int = secure(idxFrom, idxTo, destinationOffset, this, destination)
-/*{
-    val length = idxTo - idxFrom
-    require(idxFrom <= idxTo) {
-        "Start index ($idxFrom) is larger than end index ($idxTo)" }
-    require(length >= 0) {
-        "Length ($length) can not be negative" }
-    require(idxFrom in 0..<size) {
-        "Start index ($idxFrom) not in memory range" }
-    require(idxFrom + length in 0..size) {
-        "End index (${idxFrom + length}) outside of memory range" }
-    require(destinationOffset in 0..<destination.size) {
-        "Destination offset ($destinationOffset) not in memory range" }
-    require(destinationOffset + length in 0..destination.size) {
-        "End index (${destinationOffset + length}) outside of memory range" }
+): Int = object : Copy {
+    operator fun invoke(): Int {
+        require(idxFrom, idxTo, destinationOffset,this@copyInto, destination)
+        //return speedMemCpy(idxFrom, idxTo, destinationOffset, this@copyInto.ptr, destination.ptr)
+        return innerCopy(idxFrom, idxTo, destinationOffset,this@copyInto, destination)
+    }
+}()
 
-    val index = chunkLoop<Reify>(0, length, TypeSize.long) {
-        destination.speedLongSet<Reify>(
-            (destinationOffset + it).toLong(),
-            speedLongGet<Reify>((idxFrom + it).toLong())
-        )
-    }
-    chunkLoop<Reify>(index, length, TypeSize.byte) {
-        destination.speedByteSet<Reify>(
-            (destinationOffset + it).toLong(),
-            speedByteGet<Reify>((idxFrom + it).toLong())
-        )
-    }
-}*/
+@PublishedApi
+internal expect fun speedMemCpy(idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long): Int

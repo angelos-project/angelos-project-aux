@@ -55,7 +55,7 @@ public class Uuid4(private val uuid: Binary) {
 
     public fun toText(): Text = hex
 
-    override fun toString(): String = hex.asBinary().toByteArray().decodeToString().uppercase()
+    override fun toString(): String = hex.toByteArray().decodeToString().uppercase()
 
     public override fun equals(other: Any?): Boolean {
         if (this === other) return true

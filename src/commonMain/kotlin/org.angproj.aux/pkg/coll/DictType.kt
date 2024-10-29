@@ -26,10 +26,10 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class DictType<P: Packageable>(public val value: Map<Text, P>) : Enfoldable {
 
-    override fun foldSize(foldFormat: FoldFormat): Long =
+    override fun foldSize(foldFormat: FoldFormat): Int =
         if (value.isEmpty()) Enfoldable.OVERHEAD_COUNT
         else {
-            var length = 0L
+            var length = 0
             val contentFoldFormat = value.getValue(value.keys.first()).foldFormat()
 
             when (contentFoldFormat) {
@@ -45,10 +45,10 @@ public value class DictType<P: Packageable>(public val value: Map<Text, P>) : En
             length + Enfoldable.OVERHEAD_COUNT + Enfoldable.CONTENT_SIZE
         }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Int {
         Enfoldable.setType(outStream, conventionType)
         Enfoldable.setCount(outStream, value.size)
-        var length = 0L
+        var length = 0
 
         if (value.isNotEmpty()) {
             val foldFormat = value.getValue(value.keys.first()).foldFormat()

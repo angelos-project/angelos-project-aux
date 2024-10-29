@@ -16,11 +16,14 @@ package org.angproj.aux.io
 
 import org.angproj.aux.buf.SpeedCopy
 import org.angproj.aux.util.Auto
+import org.angproj.aux.util.BufferAware
+import org.angproj.aux.util.Copy
+import org.angproj.aux.util.Copyable
 
 
 public abstract class MemBlock internal constructor(
-    segment: Segment, private val _view: Boolean
-) : SpeedCopy(segment), Auto {
+    segment: Segment<*>, private val _view: Boolean
+) : SpeedCopy(segment), Auto, Comparable<MemBlock> {
 
     public override val limit: Int
         get() = _segment.limit
@@ -33,14 +36,14 @@ public abstract class MemBlock internal constructor(
      * */
     public fun limitAt(newLimit: Int) {
         require(newLimit in 0.._segment.size)
-        _segment.limit = newLimit
+        _segment.limitAt(newLimit)
     }
 
     /**
      * Reduced function compared to Buffer interface due to no rewind capability.
      * */
     public fun clear() {
-        _segment.limit = _segment.size
+        _segment.limitAt(_segment.size)
     }
 
     internal inline fun <reified E: Any> remaining(position: Int): Int = _segment.limit - position
@@ -57,10 +60,34 @@ public abstract class MemBlock internal constructor(
         if(this === other) return true
         if(other == null || this::class != other::class) return false
         other as MemBlock
-        return _segment == other._segment
+        return compareTo(other) == 0
     }
 
     public override fun hashCode(): Int = _segment.hashCode()
+
+    public override operator fun compareTo(other: MemBlock): Int { return hashCode() - other.hashCode() }
 }
 
+/**
+ * View extension method for all MemBlocks.
+ * This method should be the only used method to manipulate data within any short memory block used.
+ * */
 public fun <E: MemBlock>E.asBinary(): Binary = Binary(this._segment, true)
+
+public fun <E: MemBlock>E.toByteArray(): ByteArray = object : Copy {
+    operator fun invoke(): ByteArray {
+        check(_segment.isOpen) { "Closed memory" }
+        val dst = object : Copyable, BufferAware {
+            override val limit: Int = _segment.limit
+            val outArr = ByteArray(limit)
+
+            override fun getLong(index: Int): Long = outArr.readLongAt(index)
+            override fun getByte(index: Int): Byte = outArr.get(index)
+            override fun setLong(index: Int, value: Long) { outArr.writeLongAt(index, value) }
+            override fun setByte(index: Int, value: Byte) { outArr.set(index, value)}
+        }
+        require(0, limit, 0, _segment, dst)
+        innerCopy(0, limit, 0, _segment, dst)
+        return dst.outArr
+    }
+}()

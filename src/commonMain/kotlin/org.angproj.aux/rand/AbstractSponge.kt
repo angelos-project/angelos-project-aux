@@ -52,7 +52,7 @@ public abstract class AbstractSponge(spongeSize: Int = 0, public val visibleSize
         repeat(sponge.size) { round() }
     }
 
-    protected fun fill(data: Segment, cycle: () -> Unit): Unit = BufMgr.asWrap(data) {
+    protected fun fill(data: Segment<*>, cycle: () -> Unit): Unit = BufMgr.asWrap(data) {
         val writable = asWrapped()
         repeat(data.limit / byteSize) {
             squeeze(writable)

@@ -1,6 +1,7 @@
 package org.angproj.aux.util
 
-import org.angproj.aux.io.Memory
+import org.angproj.aux.io.DataSize
+import org.angproj.aux.mem.MemoryFree
 import kotlin.test.Test
 import kotlin.time.measureTime
 
@@ -9,21 +10,22 @@ class MemoryTrialTest {
     @OptIn(ExperimentalStdlibApi::class)
     @Test
     fun testGC() {
+        val reps = 10_000
         val timeMem = measureTime {
-            repeat(10_000) {
-                Memory(1_000_000).close()
+            repeat(reps) {
+                MemoryFree.allocate(DataSize._1M).close()
             }
         }
         println(timeMem)
         val timeUse = measureTime {
-            repeat(10_000) {
-                Memory(1_000_000).use {}
+            repeat(reps) {
+                MemoryFree.allocate(DataSize._1M).use {}
             }
         }
         println(timeUse)
         val timeArr = measureTime {
-            repeat(10_000) {
-                ByteArray(1_000_000)
+            repeat(reps) {
+                ByteArray(DataSize._1M.size)
             }
         }
         println(timeArr)

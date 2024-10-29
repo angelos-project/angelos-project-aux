@@ -27,13 +27,13 @@ public value class StructType<P: Packageable>(public val value: P) : Enfoldable 
      * Therefore, is the STREAM call to the Packageable unnecessary in this class.
      * Only if the Packageable is directly streamed by itself its foldSize(STREAM) is needed.
      * */
-    override fun foldSize(foldFormat: FoldFormat): Long = value.foldSize(
+    override fun foldSize(foldFormat: FoldFormat): Int = value.foldSize(
         FoldFormat.BLOCK) + if(foldFormat == FoldFormat.STREAM) Enfoldable.OVERHEAD_LENGTH else 0
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = value.enfold(outData, offset)
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Int = value.enfold(outData, offset)
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long {
-        val block = BlockType(binOf(foldSize(FoldFormat.BLOCK).toInt()))
+    public fun enfoldToStream(outStream: BinaryWritable): Int {
+        val block = BlockType(binOf(foldSize(FoldFormat.BLOCK)))
         enfoldToBlock(block, 0)
         return block.enfoldToStreamByConvention(outStream, conventionType)
     }

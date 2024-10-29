@@ -15,14 +15,11 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.mem.BufMgr
-import org.angproj.aux.util.CodePoint
-import org.angproj.aux.util.NullObject
-import org.angproj.aux.util.Unicode
-import org.angproj.aux.util.withUnicodeAware
+import org.angproj.aux.util.*
 
 
 public class Text internal constructor(
-     segment: Segment, view: Boolean = false
+     segment: Segment<*>, view: Boolean = false
 ) : MemBlock(segment, view), TextRetrievable, TextStorable, Iterable<CodePoint> {
 
     //public constructor(size: Int) : this(Bytes(size))

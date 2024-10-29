@@ -29,7 +29,7 @@ public object DevNull : BinaryWritable, TextWritable, PumpWriter {
     override fun writeFloat(value: Float) {}
     override fun writeDouble(value: Double) {}
 
-    override fun write(data: Segment): Int = data.limit
+    override fun write(data: Segment<*>): Int = data.limit
 
     override fun writeGlyph(codePoint: CodePoint): Int = codePoint.octetSize()
 }

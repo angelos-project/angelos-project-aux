@@ -14,17 +14,17 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public expect open class Memory protected constructor(
-    size: Int, idxLimit: Int
+public expect open class Memory internal constructor(
+    size: Int, mem: MemoryManager<Memory>
 ): AbstractMemory {
-
-    public constructor(size: Int)
 
     final override val data: Chunk
 
+    @Deprecated("Not to be used with memory manager")
     override fun create(size: Int, idxLimit: Int): Memory
 
     override fun getByte(index: Int): Byte

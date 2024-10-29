@@ -26,6 +26,9 @@ public class BinaryWrapper(
 
     init { positionAt(offset) }
 
+    public val limit: Int
+        get() = bin.limit
+
     private var _position: Int = 0
     public val position: Int
         get() = _position
@@ -78,5 +81,4 @@ public class BinaryWrapper(
 public fun Binary.asWrapped(offset: Int = 0): BinaryWrapper = BinaryWrapper(this, offset)
 public fun<E: Any> Binary.wrap(offset: Int = 0, block: BinaryWrapper.() -> E): E = BinaryWrapper(this, offset).block()
 public fun Binary.wrap(offset: Int = 0, block: BinaryWrapper.() -> Unit): Binary = also { BinaryWrapper(this, offset).block() }
-//public fun BinaryWrapper.asText(): Text = BufMgr
 

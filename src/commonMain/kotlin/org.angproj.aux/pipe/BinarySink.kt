@@ -15,6 +15,7 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.io.BinaryReadable
+import org.angproj.aux.io.TypeBits
 import org.angproj.aux.io.TypeSize
 import org.angproj.aux.util.NumberAware
 import org.angproj.aux.util.Reifiable
@@ -25,17 +26,18 @@ public class BinarySink(
     pipe: PullPipe<BinaryType>
 ): AbstractSink<BinaryType>(pipe), BinaryType, BinaryReadable, NumberAware {
 
+    // Optimize maxIter, remove?
     private inline fun <reified T : Reifiable> buildFromSegment(length: Int, maxIter: Int): Long {
         var value = 0L
-        repeat(min(length, maxIter)) {
+        repeat(min(length, maxIter)) { cnt ->
             if(pos == seg.limit) pullSegment<Reify>()
-            ((value shl 8) or (seg.getByte(pos++).toLong() and 0xff)).also { value = it }
+            value = value or ((seg.getByte(pos++).toLong() and 0xff) shl TypeBits.byte * cnt)
         }
         return value
     }
 
     private inline fun <reified R : Reifiable> withSegmentByte(): Byte = when(seg.limit - pos < TypeSize.byte) {
-        false -> seg.getByte(pos).also { pos += TypeSize.byte }
+        false -> seg.getByte(pos++)//.also { pos += TypeSize.byte }
         else -> buildFromSegment<Reify>(TypeSize.byte, TypeSize.byte).toByte()
     }
 

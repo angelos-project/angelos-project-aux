@@ -149,8 +149,8 @@ const val chinese = """
 class StringReader(text: String) : PumpReader {
     val data = text.toText()
 
-    override fun read(data: Segment): Int {
-        data.limit = min(data.limit, this.data.limit)
+    override fun read(data: Segment<*>): Int {
+        data.limitAt(min(data.limit, this.data.limit))
         this.data.asBinary().copyInto(data, 0, 0, data.limit)
 
         /*var index = chunkLoop<Reify>(0, data.limit, TypeSize.long) {

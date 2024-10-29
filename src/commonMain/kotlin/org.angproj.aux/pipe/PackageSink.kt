@@ -15,8 +15,10 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.io.PackageReadable
-import org.angproj.aux.pkg.Enfoldable
-import org.angproj.aux.pkg.Unfoldable
+import org.angproj.aux.pkg.Package
+import org.angproj.aux.pkg.Packageable
+import org.angproj.aux.pkg.arb.StructType
+import org.angproj.aux.pkg.coll.ObjectType
 
 public class PackageSink(
     private val sink: BinarySink
@@ -25,7 +27,11 @@ public class PackageSink(
 
     override fun close(): Unit = sink.close()
 
-    override fun<E : Enfoldable, S: Unfoldable<E>> readPackage(): S {
-        TODO("Not yet implemented")
+    override fun <P : Package> readObject(action: () -> P): P {
+        return ObjectType.unfoldFromStream(sink, action).value
+    }
+
+    override fun <P : Packageable> readStruct(action: () -> P): P {
+        return StructType.unfoldFromStream(sink, action).value
     }
 }

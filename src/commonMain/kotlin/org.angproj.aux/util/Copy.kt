@@ -17,15 +17,14 @@ package org.angproj.aux.util
 import org.angproj.aux.io.TypeSize
 
 
-
 public interface Copyable {
     public val limit: Int
 
-    public fun getLong(pos: Int): Long
-    public fun getByte(pos: Int): Byte
+    public fun getLong(index: Int): Long
+    public fun getByte(index: Int): Byte
 
-    public fun setLong(pos: Int, value: Long): Unit
-    public fun setByte(pos: Int, value: Byte): Unit
+    public fun setLong(index: Int, value: Long): Unit
+    public fun setByte(index: Int, value: Byte): Unit
 }
 
 public interface Copy {
@@ -86,26 +85,6 @@ public interface Copy {
         val range = idxFrom..idxTo
         return src.chunk(range, dstOff, src.loop(range, dstOff, dst), dst)
     }
-}
 
-
-public interface Speed: Copy, Copyable {
-    public fun speed(
-        idxFrom: Int, idxTo: Int, dstOff: Int, src: Copyable, dst: Copyable
-    ): Int = innerCopy(idxFrom, idxTo, dstOff, src, dst)
-
-    public fun secure(
-        idxFrom: Int, idxTo: Int, dstOff: Int, src: Copyable, dst: Copyable
-    ): Int {
-        require(idxFrom, idxTo, dstOff, src, dst)
-        return innerCopy(idxFrom, idxTo, dstOff, src, dst)
-    }
-}
-
-public interface Copyfier<C: Copyable> {
-    public fun copyInto(destination: C, destinationOffset: Int, fromIndex: Int, toIndex: Int)
-
-    public fun copyOfRange(fromIndex: Int, toIndex: Int): C
-
-    public fun copyOf(): C
+    public operator fun<E: Any> invoke(action: () -> E): E = action()
 }

@@ -31,9 +31,9 @@ public class Base64Encoder(
         private var mark = 0
         private val limit = buffer.limit
 
-        override fun read(data: Segment): Int {
+        override fun read(data: Segment<*>): Int {
             val length = min(limit - mark, data.limit)
-            buffer.asBinary().copyInto(data, 0, mark, mark + length)
+            buffer.copyInto(data, 0, mark, mark + length)
             mark += length
             return length
         }

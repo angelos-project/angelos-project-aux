@@ -34,12 +34,12 @@ import org.angproj.aux.util.Uuid4
 
 public interface Unpackageable {
     public fun unfold(inStream: BinaryReadable)
-    public fun unfold(inData: Retrievable, offset: Int = 0): Long
+    public fun unfold(inData: Retrievable, offset: Int = 0): Int
 
     public fun withUnfold(inStream: BinaryReadable, action: BinaryReadable.() -> Unit) : Unit = inStream.action()
     //public fun withUnfold(inData: Retrievable, action: Retrievable.() -> Unit) : Unit = inData.action()
-    public fun withUnfold(inData: Retrievable, offset: Int = 0, action: RetrieveIter.() -> Unit): Long {
-        val retrieve = RetrieveIter(inData, offset.toLong())
+    public fun withUnfold(inData: Retrievable, offset: Int = 0, action: RetrieveIter.() -> Unit): Int {
+        val retrieve = RetrieveIter(inData, offset)
         retrieve.action()
         return retrieve.index
     }
@@ -57,7 +57,7 @@ public interface Unpackageable {
     public fun BinaryReadable.loadUInt(): UInt = UIntType.unfoldFromStream(this).value
     public fun BinaryReadable.loadULong(): ULong = ULongType.unfoldFromStream(this).value
 
-
+    // Variable length arrays
     public fun BinaryReadable.loadByteArray(): ByteBuffer = ByteArrayType.unfoldFromStream(this).value
     public fun BinaryReadable.loadShortArray(): ShortBuffer = ShortArrayType.unfoldFromStream(this).value
     public fun BinaryReadable.loadIntArray(): IntBuffer = IntArrayType.unfoldFromStream(this).value
@@ -68,6 +68,18 @@ public interface Unpackageable {
     public fun BinaryReadable.loadUShortArray(): UShortBuffer = UShortArrayType.unfoldFromStream(this).value
     public fun BinaryReadable.loadUIntArray(): UIntBuffer = UIntArrayType.unfoldFromStream(this).value
     public fun BinaryReadable.loadULongArray(): ULongBuffer = ULongArrayType.unfoldFromStream(this).value
+
+    // Predefined fixed length arrays
+    public fun BinaryReadable.loadByteArray(value: ByteBuffer): Unit = ByteArrayType.unfoldFromStream(this, value)
+    public fun BinaryReadable.loadShortArray(value: ShortBuffer): Unit = ShortArrayType.unfoldFromStream(this, value)
+    public fun BinaryReadable.loadIntArray(value: IntBuffer): Unit = IntArrayType.unfoldFromStream(this, value)
+    public fun BinaryReadable.loadLongArray(value: LongBuffer): Unit = LongArrayType.unfoldFromStream(this, value)
+    public fun BinaryReadable.loadFloatArray(value: FloatBuffer): Unit = FloatArrayType.unfoldFromStream(this, value)
+    public fun BinaryReadable.loadDoubleArray(value: DoubleBuffer): Unit = DoubleArrayType.unfoldFromStream(this, value)
+    public fun BinaryReadable.loadUByteArray(value: UByteBuffer): Unit = UByteArrayType.unfoldFromStream(this, value)
+    public fun BinaryReadable.loadUShortArray(value: UShortBuffer): Unit = UShortArrayType.unfoldFromStream(this, value)
+    public fun BinaryReadable.loadUIntArray(value: UIntBuffer): Unit = UIntArrayType.unfoldFromStream(this, value)
+    public fun BinaryReadable.loadULongArray(value: ULongBuffer): Unit = ULongArrayType.unfoldFromStream(this, value)
 
 
     public fun BinaryReadable.loadUuid4(): Uuid4 = Uuid4Type.unfoldFromStream(this).value
@@ -137,65 +149,65 @@ public interface Unpackageable {
     public fun Retrievable.loadUuid4(offset: Int): Uuid4 = Uuid4Type.unfoldFromBlock(this, offset).value*/
 
 
-    public class RetrieveIter(public val retrieve: Retrievable, public var index: Long = 0)
+    public class RetrieveIter(public val retrieve: Retrievable, public var index: Int = 0)
 
 
     public fun RetrieveIter.loadByte(): Byte = ByteType.unfoldFromBlock(
-        retrieve, index.toInt()).value.also { index += ByteType.atomicSize }
+        retrieve, index).value.also { index += ByteType.atomicSize }
     public fun RetrieveIter.loadShort(): Short = ShortType.unfoldFromBlock(
-        retrieve, index.toInt()).value.also { index += ShortType.atomicSize }
+        retrieve, index).value.also { index += ShortType.atomicSize }
     public fun RetrieveIter.loadInt(): Int = IntType.unfoldFromBlock(
-        retrieve, index.toInt()).value.also { index += IntType.atomicSize }
+        retrieve, index).value.also { index += IntType.atomicSize }
     public fun RetrieveIter.loadLong(): Long = LongType.unfoldFromBlock(
-        retrieve, index.toInt()).value.also { index += LongType.atomicSize }
+        retrieve, index).value.also { index += LongType.atomicSize }
     public fun RetrieveIter.loadFloat(): Float = FloatType.unfoldFromBlock(
-        retrieve, index.toInt()).value.also { index += FloatType.atomicSize }
+        retrieve, index).value.also { index += FloatType.atomicSize }
     public fun RetrieveIter.loadDouble(): Double = DoubleType.unfoldFromBlock(
-        retrieve, index.toInt()).value.also { index += DoubleType.atomicSize }
+        retrieve, index).value.also { index += DoubleType.atomicSize }
     public fun RetrieveIter.loadUByte(): UByte = UByteType.unfoldFromBlock(
-        retrieve, index.toInt()).value.also { index += UByteType.atomicSize }
+        retrieve, index).value.also { index += UByteType.atomicSize }
     public fun RetrieveIter.loadUShort(): UShort = UShortType.unfoldFromBlock(
-        retrieve, index.toInt()).value.also { index += UShortType.atomicSize }
+        retrieve, index).value.also { index += UShortType.atomicSize }
     public fun RetrieveIter.loadUInt(): UInt = UIntType.unfoldFromBlock(
-        retrieve, index.toInt()).value.also { index += UIntType.atomicSize }
+        retrieve, index).value.also { index += UIntType.atomicSize }
     public fun RetrieveIter.loadULong(): ULong = ULongType.unfoldFromBlock(
-        retrieve, index.toInt()).value.also { index += ULongType.atomicSize }
+        retrieve, index).value.also { index += ULongType.atomicSize }
 
 
     public fun RetrieveIter.loadByteArray(
         value: ByteBuffer
-    ): Long = ByteArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    ): Int = ByteArrayType.unfoldFromBlock(retrieve, index, value).also { index += it }
     public fun RetrieveIter.loadShortArray(
         value: ShortBuffer
-    ): Long = ShortArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    ): Int = ShortArrayType.unfoldFromBlock(retrieve, index, value).also { index += it }
     public fun RetrieveIter.loadIntArray(
         value: IntBuffer
-    ): Long = IntArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    ): Int = IntArrayType.unfoldFromBlock(retrieve, index, value).also { index += it }
     public fun RetrieveIter.loadLongArray(
         value: LongBuffer
-    ): Long = LongArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    ): Int = LongArrayType.unfoldFromBlock(retrieve, index, value).also { index += it }
     public fun RetrieveIter.loadFloatArray(
         value: FloatBuffer
-    ): Long = FloatArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    ): Int = FloatArrayType.unfoldFromBlock(retrieve, index, value).also { index += it }
     public fun RetrieveIter.loadDoubleArray(
         value: DoubleBuffer
-    ): Long = DoubleArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    ): Int = DoubleArrayType.unfoldFromBlock(retrieve, index, value).also { index += it }
     public fun RetrieveIter.loadUByteArray(
         value: UByteBuffer
-    ): Long = UByteArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    ): Int = UByteArrayType.unfoldFromBlock(retrieve, index, value).also { index += it }
     public fun RetrieveIter.loadUShortArray(
         value: UShortBuffer
-    ): Long = UShortArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    ): Int = UShortArrayType.unfoldFromBlock(retrieve, index, value).also { index += it }
     public fun RetrieveIter.loadUIntArray(
         value: UIntBuffer
-    ): Long = UIntArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    ): Int = UIntArrayType.unfoldFromBlock(retrieve, index, value).also { index += it }
     public fun RetrieveIter.loadULongArray(
         value: ULongBuffer
-    ): Long = ULongArrayType.unfoldFromBlock(retrieve, index.toInt(), value).also { index += it }
+    ): Int = ULongArrayType.unfoldFromBlock(retrieve, index, value).also { index += it }
 
 
-    public fun RetrieveIter.loadUuid4(value: Uuid4): Long = Uuid4Type.unfoldFromBlock(
-        retrieve, index.toInt(), value).also { index += it }
+    public fun RetrieveIter.loadUuid4(value: Uuid4): Int = Uuid4Type.unfoldFromBlock(
+        retrieve, value, index).also { index += it }
 
     /*public companion object {
         protected fun loadByte(inData: Retrievable, offset: Int): ByteType = ByteType.unfoldFromBlock(inData, offset)

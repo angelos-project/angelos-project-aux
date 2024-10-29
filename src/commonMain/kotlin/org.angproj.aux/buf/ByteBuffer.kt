@@ -15,18 +15,19 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.Default
 import org.angproj.aux.util.NullObject
 
 
 public class ByteBuffer internal constructor(
-    segment: Segment, view: Boolean = false
+    segment: Segment<*>, view: Boolean = false
 ): ArrayBuffer<Byte>(segment, view, TypeSize.BYTE) {
 
-    public constructor(size: Int) : this(Bytes(size * TypeSize.byte))
+    public constructor(size: Int) : this(Default.allocate(size * TypeSize.byte))
 
     public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.byte)
 
-    override fun create(segment: Segment): ByteBuffer = ByteBuffer(segment)
+    override fun create(segment: Segment<*>): ByteBuffer = ByteBuffer(segment)
 
     override fun get(index: Int): Byte = _segment.getByte(index)
 

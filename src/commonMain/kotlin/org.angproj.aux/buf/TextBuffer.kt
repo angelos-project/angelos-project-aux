@@ -16,21 +16,21 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.BufMgr
-import org.angproj.aux.util.CodePoint
-import org.angproj.aux.util.withUnicodeAware
+import org.angproj.aux.mem.Default
+import org.angproj.aux.util.*
 import kotlin.math.max
 import kotlin.math.min
 
 
 public class TextBuffer internal constructor(
-    segment: Segment, view: Boolean = false
+    segment: Segment<*>, view: Boolean = false
 ): FlowBuffer(segment, view), TextReadable, TextWritable {
 
-    public constructor(size: Int) : this(Bytes(size))
+    public constructor(size: Int) : this(Default.allocate(size))
 
     public constructor(size: DataSize = DataSize._4K) : this(size.size)
 
-    override fun create(segment: Segment): TextBuffer = TextBuffer(segment)
+    override fun create(segment: Segment<*>): TextBuffer = TextBuffer(segment)
 
     override fun readGlyph(): CodePoint = withUnicodeAware {
         readGlyphBlk(remaining) { _segment.getByte(_position++) } }
@@ -38,19 +38,22 @@ public class TextBuffer internal constructor(
     override fun writeGlyph(codePoint: CodePoint): Int = withUnicodeAware {
         writeGlyphBlk(codePoint, remaining) { _segment.setByte(_position++, it) } }
 
+    /**
+     * Currently doesn't work
+     * */
     public fun select(selection: IntRange = mark..limit): IntRange = withUnicodeAware {
         require(selection.first in mark..limit && selection.last in mark..limit) {
             "Selection outside mark and limit." }
 
-        val first = (selection.first .. max(selection.first - 6, mark)).find {
+        val first = (selection.first .. max(selection.first - 5, mark)).find {
             isGlyphStart(_segment.getByte(it)) }
-        val last = (selection.last .. min(selection.last + 6, limit)).findLast {
+        val last = (selection.last .. min(selection.last + 5, limit)).findLast {
             isGlyphStart(_segment.getByte(it)) }
 
         check(first != null) { "Invalid beginning of start glyph" }
         check(last != null) { "Invalid end of last glyph" }
 
-        first until (last+hasGlyphSize(_segment.getByte(last)))
+        first until  (last+hasGlyphSize(_segment.getByte(last)))
     }
 }
 
@@ -63,3 +66,7 @@ public fun textOf(capacity: Int): TextBuffer = BufMgr.text(capacity)
 public fun TextBuffer.toText(selection: IntRange = mark..limit): Text = with(select(selection)) {
     BufMgr.txt(last - first).apply { this@toText.copyInto(this, 0, first, last) }
 }
+
+/*public fun TextBuffer.toText(selection: IntRange = mark..limit): Text = with(selection) {
+    BufMgr.txt(last - first).apply { this@toText.copyInto(this, 0, first, last) }
+}*/

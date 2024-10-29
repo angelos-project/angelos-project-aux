@@ -14,6 +14,13 @@
  */
 package org.angproj.aux.io
 
+/**
+ * The [PumpWriter] receives data through segments which it has to copy into whatever
+ * drainage is implemented. It reads the full segments up to its limits and return
+ * the number of copied bytes each time. If a segment has a limit set under its
+ * capacity it is a sign that it has reached EOF which simply is noted as the implementation
+ * has to deal with it. If the [PumpReader]s inner state is closed or ... the method returns -1
+ * */
 public interface PumpWriter {
-    public fun write(data: Segment): Int
+    public fun write(data: Segment<*>): Int
 }

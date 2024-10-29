@@ -47,7 +47,7 @@ public object SecureEntropy : AbstractSponge256(), PumpReader {
         require(length <= DataSize._1K.size) { "Length must not surpass 1 Kilobyte." }
     }
 
-    override fun read(data: Segment): Int {
+    override fun read(data: Segment<*>): Int {
         require(data.limit)
         revitalize()
         fill(data) { round() }

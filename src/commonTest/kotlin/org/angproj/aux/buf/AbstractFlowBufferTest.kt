@@ -21,8 +21,6 @@ import kotlin.test.assertFailsWith
 
 abstract class AbstractFlowBufferTest<E: FlowBuffer>: AbstractBufferTest<E>() {
 
-    //protected abstract fun setInput(): E
-
     protected abstract val posValue: Int
 
     /*@Test
@@ -192,19 +190,4 @@ abstract class AbstractFlowBufferTest<E: FlowBuffer>: AbstractBufferTest<E>() {
     fun getRemaining() {
         assertEquals(setInput().remaining, DataSize._4K.size - posValue)
     }
-
-    /*@Test
-    fun isView() {
-        assertEquals(setInput().isView(), false)
-    }
-
-    @Test
-    fun isMem() {
-        assertEquals(setInput().isMem(), false)
-    }
-
-    @Test
-    fun close() {
-        setInput().close()
-    }*/
 }

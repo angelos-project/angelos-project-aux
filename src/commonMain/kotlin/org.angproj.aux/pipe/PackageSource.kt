@@ -15,7 +15,10 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.io.PackageWritable
-import org.angproj.aux.pkg.Enfoldable
+import org.angproj.aux.pkg.Package
+import org.angproj.aux.pkg.Packageable
+import org.angproj.aux.pkg.arb.StructType
+import org.angproj.aux.pkg.coll.ObjectType
 
 public class PackageSource(
     private val src: BinarySource
@@ -26,7 +29,7 @@ public class PackageSource(
 
     override fun close(): Unit = src.close()
 
-    override fun <S : Enfoldable> writePackage(pkg: S) {
-        TODO("Not yet implemented")
-    }
+    override fun <P : Package> writeObject(pkg: P): Int = ObjectType(pkg).enfoldToStream(src)
+
+    override fun <P : Packageable> writeStruct(pkg: P): Int = StructType(pkg).enfoldToStream(src)
 }

@@ -14,9 +14,10 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.pkg.Enfoldable
-import org.angproj.aux.pkg.Unfoldable
+import org.angproj.aux.pkg.Package
+import org.angproj.aux.pkg.Packageable
 
 public interface PackageReadable {
-    public fun<E : Enfoldable, S: Unfoldable<E>> readPackage(): S
+    public fun<P: Package> readObject(action: () -> P): P
+    public fun<P: Packageable> readStruct(action: () -> P): P
 }

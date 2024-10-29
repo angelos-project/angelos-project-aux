@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 class BigIntTypeTest {
 
     @Test
-    fun enfoldToStream() {
+    fun enfoldUnfoldToStream() {
         val texts = listOf(
             TestInformationStub.number1,
             TestInformationStub.number2,

@@ -15,6 +15,7 @@
 package org.angproj.aux.pkg.mem
 
 import org.angproj.aux.buf.ArrayBuffer
+import org.angproj.aux.buf.isNull
 import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.pkg.Convention
@@ -31,9 +32,9 @@ public interface ArrayEnfoldable<G, E: ArrayBuffer<G>>: Enfoldable {
             value: E,
             atomicSize: Int,
             foldFormat: FoldFormat
-        ): Long = when (foldFormat) {
-            FoldFormat.BLOCK -> (atomicSize * value.limit).toLong()
-            FoldFormat.STREAM -> (atomicSize * value.limit).toLong() + Enfoldable.OVERHEAD_COUNT
+        ): Int = when (foldFormat) {
+            FoldFormat.BLOCK -> (atomicSize * value.limit)
+            FoldFormat.STREAM -> (atomicSize * value.limit) + Enfoldable.OVERHEAD_COUNT
         }
 
         public fun <G, E: ArrayBuffer<G>>arrayEnfoldToBlock(
@@ -42,7 +43,8 @@ public interface ArrayEnfoldable<G, E: ArrayBuffer<G>>: Enfoldable {
             outData: Storable,
             offset: Int = 0,
             store: (outData: Storable, index: Int, v: G) -> Unit
-        ): Long {
+        ): Int {
+            require(!value.isNull()) { "Null Array!" }
             value.forEachIndexed { index, v -> store(outData,offset + index * atomicSize, v) }
             return arrayFoldSize(value, atomicSize, FoldFormat.BLOCK)
         }
@@ -53,7 +55,8 @@ public interface ArrayEnfoldable<G, E: ArrayBuffer<G>>: Enfoldable {
             conventionType: Convention,
             outStream: BinaryWritable,
             stream: (outStream: BinaryWritable, v: G) -> Unit
-        ): Long {
+        ): Int {
+            require(!value.isNull()) { "Null Array!" }
             Enfoldable.setType(outStream, conventionType)
             Enfoldable.setCount(outStream, value.limit)
             value.forEach { stream(outStream, it) }

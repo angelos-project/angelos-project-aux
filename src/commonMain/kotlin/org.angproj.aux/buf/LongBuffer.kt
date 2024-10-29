@@ -15,18 +15,19 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.Default
 import org.angproj.aux.util.NullObject
 
 
 public class LongBuffer internal constructor(
-    segment: Segment, view: Boolean = false
+    segment: Segment<*>, view: Boolean = false
 ): ArrayBuffer<Long>(segment, view, TypeSize.LONG) {
 
-    public constructor(size: Int) : this(Bytes(size * TypeSize.long))
+    public constructor(size: Int) : this(Default.allocate(size * TypeSize.long))
 
     public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.long)
 
-    override fun create(segment: Segment): LongBuffer = LongBuffer(segment)
+    override fun create(segment: Segment<*>): LongBuffer = LongBuffer(segment)
 
     override fun get(index: Int): Long = _segment.getLong(index * TypeSize.long)
 

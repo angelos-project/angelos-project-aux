@@ -27,14 +27,14 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class UByteType(public val value: UByte) : Enfoldable {
 
-    override fun foldSize(foldFormat: FoldFormat): Long = atomicSize.toLong()
+    override fun foldSize(foldFormat: FoldFormat): Int = atomicSize
 
-    public fun enfoldToBlock(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int): Int {
         outData.storeUByte(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Int {
         outStream.writeUByte(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -43,6 +43,7 @@ public value class UByteType(public val value: UByte) : Enfoldable {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.UBYTE
         override val atomicSize: Int = UByte.SIZE_BYTES
+
         public fun unfoldFromBlock(inData: Retrievable, offset: Int): UByteType =
             UByteType(inData.retrieveUByte(offset))
 

@@ -15,6 +15,7 @@
 package org.angproj.aux.pkg.mem
 
 import org.angproj.aux.buf.UIntBuffer
+import org.angproj.aux.buf.isNull
 import org.angproj.aux.io.*
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.FoldFormat
@@ -24,17 +25,17 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class UIntArrayType(public override val value: UIntBuffer): ArrayEnfoldable<UInt, UIntBuffer> {
 
-    override fun foldSize(foldFormat: FoldFormat): Long = ArrayEnfoldable.arrayFoldSize(
+    override fun foldSize(foldFormat: FoldFormat): Int = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Int = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeUInt(i, v) }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long = ArrayEnfoldable.arrayEnfoldToStream(
+    public fun enfoldToStream(outStream: BinaryWritable): Int = ArrayEnfoldable.arrayEnfoldToStream(
         value, atomicSize, conventionType, outStream) { o, v -> o.writeUInt(v) }
 
     public companion object : ArrayUnfoldable<UInt, UIntBuffer, UIntArrayType> {
-        override val factory: (count: Int) -> UIntArrayType = { c -> UIntArrayType(UIntBuffer(c)) }
+        override val factory: (count: Int) -> UIntBuffer = { c -> UIntBuffer(c) }
 
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.ARRAY_UINT
@@ -43,15 +44,18 @@ public value class UIntArrayType(public override val value: UIntBuffer): ArrayEn
         public fun unfoldFromBlock(
             inData: Retrievable,
             value: UIntBuffer
-        ): Long = unfoldFromBlock(inData, 0, value)
+        ): Int = unfoldFromBlock(inData, 0, value)
 
         public fun unfoldFromBlock(
             inData: Retrievable,
             offset: Int,
             value: UIntBuffer
-        ): Long = ArrayUnfoldable.arrayUnfoldFromBlock(
-            inData, offset, value, atomicSize
-        ) { d, i -> d.retrieveUInt(i) }
+        ): Int {
+            require(!value.isNull()) { "Null Array!" }
+            return ArrayUnfoldable.arrayUnfoldFromBlock(
+                inData, offset, value, atomicSize
+            ) { d, i -> d.retrieveUInt(i) }
+        }
 
        /* public fun unfoldFromBlock(
             inData: Retrievable,
@@ -65,9 +69,17 @@ public value class UIntArrayType(public override val value: UIntBuffer): ArrayEn
         ): UIntArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
             inData, offset, count, atomicSize, factory) { d, i -> d.retrieveUInt(i) }*/
 
-        public fun unfoldFromStream(
+        public override fun unfoldFromStream(
             inStream: BinaryReadable
-        ): UIntArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
-            inStream, conventionType, factory) { s -> s.readUInt() }
+        ): UIntArrayType = UIntArrayType(ArrayUnfoldable.arrayUnfoldFromStream(
+            inStream, conventionType, factory) { s -> s.readUInt() })
+
+        public override fun unfoldFromStream(
+            inStream: BinaryReadable,
+            value: UIntBuffer
+        ) {
+            require(!value.isNull()) { "Null Array!" }
+            ArrayUnfoldable.arrayUnfoldFromStream(inStream, conventionType, value) { s -> s.readUInt() }
+        }
     }
 }

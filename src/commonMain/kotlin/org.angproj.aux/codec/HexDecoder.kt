@@ -29,9 +29,9 @@ public class HexDecoder : Decoder<TextBuffer, Binary> {
         private var mark = buffer.mark
         private val limit = buffer.limit
 
-        override fun read(data: Segment): Int {
+        override fun read(data: Segment<*>): Int {
             val length = min(limit - mark, data.limit)
-            buffer.asBinary().copyInto(data, 0, mark, mark + length)
+            if(length > 0) buffer.asBinary().copyInto(data, 0, mark, mark + length)
             mark += length
             return length
         }

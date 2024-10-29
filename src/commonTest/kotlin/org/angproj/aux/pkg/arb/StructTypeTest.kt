@@ -29,9 +29,6 @@ class StructTypeTest {
 
     @Test
     fun enfoldUnfoldStream() {
-        /**
-         * Unknown error related to unpacking and assertEquals arises randomly
-         * */
         val pl1 = setInputTestStruct()
         val buf = BinaryBuffer()
         val lt = StructType(pl1)

@@ -15,6 +15,7 @@
 package org.angproj.aux.pkg.mem
 
 import org.angproj.aux.buf.FloatBuffer
+import org.angproj.aux.buf.isNull
 import org.angproj.aux.io.*
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.FoldFormat
@@ -24,17 +25,17 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class FloatArrayType(public override val value: FloatBuffer): ArrayEnfoldable<Float, FloatBuffer> {
 
-    override fun foldSize(foldFormat: FoldFormat): Long = ArrayEnfoldable.arrayFoldSize(
+    override fun foldSize(foldFormat: FoldFormat): Int = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Int = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeFloat(i, v) }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long = ArrayEnfoldable.arrayEnfoldToStream(
+    public fun enfoldToStream(outStream: BinaryWritable): Int = ArrayEnfoldable.arrayEnfoldToStream(
         value, atomicSize, conventionType, outStream) { o, v -> o.writeFloat(v) }
 
     public companion object : ArrayUnfoldable<Float, FloatBuffer, FloatArrayType> {
-        override val factory: (count: Int) -> FloatArrayType = { c -> FloatArrayType(FloatBuffer(c)) }
+        override val factory: (count: Int) -> FloatBuffer = { c -> FloatBuffer(c) }
 
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.ARRAY_FLOAT
@@ -43,15 +44,21 @@ public value class FloatArrayType(public override val value: FloatBuffer): Array
         public fun unfoldFromBlock(
             inData: Retrievable,
             value: FloatBuffer
-        ): Long = unfoldFromBlock(inData, 0, value)
+        ): Int = unfoldFromBlock(inData, 0, value)
 
         public fun unfoldFromBlock(
             inData: Retrievable,
             offset: Int,
             value: FloatBuffer
-        ): Long = ArrayUnfoldable.arrayUnfoldFromBlock(
-            inData, offset, value, atomicSize
-        ) { d, i -> d.retrieveFloat(i) }
+        ): Int {
+            require(!value.isNull()) { "Null Array!" }
+            return ArrayUnfoldable.arrayUnfoldFromBlock(
+                inData,
+                offset,
+                value,
+                atomicSize
+            ) { d, i -> d.retrieveFloat(i) }
+        }
 
         /*public fun unfoldFromBlock(
             inData: Retrievable,
@@ -65,9 +72,17 @@ public value class FloatArrayType(public override val value: FloatBuffer): Array
         ): FloatArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
             inData, offset, count, atomicSize, factory) { d, i -> d.retrieveFloat(i) }*/
 
-        public fun unfoldFromStream(
+        public override fun unfoldFromStream(
             inStream: BinaryReadable
-        ): FloatArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
-            inStream, conventionType, factory) { s -> s.readFloat() }
+        ): FloatArrayType = FloatArrayType(ArrayUnfoldable.arrayUnfoldFromStream(
+            inStream, conventionType, factory) { s -> s.readFloat() })
+
+        public override fun unfoldFromStream(
+            inStream: BinaryReadable,
+            value: FloatBuffer
+        ){
+            require(!value.isNull()) { "Null Array!" }
+            ArrayUnfoldable.arrayUnfoldFromStream(inStream, conventionType, value) { s -> s.readFloat() }
+        }
     }
 }

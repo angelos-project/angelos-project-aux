@@ -15,6 +15,7 @@
 package org.angproj.aux.pkg.mem
 
 import org.angproj.aux.buf.UShortBuffer
+import org.angproj.aux.buf.isNull
 import org.angproj.aux.io.*
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.FoldFormat
@@ -24,17 +25,17 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class UShortArrayType(public override val value: UShortBuffer): ArrayEnfoldable<UShort, UShortBuffer> {
 
-    override fun foldSize(foldFormat: FoldFormat): Long = ArrayEnfoldable.arrayFoldSize(
+    override fun foldSize(foldFormat: FoldFormat): Int = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = ArrayEnfoldable.arrayEnfoldToBlock(
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Int = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeUShort(i, v) }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long = ArrayEnfoldable.arrayEnfoldToStream(
+    public fun enfoldToStream(outStream: BinaryWritable): Int = ArrayEnfoldable.arrayEnfoldToStream(
         value, atomicSize, conventionType, outStream) { o, v -> o.writeUShort(v) }
 
     public companion object : ArrayUnfoldable<UShort, UShortBuffer, UShortArrayType> {
-        override val factory: (count: Int) -> UShortArrayType = { c -> UShortArrayType(UShortBuffer(c)) }
+        override val factory: (count: Int) -> UShortBuffer = { c -> UShortBuffer(c) }
 
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.ARRAY_USHORT
@@ -43,15 +44,18 @@ public value class UShortArrayType(public override val value: UShortBuffer): Arr
         public fun unfoldFromBlock(
             inData: Retrievable,
             value: UShortBuffer
-        ): Long = unfoldFromBlock(inData, 0, value)
+        ): Int = unfoldFromBlock(inData, 0, value)
 
         public fun unfoldFromBlock(
             inData: Retrievable,
             offset: Int,
             value: UShortBuffer
-        ): Long = ArrayUnfoldable.arrayUnfoldFromBlock(
-            inData, offset, value, atomicSize
-        ) { d, i -> d.retrieveUShort(i) }
+        ): Int {
+            require(!value.isNull()) { "Null Array!" }
+            return ArrayUnfoldable.arrayUnfoldFromBlock(
+                inData, offset, value, atomicSize
+            ) { d, i -> d.retrieveUShort(i) }
+        }
 
         /*public fun unfoldFromBlock(
             inData: Retrievable,
@@ -65,9 +69,17 @@ public value class UShortArrayType(public override val value: UShortBuffer): Arr
         ): UShortArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
             inData, offset, count, atomicSize, factory) { d, i -> d.retrieveUShort(i) }*/
 
-        public fun unfoldFromStream(
+        public override fun unfoldFromStream(
             inStream: BinaryReadable
-        ): UShortArrayType = ArrayUnfoldable.arrayUnfoldFromStream(
-            inStream, conventionType, factory) { s -> s.readUShort() }
+        ): UShortArrayType = UShortArrayType(ArrayUnfoldable.arrayUnfoldFromStream(
+            inStream, conventionType, factory) { s -> s.readUShort() })
+
+        public override fun unfoldFromStream(
+            inStream: BinaryReadable,
+            value: UShortBuffer
+        ) {
+            require(!value.isNull()) { "Null Array!" }
+            ArrayUnfoldable.arrayUnfoldFromStream(inStream, conventionType, value) { s -> s.readUShort() }
+        }
     }
 }

@@ -14,20 +14,18 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.AbstractSpeedCopy
+import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.res.allocateMemory
 import org.angproj.aux.res.Memory as Chunk
 
-// throw UnsupportedOperationException("No access to native memory.")
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-public actual open class Memory actual constructor(
-    size: Int, idxLimit: Int
-) : AbstractMemory(size, idxLimit) {
-    public actual constructor(size: Int) : this(size, size)
+public actual open class Memory internal actual constructor(
+    size: Int, mem: MemoryManager<Memory>
+) : AbstractMemory(size, mem) {
 
-    actual final override val data: Chunk = allocateMemory(length)
+    actual final override val data: Chunk = allocateMemory(size)
 
-    public override fun close() { throw UnsupportedOperationException("No access to native memory.") }
+    override fun close() { super.close { memCtx.recycle(this) } }
 
     actual override fun getByte(index: Int): Byte {
         throw UnsupportedOperationException("No access to native memory.")
@@ -61,9 +59,8 @@ public actual open class Memory actual constructor(
         throw UnsupportedOperationException("No access to native memory.")
     }
 
-    actual override fun create(size: Int, idxLimit: Int): Memory = Memory(size, idxLimit)
+    @Deprecated("Not to be used with memory manager")
+    actual override fun create(size: Int, idxLimit: Int): Memory = memCtx.allocate(DataSize.findLowestAbove(size))
 
-    override fun <T: AbstractSpeedCopy> calculateInto(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
-        innerCopy(dest as Memory, destOff, idxFrom, idxTo)
-    }
+    //override val size: Int = size
 }

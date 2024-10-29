@@ -27,14 +27,14 @@ import kotlin.jvm.JvmInline
 @JvmInline
 public value class ByteType(public val value: Byte) : Enfoldable {
 
-    override fun foldSize(foldFormat: FoldFormat): Long = atomicSize.toLong()
+    override fun foldSize(foldFormat: FoldFormat): Int = atomicSize
 
-    public fun enfoldToBlock(outData: Storable, offset: Int): Long {
+    public fun enfoldToBlock(outData: Storable, offset: Int): Int {
         outData.storeByte(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long {
+    public fun enfoldToStream(outStream: BinaryWritable): Int {
         outStream.writeByte(value)
         return foldSize(FoldFormat.STREAM)
     }

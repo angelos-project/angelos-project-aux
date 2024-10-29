@@ -14,24 +14,25 @@
  */
 package org.angproj.aux.io
 
+import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.res.copyInto
 import org.angproj.aux.util.Reify
 import org.angproj.aux.res.Memory as Chunk
 
 public abstract class AbstractMemory protected constructor(
-    size: Int, idxLimit: Int
-): Segment(size, typeSize, idxLimit) {
+    size: Int, mem: MemoryManager<Memory>
+): Segment<Memory>(size, mem) {
 
-    init {
+    /*init {
         // Must be BYTE
         require(typeSize == TypeSize.BYTE)
-    }
+    }*/
 
-    @PublishedApi
+    //@PublishedApi
     internal abstract val data: Chunk
 
     @Deprecated("Not to be used with memory manager")
-    abstract override fun create(size: Int, idxLimit: Int): AbstractMemory
+    public abstract fun create(size: Int, idxLimit: Int): AbstractMemory
 
     abstract override fun getByte(index: Int): Byte
 
@@ -49,12 +50,12 @@ public abstract class AbstractMemory protected constructor(
 
     abstract override fun setLong(index: Int, value: Long)
 
-    public companion object {
+    /*public companion object {
         public val typeSize: TypeSize = TypeSize.BYTE
-    }
+    }*/
 }
 
-@PublishedApi
-internal inline fun<reified T: AbstractMemory> T.innerCopy(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
+//@PublishedApi
+/*internal inline fun<reified T: AbstractMemory> T.innerCopy(dest: T, destOff: Int, idxFrom: Int, idxTo: Int) {
     data.copyInto<Reify>(dest.data, destOff, idxFrom, idxTo)
-}
+}*/

@@ -15,19 +15,20 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.Default
 import org.angproj.aux.util.NullObject
 import org.angproj.aux.util.NumberAware
 
 
 public class FloatBuffer internal constructor(
-    segment: Segment, view: Boolean = false
+    segment: Segment<*>, view: Boolean = false
 ): ArrayBuffer<Float>(segment, view, TypeSize.FLOAT), NumberAware {
 
-    public constructor(size: Int) : this(Bytes(size * TypeSize.float))
+    public constructor(size: Int) : this(Default.allocate(size * TypeSize.float))
 
     public constructor(size: DataSize = DataSize._4K) : this(size.size / TypeSize.float)
 
-    override fun create(segment: Segment): FloatBuffer = FloatBuffer(segment)
+    override fun create(segment: Segment<*>): FloatBuffer = FloatBuffer(segment)
 
     override fun get(index: Int): Float = _segment.getInt(index * TypeSize.float).conv2F()
 

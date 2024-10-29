@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 class Uuid4TypeTest {
 
     @Test
-    fun enfoldToBlock() {
+    fun enfoldUnfoldToBlock() {
         val type = Uuid4Type(uuid4())
         val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK).toInt()))
 
@@ -21,10 +21,14 @@ class Uuid4TypeTest {
 
         val retrieved = Uuid4Type.unfoldFromBlock(block)
         assertEquals(type, retrieved)
+
+        val retrieved2 = uuid4()
+        Uuid4Type.unfoldFromBlock(block, retrieved2)
+        assertEquals(type.value, retrieved2)
     }
 
     @Test
-    fun enfoldToStream() {
+    fun enfoldUnfoldToStream() {
         val type = Uuid4Type(uuid4())
         val stream = BinaryBuffer()
         type.enfoldToStream(stream)

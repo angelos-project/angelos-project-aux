@@ -15,21 +15,22 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.com.Limitable
+import org.angproj.aux.util.Copyable
 
 @OptIn(ExperimentalStdlibApi::class)
-public interface ByteString: Limitable, AutoCloseable {
+public interface ByteString: Limitable, Copyable, AutoCloseable {
 
-    public fun getByte(index: Int): Byte
+    public override fun getByte(index: Int): Byte
     public fun getShort(index: Int): Short
     public fun getInt(index: Int): Int
-    public fun getLong(index: Int): Long
+    public override fun getLong(index: Int): Long
 
-    public fun setByte(index: Int, value: Byte): Unit
+    public override fun setByte(index: Int, value: Byte): Unit
     public fun setShort(index: Int, value: Short): Unit
     public fun setInt(index: Int, value: Int): Unit
-    public fun setLong(index: Int, value: Long): Unit
+    public override fun setLong(index: Int, value: Long): Unit
 
-    public override fun close() {}
+    public override fun close()
 
     public companion object {
 

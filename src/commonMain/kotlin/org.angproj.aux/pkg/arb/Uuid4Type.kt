@@ -24,21 +24,22 @@ import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.Unfoldable
 import org.angproj.aux.pkg.type.BlockType
 import org.angproj.aux.util.Uuid4
+import org.angproj.aux.util.isNull
 import org.angproj.aux.util.uuid4Of
 import kotlin.jvm.JvmInline
 
 @JvmInline
 public value class Uuid4Type(public val value: Uuid4) : Enfoldable {
 
-    override fun foldSize(foldFormat: FoldFormat): Long = when (foldFormat) {
-        FoldFormat.BLOCK -> atomicSize.toLong()
-        FoldFormat.STREAM -> atomicSize.toLong() + Enfoldable.OVERHEAD_LENGTH
+    override fun foldSize(foldFormat: FoldFormat): Int = when (foldFormat) {
+        FoldFormat.BLOCK -> atomicSize
+        FoldFormat.STREAM -> atomicSize + Enfoldable.OVERHEAD_LENGTH
     }
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Long = BlockType(
+    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Int = BlockType(
         value.asBinary()).enfoldToBlock(outData, offset)
 
-    public fun enfoldToStream(outStream: BinaryWritable): Long = BlockType(
+    public fun enfoldToStream(outStream: BinaryWritable): Int = BlockType(
         value.asBinary()).enfoldToStreamByConvention(outStream, conventionType)
 
     public companion object : Unfoldable<Uuid4Type> {
@@ -46,7 +47,8 @@ public value class Uuid4Type(public val value: Uuid4) : Enfoldable {
         override val conventionType: Convention = Convention.UUID4
         override val atomicSize: Int = 16
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int = 0, uuid4: Uuid4): Long {
+        public fun unfoldFromBlock(inData: Retrievable, uuid4: Uuid4, offset: Int = 0): Int {
+            require(!uuid4.isNull()) { "Null UUID" }
             return BlockType.unfoldFromBlock(inData, offset, uuid4.asBinary())
         }
 

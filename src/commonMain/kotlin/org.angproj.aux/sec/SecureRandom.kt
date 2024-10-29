@@ -49,7 +49,7 @@ public object SecureRandom : BinaryReadable, PumpReader {
     override fun readFloat(): Float = sink.readFloat()
     override fun readDouble(): Double = sink.readDouble()
 
-    override fun read(data: Segment): Int = BufMgr.asWrap(data) {
+    override fun read(data: Segment<*>): Int = BufMgr.asWrap(data) {
         val index = chunkLoop<Reify>(0, limit, Long.SIZE_BYTES) {
             storeLong(it, readLong())
         }

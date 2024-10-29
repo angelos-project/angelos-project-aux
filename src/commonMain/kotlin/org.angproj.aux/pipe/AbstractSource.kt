@@ -25,7 +25,7 @@ public abstract class AbstractSource<T: PipeType>(
     protected val pipe: PushPipe<T>
 ): Source, PipeType {
     protected var pos: Int = 0
-    protected var seg: Segment = NullObject.segment
+    protected var seg: Segment<*> = NullObject.segment
 
     protected var _open: Boolean = true
 

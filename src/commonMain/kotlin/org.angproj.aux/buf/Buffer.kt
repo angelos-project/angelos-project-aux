@@ -17,14 +17,19 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.Binary
 import org.angproj.aux.io.Memory
 import org.angproj.aux.io.Segment
+import org.angproj.aux.io.copyInto
 import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.Auto
+import org.angproj.aux.util.BufferAware
+import org.angproj.aux.util.Copy
+import org.angproj.aux.util.Copyable
+
 
 public abstract class Buffer protected constructor(
-    segment: Segment, protected val view: Boolean = false
-): SpeedCopy(segment), Auto {
+    segment: Segment<*>, protected val view: Boolean = false
+): SpeedCopy(segment), Auto, Comparable<Buffer> {
 
-    internal abstract fun create(segment: Segment): Buffer
+    internal abstract fun create(segment: Segment<*>): Buffer
 
     /**
      * Gives the max capacity of the buffer
@@ -48,12 +53,24 @@ public abstract class Buffer protected constructor(
         if(this === other) return true
         if(other == null || this::class != other::class) return false
         other as Buffer
-        return _segment == other._segment
+        return compareTo(other) == 0
     }
 
     public override fun hashCode(): Int = _segment.hashCode()
+
+    public override operator fun compareTo(other: Buffer): Int { return hashCode() - other.hashCode() }
 }
 
+
+//public fun <S: Buffer, D: Buffer>S.copyOfRange(fromIndex: Int, toIndex: Int): D
+
+//public fun <S: Buffer, D: Buffer>S.copyOf(): D
+
+@Deprecated("Has moved to Binary", ReplaceWith("x.asBinary.securelyRandomize()"))
 public fun Buffer.securelyRandomize() { SecureRandom.read(_segment) }
 
+/**
+ * View extension method for all Buffers.
+ * This method should be the only used method to manipulate data within any buffer used.
+ * */
 public fun <E: Buffer>E.asBinary(): Binary = Binary(this._segment, true)

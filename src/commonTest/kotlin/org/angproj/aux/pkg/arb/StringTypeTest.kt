@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 class StringTypeTest {
 
     @Test
-    fun enfoldToStream() {
+    fun enfoldUnfoldToStream() {
         val texts = listOf(
             TestInformationStub.lipsumShort.toText(),
             TestInformationStub.lipsumMedium.toText(),

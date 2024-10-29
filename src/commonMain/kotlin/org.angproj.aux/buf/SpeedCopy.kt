@@ -14,16 +14,36 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.io.Memory
 import org.angproj.aux.io.Segment
+import org.angproj.aux.res.speedMemCpy
+import org.angproj.aux.util.Copy
 
 
-public abstract class SpeedCopy internal constructor(segment: Segment) {
+public abstract class SpeedCopy internal constructor(segment: Segment<*>) {
     public abstract val capacity: Int
     public abstract val limit: Int
-    internal val _segment: Segment = segment
+    internal val _segment: Segment<*> = segment
 }
 
-public fun<C: SpeedCopy> SpeedCopy.copyInto(destination: C, destinationOffset: Int, fromIndex: Int, toIndex: Int) {
-    check(_segment.isOpen && destination._segment.isOpen) { "Closed memory" }
-    _segment.copyInto(destination._segment, destinationOffset, fromIndex, toIndex)
-}
+public fun <C: SpeedCopy>C.copyInto(
+    destination: C, destinationOffset: Int, fromIndex: Int, toIndex: Int
+): Int = object : Copy {
+    operator fun invoke(): Int {
+        check(_segment.isOpen && destination._segment.isOpen) { "Closed memory" }
+        return when {
+            _segment is Memory && destination._segment is Memory ->  {
+                require(fromIndex, toIndex, destinationOffset, _segment.data, destination._segment.data)
+                speedMemCpy(fromIndex, toIndex, destinationOffset, _segment.data.ptr, destination._segment.data.ptr)
+            }
+            _segment is Memory -> {
+                require(fromIndex, toIndex, destinationOffset, _segment.data, destination._segment)
+                innerCopy(fromIndex, toIndex, destinationOffset, _segment.data, destination._segment)
+            }
+            else -> {
+                require(fromIndex, toIndex, destinationOffset, _segment, destination._segment)
+                innerCopy(fromIndex, toIndex, destinationOffset, _segment, destination._segment)
+            }
+        }
+    }
+}()
