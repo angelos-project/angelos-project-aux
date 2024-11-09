@@ -1,63 +1,152 @@
+/**
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ *
+ * This software is available under the terms of the MIT license. Parts are licensed
+ * under different terms if stated. The legal terms are attached to the LICENSE file
+ * and are made available on:
+ *
+ *      https://opensource.org/licenses/MIT
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Contributors:
+ *      Kristoffer Paulsson - initial implementation
+ */
 package org.angproj.aux.pkg.mem
 
-import org.angproj.aux.buf.BinaryBuffer
-import org.angproj.aux.buf.DoubleBuffer
-import org.angproj.aux.buf.toDoubleBuffer
-import org.angproj.aux.io.binOf
+import org.angproj.aux.buf.*
+import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.pkg.FoldFormat
+import org.angproj.aux.pkg.Package
+import org.angproj.aux.pkg.Packageable
+import org.angproj.aux.pkg.arb.StructType
+import org.angproj.aux.pkg.coll.ObjectType
 import org.angproj.aux.pkg.type.BlockType
+import org.angproj.aux.util.NullObject
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 
+data class DoubleTestObjectPackage(
+    val fixBuffer: DoubleBuffer = DoubleBuffer(DataSize._128B), // Fixed size buffer
+    var dynBuffer: DoubleBuffer = NullObject.doubleBuffer // Dynamic sized buffer
+): Package { // According to Package convention
+    override fun foldSize(foldFormat: FoldFormat): Int = withFoldSize(foldFormat) { listOf(
+        sizeOf(fixBuffer),
+        sizeOf(dynBuffer)
+    ).sum() }
+    override fun enfold(outStream: BinaryWritable): Unit = withEnfold(outStream) {
+        saveDoubleArray(fixBuffer)
+        saveDoubleArray(dynBuffer)
+    }
+    override fun unfold(inStream: BinaryReadable): Unit = withUnfold(inStream) {
+        loadDoubleArray(fixBuffer)
+        dynBuffer = loadDoubleArray()
+    }
+}
+
+data class DoubleTestStructPackageable(
+    val fixBuffer: DoubleBuffer = DoubleBuffer(DataSize._128B), // Fixed size buffer
+): Packageable { // According to struct Packageable convention
+    override fun foldSize(foldFormat: FoldFormat): Int = withFoldSize(foldFormat){ listOf(
+        sizeOf(fixBuffer),
+    ).sum() }
+    override fun enfold(outData: Storable, offset: Int): Int = withEnfold(outData) {
+        saveDoubleArray(fixBuffer)
+    }
+    override fun unfold(inData: Retrievable, offset: Int): Int = withUnfold(inData, offset) {
+        loadDoubleArray(fixBuffer)
+    }
+    override fun foldFormat(): FoldFormat = FoldFormat.BLOCK
+}
+
+data class DoubleTestObjectPackageable(
+    val fixBuffer: DoubleBuffer = DoubleBuffer(DataSize._128B), // Fixed size buffer
+    var dynBuffer: DoubleBuffer = NullObject.doubleBuffer // Dynamic sized buffer
+): Packageable { // According to object Packageable convention
+    override fun foldSize(foldFormat: FoldFormat): Int = withFoldSize(foldFormat){ listOf(
+        sizeOf(fixBuffer),
+        sizeOf(dynBuffer)
+    ).sum() }
+    override fun enfold(outStream: BinaryWritable): Unit = withEnfold(outStream) {
+        saveDoubleArray(fixBuffer)
+        saveDoubleArray(dynBuffer)
+    }
+    override fun unfold(inStream: BinaryReadable): Unit = withUnfold(inStream) {
+        loadDoubleArray(fixBuffer)
+        dynBuffer = loadDoubleArray()
+    }
+    override fun foldFormat(): FoldFormat = FoldFormat.STREAM
+}
+
 class DoubleArrayTypeTest {
 
-    val first = doubleArrayOf(
-        -1.1274499625307711E14, 1.464455434580084E-24, -4.1152774742056765E-293).toDoubleBuffer()
-    val second = doubleArrayOf(
-        -9.180147825544662E-143, 8.882354166005901E145, 4.3510713287058534E-175,
-        -9.878649542453361E25, 8.06845773968483E241
-    ).toDoubleBuffer()
-    val third = doubleArrayOf(
-        2.6844695967862244E178, 1.6578280087185313E80, -3.279012092802669E23,
-        1.1494304409520904E-96, 1.3035478402495984E70, 2.4410472610912234E194,
-        4.2626831867101333E-252
-    ).toDoubleBuffer()
+    @Test
+    fun enfoldUnfoldToObjectPackage() {
+        val to1 = DoubleTestObjectPackage()
+        to1.fixBuffer.random()
+        to1.dynBuffer = DoubleBuffer(DataSize._128B).apply { random() }
+        val buf = BufMgr.binary(DataSize._4K.size)
+        val len = ObjectType(to1).enfoldStream(buf)
+        buf.flip()
+        val to2 = ObjectType.unfoldStream(buf) { DoubleTestObjectPackage() }.value
 
-    protected fun enfoldArrayToBlock(data: DoubleBuffer) {
-        val type = DoubleArrayType(data)
-        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK).toInt()))
+        assertEquals(len, buf.limit)
+        assertEquals(to1, to2)
+    }
+
+    @Test
+    fun enfoldUnfoldToStructPackageable() {
+        val to1 = DoubleTestStructPackageable()
+        to1.fixBuffer.random()
+        val bin = BufMgr.bin(DataSize._4K.size)
+        val len1 = StructType(to1).enfoldBlock(bin, 0)
+        bin.limitAt(len1)
+        val to2 = StructType.unfoldBlock(bin) { DoubleTestStructPackageable() }.value
+
+        assertEquals(to1, to2)
+    }
+
+    @Test
+    fun enfoldUnfoldToObjectPackageable() {
+        val to1 = DoubleTestObjectPackageable()
+        to1.fixBuffer.random()
+        to1.dynBuffer = DoubleBuffer(DataSize._128B).apply { random() }
+        val buf = BufMgr.binary(DataSize._4K.size)
+        val len = ObjectType(to1).enfoldStream(buf)
+        buf.flip()
+        val to2 = ObjectType.unfoldStream(buf) { DoubleTestObjectPackageable() }.value
+
+        assertEquals(len, buf.limit)
+        assertEquals(to1, to2)
+    }
+
+
+    val rand = DoubleBuffer(DataSize._128B).apply { random() }
+
+    @Test
+    fun enfoldArrayToBlock() {
+        val type = DoubleArrayType(rand)
+        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK)))
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
-        type.enfoldToBlock(block)
+        type.enfoldBlock(block, 0)
 
         val retrieved = DoubleArrayType(DoubleBuffer(type.value.limit))
         DoubleArrayType.unfoldFromBlock(block, retrieved.value)
         assertContentEquals(type.value, retrieved.value)
     }
 
-    protected fun enfoldArrayToStream(data: DoubleBuffer) {
-        val type = DoubleArrayType(data)
+    @Test
+    fun enfoldArrayToStream() {
+        val type = DoubleArrayType(rand)
         val stream = BinaryBuffer()
-        type.enfoldToStream(stream)
+        type.enfoldStream(stream)
         stream.flip()
-        assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())
+        assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM))
 
-        val retrieved = DoubleArrayType.unfoldFromStream(stream)
+        val retrieved = DoubleArrayType.unfoldStream(stream)
         assertContentEquals(type.value, retrieved.value)
-    }
-
-    @Test
-    fun enfoldToBlock() {
-        enfoldArrayToBlock(first)
-        enfoldArrayToBlock(second)
-        enfoldArrayToBlock(third)
-    }
-
-    @Test
-    fun enfoldToStream() {
-        enfoldArrayToStream(first)
-        enfoldArrayToStream(second)
-        enfoldArrayToStream(third)
     }
 }

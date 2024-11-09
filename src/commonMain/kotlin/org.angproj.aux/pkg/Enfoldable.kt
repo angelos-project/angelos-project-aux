@@ -17,6 +17,7 @@ package org.angproj.aux.pkg
 import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.io.TypeSize
+import org.angproj.aux.util.EndianAwareContext.asBig
 
 public interface Enfoldable {
 
@@ -34,7 +35,9 @@ public interface Enfoldable {
         public const val TYPE_SIZE: Int = TypeSize.short
         public const val CONTENT_SIZE: Int = TypeSize.byte
         public const val COUNT_SIZE: Int = TypeSize.int
-        public const val LENGTH_SIZE: Int = TypeSize.long
+        public const val ITEM_SIZE: Int = TypeSize.int
+        public const val CHECK_SIZE: Int = TypeSize.long
+        public const val LENGTH_SIZE: Int = TypeSize.int
         public const val END_SIZE: Int = TypeSize.byte
 
 
@@ -64,12 +67,24 @@ public interface Enfoldable {
             outData.storeInt(offset, count)
         }
 
-        public fun setLength(outStream: BinaryWritable, length: Long) {
-            outStream.writeLong(length)
+        public fun setItem(outStream: BinaryWritable, size: Int) {
+            outStream.writeInt(size)
         }
 
-        public fun setLength(outData: Storable, offset: Int, length: Long) {
-            outData.storeLong(offset, length)
+        public fun setItem(outData: Storable, offset: Int, size: Int) {
+            outData.storeInt(offset, size)
+        }
+
+        public fun setCheck(outStream: BinaryWritable, checkSum: Long) {
+            outStream.writeLong(checkSum.asBig())
+        }
+
+        public fun setLength(outStream: BinaryWritable, length: Int) {
+            outStream.writeInt(length)
+        }
+
+        public fun setLength(outData: Storable, offset: Int, length: Int) {
+            outData.storeInt(offset, length)
         }
 
         public fun setEnd(outStream: BinaryWritable, end: Convention) {

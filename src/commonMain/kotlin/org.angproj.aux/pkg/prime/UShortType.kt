@@ -29,12 +29,12 @@ public value class UShortType(public val value: UShort) : Enfoldable {
 
     override fun foldSize(foldFormat: FoldFormat): Int = atomicSize
 
-    public fun enfoldToBlock(outData: Storable, offset: Int): Int {
+    public override fun enfoldBlock(outData: Storable, offset: Int): Int {
         outData.storeUShort(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int {
+    public override fun enfoldStream(outStream: BinaryWritable): Int {
         outStream.writeUShort(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -44,9 +44,9 @@ public value class UShortType(public val value: UShort) : Enfoldable {
         override val conventionType: Convention = Convention.USHORT
         override val atomicSize: Int = UShort.SIZE_BYTES
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int): UShortType =
+        public override fun unfoldBlock(inData: Retrievable, offset: Int): UShortType =
             UShortType(inData.retrieveUShort(offset))
 
-        public fun unfoldFromStream(inStream: BinaryReadable): UShortType = UShortType(inStream.readUShort())
+        public override fun unfoldStream(inStream: BinaryReadable): UShortType = UShortType(inStream.readUShort())
     }
 }

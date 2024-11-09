@@ -16,6 +16,7 @@ package org.angproj.aux.pkg.coll
 
 import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.BinaryWritable
+import org.angproj.aux.io.measureBytes
 import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
@@ -27,28 +28,27 @@ public value class ObjectType<P: Packageable>(public val value: P) : Enfoldable 
         FoldFormat.STREAM -> value.foldSize(foldFormat) + Enfoldable.OVERHEAD_LENGTH
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int {
+    public override fun enfoldStream(outStream: BinaryWritable): Int = outStream.measureBytes {
         Enfoldable.setType(outStream, conventionType)
-        Enfoldable.setLength(outStream, (foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH).toLong())
+        Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH)
         value.enfold(outStream)
         Enfoldable.setEnd(outStream, conventionType)
-        return foldSize(FoldFormat.STREAM)
-    }
+    }.toInt()
 
     public companion object : Unfoldable<ObjectType<Packageable>> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.STREAM)
         override val conventionType: Convention = Convention.OBJECT
         override val atomicSize: Int = 0
 
-        @Suppress("UNCHECKED_CAST")
-        public fun <P: Packageable, O: ObjectType<P>> unfoldFromStream(
+        public fun <P: Packageable> unfoldStream(
             inStream: BinaryReadable, unpack: () -> P
-        ): O {
+        ): ObjectType<P> {
             require(Unfoldable.getType(inStream, conventionType))
-            val length = Unfoldable.getLength(inStream)
-            val obj = ObjectType(unpack().also { o -> o.unfold(inStream) })
+            val obj = inStream.measureBytes(Unfoldable.getLength(inStream)) {
+                ObjectType(unpack().also { o -> o.unfold(inStream) })
+            }
             require(Unfoldable.getEnd(inStream, conventionType))
-            return obj as O
+            return obj
         }
     }
 }

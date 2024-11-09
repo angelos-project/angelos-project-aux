@@ -1,6 +1,19 @@
+/**
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ *
+ * This software is available under the terms of the MIT license. Parts are licensed
+ * under different terms if stated. The legal terms are attached to the LICENSE file
+ * and are made available on:
+ *
+ *      https://opensource.org/licenses/MIT
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Contributors:
+ *      Kristoffer Paulsson - initial implementation
+ */
 package org.angproj.aux.pkg.prime
 
-import org.angproj.aux.TestInformationStub.refByte
 import org.angproj.aux.TestInformationStub.refDouble
 import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.io.*
@@ -49,9 +62,9 @@ class DoubleTypeTest {
     fun enfoldUnfoldToObjectPackage() {
         val to1 = DoubleTestObjectPackage(testDouble)
         val buf = BufMgr.binary(DataSize._4K.size)
-        val len = ObjectType(to1).enfoldToStream(buf)
+        val len = ObjectType(to1).enfoldStream(buf)
         buf.flip()
-        val to2 = ObjectType.unfoldFromStream(buf) { DoubleTestObjectPackage() }.value
+        val to2 = ObjectType.unfoldStream(buf) { DoubleTestObjectPackage() }.value
 
         assertEquals(len, buf.limit)
         assertEquals(to1, to2)
@@ -61,9 +74,9 @@ class DoubleTypeTest {
     fun enfoldUnfoldToStructPackageable() {
         val to1 = DoubleTestStructPackageable(testDouble)
         val bin = BufMgr.bin(DataSize._4K.size)
-        val len1 = StructType(to1).enfoldToBlock(bin)
+        val len1 = StructType(to1).enfoldBlock(bin, 0)
         bin.limitAt(len1)
-        val to2 = StructType.unfoldFromBlock(bin) { DoubleTestStructPackageable() }.value
+        val to2 = StructType.unfoldBlock(bin) { DoubleTestStructPackageable() }.value
 
         assertEquals(to1, to2)
     }
@@ -72,36 +85,36 @@ class DoubleTypeTest {
     fun enfoldUnfoldToObjectPackageable() {
         val to1 = DoubleTestObjectPackageable(testDouble)
         val buf = BufMgr.binary(DataSize._4K.size)
-        val len = ObjectType(to1).enfoldToStream(buf)
+        val len = ObjectType(to1).enfoldStream(buf)
         buf.flip()
-        val to2 = ObjectType.unfoldFromStream(buf) { DoubleTestObjectPackageable() }.value
+        val to2 = ObjectType.unfoldStream(buf) { DoubleTestObjectPackageable() }.value
 
         assertEquals(len, buf.limit)
         assertEquals(to1, to2)
     }
 
-    /*val first: Double = -1.9695734209401788E-261
+    val first: Double = -1.9695734209401788E-261
 
     @Test
-    fun enfoldToBlock() {
+    fun enfoldUnfoldToBlock() {
         val type = DoubleType(first)
-        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK).toInt()))
+        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK)))
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
-        type.enfoldToBlock(block, 0)
+        type.enfoldBlock(block, 0)
 
-        val retrieved = DoubleType.unfoldFromBlock(block, 0)
+        val retrieved = DoubleType.unfoldBlock(block, 0)
         assertEquals(type.value, retrieved.value)
     }
 
     @Test
-    fun enfoldToStream() {
+    fun enfoldUnfoldToStream() {
         val type = DoubleType(first)
         val stream = BinaryBuffer()
-        type.enfoldToStream(stream)
+        type.enfoldStream(stream)
         stream.flip()
-        assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())
+        assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM))
 
-        val retrieved = DoubleType.unfoldFromStream(stream)
+        val retrieved = DoubleType.unfoldStream(stream)
         assertEquals(type.value, retrieved.value)
-    }*/
+    }
 }

@@ -11,6 +11,7 @@ import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.test.Test
+import kotlin.time.measureTime
 
 class TestRandom512(iv: LongArray = LongArray(8)): AbstractSponge512(), Reader {
 
@@ -32,13 +33,15 @@ class AbstractSponge512Test {
         val monteCarlo = Benchmark()
         val random = TestRandom512(LongArray(8) { SecureRandom.readLong() })
         val buffer = BinaryBuffer()
-        repeat(10_000_000) {
-            if(buffer.remaining == 0) {
-                buffer.reset()
-                random.read(buffer.asBinary())
+        measureTime {
+            repeat(10_000_000) {
+                if(buffer.remaining == 0) {
+                    buffer.reset()
+                    random.read(buffer.asBinary())
+                }
+                monteCarlo.scatterPoint(buffer.readLong(), buffer.readLong())
             }
-            monteCarlo.scatterPoint(buffer.readLong(), buffer.readLong())
-        }
+        }.also { println(it) }
         println(monteCarlo.distribution())
         println((monteCarlo.distribution() - PI).absoluteValue)
     }

@@ -3,6 +3,7 @@ package org.angproj.aux
 import org.angproj.aux.buf.TextBuffer
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.util.Unicode
+import org.angproj.aux.util.toByteArray
 
 object TestInformationStub {
 
@@ -22,20 +23,65 @@ object TestInformationStub {
         120, 121, 122, 123, 124, 125, 126, -127
     )
 
-    const val refByte: Byte = 0x35
-    const val refUByte: UByte = 0xCAu
+    val refByteArray = byteArrayOf (
+        // BE Signed
+        0x12.toByte(), 0x34.toByte(), 0x56.toByte(), 0x78.toByte(),
+        0x9A.toByte(), 0xBC.toByte(), 0xDE.toByte(), 0xF0.toByte(),
 
-    const val refLong: Long = 0x3569356935693569L
-    const val refULong: ULong = 0xCA96CA96CA96CA96uL
+        // LE Signed
+        0xF0.toByte(), 0xDE.toByte(), 0xBC.toByte(), 0x9A.toByte(),
+        0x78.toByte(), 0x56.toByte(), 0x34.toByte(), 0x12.toByte(),
 
-    const val refInt: Int = 0x35693569
-    const val refUInt: UInt = 0xCA96CA96u
+        // BE Unsigned
+        0xF1.toByte(), 0x22.toByte(), 0x33.toByte(), 0x44.toByte(),
+        0x55.toByte(), 0x66.toByte(), 0x00.toByte(), 0xF7.toByte(),
 
-    const val refShort: Short = 0x3569
-    const val refUShort: UShort = 0xCA96u
+        // LE Unsigned
+        0xF7.toByte(), 0x00.toByte(), 0x66.toByte(), 0x55.toByte(),
+        0x44.toByte(), 0x33.toByte(), 0x22.toByte(), 0xF1.toByte(),
+        )
+
+    val ref = 0x12_34_56_78_9A_BC_DE_F0uL
+    val refRev = 0xF0_DE_BC_9A_78_56_34_12uL
+    val refu = 0xF1_22_33_44_55_66_00_F7uL
+    val refRevu = 0xF7_00_66_55_44_33_22_F1uL
+
+    /**
+     * Straight order data
+     * */
+    val refByte: Byte = ((ref.toLong() ushr 56) and 0xFF).toByte()
+    val refUByte: UByte = ((refu.toLong() ushr 56) and 0xFF).toUByte()
+
+    val refShort: Short = ((ref.toLong() ushr 48) and 0xFFFF).toShort()
+    val refUShort: UShort = ((refu.toLong() ushr 48) and 0xFFFF).toUShort()
+
+    val refInt: Int = ((ref.toLong() ushr 32) and 0xFFFFFFFF).toInt()
+    val refUInt: UInt = ((refu.toLong() ushr 32) and 0xFFFFFFFF).toUInt()
+
+    val refLong: Long = ref.toLong()
+    val refULong: ULong = refu
 
     val refFloat: Float = Float.fromBits(refInt)
     val refDouble: Double = Double.fromBits(refLong)
+
+    /**
+     * Reverse order data (swapped)
+     * */
+    val refRevByte: Byte = (refRev.toLong() and 0xFF).toByte()
+    val refRevUByte: UByte = (refRevu.toLong() and 0xFF).toUByte()
+
+    val refRevShort: Short = (refRev.toLong() and 0xFFFF).toShort()
+    val refRevUShort: UShort = (refRevu.toLong() and 0xFFFF).toUShort()
+
+    val refRevInt: Int = (refRev.toLong() and 0xFFFFFFFF).toInt()
+    val refRevUInt: UInt = (refRevu.toLong() and 0xFFFFFFFF).toUInt()
+
+    val refRevLong: Long = refRev.toLong()
+    val refRevULong: ULong = refRevu
+
+    val refRevFloat: Float = Float.fromBits(refRevInt)
+    val refRevDouble: Double = Double.fromBits(refRevLong)
+
 
     const val number1 = "" +
             "15638aafb152690877aa62faff228c72ff407b1d75860486a5885409ce8d6292" +

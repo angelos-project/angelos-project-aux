@@ -11,6 +11,9 @@ import org.angproj.aux.util.uuid4
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+/**
+ * PullPackage uses an underlying binary PullPipe, it has the same logic.
+ * */
 class PullPackageTest {
 
     /**
@@ -20,7 +23,7 @@ class PullPackageTest {
     fun testStreamPull() {
         val to1 = TestObject(uuid4())
         val data = BufMgr.binary(DataSize._16K.size)
-        ObjectType(to1).enfoldToStream(data)
+        ObjectType(to1).enfoldStream(data)
 
         val r1 = Pipe.buildPackagePullPipe(BlobReader(data.asBinary()))
         val to2 = r1.readObject { TestObject() }
@@ -29,11 +32,13 @@ class PullPackageTest {
 
         data.clear()
         val ts1 = TestStruct.randomize()
-        StructType(ts1).enfoldToStream(data)
+        StructType(ts1).enfoldStream(data)
 
         val r2 = Pipe.buildPackagePullPipe(BlobReader(data.asBinary()))
         val ts2 = r2.readStruct { TestStruct() }
 
+        r1.close()
+        r2.close()
         assertEquals(ts1, ts2)
     }
 }

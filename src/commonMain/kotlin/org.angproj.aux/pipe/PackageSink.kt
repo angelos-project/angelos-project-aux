@@ -23,15 +23,19 @@ import org.angproj.aux.pkg.coll.ObjectType
 public class PackageSink(
     private val sink: BinarySink
 ): Sink, PackageType, PackageReadable {
+
+    override val count: Long
+        get() = sink.count
+
     override fun isOpen(): Boolean = sink.isOpen()
 
     override fun close(): Unit = sink.close()
 
     override fun <P : Package> readObject(action: () -> P): P {
-        return ObjectType.unfoldFromStream(sink, action).value
+        return ObjectType.unfoldStream(sink, action).value
     }
 
     override fun <P : Packageable> readStruct(action: () -> P): P {
-        return StructType.unfoldFromStream(sink, action).value
+        return StructType.unfoldStream(sink, action).value
     }
 }

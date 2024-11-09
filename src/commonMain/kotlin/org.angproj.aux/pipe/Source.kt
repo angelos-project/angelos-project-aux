@@ -14,5 +14,7 @@
  */
 package org.angproj.aux.pipe
 
-public interface Source: Close {
+import org.angproj.aux.io.ByteCount
+
+public interface Source: Close, ByteCount {
 }

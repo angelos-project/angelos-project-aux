@@ -224,16 +224,16 @@ data class TestStruct(
             uShort = SecureRandom.readUShort()
             uInt = SecureRandom.readUInt()
             uLong = SecureRandom.readULong()
-            byteArray.securelyRandomize()
-            shortArray.securelyRandomize()
-            intArray.securelyRandomize()
-            longArray.securelyRandomize()
-            floatArray.securelyRandomize()
-            doubleArray.securelyRandomize()
-            uByteArray.securelyRandomize()
-            uShortArray.securelyRandomize()
-            uIntArray.securelyRandomize()
-            uLongArray.securelyRandomize()
+            byteArray.random()
+            shortArray.random()
+            intArray.random()
+            longArray.random()
+            floatArray.random()
+            doubleArray.random()
+            uByteArray.random()
+            uShortArray.random()
+            uIntArray.random()
+            uLongArray.random()
         }
     }
 }
@@ -245,9 +245,9 @@ class ExampleTest {
     fun tryObject() {
         val to1 = TestObject(uuid4())
         val buf = BinaryBuffer()
-        ObjectType(to1).enfoldToStream(buf)
+        ObjectType(to1).enfoldStream(buf)
         buf.flip()
-        val to2 = ObjectType.unfoldFromStream(buf) { TestObject() }.value
+        val to2 = ObjectType.unfoldStream(buf) { TestObject() }.value
 
         assertEquals(to1, to2)
     }
@@ -256,10 +256,10 @@ class ExampleTest {
     fun tryStruct() {
         val to1 = TestStruct.randomize()
         val buf = BinaryBuffer()
-        StructType(to1).enfoldToStream(buf)
+        StructType(to1).enfoldStream(buf)
         buf.flip()
 
-        val to2 = StructType.unfoldFromStream(buf) { TestStruct() }.value
+        val to2 = StructType.unfoldStream(buf) { TestStruct() }.value
 
         assertEquals(to1, to2)
     }

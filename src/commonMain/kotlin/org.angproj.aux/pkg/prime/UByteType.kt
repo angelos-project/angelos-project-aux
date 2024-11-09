@@ -29,12 +29,12 @@ public value class UByteType(public val value: UByte) : Enfoldable {
 
     override fun foldSize(foldFormat: FoldFormat): Int = atomicSize
 
-    public fun enfoldToBlock(outData: Storable, offset: Int): Int {
+    public override fun enfoldBlock(outData: Storable, offset: Int): Int {
         outData.storeUByte(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int {
+    public override fun enfoldStream(outStream: BinaryWritable): Int {
         outStream.writeUByte(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -44,9 +44,9 @@ public value class UByteType(public val value: UByte) : Enfoldable {
         override val conventionType: Convention = Convention.UBYTE
         override val atomicSize: Int = UByte.SIZE_BYTES
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int): UByteType =
+        public override fun unfoldBlock(inData: Retrievable, offset: Int): UByteType =
             UByteType(inData.retrieveUByte(offset))
 
-        public fun unfoldFromStream(inStream: BinaryReadable): UByteType = UByteType(inStream.readUByte())
+        public override fun unfoldStream(inStream: BinaryReadable): UByteType = UByteType(inStream.readUByte())
     }
 }

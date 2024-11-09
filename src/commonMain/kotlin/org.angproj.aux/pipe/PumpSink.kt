@@ -16,17 +16,35 @@ package org.angproj.aux.pipe
 
 import org.angproj.aux.io.PumpWriter
 import org.angproj.aux.io.Segment
-import org.angproj.aux.util.Reifiable
 
 public class PumpSink<T: PipeType>(
     private val pump: PumpWriter
 ): Sink, PipeType  {
     private var _open: Boolean = true
+    private var _staleCnt: Int = 0
 
-    public fun<reified : Reifiable> absorb(seg: Segment<*>): Int {
+    public val staleCnt: Int
+        get() = _staleCnt
+
+    public override val count: Long
+        get() = pump.count
+
+    /**
+     *
+     * */
+    public fun<reified : Any> absorb(seg: Segment<*>): Int = when {
+        !isOpen() -> throw PipeException("Sink is closed")
+        !pump.stale -> {
+            _staleCnt = 0
+            pump.write(seg)//.also { if(it < seg.limit) _staleCnt++ }
+        }
+        _staleCnt >= 2 -> 0.also { close() }
+        else -> 0.also { _staleCnt++ }
+    }
+    /*{
         val size = seg.limit
         return pump.write(seg).also { if (it < size || it == 0) close() }
-    }
+    }*/
 
     override fun isOpen(): Boolean = _open
 

@@ -28,11 +28,11 @@ public value class UByteArrayType(public override val value: UByteBuffer): Array
     override fun foldSize(foldFormat: FoldFormat): Int = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Int = ArrayEnfoldable.arrayEnfoldToBlock(
+    public override fun enfoldBlock(outData: Storable, offset: Int): Int = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeUByte(i, v) }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int = ArrayEnfoldable.arrayEnfoldToStream(
-        value, atomicSize, conventionType, outStream) { o, v -> o.writeUByte(v) }
+    public override fun enfoldStream(outStream: BinaryWritable): Int = ArrayEnfoldable.arrayEnfoldToStream(
+        value, conventionType, outStream) { o, v -> o.writeUByte(v) }
 
     public companion object : ArrayUnfoldable<UByte, UByteBuffer, UByteArrayType> {
         override val factory: (count: Int) -> UByteBuffer = { c -> UByteBuffer(c) }
@@ -69,7 +69,7 @@ public value class UByteArrayType(public override val value: UByteBuffer): Array
         ): UByteArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
             inData, offset, count, atomicSize, factory) { d, i -> d.retrieveUByte(i) }*/
 
-        public override fun unfoldFromStream(
+        public override fun unfoldStream(
             inStream: BinaryReadable
         ): UByteArrayType = UByteArrayType(ArrayUnfoldable.arrayUnfoldFromStream(
             inStream, conventionType, factory) { s -> s.readUByte() })

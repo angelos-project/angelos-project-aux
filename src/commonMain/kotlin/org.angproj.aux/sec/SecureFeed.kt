@@ -34,6 +34,12 @@ public object SecureFeed : AbstractSponge512(), PumpReader {
 
     private var next: Int = 0
 
+    private var _count: Long = 0
+    override val count: Long
+        get() = _count
+
+    override val stale: Boolean = false
+
     private val sink: BinarySink = PullPipe<BinaryType>(
         Default,
         PumpSource(SecureEntropy),
@@ -71,6 +77,7 @@ public object SecureFeed : AbstractSponge512(), PumpReader {
         require(data.limit)
         revitalize()
         fill(data) { cycle() }
+        _count += data.size
         return data.size
     }
 }

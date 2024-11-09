@@ -30,11 +30,11 @@ public value class StructType<P: Packageable>(public val value: P) : Enfoldable 
     override fun foldSize(foldFormat: FoldFormat): Int = value.foldSize(
         FoldFormat.BLOCK) + if(foldFormat == FoldFormat.STREAM) Enfoldable.OVERHEAD_LENGTH else 0
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Int = value.enfold(outData, offset)
+    public override fun enfoldBlock(outData: Storable, offset: Int): Int = value.enfold(outData, offset)
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int {
+    public override fun enfoldStream(outStream: BinaryWritable): Int {
         val block = BlockType(binOf(foldSize(FoldFormat.BLOCK)))
-        enfoldToBlock(block, 0)
+        enfoldBlock(block, 0)
         return block.enfoldToStreamByConvention(outStream, conventionType)
     }
 
@@ -43,22 +43,28 @@ public value class StructType<P: Packageable>(public val value: P) : Enfoldable 
         override val conventionType: Convention = Convention.STRUCT
         override val atomicSize: Int = 0
 
-        public fun <P: Packageable, S: StructType<P>> unfoldFromBlock(
+        public fun <P: Packageable> unfoldFromBlock(
+            inData: Retrievable, s: P
+        ): Int = s.unfold(inData, 0)
+
+        public fun <P: Packageable> unfoldFromBlock(
+            inData: Retrievable, offset: Int, s: P
+        ): Int = s.unfold(inData, offset)
+
+        // FIX or do away?
+        public fun <P: Packageable> unfoldBlock(
             inData: Retrievable, unpack: () -> P
-        ): S = unfoldFromBlock(inData, 0, unpack)
+        ): StructType<P> = unfoldBlock(inData, 0, unpack)
 
-        @Suppress("UNCHECKED_CAST")
-        public fun <P: Packageable, S: StructType<P>> unfoldFromBlock(
+        public fun <P: Packageable> unfoldBlock(
             inData: Retrievable, offset: Int, unpack: () -> P
-        ): S = StructType(unpack().also { s -> s.unfold(inData, offset) }) as S
+        ): StructType<P> = StructType(unpack().also { s -> s.unfold(inData, offset) })
 
-        @Suppress("UNCHECKED_CAST")
-        public fun <P: Packageable, S: StructType<P>> unfoldFromStream(
+        public fun <P: Packageable> unfoldStream(
             inStream: BinaryReadable, unpack: () -> P
-        ): S {
+        ): StructType<P> {
             val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
-            val strct = StructType(unpack().also { s -> s.unfold(block) })
-            return strct as S
+            return StructType(unpack().also { s -> s.unfold(block) })
         }
     }
 }

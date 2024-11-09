@@ -27,10 +27,14 @@ import kotlin.test.*
 import kotlin.time.measureTime
 
 
-class BlobWriter(
-    private val blob: Binary,
-) : PumpWriter {
+class BlobWriter(private val blob: Binary) : PumpWriter {
     private var pos = 0
+
+    override val count: Long
+        get() = pos.toLong()
+
+    override val stale: Boolean
+        get() = remaining() <= 0
 
     private fun remaining(): Int = blob.limit - pos
 
@@ -48,6 +52,12 @@ class BlobWriter(
 class TestPumpWriter(data: Binary, private val half: Boolean = false) : PumpWriter {
     private val txt = data
     private var pos = 0
+
+    override val count: Long
+        get() = pos.toLong()
+
+    override val stale: Boolean
+        get() = remaining() <= 0
 
     private fun remaining(): Int = txt.limit - pos
 
@@ -176,7 +186,7 @@ class PushTextTest {
          * Because of the misbehavior the pipe should close the queue and send a Null segment
          * signaling internally EOF of the inner queue of the pipe
          * */
-        assertFailsWith<UnsupportedOperationException> {
+        assertFailsWith<StaleException> {
             text.asBinary().wrap {
                 do {
                     writeable.writeGlyph(readGlyph())
@@ -188,10 +198,15 @@ class PushTextTest {
          * After a misbehavior and a flush the [text] and [canvas] should not be identical,
          * neither should any subsequent writes be accepted to the pipe
          * */
-        writeable.flush()
+        /*writeable.flush()
         assertNotEquals(text, canvas)
         assertFailsWith<UnsupportedOperationException> { writeable.writeGlyph(CodePoint(123)) }
         assertTrue { writeable.isOpen() } // Is this correct?
+        writeable.close()*/
+        assertFailsWith<StaleException> { writeable.flush() }
+        assertNotEquals(text, canvas)
+        //assertFailsWith<StaleException> { writeable.writeGlyph(CodePoint(123)) }
+        //assertTrue { writeable.isOpen() } // Is this correct?
         writeable.close()
     }
 
@@ -220,12 +235,19 @@ class PushTextTest {
          * A pipe should not accept any subsequent writes after close or after a following flush either,
          * a closed pipe is a closed pip
          * */
-        writeable.flush()
+        /*writeable.flush()
         assertNotEquals(text, canvas)
         writeable.close()
         assertFailsWith<UnsupportedOperationException> { writeable.writeGlyph(CodePoint(123)) }
         writeable.flush()
         assertFailsWith<UnsupportedOperationException> { writeable.writeGlyph(CodePoint(123)) }
-        assertFalse { writeable.isOpen() }
+        assertFalse { writeable.isOpen() }*/
+
+        writeable.flush()
+        assertNotEquals(text, canvas)
+        writeable.close()
+        assertFailsWith<PipeException> { writeable.writeGlyph(CodePoint(123)) }
+        assertFailsWith<PipeException> { writeable.flush() }
+        assertFailsWith<PipeException> { writeable.writeGlyph(CodePoint(123)) }
     }
 }

@@ -29,12 +29,12 @@ public value class IntType(public val value: Int) : Enfoldable {
 
     override fun foldSize(foldFormat: FoldFormat): Int = atomicSize
 
-    public fun enfoldToBlock(outData: Storable, offset: Int): Int {
+    public override fun enfoldBlock(outData: Storable, offset: Int): Int {
         outData.storeInt(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int {
+    public override fun enfoldStream(outStream: BinaryWritable): Int {
         outStream.writeInt(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -44,8 +44,8 @@ public value class IntType(public val value: Int) : Enfoldable {
         override val conventionType: Convention = Convention.INT
         override val atomicSize: Int = Int.SIZE_BYTES
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int): IntType = IntType(inData.retrieveInt(offset))
+        public override fun unfoldBlock(inData: Retrievable, offset: Int): IntType = IntType(inData.retrieveInt(offset))
 
-        public fun unfoldFromStream(inStream: BinaryReadable): IntType = IntType(inStream.readInt())
+        public override fun unfoldStream(inStream: BinaryReadable): IntType = IntType(inStream.readInt())
     }
 }

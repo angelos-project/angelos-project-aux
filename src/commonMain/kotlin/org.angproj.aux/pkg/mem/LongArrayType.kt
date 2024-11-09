@@ -28,11 +28,11 @@ public value class LongArrayType(public override val value: LongBuffer): ArrayEn
     override fun foldSize(foldFormat: FoldFormat): Int = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Int = ArrayEnfoldable.arrayEnfoldToBlock(
+    public override fun enfoldBlock(outData: Storable, offset: Int): Int = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeLong(i, v) }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int = ArrayEnfoldable.arrayEnfoldToStream(
-        value, atomicSize, conventionType, outStream) { o, v -> o.writeLong(v) }
+    public override fun enfoldStream(outStream: BinaryWritable): Int = ArrayEnfoldable.arrayEnfoldToStream(
+        value, conventionType, outStream) { o, v -> o.writeLong(v) }
 
     public companion object : ArrayUnfoldable<Long, LongBuffer, LongArrayType> {
         override val factory: (count: Int) -> LongBuffer = { c -> LongBuffer(c) }
@@ -69,7 +69,7 @@ public value class LongArrayType(public override val value: LongBuffer): ArrayEn
         ): LongArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
             inData, offset, count, atomicSize, factory) { d, i -> d.retrieveLong(i) }*/
 
-        public override fun unfoldFromStream(
+        public override fun unfoldStream(
             inStream: BinaryReadable
         ): LongArrayType = LongArrayType(ArrayUnfoldable.arrayUnfoldFromStream(
             inStream, conventionType, factory) { s -> s.readLong() })

@@ -29,12 +29,12 @@ public value class ULongType(public val value: ULong) : Enfoldable {
 
     override fun foldSize(foldFormat: FoldFormat): Int = atomicSize
 
-    public fun enfoldToBlock(outData: Storable, offset: Int): Int {
+    public override fun enfoldBlock(outData: Storable, offset: Int): Int {
         outData.storeULong(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int {
+    public override fun enfoldStream(outStream: BinaryWritable): Int {
         outStream.writeULong(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -44,9 +44,9 @@ public value class ULongType(public val value: ULong) : Enfoldable {
         override val conventionType: Convention = Convention.ULONG
         override val atomicSize: Int = ULong.SIZE_BYTES
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int): ULongType =
+        public override fun unfoldBlock(inData: Retrievable, offset: Int): ULongType =
             ULongType(inData.retrieveULong(offset))
 
-        public fun unfoldFromStream(inStream: BinaryReadable): ULongType = ULongType(inStream.readULong())
+        public override fun unfoldStream(inStream: BinaryReadable): ULongType = ULongType(inStream.readULong())
     }
 }

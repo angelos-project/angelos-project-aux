@@ -146,8 +146,14 @@ const val chinese = """
     }
 }*/
 
-class StringReader(text: String) : PumpReader {
+/*class StringReader(text: String) : PumpReader {
     val data = text.toText()
+
+    override val count: Long
+        get() = TODO("Not yet implemented")
+
+    override val stale: Boolean
+        get() = TODO("Not yet implemented")
 
     override fun read(data: Segment<*>): Int {
         data.limitAt(min(data.limit, this.data.limit))
@@ -161,7 +167,7 @@ class StringReader(text: String) : PumpReader {
         }*/
         return data.limit //index
     }
-}
+}*/
 
 /*data class PushConst<T: PipeType>(
     val pump: PumpWriter,

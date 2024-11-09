@@ -16,28 +16,35 @@ package org.angproj.aux.pipe
 
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
-import org.angproj.aux.util.Reifiable
 
 public class PumpSource<T: PipeType>(
     private val pump: PumpReader
 ): Source, PipeType  {
     private var _open: Boolean = true
+    private var _staleCnt: Int = 0
+
+    public val staleCnt: Int
+        get() = _staleCnt
+
+    public override val count: Long
+        get() = pump.count
 
     /**
      * This function forcefully sets the limit of the segment to the returned value
      * to avoid programming mistakes.
      * */
-    public fun<reified : Reifiable> squeeze(seg: Segment<*>): Int {
-        val size = seg.limit
-        return pump.read(seg).also {
-            seg.limitAt(it)
-            if (it < size || it == 0) close()
+    public fun<reified : Any> squeeze(seg: Segment<*>): Int = when {
+        !isOpen() -> throw PipeException("Source is closed")
+        !pump.stale -> {
+            _staleCnt = 0
+            seg.clear()
+            pump.read(seg).also { seg.limitAt(it) }
         }
+        _staleCnt >= 3 -> 0.also { close() }
+        else -> 0.also { _staleCnt++ }
     }
 
     override fun isOpen(): Boolean = _open
 
-    override fun close() {
-        _open = false
-    }
+    override fun close() { _open = false }
 }

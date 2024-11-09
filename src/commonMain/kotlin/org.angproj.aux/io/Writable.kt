@@ -43,7 +43,7 @@ public interface Writable {
      *
      * @param value A character of data.
      */
-    public fun writeChar(value: Char)
+    //public fun writeChar(value: Char)
 
     /**
      * Write next short integer.

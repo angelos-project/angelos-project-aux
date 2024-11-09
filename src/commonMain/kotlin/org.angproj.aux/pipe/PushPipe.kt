@@ -14,35 +14,72 @@
  */
 package org.angproj.aux.pipe
 
+import org.angproj.aux.buf.copyInto
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Segment
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.mem.MemoryManager
-import org.angproj.aux.util.Reifiable
-import org.angproj.aux.util.Reify
 
 public class PushPipe<T: PipeType>(
     memMgr: MemoryManager<*>,
-    private val sink: PumpSink<T>,
+    public val sink: PumpSink<T>,
     segSize: DataSize = DataSize._1K,
-    bufSize: DataSize = DataSize._4K
-): AbstractPipe<T>(segSize, bufSize, memMgr) {
+    bufSize: DataSize = DataSize._1K
+): AbstractPipe<T>(segSize, bufSize, memMgr), Close {
 
-    public fun<reified : Reifiable> isCrammed(): Boolean = totSize<Reify>() >= bufSize.size
+    init {
+        require(sink.isOpen()) { "A pipe must have an open sink" }
+    }
+
+    /**
+     * Adds FIFO push abilities to the List of Segment.
+     * */
+    protected fun<reified : Any> ArrayDeque<Segment<*>>.push(seg: Segment<*>) { addFirst(seg) }
+
+    /**
+     * Adds FIFO pop abilities to the List of Segment
+     * */
+    protected fun<reified : Any> ArrayDeque<Segment<*>>.pop(): Segment<*> = last() //
+    // OrNull() ?: NullObject.segment
+
+    public fun<reified : Any> isCrammed(): Boolean = queueCap <= queueLen
 
     /**
      * Will drain all data.
+     * Even if the queue is empty it is allowed to run one Null segment
+     * to deal with empty [flush]es triggered by the programmer unnecessarily
      * */
-    public fun<reified : Reifiable> drain() {
+    public fun<reified : Any> drain() {
         do {
-            val seg = buf.pop<Reify>()
-            sink.absorb<Reify>(seg)
-            recycle<Reify>(seg)
-        } while(buf.isNotEmpty() && sink.isOpen())
+            val seg = buf.pop<Unit>()
+            val length = sink.absorb<Unit>(seg)
+            when {
+                length == seg.limit -> { // Remove fully absorbed segment
+                    buf.remove(seg)
+                    recycle<Unit>(seg)
+                    _segCnt++
+                }
+                length == 0 -> throw StaleException("Sink is stale") // Nothing was absorbed call stale
+                length < seg.limit -> { // Partially absorbed, move unabsorbed data to beginning of segment and set new limit
+                    BufMgr.asWrap(seg) {
+                        this.copyInto(this, 0, length, seg.limit)
+                    }
+                    seg.limitAt(seg.limit - length)
+                }
+            }
+        } while(length == seg.limit && buf.isNotEmpty())
+        _bufUse = -1
     }
 
-    public fun<reified : Reifiable> push(seg: Segment<*>): Unit = buf.push<Reify>(seg)
+    public fun<reified : Any> push(seg: Segment<*>): Unit = buf.push<Unit>(seg)
 
-    public fun<reified : Reifiable> isSinkOpen(): Boolean = sink.isOpen()
+    override fun isOpen(): Boolean = sink.isOpen() or buf.isNotEmpty()
+    override fun close() {
+        if(sink.isOpen()) {
+            sink.close()
+            dispose<Unit>()
+        }
+    }
 }
 
 public fun PushPipe<TextType>.getSource(): TextSource = TextSource(this)

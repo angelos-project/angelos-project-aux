@@ -17,12 +17,8 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.Binary
 import org.angproj.aux.io.Memory
 import org.angproj.aux.io.Segment
-import org.angproj.aux.io.copyInto
-import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.Auto
-import org.angproj.aux.util.BufferAware
-import org.angproj.aux.util.Copy
-import org.angproj.aux.util.Copyable
+import org.angproj.aux.util.Uuid4
 
 
 public abstract class Buffer protected constructor(
@@ -66,8 +62,10 @@ public abstract class Buffer protected constructor(
 
 //public fun <S: Buffer, D: Buffer>S.copyOf(): D
 
-@Deprecated("Has moved to Binary", ReplaceWith("x.asBinary.securelyRandomize()"))
-public fun Buffer.securelyRandomize() { SecureRandom.read(_segment) }
+/*@Deprecated("Has moved to Binary", ReplaceWith("x.asBinary.securelyRandomize()"))
+public fun Buffer.random() { SecureRandom.read(_segment) }*/
+
+public fun Buffer.random() { Uuid4.read(_segment) }
 
 /**
  * View extension method for all Buffers.

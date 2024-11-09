@@ -15,37 +15,17 @@
 package org.angproj.aux.util
 
 import junit.framework.TestCase.assertEquals
-import java.nio.ByteBuffer
+import org.angproj.aux.TestInformationStub.refDouble
+import org.angproj.aux.TestInformationStub.refFloat
+import org.angproj.aux.TestInformationStub.refInt
+import org.angproj.aux.TestInformationStub.refLong
+import org.angproj.aux.TestInformationStub.refShort
 import java.nio.ByteOrder
 import java.nio.ByteBuffer as JavaByteBuffer
 import kotlin.test.Test
-import kotlin.test.assertNotEquals
 
 class JvmByteArrayTest: BufferAware {
-    /*private val refChar: Char = 'Ö'
 
-    private val refShort: Short = 0B1010101_10101010
-
-    private val refInt: Int = 0B1010101_10101010_10101010_10101010
-
-    private val refLong: Long = 0B1010101_10101010_10101010_10101010_10101010_10101010_10101010_10101010L
-
-    private val refFloat: Float = 23.43585F
-    private val refDouble: Double = -0.892384774029876*/
-
-    private val refChar: Char = 'Ö'
-
-    private val refLong: Long = 0x3569356935693569L
-    private val refULong: ULong = 0xCA96CA96CA96CA96uL
-
-    private val refInt: Int = 0x35693569
-    private val refUInt: UInt = 0xCA96CA96u
-
-    private val refShort: Short = 0x3569
-    private val refUShort: UShort = 0xCA96u
-
-    private val refFloat: Float = Float.fromBits(refInt)
-    private val refDouble: Double = Double.fromBits(refLong)
 
     @Test
     fun short() {
@@ -54,16 +34,33 @@ class JvmByteArrayTest: BufferAware {
         buf.order(ByteOrder.nativeOrder())
         buf.putShort(0, refShort)
         assertEquals(array.readShortAt(0), refShort)
+
+        array.writeShortAt(0, refShort)
+        buf.clear()
+        kotlin.test.assertEquals(buf.getShort(0), refShort)
     }
 
     @Test
+    fun shortRev() {
+        val array = ByteArray(8)
+        val buf = JavaByteBuffer.wrap(array)
+        buf.order(if(ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) ByteOrder.BIG_ENDIAN else ByteOrder.LITTLE_ENDIAN)
+        buf.putShort(0, refShort)
+        assertEquals(array.readRevShortAt(0), refShort)
+
+        array.writeRevShortAt(0, refShort)
+        buf.clear()
+        kotlin.test.assertEquals(buf.getShort(0), refShort)
+    }
+
+    /*@Test
     fun char() {
         val array = ByteArray(8)
         val buf = JavaByteBuffer.wrap(array)
         buf.order(ByteOrder.nativeOrder())
         buf.putChar(0, refChar)
         assertEquals(array.readCharAt(0), refChar)
-    }
+    }*/
 
     @Test
     fun int() {
@@ -72,6 +69,23 @@ class JvmByteArrayTest: BufferAware {
         buf.order(ByteOrder.nativeOrder())
         buf.putInt(0, refInt)
         assertEquals(array.readIntAt(0), refInt)
+
+        array.writeIntAt(0, refInt)
+        buf.clear()
+        kotlin.test.assertEquals(buf.getInt(0), refInt)
+    }
+
+    @Test
+    fun intRev() {
+        val array = ByteArray(8)
+        val buf = JavaByteBuffer.wrap(array)
+        buf.order(if(ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) ByteOrder.BIG_ENDIAN else ByteOrder.LITTLE_ENDIAN)
+        buf.putInt(0, refInt)
+        assertEquals(array.readRevIntAt(0), refInt)
+
+        array.writeRevIntAt(0, refInt)
+        buf.clear()
+        kotlin.test.assertEquals(buf.getInt(0), refInt)
     }
 
     @Test
@@ -81,6 +95,23 @@ class JvmByteArrayTest: BufferAware {
         buf.order(ByteOrder.nativeOrder())
         buf.putLong(0, refLong)
         assertEquals(array.readLongAt(0), refLong)
+
+        array.writeLongAt(0, refLong)
+        buf.clear()
+        kotlin.test.assertEquals(buf.getLong(0), refLong)
+    }
+
+    @Test
+    fun longRev() {
+        val array = ByteArray(8)
+        val buf = JavaByteBuffer.wrap(array)
+        buf.order(if(ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) ByteOrder.BIG_ENDIAN else ByteOrder.LITTLE_ENDIAN)
+        buf.putLong(0, refLong)
+        assertEquals(array.readRevLongAt(0), refLong)
+
+        array.writeRevLongAt(0, refLong)
+        buf.clear()
+        kotlin.test.assertEquals(buf.getLong(0), refLong)
     }
 
     @Test
@@ -90,6 +121,23 @@ class JvmByteArrayTest: BufferAware {
         buf.order(ByteOrder.nativeOrder())
         buf.putFloat(0, refFloat)
         assertEquals(array.readFloatAt(0).toRawBits(), refFloat.toRawBits())
+
+        array.writeFloatAt(0, refFloat)
+        buf.clear()
+        kotlin.test.assertEquals(buf.getFloat(0).toRawBits(), refFloat.toRawBits())
+    }
+
+    @Test
+    fun floatRev() {
+        val array = ByteArray(8)
+        val buf = JavaByteBuffer.wrap(array)
+        buf.order(if(ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) ByteOrder.BIG_ENDIAN else ByteOrder.LITTLE_ENDIAN)
+        buf.putFloat(0, refFloat)
+        assertEquals(array.readRevFloatAt(0).toRawBits(), refFloat.toRawBits())
+
+        array.writeRevFloatAt(0, refFloat)
+        buf.clear()
+        kotlin.test.assertEquals(buf.getFloat(0).toRawBits(), refFloat.toRawBits())
     }
 
     @Test
@@ -99,5 +147,22 @@ class JvmByteArrayTest: BufferAware {
         buf.order(ByteOrder.nativeOrder())
         buf.putDouble(0, refDouble)
         assertEquals(array.readDoubleAt(0), refDouble)
+
+        array.writeDoubleAt(0, refDouble)
+        buf.clear()
+        kotlin.test.assertEquals(buf.getDouble(0).toRawBits(), refDouble.toRawBits())
+    }
+
+    @Test
+    fun doubleRev() {
+        val array = ByteArray(8)
+        val buf = JavaByteBuffer.wrap(array)
+        buf.order(if(ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) ByteOrder.BIG_ENDIAN else ByteOrder.LITTLE_ENDIAN)
+        buf.putDouble(0, refDouble)
+        assertEquals(array.readRevDoubleAt(0), refDouble)
+
+        array.writeRevDoubleAt(0, refDouble)
+        buf.clear()
+        kotlin.test.assertEquals(buf.getDouble(0).toRawBits(), refDouble.toRawBits())
     }
 }

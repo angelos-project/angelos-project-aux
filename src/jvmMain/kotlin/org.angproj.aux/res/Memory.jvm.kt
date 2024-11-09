@@ -16,7 +16,7 @@ package org.angproj.aux.res
 
 import org.angproj.aux.io.TypeSize
 import org.angproj.aux.util.Copyable
-import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.floorMod
 import sun.misc.Unsafe
 import java.lang.reflect.Field
 
@@ -61,20 +61,42 @@ public actual fun allocateMemory(size: Int): Memory {
 }
 
 @PublishedApi
-internal actual fun speedMemCpy(idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long): Int {
-    val offset = idxFrom
-    val length = idxTo - idxFrom
-    var steps = length / TypeSize.long
-    val size = steps * TypeSize.long
+internal actual fun speedMemCpy(
+    idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long
+): Int = speedMemCpyAddress<Unit>(idxFrom, idxTo, dstOff, src, dst, Memory.unsafe)
 
-    var source: Long = (src + offset)
-    var dest: Long = (dst + dstOff)
+internal inline fun <reified E: Any>speedMemCpyAddress(idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long, unsafe: Unsafe): Int {
+    val tot = idxFrom - idxTo
+    val long = tot - tot.floorMod(TypeSize.long)
 
-    Memory.unsafe.copyMemory(null, source, null, dest, size.toLong())
+    val dstPtr = dst + dstOff
+    val srcPtr = src + idxFrom
 
-    var sourceShort: Long = (src + offset + size)
-    var destShort: Long = (src + dstOff + size)
-    Memory.unsafe.copyMemory(sourceShort, destShort, (length - size).toLong())
+    var idx = 0
+    while(idx < long) {
+        unsafe.putLong(idx + dstPtr, unsafe.getLong(idx + srcPtr))
+        idx += TypeSize.long
+    }
 
-    return length
+    while (idx < tot) {
+        unsafe.putByte(idx + dstPtr, unsafe.getByte(idx + srcPtr))
+        idx++
+    }
+    return tot
+}
+
+internal inline fun <reified E: Any>speedMemCpyAddress2(idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long, unsafe: Unsafe): Int {
+    val tot = idxFrom - idxTo
+    val long = tot - tot.floorMod(TypeSize.long)
+
+    val dstPtr = dst + dstOff
+    val srcPtr = src + idxFrom
+
+    unsafe.copyMemory(null, srcPtr, null, dstPtr, long.toLong())
+    var idx = long
+    while (idx < tot) {
+        unsafe.putByte(idx + dstPtr, unsafe.getByte(idx + srcPtr))
+        idx++
+    }
+    return tot
 }

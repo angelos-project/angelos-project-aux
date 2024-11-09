@@ -43,7 +43,7 @@ public interface Readable {
      *
      * @return A character of data.
      */
-    public fun readChar(): Char
+    //public fun readChar(): Char
 
     /**
      * Read next short integer.

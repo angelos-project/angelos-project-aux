@@ -16,43 +16,41 @@ package org.angproj.aux.pkg.coll
 
 import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.BinaryWritable
+import org.angproj.aux.io.measureBytes
 import org.angproj.aux.pkg.*
 import org.angproj.aux.pkg.arb.StructType
 import kotlin.jvm.JvmInline
 
 @JvmInline
-public value class ListType<P : Packageable>(public val value: List<P>) : Enfoldable {
+public value class ListType<P : Packageable>(public val value: MutableList<P>) : Enfoldable {
 
     override fun foldSize(foldFormat: FoldFormat): Int =
         if (value.isEmpty()) Enfoldable.OVERHEAD_COUNT
         else with(value.first()) {
             var length = 0
-            when (foldFormat) {
+            val contentFoldFormat = foldFormat()
+            when (contentFoldFormat) {
                 FoldFormat.BLOCK -> value.forEach { length += StructType(it).foldSize(FoldFormat.STREAM) }
                 FoldFormat.STREAM -> value.forEach { length += ObjectType(it).foldSize(FoldFormat.STREAM) }
             }
             length + Enfoldable.OVERHEAD_CONTENT
         }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int {
+    public override fun enfoldStream(outStream: BinaryWritable): Int = outStream.measureBytes {
         Enfoldable.setType(outStream, conventionType)
         Enfoldable.setCount(outStream, value.size)
-        var length = 0
 
         if (value.isNotEmpty()) with(value.first()) {
             val foldFormat = foldFormat()
             Enfoldable.setContent(outStream, foldFormat.format)
-            length += Enfoldable.CONTENT_SIZE // Conditionally including CONTENT_SIZE
 
             when (foldFormat) {
-                FoldFormat.BLOCK -> value.forEach { length += StructType(it).enfoldToStream(outStream) }
-                FoldFormat.STREAM -> value.forEach { length += ObjectType(it).enfoldToStream(outStream) }
+                FoldFormat.BLOCK -> value.forEach { StructType(it).enfoldStream(outStream) }
+                FoldFormat.STREAM -> value.forEach { ObjectType(it).enfoldStream(outStream) }
             }
         }
         Enfoldable.setEnd(outStream, conventionType)
-        // Using OVERHEAD_COUNT instead of OVERHEAD_CONTENT because CONTENT_SIZE is included in length.
-        return Enfoldable.OVERHEAD_COUNT + length
-    }
+    }.toInt()
 
     public companion object : Unfoldable<ListType<Packageable>> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.STREAM)
@@ -60,7 +58,7 @@ public value class ListType<P : Packageable>(public val value: List<P>) : Enfold
         public val contentFormat: List<FoldFormat> = listOf(FoldFormat.STREAM, FoldFormat.BLOCK)
         override val atomicSize: Int = 0
 
-        public fun <P : Packageable> unfoldFromStream(
+        public fun <P : Packageable> unfoldStream(
             inStream: BinaryReadable, unpack: () -> P
         ): ListType<P> {
             require(Unfoldable.getType(inStream, conventionType))
@@ -69,11 +67,12 @@ public value class ListType<P : Packageable>(public val value: List<P>) : Enfold
             if (count > 0) {
                 val foldFormat = Unfoldable.getContent(inStream)
                 when (foldFormat) {
-                    FoldFormat.BLOCK.format -> repeat(count) { value.add(StructType.unfoldFromStream(inStream) { unpack() }.value) }
-                    FoldFormat.STREAM.format -> repeat(count) { value.add(ObjectType.unfoldFromStream(inStream) { unpack() }.value) }
+                    FoldFormat.BLOCK.format -> repeat(count) { value.add(StructType.unfoldStream(inStream) { unpack() }.value) }
+                    FoldFormat.STREAM.format -> repeat(count) { value.add(ObjectType.unfoldStream(inStream) { unpack() }.value) }
                 }
             }
-            return ListType(value.toList())
+            require(Unfoldable.getEnd(inStream, conventionType))
+            return ListType(value)
         }
     }
 }

@@ -29,12 +29,12 @@ public value class DoubleType(public val value: Double) : Enfoldable {
 
     override fun foldSize(foldFormat: FoldFormat): Int = atomicSize
 
-    public fun enfoldToBlock(outData: Storable, offset: Int): Int {
+    public override fun enfoldBlock(outData: Storable, offset: Int): Int {
         outData.storeDouble(offset, value)
         return foldSize(FoldFormat.BLOCK)
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int {
+    public override fun enfoldStream(outStream: BinaryWritable): Int {
         outStream.writeDouble(value)
         return foldSize(FoldFormat.STREAM)
     }
@@ -44,9 +44,9 @@ public value class DoubleType(public val value: Double) : Enfoldable {
         override val conventionType: Convention = Convention.DOUBLE
         override val atomicSize: Int = Double.SIZE_BYTES
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int): DoubleType =
+        public override fun unfoldBlock(inData: Retrievable, offset: Int): DoubleType =
             DoubleType(inData.retrieveDouble(offset))
 
-        public fun unfoldFromStream(inStream: BinaryReadable): DoubleType = DoubleType(inStream.readDouble())
+        public override fun unfoldStream(inStream: BinaryReadable): DoubleType = DoubleType(inStream.readDouble())
     }
 }

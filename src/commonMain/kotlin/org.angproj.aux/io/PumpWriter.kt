@@ -21,6 +21,18 @@ package org.angproj.aux.io
  * capacity it is a sign that it has reached EOF which simply is noted as the implementation
  * has to deal with it. If the [PumpReader]s inner state is closed or ... the method returns -1
  * */
-public interface PumpWriter {
+
+/**
+ * A [PumpWriter] must never send partial data if it indicates itself as stale.
+ * */
+public interface PumpWriter: ByteCount {
+
+    public override val count: Long
+
+    /**
+     * Stale mode means that the writer is currently busy digesting data.
+     * */
+    public val stale: Boolean
+
     public fun write(data: Segment<*>): Int
 }

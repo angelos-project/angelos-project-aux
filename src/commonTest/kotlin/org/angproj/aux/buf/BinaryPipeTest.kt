@@ -62,6 +62,12 @@ Fusce volutpat hendrerit sapien ut mollis.
 class BinaryReader(data: ByteArray) : PumpReader {
     val data = DataBuffer(data)
 
+    override val count: Long
+        get() = data.position.toLong()
+
+    override val stale: Boolean
+        get() = data.limit - data.position <= 0
+
     override fun read(data: Segment<*>): Int {
         data.limitAt(min(data.limit, this.data.remaining))
 

@@ -1,7 +1,7 @@
 package org.angproj.aux.rand
 
-import org.angproj.aux.io.OldReader
-import org.angproj.aux.io.binOf
+import org.angproj.aux.buf.BinaryReader
+import org.angproj.aux.io.*
 import org.angproj.aux.util.*
 import kotlin.math.PI
 import kotlin.math.absoluteValue

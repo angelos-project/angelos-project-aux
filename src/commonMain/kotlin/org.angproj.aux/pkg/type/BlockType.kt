@@ -19,12 +19,11 @@ import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
 import org.angproj.aux.pkg.Unfoldable
+import org.angproj.aux.util.floorMod
 import kotlin.jvm.JvmInline
 
 @JvmInline
 public value class BlockType(public val block: Binary) : Storable, Retrievable, Enfoldable {
-
-    //public constructor(size: Long) : this(binOf(size.toInt()))
 
     override fun retrieveByte(position: Int): Byte = block.retrieveByte(position)
     override fun retrieveUByte(position: Int): UByte = block.retrieveUByte(position)
@@ -53,39 +52,32 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
         FoldFormat.STREAM -> block.limit + Enfoldable.OVERHEAD_LENGTH
     }
 
-    public fun enfoldToBlock(outData: Storable, offset: Int): Int {
-        var index = chunkLoop(0, block.limit, Long.SIZE_BYTES) {
-            outData.storeLong(offset + it, block.retrieveLong(it))
-        }
-        index = chunkSimple(index, block.limit, Int.SIZE_BYTES) {
-            outData.storeInt(offset + it, block.retrieveInt(it))
-        }
-        index = chunkSimple(index, block.limit, Short.SIZE_BYTES) {
-            outData.storeShort(offset + it, block.retrieveShort(it))
-        }
-        return chunkSimple(index, block.limit, Byte.SIZE_BYTES) {
-            outData.storeByte(offset + it, block.retrieveByte(it))
-        }
+    public fun enfoldToBlock(outData: Storable, offset: Int): Int = with(block) {
+        val index = chunkLoop<Unit>(0, limit, TypeSize.long) { outData.storeLong(offset + it, retrieveLong(it)) }
+        chunkLoop<Unit>(index, limit, TypeSize.byte) { outData.storeByte(offset + it, retrieveByte(it)) }
+        //val index = longLoop<Unit>(limit) { outData.storeLong(offset + it, retrieveLong(it)) }
+        //byteLoop<Unit>(index, limit) { outData.storeByte(offset + it, retrieveByte(it)) }
     }
 
-    public fun enfoldToStreamByConvention(outStream: BinaryWritable, type: Convention): Int {
+    public fun enfoldToStreamByConvention(outStream: BinaryWritable, type: Convention): Int = outStream.measureBytes {
         Enfoldable.setType(outStream, type)
-        Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH.toLong()) // FoldFormat.BLOCK ?
-        var index = chunkLoop(0, block.limit, Long.SIZE_BYTES) {
-            outStream.writeLong(block.retrieveLong(it))
-        }
-        index = chunkSimple(index, block.limit, Int.SIZE_BYTES) {
-            outStream.writeInt(block.retrieveInt(it))
-        }
-        index = chunkSimple(index, block.limit, Short.SIZE_BYTES) {
-            outStream.writeShort(block.retrieveShort(it))
-        }
-        chunkSimple(index, block.limit, Byte.SIZE_BYTES) {
-            outStream.writeByte(block.retrieveByte(it))
-        }
+        Enfoldable.setLength(outStream, foldSize(FoldFormat.STREAM) - Enfoldable.OVERHEAD_LENGTH) // FoldFormat.BLOCK ?
+        enfoldToStreamRaw(outStream, block)
         Enfoldable.setEnd(outStream, type)
-        return foldSize(FoldFormat.STREAM)
-    }
+    }.toInt()
+
+    /**
+     * Allows for packaging arbitrary data blocks which uses hashing that can be verified, also a 64-bit key
+     * can be used to XOR the checksum, should give decent protection against forceful corruption attempts of
+     * signed data. However, not cryptographically proven yet.
+     * */
+    public fun enfoldToStreamByCheck(outStream: BinaryWritable, key: Long = 0): Int = outStream.measureBytes {
+        Enfoldable.setType(outStream, Convention.CHECK)
+        Enfoldable.setLength(outStream, foldSize(FoldFormat.BLOCK)) // FoldFormat.BLOCK ?
+        Enfoldable.setCheck(outStream, block.checkSum(key))
+        enfoldToStreamRaw(outStream, block)
+        Enfoldable.setEnd(outStream, Convention.CHECK)
+    }.toInt()
 
     public fun enfoldToStream(outStream: BinaryWritable): Int = enfoldToStreamByConvention(outStream, conventionType)
 
@@ -94,73 +86,97 @@ public value class BlockType(public val block: Binary) : Storable, Retrievable, 
         override val conventionType: Convention = Convention.BLOCK
         override val atomicSize: Int = 0
 
-        protected fun chunkSimple(
-            index: Int, length: Int, slice: Int, action: (Int) -> Unit
-        ): Int = when (length - index >= slice) {
-            true -> (index + slice).also { action(index) }
-            else -> index
+        private inline fun <reified E: Any> longLoop(length: Int, action: (Int) -> Unit): Int {
+            val size = length - length.floorMod(TypeSize.long)
+            var idx = 0
+            while(idx < size) {
+                action(idx)
+                idx += TypeSize.long
+            }
+            return idx
         }
 
-        protected fun chunkLoop(index: Int, length: Int, slice: Int, action: (Int) -> Unit): Int {
+        private inline fun <reified E: Any> byteLoop(index: Int, length: Int, action: (Int) -> Unit): Int {
+            var idx = index
+            while(idx < length) {
+                action(idx)
+                idx++
+            }
+            return idx
+        }
+
+        private inline fun <reified E: Any> chunkLoop(index: Int, length: Int, slice: Int, action: (Int) -> Unit): Int {
             val steps = (length - index) / slice
             val size = steps * slice
             if (steps > 0) (index until (index + size) step slice).forEach { action(it) }
             return index + size
         }
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int, block: Binary): Int {
-            var index = chunkLoop(0, block.limit, Long.SIZE_BYTES) {
-                block.storeLong(it, inData.retrieveLong(offset + it))
-            }
-            index = chunkSimple(index, block.limit, Int.SIZE_BYTES) {
-                block.storeInt(it, inData.retrieveInt(offset + it))
-            }
-            index = chunkSimple(index, block.limit, Short.SIZE_BYTES) {
-                block.storeShort(it, inData.retrieveShort(offset + it))
-            }
-            index = chunkSimple(index, block.limit, Byte.SIZE_BYTES) {
-                block.storeByte(it, inData.retrieveByte(offset + it))
-            }
-            return index
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int, block: Binary): Int = with(block) {
+            val index = chunkLoop<Unit>(0, limit, TypeSize.long) { storeLong(it, inData.retrieveLong(offset + it)) }
+            chunkLoop<Unit>(index, limit, TypeSize.byte) { storeByte(it, inData.retrieveByte(offset + it)) }
+            //val index = longLoop<Unit>(limit) { storeLong(it, inData.retrieveLong(offset + it)) }
+            //byteLoop<Unit>(index, limit) { storeByte(it, inData.retrieveByte(offset + it)) }
         }
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int, length: Long): BlockType {
-            require(length <= Int.MAX_VALUE)
-            val block = BlockType(binOf(length.toInt()))
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int, length: Int): BlockType {
+            require(length <= DataSize._1G.size)
+            val block = BlockType(binOf(length))
             unfoldFromBlock(inData, offset, block.block)
-            /*var index = chunkLoop(0, length.toInt(), Long.SIZE_BYTES) {
-                block.storeLong(it, inData.retrieveLong(offset + it))
-            }
-            index = chunkSimple(index, length.toInt(), Int.SIZE_BYTES) {
-                block.storeInt(it, inData.retrieveInt(offset + it))
-            }
-            index = chunkSimple(index, length.toInt(), Short.SIZE_BYTES) {
-                block.storeShort(it, inData.retrieveShort(offset + it))
-            }
-            chunkSimple(index, length.toInt(), Byte.SIZE_BYTES) {
-                block.storeByte(it, inData.retrieveByte(offset + it))
-            }*/
             return block
         }
 
+        /*public fun unfoldFromStreamByConvention(inStream: BinaryReadable, type: Convention): BlockType {
+            require(Unfoldable.getType(inStream, type))
+            val length = Unfoldable.getLength(inStream).toInt()
+            require(length <= Int.MAX_VALUE)
+            val block = BlockType(binOf(length))
+            var index = chunkLoop(0, length, TypeSize.long) { block.storeLong(it, inStream.readLong()) }
+            index = chunkLoop(index, length, TypeSize.byte) { block.storeByte(it, inStream.readByte()) }
+            require(Unfoldable.getEnd(inStream, type))
+            return block
+        }*/
+
         public fun unfoldFromStreamByConvention(inStream: BinaryReadable, type: Convention): BlockType {
             require(Unfoldable.getType(inStream, type))
-            val length = Unfoldable.getLength(inStream)
-            require(length <= Int.MAX_VALUE)
-            val block = BlockType(binOf(length.toInt()))
-            var index = chunkLoop(0, length.toInt(), Long.SIZE_BYTES) {
-                block.storeLong(it, inStream.readLong())
-            }
-            index = chunkSimple(index, length.toInt(), Int.SIZE_BYTES) {
-                block.storeInt(it, inStream.readInt())
-            }
-            index = chunkSimple(index, length.toInt(), Short.SIZE_BYTES) {
-                block.storeShort(it, inStream.readShort())
-            }
-            chunkSimple(index, length.toInt(), Byte.SIZE_BYTES) {
-                block.storeByte(it, inStream.readByte())
+            val block = inStream.measureBytes(Unfoldable.getLength(inStream)) {
+                require(this@measureBytes <= Int.MAX_VALUE)
+                BlockType(binOf(this@measureBytes.toInt())).apply {
+                    unfoldFromStreamRaw(inStream, this@apply.block)
+                }
             }
             require(Unfoldable.getEnd(inStream, type))
+            return block
+        }
+
+        public fun enfoldToStreamRaw(outStream: BinaryWritable, block: Binary): Int = with(block){
+            val index = chunkLoop<Unit>(0, block.limit, TypeSize.long) { outStream.writeLong(retrieveLong(it)) }
+            chunkLoop<Unit>(index, block.limit, TypeSize.byte) { outStream.writeByte(retrieveByte(it)) }
+            //val index = longLoop<Unit>(limit) { outStream.writeLong(retrieveLong(it)) }
+            //byteLoop<Unit>(index, limit) { outStream.writeByte(retrieveByte(it)) }
+        }
+
+        public fun unfoldFromStreamRaw(inStream: BinaryReadable, block: Binary): Int = with(block) {
+            val index = chunkLoop<Unit>(0, limit, TypeSize.long) { storeLong(it, inStream.readLong()) }
+            chunkLoop<Unit>(index, limit, TypeSize.byte) { storeByte(it, inStream.readByte()) }
+            //val index = longLoop<Unit>(limit) { storeLong(it, inStream.readLong()) }
+            //byteLoop<Unit>(index, limit) { storeByte(it, inStream.readByte()) }
+        }
+
+        /**
+         * A false checksum doesn't interrupt data flow but is the last to be checked. Just catch the exception,
+         * log it and continue execution in a safe manner.
+         * */ // Should this one be removed when there is ChunkType?
+        public fun unfoldFromStreamByCheck(inStream: BinaryReadable, key: Long): BlockType {
+            require(Unfoldable.getType(inStream, Convention.CHECK))
+            val length = Unfoldable.getLength(inStream).toInt()
+            require(length <= DataSize._1G.size)
+            val hash = Unfoldable.getCheck(inStream)
+            val block = BlockType(binOf(length))
+            var index = chunkLoop<Unit>(0, length, TypeSize.long) { block.storeLong(it, inStream.readLong()) }
+            index = chunkLoop<Unit>(index, length, TypeSize.byte) { block.storeByte(it, inStream.readByte()) }
+            require(Unfoldable.getEnd(inStream, Convention.CHECK))
+            check(block.block.checkSum(key) == hash) { "Block of data is corrupt" }
             return block
         }
 

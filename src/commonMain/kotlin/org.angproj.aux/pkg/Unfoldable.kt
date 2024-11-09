@@ -17,6 +17,7 @@ package org.angproj.aux.pkg
 import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.pkg.arb.StructType
+import org.angproj.aux.util.EndianAwareContext.asBig
 
 public interface Unfoldable<E : Enfoldable> {
     public val foldFormatSupport: List<FoldFormat>
@@ -53,7 +54,13 @@ public interface Unfoldable<E : Enfoldable> {
 
         public fun getCount(inStream: BinaryReadable): Int = inStream.readInt()
 
-        public fun getLength(inStream: BinaryReadable): Long = inStream.readLong()
+        public fun getItem(inStream: BinaryReadable): Int = inStream.readInt()
+
+        public fun getItem(inData: Retrievable, offset: Int = 0): Int = inData.retrieveInt(offset)
+
+        public fun getCheck(inStream: BinaryReadable): Long = inStream.readLong().asBig()
+
+        public fun getLength(inStream: BinaryReadable): Int = inStream.readInt()
 
         public fun getEnd(inStream: BinaryReadable, end: Convention): Boolean = inStream.readByte() == end.end
     }

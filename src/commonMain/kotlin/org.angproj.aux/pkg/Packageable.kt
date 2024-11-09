@@ -21,6 +21,7 @@ import org.angproj.aux.pkg.arb.BigIntType
 import org.angproj.aux.pkg.arb.StringType
 import org.angproj.aux.pkg.arb.StructType
 import org.angproj.aux.pkg.arb.Uuid4Type
+import org.angproj.aux.pkg.coll.ArrayType
 import org.angproj.aux.pkg.coll.DictType
 import org.angproj.aux.pkg.coll.ListType
 import org.angproj.aux.pkg.coll.ObjectType
@@ -75,8 +76,10 @@ public interface Packageable : Enpackageable, Unpackageable, EndianAware, Compar
 
     public fun <P: Packageable>FoldFormat.sizeOf(type: StructType<P>): Int = type.foldSize(this)
     public fun <P: Packageable>FoldFormat.sizeOf(type: ObjectType<P>): Int = type.foldSize(this)
-    public fun <P: Packageable>FoldFormat.sizeOf(type: DictType<P>): Int = type.foldSize(this)
-    public fun <P: Packageable>FoldFormat.sizeOf(type: ListType<P>): Int = type.foldSize(this)
+    public fun <P: Packageable>FoldFormat.sizeOf(type: MutableMap<Text, P>): Int = DictType(type).foldSize(this)
+    public fun <P: Packageable>FoldFormat.sizeOf(type: MutableList<P>): Int = ListType(type).foldSize(this)
+    public fun <P: Packageable>FoldFormat.sizeOf(type: Array<P>): Int = ArrayType(type).foldSize(this)
+
 
     public fun foldFormat(): FoldFormat
 

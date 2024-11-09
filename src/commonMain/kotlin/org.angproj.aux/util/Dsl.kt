@@ -16,7 +16,7 @@ package org.angproj.aux.util
 
 public interface DslBlock
 
-public inline operator fun <E : DslBlock> E.invoke(block: E.() -> Unit): E = this.also { block() }
+public inline operator fun <reified E : DslBlock> E.invoke(block: E.() -> Unit): E = this.also { block() }
 
 
 public fun interface Lambda<E> {

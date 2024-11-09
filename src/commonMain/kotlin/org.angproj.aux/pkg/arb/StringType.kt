@@ -15,10 +15,8 @@
 package org.angproj.aux.pkg.arb
 
 import org.angproj.aux.buf.copyInto
-import org.angproj.aux.io.BinaryReadable
-import org.angproj.aux.io.BinaryWritable
-import org.angproj.aux.io.Text
-import org.angproj.aux.io.asBinary
+import org.angproj.aux.buf.wrap
+import org.angproj.aux.io.*
 import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
@@ -35,7 +33,8 @@ public value class StringType(public val value: Text) : Enfoldable {
         FoldFormat.STREAM -> value.limit + Enfoldable.OVERHEAD_LENGTH
     }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int {
+    public override fun enfoldStream(outStream: BinaryWritable): Int {
+        require(!value.isNull()) { "Null Text" }
         val block = BlockType(value.asBinary())
         return block.enfoldToStreamByConvention(outStream, conventionType)
     }
@@ -45,7 +44,7 @@ public value class StringType(public val value: Text) : Enfoldable {
         override val conventionType: Convention = Convention.STRING
         override val atomicSize: Int = 0
 
-        public fun unfoldFromStream(inStream: BinaryReadable): StringType {
+        public override fun unfoldStream(inStream: BinaryReadable): StringType {
             val block = BlockType.unfoldFromStreamByConvention(inStream, conventionType)
             val txt = BufMgr.txt(block.block.limit).apply {
                 block.block.copyInto(this, 0, 0, limit) }

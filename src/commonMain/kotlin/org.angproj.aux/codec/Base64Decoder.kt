@@ -31,6 +31,12 @@ public class Base64Decoder(
         private var mark = buffer.mark
         private val limit = buffer.limit
 
+        override val count: Long
+            get() = (mark - buffer.mark).toLong()
+
+        override val stale: Boolean
+            get() = limit - mark <= 0
+
         override fun read(data: Segment<*>): Int {
             val length = min(limit - mark, data.limit)
             buffer.asBinary().copyInto(data, 0, mark, mark + length)
@@ -70,7 +76,7 @@ public class Base64Decoder(
                         writeByte((bits shr 8).toByte())
                     }
                 }
-            } while (!pipe.eofReached() || cp != padding)
+            } while (cp != padding)
             pipe.close()
 
             bin.apply { limitAt(position) }

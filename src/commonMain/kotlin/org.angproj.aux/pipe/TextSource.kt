@@ -25,7 +25,7 @@ public class TextSource(
 ): AbstractSource<TextType>(pipe), TextType, TextWritable {
     override fun writeGlyph(codePoint: CodePoint): Int = withUnicodeAware {
         writeGlyphStrm(codePoint) {
-            if(pos == seg.limit && _open) pushSegment<Reify>()
+            if(pos == seg.limit) pushSegment<Reify>()
             seg.setByte(pos++, it)
         }
     }

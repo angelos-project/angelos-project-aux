@@ -25,7 +25,7 @@ public class TextSink(
 
     override fun readGlyph(): CodePoint = withUnicodeAware {
         readGlyphStrm {
-            if(pos == seg.limit && _open) pullSegment<Reify>()
+            if(pos == seg.limit) pullSegment<Reify>()
             seg.getByte(pos++)
         }
     }

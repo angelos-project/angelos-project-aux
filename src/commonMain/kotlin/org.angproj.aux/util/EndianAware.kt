@@ -14,6 +14,10 @@
  */
 package org.angproj.aux.util
 
+/**
+ * Flowing Classes must be able to set their endian context for automatic swapping is different compared to two flows
+ * or the native environment
+ * */
 public interface EndianAware: NumberAware {
 
     public fun Short.asBig(): Short = if (bigEndian) this else swapEndian()
@@ -90,3 +94,50 @@ public inline fun<reified T> withEndianAware(block: EndianAwareContext.() -> T):
 public inline fun<reified T> withEndianAware(
     array: ByteArray, block: EndianAwareContext.(array: ByteArray) -> T
 ): T = EndianAwareContext.block(array)
+
+/**
+ * New development
+ * */
+public interface EndianContext: NumberAware {
+    public val endianCtx: Endian
+        get() = Endian.native
+}
+
+public class EndianWrapper<E: EndianContext, T: EndianContext>(
+    public val one: E, public val other: T
+): BufferAware, NumberAware {
+    public val swap: Boolean = one.endianCtx.asLittleIfUnknown() != other.endianCtx.asLittleIfUnknown()
+
+    public fun Short.swapAdjust(): Short = if (!swap) this else swapEndian()
+    public fun UShort.swapAdjust(): UShort = if (!swap) this else swapEndian()
+    public fun Int.swapAdjust(): Int = if (!swap) this else swapEndian()
+    public fun UInt.swapAdjust(): UInt = if (!swap) this else swapEndian()
+    public fun Long.swapAdjust(): Long = if (!swap) this else swapEndian()
+    public fun ULong.swapAdjust(): ULong = if (!swap) this else swapEndian()
+    public fun Float.swapAdjust(): Float = if (!swap) this else swapEndian()
+    public fun Double.swapAdjust(): Double = if (!swap) this else swapEndian()
+
+    public fun swap(action: EndianWrapper<E, T>.() -> Unit) { this.action() }
+}
+
+public inline fun <reified E: EndianContext, T: EndianContext, R: Any> E.swap(
+    other: T, block: EndianWrapper<E, T>.() -> R
+): R = EndianWrapper(this, other).block()
+
+public inline fun <reified E: EndianContext, T: EndianContext> E.swapWrapped(
+    other: T
+): EndianWrapper<E, T> = EndianWrapper(this, other)
+
+public object EndianNativeContext: EndianContext {
+    override val endianCtx: Endian
+        get() = Endian.native
+}
+
+public object EndianNetworkContext: EndianContext {
+    override val endianCtx: Endian
+        get() = Endian.network
+}
+
+public inline fun<reified E: EndianContext, R: Any> withEndianContextAware(
+    one: E, block: EndianWrapper<E, EndianNativeContext>.() -> R
+): R = one.swap(EndianNativeContext, block)

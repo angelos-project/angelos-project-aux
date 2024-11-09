@@ -29,6 +29,12 @@ public class HexEncoder : Encoder<Binary, TextBuffer> {
         private var mark = 0
         private val limit = buffer.limit
 
+        override val count: Long
+            get() = mark.toLong()
+
+        override val stale: Boolean
+            get() = limit - mark <= 0
+
         override fun read(data: Segment<*>): Int {
             val length = min(limit - mark, data.limit-1)
             buffer.copyInto(data, 0, mark, mark + length)
@@ -48,7 +54,7 @@ public class HexEncoder : Encoder<Binary, TextBuffer> {
                 tb.writeGlyph(octet.upperToHex<Int>().toCodePoint())
                 tb.writeGlyph(octet.lowerToHex<Int>().toCodePoint())
             }
-        } while(pipe.eofReached())
+        } while(pipe.count < limit)
         pipe.close()
 
         tb.flip()

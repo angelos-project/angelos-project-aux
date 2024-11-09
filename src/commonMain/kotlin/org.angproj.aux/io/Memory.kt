@@ -15,6 +15,8 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.mem.MemoryManager
+import org.angproj.aux.res.speedMemCpy
+import org.angproj.aux.util.Copy
 import org.angproj.aux.res.Memory as Chunk
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
@@ -43,3 +45,17 @@ public expect open class Memory internal constructor(
 
     override fun setLong(index: Int, value: Long)
 }
+
+/**
+ * TEMPORARILY FOR TESTING SPEED
+ * */
+public fun Memory.copyInto(
+    destination: Memory, destinationOffset: Int, fromIndex: Int, toIndex: Int
+): Int = object : Copy {
+    operator fun invoke(): Int {
+        check(isOpen && destination.isOpen) { "Closed memory" }
+        require(fromIndex, toIndex, destinationOffset, this@copyInto, destination)
+        //return speedMemCpy(fromIndex, toIndex, destinationOffset, this@copyInto.data.ptr, destination.data.ptr)
+        return innerCopy(fromIndex, toIndex, destinationOffset, this@copyInto, destination)
+    }
+}()

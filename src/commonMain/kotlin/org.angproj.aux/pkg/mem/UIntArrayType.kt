@@ -28,11 +28,11 @@ public value class UIntArrayType(public override val value: UIntBuffer): ArrayEn
     override fun foldSize(foldFormat: FoldFormat): Int = ArrayEnfoldable.arrayFoldSize(
         value, atomicSize, foldFormat)
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Int = ArrayEnfoldable.arrayEnfoldToBlock(
+    public override fun enfoldBlock(outData: Storable, offset: Int): Int = ArrayEnfoldable.arrayEnfoldToBlock(
         value, atomicSize, outData, offset) { o, i, v -> o.storeUInt(i, v) }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int = ArrayEnfoldable.arrayEnfoldToStream(
-        value, atomicSize, conventionType, outStream) { o, v -> o.writeUInt(v) }
+    public override fun enfoldStream(outStream: BinaryWritable): Int = ArrayEnfoldable.arrayEnfoldToStream(
+        value, conventionType, outStream) { o, v -> o.writeUInt(v) }
 
     public companion object : ArrayUnfoldable<UInt, UIntBuffer, UIntArrayType> {
         override val factory: (count: Int) -> UIntBuffer = { c -> UIntBuffer(c) }
@@ -69,7 +69,7 @@ public value class UIntArrayType(public override val value: UIntBuffer): ArrayEn
         ): UIntArrayType = ArrayUnfoldable.arrayUnfoldFromBlock(
             inData, offset, count, atomicSize, factory) { d, i -> d.retrieveUInt(i) }*/
 
-        public override fun unfoldFromStream(
+        public override fun unfoldStream(
             inStream: BinaryReadable
         ): UIntArrayType = UIntArrayType(ArrayUnfoldable.arrayUnfoldFromStream(
             inStream, conventionType, factory) { s -> s.readUInt() })

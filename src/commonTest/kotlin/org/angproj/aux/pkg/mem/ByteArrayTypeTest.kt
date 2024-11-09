@@ -1,8 +1,23 @@
+/**
+ * Copyright (c) 2024 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ *
+ * This software is available under the terms of the MIT license. Parts are licensed
+ * under different terms if stated. The legal terms are attached to the LICENSE file
+ * and are made available on:
+ *
+ *      https://opensource.org/licenses/MIT
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Contributors:
+ *      Kristoffer Paulsson - initial implementation
+ */
 package org.angproj.aux.pkg.mem
 
+import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.buf.ByteBuffer
 import org.angproj.aux.buf.byteBuffer
-import org.angproj.aux.buf.securelyRandomize
+import org.angproj.aux.buf.random
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.pkg.FoldFormat
@@ -10,13 +25,14 @@ import org.angproj.aux.pkg.Package
 import org.angproj.aux.pkg.Packageable
 import org.angproj.aux.pkg.arb.StructType
 import org.angproj.aux.pkg.coll.ObjectType
+import org.angproj.aux.pkg.type.BlockType
 import org.angproj.aux.util.NullObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
 data class ByteTestObjectPackage(
-    val fixBuffer: ByteBuffer = ByteBuffer(DataSize._32B), // Fixed size buffer
+    val fixBuffer: ByteBuffer = ByteBuffer(DataSize._128B), // Fixed size buffer
     var dynBuffer: ByteBuffer = NullObject.byteBuffer // Dynamic sized buffer
 ): Package { // According to Package convention
     override fun foldSize(foldFormat: FoldFormat): Int = withFoldSize(foldFormat) { listOf(
@@ -34,7 +50,7 @@ data class ByteTestObjectPackage(
 }
 
 data class ByteTestStructPackageable(
-    val fixBuffer: ByteBuffer = ByteBuffer(DataSize._32B), // Fixed size buffer
+    val fixBuffer: ByteBuffer = ByteBuffer(DataSize._128B), // Fixed size buffer
 ): Packageable { // According to struct Packageable convention
     override fun foldSize(foldFormat: FoldFormat): Int = withFoldSize(foldFormat){ listOf(
         sizeOf(fixBuffer),
@@ -49,7 +65,7 @@ data class ByteTestStructPackageable(
 }
 
 data class ByteTestObjectPackageable(
-    val fixBuffer: ByteBuffer = ByteBuffer(DataSize._32B), // Fixed size buffer
+    val fixBuffer: ByteBuffer = ByteBuffer(DataSize._128B), // Fixed size buffer
     var dynBuffer: ByteBuffer = NullObject.byteBuffer // Dynamic sized buffer
 ): Packageable { // According to object Packageable convention
     override fun foldSize(foldFormat: FoldFormat): Int = withFoldSize(foldFormat){ listOf(
@@ -72,12 +88,12 @@ class ByteArrayTypeTest {
     @Test
     fun enfoldUnfoldToObjectPackage() {
         val to1 = ByteTestObjectPackage()
-        to1.fixBuffer.securelyRandomize()
-        to1.dynBuffer = ByteBuffer(DataSize._128B).apply { securelyRandomize() }
+        to1.fixBuffer.random()
+        to1.dynBuffer = ByteBuffer(DataSize._128B).apply { random() }
         val buf = BufMgr.binary(DataSize._4K.size)
-        val len = ObjectType(to1).enfoldToStream(buf)
+        val len = ObjectType(to1).enfoldStream(buf)
         buf.flip()
-        val to2 = ObjectType.unfoldFromStream(buf) { ByteTestObjectPackage() }.value
+        val to2 = ObjectType.unfoldStream(buf) { ByteTestObjectPackage() }.value
 
         assertEquals(len, buf.limit)
         assertEquals(to1, to2)
@@ -86,11 +102,11 @@ class ByteArrayTypeTest {
     @Test
     fun enfoldUnfoldToStructPackageable() {
         val to1 = ByteTestStructPackageable()
-        to1.fixBuffer.securelyRandomize()
+        to1.fixBuffer.random()
         val bin = BufMgr.bin(DataSize._4K.size)
-        val len1 = StructType(to1).enfoldToBlock(bin)
+        val len1 = StructType(to1).enfoldBlock(bin, 0)
         bin.limitAt(len1)
-        val to2 = StructType.unfoldFromBlock(bin) { ByteTestStructPackageable() }.value
+        val to2 = StructType.unfoldBlock(bin) { ByteTestStructPackageable() }.value
 
         assertEquals(to1, to2)
     }
@@ -98,64 +114,41 @@ class ByteArrayTypeTest {
     @Test
     fun enfoldUnfoldToObjectPackageable() {
         val to1 = ByteTestObjectPackageable()
-        to1.fixBuffer.securelyRandomize()
-        to1.dynBuffer = ByteBuffer(DataSize._128B).apply { securelyRandomize() }
+        to1.fixBuffer.random()
+        to1.dynBuffer = ByteBuffer(DataSize._128B).apply { random() }
         val buf = BufMgr.binary(DataSize._4K.size)
-        val len = ObjectType(to1).enfoldToStream(buf)
+        val len = ObjectType(to1).enfoldStream(buf)
         buf.flip()
-        val to2 = ObjectType.unfoldFromStream(buf) { ByteTestObjectPackageable() }.value
+        val to2 = ObjectType.unfoldStream(buf) { ByteTestObjectPackageable() }.value
 
         assertEquals(len, buf.limit)
         assertEquals(to1, to2)
     }
 
 
-    /*val first = byteArrayOf(
-        (-31123).mod(128), (-25444).mod(128), 9662.mod(128)
-    ).toByteBuffer()
-    val second = byteArrayOf(
-        12959.mod(128), 28616.mod(128), 2619.mod(128),
-        17090.mod(128), (-31423).mod(128)
-    ).toByteBuffer()
-    val third = byteArrayOf(
-        20417.mod(128), 11571.mod(128), 30775.mod(128),
-        2691.mod(128), 26005.mod(128), (-28863).mod(128),
-        (-1299).mod(128)
-    ).toByteBuffer()
+    val rand = ByteBuffer(DataSize._128B).apply { random() }
 
-    protected fun enfoldArrayToBlock(data: ByteBuffer) {
-        val type = ByteArrayType(data)
-        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK).toInt()))
+    @Test
+    fun enfoldArrayToBlock() {
+        val type = ByteArrayType(rand)
+        val block = BlockType(binOf(type.foldSize(FoldFormat.BLOCK)))
         assertEquals(block.foldSize(FoldFormat.BLOCK), type.foldSize(FoldFormat.BLOCK))
-        type.enfoldToBlock(block)
+        type.enfoldBlock(block, 0)
 
         val retrieved = ByteArrayType(ByteBuffer(type.value.limit))
         ByteArrayType.unfoldFromBlock(block, retrieved.value)
-        assertContentEquals(type.value, retrieved.value)
+        assertEquals(type.value, retrieved.value)
     }
 
-    protected fun enfoldArrayToStream(data: ByteBuffer) {
-        val type = ByteArrayType(data)
+    @Test
+    fun enfoldArrayToStream() {
+        val type = ByteArrayType(rand)
         val stream = BinaryBuffer()
-        type.enfoldToStream(stream)
+        type.enfoldStream(stream)
         stream.flip()
-        assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM).toInt())
+        assertEquals(stream.limit, type.foldSize(FoldFormat.STREAM))
 
-        val retrieved = ByteArrayType.unfoldFromStream(stream)
-        assertContentEquals(type.value, retrieved.value)
+        val retrieved = ByteArrayType.unfoldStream(stream)
+        assertEquals(type.value, retrieved.value)
     }
-
-    @Test
-    fun enfoldToBlock() {
-        enfoldArrayToBlock(first)
-        enfoldArrayToBlock(second)
-        enfoldArrayToBlock(third)
-    }
-
-    @Test
-    fun enfoldToStream() {
-        enfoldArrayToStream(first)
-        enfoldArrayToStream(second)
-        enfoldArrayToStream(third)
-    }*/
 }

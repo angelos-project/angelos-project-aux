@@ -19,6 +19,7 @@ import platform.posix.*
 import org.angproj.aux.io.TypeSize
 import org.angproj.aux.util.Copyable
 import org.angproj.aux.util.Reifiable
+import org.angproj.aux.util.floorMod
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
@@ -51,9 +52,79 @@ public actual fun allocateMemory(size: Int): Memory {
 }
 
 @PublishedApi
+internal actual fun speedMemCpy(
+    idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long
+): Int = speedMemCpyAddress3<Unit>(idxFrom, idxTo, dstOff, src, dst)
+
 @OptIn(ExperimentalForeignApi::class)
-internal actual fun speedMemCpy(idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long): Int = memScoped {
-    val length = idxTo - idxFrom
-    memcpy((src + idxFrom).toCPointer<LongVar>(), (dst + dstOff).toCPointer<LongVar>(), length.toULong())
-    length
+internal inline fun <reified E: Any>speedMemCpyAddress(idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long): Int = memScoped {
+    val tot = idxFrom - idxTo
+    val long = tot - tot.floorMod(TypeSize.long)
+
+    val dstPtr = dst + dstOff
+    val srcPtr = src + idxFrom
+
+    var idx = 0
+    while(idx < long) {
+        (idx + dstPtr).toCPointer<LongVar>()!!.pointed.value = (idx + srcPtr).toCPointer<LongVar>()!!.pointed.value
+        idx += TypeSize.long
+    }
+
+    while (idx < tot) {
+        (idx + dstPtr).toCPointer<ByteVar>()!!.pointed.value = (idx + srcPtr).toCPointer<ByteVar>()!!.pointed.value
+        idx++
+    }
+    return tot
+}
+
+
+@OptIn(ExperimentalForeignApi::class)
+internal inline fun <reified E: Any>speedMemCpyAddress2(idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long): Int = memScoped {
+    val tot = idxFrom - idxTo
+    val long = tot - tot.floorMod(TypeSize.long)
+
+    val dstPtr: Long = dst + dstOff
+    val srcPtr: Long = src + idxFrom
+
+    memcpy(srcPtr.toCPointer<LongVar>(), dstPtr.toCPointer<LongVar>(), long.toULong())
+    var idx = long
+    while (idx < tot) {
+        (idx + dstPtr).toCPointer<ByteVar>()!!.pointed.value = (idx + srcPtr).toCPointer<ByteVar>()!!.pointed.value
+        idx++
+    }
+    return tot
+}
+
+@OptIn(ExperimentalForeignApi::class)
+internal inline fun <reified E: Any>speedMemCpyAddress3(idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long): Int = memScoped {
+    val tot = idxFrom - idxTo
+    val long = tot - tot.floorMod(TypeSize.long)
+    val steps = long / TypeSize.long
+
+    val dstLongPtr: CPointer<LongVar> = (dst + dstOff).toCPointer()!! //.toCPointer<CArrayPointerVar<Long>>()!!.asStableRef<Long>()
+    val srcLongPtr: CPointer<LongVar> = (src + idxFrom).toCPointer()!!
+
+    srcLongPtr.usePinned {
+        dstLongPtr.usePinned {
+            var idx = 0
+            while(idx < steps) {
+                dstLongPtr[idx] = srcLongPtr[idx]
+                idx++
+            }
+        }
+    }
+
+    val dstBytePtr: CPointer<ByteVar> = (dst + dstOff + long).toCPointer()!!
+    val srcBytePtr: CPointer<ByteVar> = (src + idxFrom + long).toCPointer()!!
+
+    srcBytePtr.usePinned {
+        dstBytePtr.usePinned {
+            var idx = long
+            while (idx < tot) {
+                dstBytePtr[idx] = srcBytePtr[idx]
+                idx++
+            }
+        }
+    }
+    return tot
 }

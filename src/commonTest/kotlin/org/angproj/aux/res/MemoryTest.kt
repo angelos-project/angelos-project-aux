@@ -15,16 +15,15 @@
 package org.angproj.aux.res
 
 import org.angproj.aux.io.DataSize
-import org.angproj.aux.mem.BufMgr
-import org.angproj.aux.mem.MemoryFree
-import org.angproj.aux.sec.SecureRandom
+import org.angproj.aux.io.Segment
+import org.angproj.aux.io.copyInto
+import org.angproj.aux.mem.*
 import org.angproj.aux.util.Reify
+import org.angproj.aux.util.Uuid4
 import org.angproj.aux.util.ifNotJs
 import kotlin.random.Random
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFails
-import kotlin.test.assertFailsWith
+import kotlin.test.*
+import kotlin.time.Duration
 import kotlin.time.measureTime
 
 class MemoryTest {
@@ -160,16 +159,66 @@ class MemoryTest {
             println(time)
     }
 
+    private fun testRunRand(seg: Segment<*>, loops: Int): Duration = BufMgr.asWrap(seg) {
+        var time = measureTime {  }
+        repeat(loops) {
+            time += measureTime { Uuid4.read(this@asWrap._segment) } // P128 Small Random
+        }
+        time / loops
+    }
+
     //@Test
     fun testRandomMeasure() = ifNotJs {
-        val vol = DataSize._256M
+        val vol = DataSize._64M
+        val iter = 128
+        repeat(4) {
+            val time = when(it) {
+                0 -> testRunRand(MemoryFree.allocate(vol.size), iter)
+                1 -> testRunRand(Default.allocate(vol.size), iter)
+                2 -> testRunRand(ModelMem.allocate(vol.size), iter)
+                else -> {
+                    val arr1 = ByteArray(vol.size)
+                    var time = measureTime {  }
+                    repeat(iter) {
+                        time += measureTime { Random.nextBytes(arr1) } // Stdlib Kotlin Default Random
+                    }
+                    time / iter
+                }
+            }
+            println("1 Gigabyte in ${time.times(DataSize._1G.size / vol.size)}")
+        }
+    }
 
-        val arr1 = ByteArray(vol.size)
-        val timeA = measureTime { Random.nextBytes(arr1) }
-        println(timeA)
+    //@Test
+    fun testCopyMeasure() = ifNotJs {
+        val vol = DataSize._64M
+        val loops = 128
 
-        val mem1 = MemoryFree.allocate(DataSize._1G)
-        val timeM = measureTime { SecureRandom.read(mem1) }
-        println(timeM)
+        val barr1 = ByteArray(vol.size)
+        val barr2 = ByteArray(vol.size)
+        var time = measureTime {  }
+        repeat(loops) {
+            println(it)
+            Random.nextBytes(barr1)
+            time += measureTime { barr1.copyInto(barr2, 0, 0, barr1.size) }
+            assertContentEquals(barr1, barr2)
+        }
+        time /= loops
+        println("1 Gigabyte in ${time.times(DataSize._1G.size / vol.size)}")
+
+        val mem1 = MemoryFree.allocate(vol.size)
+        val mem2 = MemoryFree.allocate(vol.size)
+
+        time = measureTime {  }
+        repeat(loops) {
+            println(it)
+            Uuid4.read(mem1)
+            println("Mem 1 " + mem1.getLong(0))
+            time += measureTime { mem1.copyInto(mem2, 0, 0, mem1.limit) }
+            //assertEquals(mem1.hashCode(), mem2.hashCode())
+            println("Mem 2 " + mem2.getLong(0))
+        }
+        time /= loops
+        println("1 Gigabyte in ${time.times(DataSize._1G.size / vol.size)}")
     }
 }

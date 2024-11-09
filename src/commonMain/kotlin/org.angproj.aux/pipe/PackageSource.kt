@@ -23,13 +23,17 @@ import org.angproj.aux.pkg.coll.ObjectType
 public class PackageSource(
     private val src: BinarySource
 ): Source, PackageType, PackageWritable {
+
+    override val count: Long
+        get() = src.count
+
     public fun flush(): Unit = src.flush()
 
     override fun isOpen(): Boolean = src.isOpen()
 
     override fun close(): Unit = src.close()
 
-    override fun <P : Package> writeObject(pkg: P): Int = ObjectType(pkg).enfoldToStream(src)
+    override fun <P : Package> writeObject(pkg: P): Int = ObjectType(pkg).enfoldStream(src)
 
-    override fun <P : Packageable> writeStruct(pkg: P): Int = StructType(pkg).enfoldToStream(src)
+    override fun <P : Packageable> writeStruct(pkg: P): Int = StructType(pkg).enfoldStream(src)
 }

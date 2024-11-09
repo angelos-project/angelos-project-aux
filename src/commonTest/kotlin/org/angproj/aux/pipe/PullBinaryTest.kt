@@ -15,11 +15,9 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.buf.wrap
-import org.angproj.aux.io.*
 import org.angproj.aux.mem.BufMgr
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import org.angproj.aux.util.Uuid4
+import kotlin.test.*
 import kotlin.time.measureTime
 
 class PullBinaryTest {
@@ -28,12 +26,13 @@ class PullBinaryTest {
      * The goal is to pull all data from the BinarySource.
      * */
     @Test
-    fun testStreamPull() {
+    fun testStreamPullClose() {
 
         val len = 42 * 100
 
-        val rand = BufMgr.bin(len).apply { securelyRandomize() }
+        val rand = BufMgr.bin(len).apply { Uuid4.read(this._segment) }
         val canvas = BufMgr.bin(rand.capacity)
+        println(rand.capacity)
 
         val readable = Pipe.buildBinaryPullPipe(TestPumpReader(rand))
         val time = measureTime {
@@ -55,15 +54,17 @@ class PullBinaryTest {
 
         println(time)
         assertEquals(rand, canvas)
-        assertFailsWith<UnsupportedOperationException> { readable.readByte() }
+        readable.close()
+        assertFalse { readable.isOpen() }
+        assertFailsWith<PipeException> { readable.readByte() }
     }
 
     @Test
-    fun testStreamPullClose() {
+    fun testStreamPullAutoClose() {
 
         val len = 42 * 100
 
-        val rand = BufMgr.bin(len).apply { securelyRandomize() }
+        val rand = BufMgr.bin(len).apply { Uuid4.read(this._segment) }
         val canvas = BufMgr.bin(rand.capacity)
 
         val readable = Pipe.buildBinaryPullPipe(TestPumpReader(rand))
@@ -82,7 +83,14 @@ class PullBinaryTest {
             } while(position < limit)
         }
 
-        readable.close()
-        assertFailsWith<UnsupportedOperationException> { readable.readByte() }
+        assertEquals(rand, canvas)
+        assertFailsWith<StaleException> { readable.readByte() }
+        assertFailsWith<StaleException> { readable.readByte() }
+        assertTrue { readable.isOpen() } // Still open
+        assertTrue { readable.telemetry().pumpOpen } // Still open
+        assertFailsWith<StaleException> { readable.readByte() }
+        assertFalse { readable.isOpen() } // Closes on third strike
+        assertFalse { readable.telemetry().pumpOpen } // Closes on third strike
+        assertFailsWith<PipeException> { readable.readByte() }
     }
 }

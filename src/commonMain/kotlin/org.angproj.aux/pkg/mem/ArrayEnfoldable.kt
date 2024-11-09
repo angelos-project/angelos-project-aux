@@ -18,6 +18,7 @@ import org.angproj.aux.buf.ArrayBuffer
 import org.angproj.aux.buf.isNull
 import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.io.Storable
+import org.angproj.aux.io.measureBytes
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.Enfoldable
 import org.angproj.aux.pkg.FoldFormat
@@ -51,17 +52,16 @@ public interface ArrayEnfoldable<G, E: ArrayBuffer<G>>: Enfoldable {
 
         public fun <G, E: ArrayBuffer<G>>arrayEnfoldToStream(
             value: E,
-            atomicSize: Int,
+            //atomicSize: Int,
             conventionType: Convention,
             outStream: BinaryWritable,
             stream: (outStream: BinaryWritable, v: G) -> Unit
-        ): Int {
+        ): Int = outStream.measureBytes {
             require(!value.isNull()) { "Null Array!" }
             Enfoldable.setType(outStream, conventionType)
             Enfoldable.setCount(outStream, value.limit)
             value.forEach { stream(outStream, it) }
             Enfoldable.setEnd(outStream, conventionType)
-            return arrayFoldSize(value, atomicSize, FoldFormat.STREAM)
-        }
+        }.toInt()
     }
 }

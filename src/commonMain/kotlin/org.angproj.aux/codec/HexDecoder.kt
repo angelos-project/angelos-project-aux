@@ -19,6 +19,7 @@ import org.angproj.aux.buf.asBinary
 import org.angproj.aux.buf.wrap
 import org.angproj.aux.io.*
 import org.angproj.aux.pipe.Pipe
+import org.angproj.aux.pipe.TextSink
 import org.angproj.aux.util.Hex
 import kotlin.math.min
 
@@ -29,12 +30,27 @@ public class HexDecoder : Decoder<TextBuffer, Binary> {
         private var mark = buffer.mark
         private val limit = buffer.limit
 
+        override val count: Long
+            get() = (mark - buffer.mark).toLong()
+
+        override val stale: Boolean
+            get() = limit - mark <= 0
+
         override fun read(data: Segment<*>): Int {
             val length = min(limit - mark, data.limit)
             if(length > 0) buffer.asBinary().copyInto(data, 0, mark, mark + length)
             mark += length
             return length
         }
+    }
+
+    private inline fun <reified E: Any> invalidHex(data: TextBuffer): E {
+        error("Invalid Hex value before position " + data.position)
+    }
+
+    private inline fun <reified E: Any> invalidHex(pipe: TextSink): E {
+        pipe.close()
+        error("Invalid Hex value at position " + (pipe.count - 1))
     }
 
     override fun decode(data: TextBuffer): Binary {
@@ -45,23 +61,22 @@ public class HexDecoder : Decoder<TextBuffer, Binary> {
 
         return bin.wrap {
             data.reset() // Resetting position to mark
+
+            /*while (data.position < data.limit) {
+                val upperHex = Hex.hex2bin[data.readGlyph().value] ?: invalidHex(data)
+                val lowerHex = Hex.hex2bin[data.readGlyph().value] ?: invalidHex(data)
+                writeByte((((upperHex shl 4) or lowerHex) and 0xFF).toByte())
+            }*/
+
             val pipe = Pipe.buildTextPullPipe(TextBufferReader(data))
-
-            val value = {
-                val cp = pipe.readGlyph()
-                check(cp.value in Hex.valid)
-                cp.value
+            while(pipe.count < limit) {
+                val upperHex = Hex.hex2bin[pipe.readGlyph().value] ?: invalidHex(pipe)
+                val lowerHex = Hex.hex2bin[pipe.readGlyph().value] ?: invalidHex(pipe)
+                writeByte((((upperHex shl 4) or lowerHex) and 0xFF).toByte())
             }
-
-            do {
-                val upperHex: Int = (Hex.hex2bin[value()]!!.toInt() shl 4)
-                val lowerHex: Int = Hex.hex2bin[value()]!!
-                writeByte((upperHex or lowerHex and 0xFF).toByte())
-            } while(pipe.eofReached())
             pipe.close()
 
-            bin.limitAt(position)
-            bin
+            bin.apply { limitAt(position) }
         }
     }
 }

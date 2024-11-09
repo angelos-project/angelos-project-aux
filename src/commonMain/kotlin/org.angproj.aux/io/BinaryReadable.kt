@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.io
 
+
 /**
  * Imported from angelos-project-buffer package.
  */
@@ -23,74 +24,92 @@ package org.angproj.aux.io
  *
  * @constructor Create Readable
  */
-public interface BinaryReadable {
+public interface BinaryReadable: Readable, ByteCount {
+
+    public override val count: Long
+
     /**
      * Read next byte.
      *
      * @return A byte of data.
      */
-    public fun readByte(): Byte
+    public override fun readByte(): Byte
 
     /**
      * Read next unsigned byte.
      *
      * @return An unsigned byte of data.
      */
-    public fun readUByte(): UByte
+    public override fun readUByte(): UByte
 
     /**
      * Read next short integer.
      *
      * @return A short integer of data.
      */
-    public fun readShort(): Short
+    public override fun readShort(): Short
 
     /**
      * Read next unsigned short integer.
      *
      * @return An unsigned short integer of data.
      */
-    public fun readUShort(): UShort
+    public override fun readUShort(): UShort
 
     /**
      * Read next integer.
      *
      * @return An integer of data.
      */
-    public fun readInt(): Int
+    public override fun readInt(): Int
 
     /**
      * Read next unsigned integer.
      *
      * @return An unsigned integer of data.
      */
-    public fun readUInt(): UInt
+    public override fun readUInt(): UInt
 
     /**
      * Read next long integer.
      *
      * @return A long integer of data.
      */
-    public fun readLong(): Long
+    public override fun readLong(): Long
 
     /**
      * Read next unsigned long integer.
      *
      * @return An unsigned long integer of data
      */
-    public fun readULong(): ULong
+    public override fun readULong(): ULong
 
     /**
      * Read next float.
      *
      * @return A float of data.
      */
-    public fun readFloat(): Float
+    public override fun readFloat(): Float
 
     /**
      * Read next double.
      *
      * @return A double of data.
      */
-    public fun readDouble(): Double
+    public override fun readDouble(): Double
 }
+
+/*public inline fun <reified T: BinaryReadable, E: Any> T.measureBytes(expected: Int, block: Int.() -> E): E {
+    val curCnt = count
+    return expected.block().also {
+        check((count - curCnt).toInt() == expected) {
+            "Expected $expected bytes but ${count - curCnt} was read"
+        }
+    }
+}
+
+public inline fun <reified T: BinaryReadable> T.measureBytes(block: () -> Unit): Int {
+    val curCnt = count
+    block()
+    return (count - curCnt).toInt()
+}*/

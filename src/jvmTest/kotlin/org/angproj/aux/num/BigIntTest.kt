@@ -33,6 +33,18 @@ class BigIntTest {
     }
 
     /**
+     * Fail report, deal with immediately
+     *
+     * Vx: ffff
+     * Jx: ff
+     * Kx: ff
+     * Rj: 0
+     * Rk: 1
+     * kM 1
+     * kS -1
+     * */
+
+    /**
      * This test recognizes that BigInt can predict its export size properly.
      * */
     @Test

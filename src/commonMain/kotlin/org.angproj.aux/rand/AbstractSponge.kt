@@ -26,7 +26,10 @@ import org.angproj.aux.util.floorMod
  * AbstractSponge is a class that circumvents unnecessary
  * bugs when implementing a secure random sponge construction.
  * */
-public abstract class AbstractSponge(spongeSize: Int = 0, public val visibleSize: Int = 0) : EndianAware {
+public abstract class AbstractSponge(
+    spongeSize: Int = 0,
+    public val visibleSize: Int = 0,
+): EndianAware {
 
     protected var counter: Long = 0
     protected var mask: Long = 0

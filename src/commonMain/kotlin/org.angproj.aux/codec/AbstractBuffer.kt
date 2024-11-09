@@ -17,8 +17,6 @@ package org.angproj.aux.codec
 import org.angproj.aux.io.Readable
 import org.angproj.aux.io.Writable
 import org.angproj.aux.util.BufferAware
-import org.angproj.aux.util.readCharAt
-import org.angproj.aux.util.writeCharAt
 
 @Deprecated("Seizes to exist.", ReplaceWith("Replace"))
 public abstract class AbstractBuffer: Readable, Writable, BufferAware {
@@ -51,8 +49,8 @@ public abstract class AbstractBuffer: Readable, Writable, BufferAware {
         _data[_position] }
     override fun readUByte(): UByte = withinReadLimit(UByte.SIZE_BYTES) {
         _data[_position].toUByte() }
-    override fun readChar(): Char = withinReadLimit(Char.SIZE_BYTES) {
-        _data.readCharAt(_position) }
+    //override fun readChar(): Char = withinReadLimit(Char.SIZE_BYTES) {
+    //    _data.readCharAt(_position) }
     override fun readShort(): Short = withinReadLimit(Short.SIZE_BYTES) {
         _data.readShortAt(_position) }
     override fun readUShort(): UShort = withinReadLimit(UShort.SIZE_BYTES) {
@@ -79,8 +77,8 @@ public abstract class AbstractBuffer: Readable, Writable, BufferAware {
         _data[_position] = value }
     override fun writeUByte(value: UByte): Unit = withinWriteLimit(UByte.SIZE_BYTES) {
         _data[_position] = value.toByte() }
-    override fun writeChar(value: Char): Unit = withinWriteLimit(Char.SIZE_BYTES) {
-        _data.writeCharAt(_position, value) }
+    //override fun writeChar(value: Char): Unit = withinWriteLimit(Char.SIZE_BYTES) {
+    //    _data.writeCharAt(_position, value) }
     override fun writeShort(value: Short): Unit = withinWriteLimit(Short.SIZE_BYTES) {
         _data.writeShortAt(_position, value) }
     override fun writeUShort(value: UShort): Unit =

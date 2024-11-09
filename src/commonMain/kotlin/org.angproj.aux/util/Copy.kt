@@ -29,12 +29,23 @@ public interface Copyable {
 
 public interface Copy {
 
-    private inline fun <reified S: Copyable> S.loop(slice: IntRange, pos: Int, action: (Int, Int) -> Unit): Int {
-        val offset = slice.first
-        val steps = (slice.last - slice.first) / TypeSize.long
-        val size = steps * TypeSize.long
-        if (steps > 0) (0 until size step TypeSize.long).forEach { action(offset + it, pos + it) }
-        return size
+    private inline fun <reified S: Copyable, D: Copyable> oneLoop(
+        idxFrom: Int, idxTo: Int, dstOff: Int, src: S, dst: D
+    ): Int {
+        val tot = idxTo - idxFrom
+        val long = tot - tot.floorMod(TypeSize.long)
+
+        var idx = 0
+        while(idx < long) {
+            dst.setLong(idx + dstOff, src.getLong(idx + idxFrom))
+            idx += TypeSize.long
+        }
+
+        while (idx < tot) {
+            dst.setByte(idx + dstOff, src.getByte(idx + idxFrom))
+            idx++
+        }
+        return tot
     }
 
     private inline fun <reified S: Copyable, D: Copyable> S.loop(slice: IntRange, pos: Int, dst: D): Int {
@@ -45,13 +56,6 @@ public interface Copy {
             dst.setLong(pos + it, getLong(offset + it))
         }
         return size
-    }
-
-    private inline fun <reified S: Copyable> S.chunk(slice: IntRange, pos: Int, size: Int, action: (Int, Int) -> Unit): Int {
-        val offset = slice.first
-        val steps = (slice.last - slice.first) - size
-        if (steps > 0) (size until size + steps).forEach { action(offset + it, pos + it) }
-        return size + steps
     }
 
     private inline fun <reified S: Copyable, D: Copyable> S.chunk(slice: IntRange, pos: Int, size: Int, dst: D): Int {
@@ -84,6 +88,12 @@ public interface Copy {
     ): Int {
         val range = idxFrom..idxTo
         return src.chunk(range, dstOff, src.loop(range, dstOff, dst), dst)
+    }
+
+    public fun innerCopyExperimental(
+        idxFrom: Int, idxTo: Int, dstOff: Int, src: Copyable, dst: Copyable
+    ): Int {
+        return oneLoop(idxFrom, idxTo, dstOff, src, dst)
     }
 
     public operator fun<E: Any> invoke(action: () -> E): E = action()

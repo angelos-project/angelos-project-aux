@@ -42,6 +42,8 @@ public enum class Convention(public val type: Short, public val end: Byte) {
     LIST(10042, -42),
     OBJECT(10043, -43),
     STRUCT(10044, -44),
+    CHECK(10045, -45),
+    ARRAY(10046, -46),
 
     BIGINT(10050, -50),
     UUID4(10051, -51),

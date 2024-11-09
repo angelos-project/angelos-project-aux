@@ -36,27 +36,33 @@ public value class Uuid4Type(public val value: Uuid4) : Enfoldable {
         FoldFormat.STREAM -> atomicSize + Enfoldable.OVERHEAD_LENGTH
     }
 
-    public fun enfoldToBlock(outData: Storable, offset: Int = 0): Int = BlockType(
-        value.asBinary()).enfoldToBlock(outData, offset)
+    public override fun enfoldBlock(outData: Storable, offset: Int): Int {
+        require(!value.isNull()) { "Null UUID" }
+        return BlockType(value.asBinary()).enfoldToBlock(outData, offset)
+    }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int = BlockType(
-        value.asBinary()).enfoldToStreamByConvention(outStream, conventionType)
+    public override fun enfoldStream(outStream: BinaryWritable): Int {
+        require(!value.isNull()) { "Null UUID" }
+        return BlockType(value.asBinary()).enfoldToStreamByConvention(outStream, conventionType)
+    }
 
     public companion object : Unfoldable<Uuid4Type> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.BLOCK, FoldFormat.STREAM)
         override val conventionType: Convention = Convention.UUID4
         override val atomicSize: Int = 16
 
-        public fun unfoldFromBlock(inData: Retrievable, uuid4: Uuid4, offset: Int = 0): Int {
+        public fun unfoldFromBlock(inData: Retrievable, uuid4: Uuid4): Int = unfoldFromBlock(inData, 0, uuid4)
+
+        public fun unfoldFromBlock(inData: Retrievable, offset: Int, uuid4: Uuid4): Int {
             require(!uuid4.isNull()) { "Null UUID" }
             return BlockType.unfoldFromBlock(inData, offset, uuid4.asBinary())
         }
 
-        public fun unfoldFromBlock(inData: Retrievable, offset: Int = 0): Uuid4Type {
-            return Uuid4Type(uuid4Of(BlockType.unfoldFromBlock(inData, offset, atomicSize.toLong()).block))
+        public override fun unfoldBlock(inData: Retrievable, offset: Int): Uuid4Type {
+            return Uuid4Type(uuid4Of(BlockType.unfoldFromBlock(inData, offset, atomicSize).block))
         }
 
-        public fun unfoldFromStream(inStream: BinaryReadable): Uuid4Type {
+        public override fun unfoldStream(inStream: BinaryReadable): Uuid4Type {
             return Uuid4Type(uuid4Of(BlockType.unfoldFromStreamByConvention(inStream, conventionType).block))
         }
     }

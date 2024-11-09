@@ -17,6 +17,7 @@ package org.angproj.aux.pkg.coll
 import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.io.Text
+import org.angproj.aux.io.measureBytes
 import org.angproj.aux.pkg.*
 import org.angproj.aux.pkg.arb.StringType
 import org.angproj.aux.pkg.arb.StructType
@@ -24,7 +25,7 @@ import kotlin.jvm.JvmInline
 
 
 @JvmInline
-public value class DictType<P: Packageable>(public val value: Map<Text, P>) : Enfoldable {
+public value class DictType<P: Packageable>(public val value: MutableMap<Text, P>) : Enfoldable {
 
     override fun foldSize(foldFormat: FoldFormat): Int =
         if (value.isEmpty()) Enfoldable.OVERHEAD_COUNT
@@ -45,38 +46,34 @@ public value class DictType<P: Packageable>(public val value: Map<Text, P>) : En
             length + Enfoldable.OVERHEAD_COUNT + Enfoldable.CONTENT_SIZE
         }
 
-    public fun enfoldToStream(outStream: BinaryWritable): Int {
+    public override fun enfoldStream(outStream: BinaryWritable): Int = outStream.measureBytes {
         Enfoldable.setType(outStream, conventionType)
         Enfoldable.setCount(outStream, value.size)
-        var length = 0
 
         if (value.isNotEmpty()) {
             val foldFormat = value.getValue(value.keys.first()).foldFormat()
             Enfoldable.setContent(outStream, foldFormat.format)
-            length += Enfoldable.CONTENT_SIZE // Conditionally including CONTENT_SIZE
 
             when (foldFormat) {
                 FoldFormat.BLOCK -> value.forEach {
-                    length += StringType(it.key).enfoldToStream(outStream)
-                    length += StructType(it.value).enfoldToStream(outStream)
+                    StringType(it.key).enfoldStream(outStream)
+                    StructType(it.value).enfoldStream(outStream)
                 }
                 FoldFormat.STREAM -> value.forEach {
-                    length += StringType(it.key).enfoldToStream(outStream)
-                    length += ObjectType(it.value).enfoldToStream(outStream)
+                    StringType(it.key).enfoldStream(outStream)
+                    ObjectType(it.value).enfoldStream(outStream)
                 }
             }
         }
         Enfoldable.setEnd(outStream, conventionType)
-        // Using OVERHEAD_COUNT instead of OVERHEAD_CONTENT because CONTENT_SIZE is included in length.
-        return length + Enfoldable.OVERHEAD_COUNT
-    }
+    }.toInt()
 
     public companion object : Unfoldable<DictType<Packageable>> {
         override val foldFormatSupport: List<FoldFormat> = listOf(FoldFormat.STREAM)
         override val conventionType: Convention = Convention.DICT
         override val atomicSize: Int = 0
 
-        public fun <P : Packageable> unfoldFromStream(
+        public fun <P : Packageable> unfoldStream(
             inStream: BinaryReadable, unpack: () -> P
         ): DictType<P> {
             require(Unfoldable.getType(inStream, conventionType))
@@ -88,19 +85,20 @@ public value class DictType<P: Packageable>(public val value: Map<Text, P>) : En
                 when (foldFormat) {
                     FoldFormat.BLOCK.format -> repeat(count) {
                         value.put(
-                            StringType.unfoldFromStream(inStream).value,
-                            StructType.unfoldFromStream(inStream) { unpack() }.value
+                            StringType.unfoldStream(inStream).value,
+                            StructType.unfoldStream(inStream) { unpack() }.value
                         )
                     }
                     FoldFormat.STREAM.format -> repeat(count) {
                         value.put(
-                            StringType.unfoldFromStream(inStream).value,
-                            ObjectType.unfoldFromStream(inStream) { unpack() }.value
+                            StringType.unfoldStream(inStream).value,
+                            ObjectType.unfoldStream(inStream) { unpack() }.value
                         )
                     }
                 }
             }
-            return DictType(value.toMap())
+            require(Unfoldable.getEnd(inStream, conventionType))
+            return DictType(value)
         }
     }
 }

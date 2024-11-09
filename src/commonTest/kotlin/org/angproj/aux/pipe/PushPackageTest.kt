@@ -24,7 +24,7 @@ class PushPackageTest {
         w1.flush()
         data.limitAt(l1.toInt())
 
-        val to2 = ObjectType.unfoldFromStream(data) { TestObject() }.value
+        val to2 = ObjectType.unfoldStream(data) { TestObject() }.value
         assertEquals(to1, to2)
 
         data.clear()
@@ -35,7 +35,7 @@ class PushPackageTest {
         w2.flush()
         data.limitAt(l2.toInt())
 
-        val ts2 = StructType.unfoldFromStream(data) { TestStruct() }.value
+        val ts2 = StructType.unfoldStream(data) { TestStruct() }.value
         assertEquals(ts1, ts2)
     }
 }

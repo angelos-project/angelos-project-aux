@@ -38,6 +38,12 @@ public object SecureRandom : BinaryReadable, PumpReader {
         DataSize._1K
     ).getSink()
 
+    override val count: Long
+        get() = sink.count
+
+    override val stale: Boolean
+        get() = !sink.isOpen()
+
     override fun readByte(): Byte = sink.readByte()
     override fun readUByte(): UByte = sink.readUByte()
     override fun readShort(): Short = sink.readShort()

@@ -17,6 +17,7 @@ package org.angproj.aux.io
 import org.angproj.aux.mem.Default
 import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.rand.InitializationVector
+import org.angproj.aux.res.speedMemCpy
 import org.angproj.aux.util.Copy
 import org.angproj.aux.util.NullObject
 import kotlin.jvm.JvmStatic
@@ -171,8 +172,6 @@ private val nullSegment = object : Segment<Nothing>(0, object : MemoryManager<No
     override fun setLong(index: Int, value: Long) { none() }
 
     override fun close() { none() }
-    override val size: Int
-        get() = none()
 }
 public val NullObject.segment: Segment<*>
     get() = nullSegment

@@ -26,6 +26,11 @@ public class BinaryWrapper(
 
     init { positionAt(offset) }
 
+    private var _innerOffset: Int = offset
+    private var _count: Long = 0
+    public override val count: Long
+        get() = _count + (_position - _innerOffset)
+
     public val limit: Int
         get() = bin.limit
 
@@ -34,8 +39,12 @@ public class BinaryWrapper(
         get() = _position
 
     public fun positionAt(newPos: Int) {
-        require(newPos in 0..bin.limit)
+        //require(newPos in 0..bin.limit)
+        require(newPos in offset..bin.limit)
+        //_position = newPos
+        _count += _position - _innerOffset
         _position = newPos
+        _innerOffset = _position
     }
 
     public val indices: IntRange by lazy { offset until bin.limit }

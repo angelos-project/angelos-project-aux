@@ -55,7 +55,7 @@ public class Uuid4(private val uuid: Binary) {
 
     public fun toText(): Text = hex
 
-    override fun toString(): String = hex.toByteArray().decodeToString().uppercase()
+    override fun toString(): String = toText().toByteArray().decodeToString().uppercase()
 
     public override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -67,27 +67,34 @@ public class Uuid4(private val uuid: Binary) {
     public override fun hashCode(): Int = uuid.hashCode()
 
     @ThreadLocal
-    protected companion object : AbstractSmallRandom(
+    public companion object : AbstractSmallRandom(
         binOf(16).also { InitializationVector.realTimeGatedEntropy(it) }
-    ) {
+    ), PumpReader {
 
-        private var counter: Int = 0
+        private var counter: Long = 0
 
         init {
             revitalize()
         }
 
+        private var _count: Long = 0
+        override val count: Long
+            get() = _count + counter
+
+        override val stale: Boolean = false
+
         private fun revitalize() {
             binOf(16).useWith {
                 InitializationVector.realTimeGatedEntropy(it)
                 reseed(it)
+                _count += counter
                 counter = 0
             }
         }
 
         private fun generate(): Binary {
-            if (counter.floorMod(Int.MAX_VALUE) == 0) revitalize()
-            else counter++
+            if (counter >= Int.MAX_VALUE) revitalize()
+            counter += 4
 
             return binOf(16).wrap {
                 writeInt(round())
@@ -95,6 +102,17 @@ public class Uuid4(private val uuid: Binary) {
                 writeInt(((round().toLong() and 0x3fffffff) or -0x80000000).toInt().asBig())
                 writeInt(round())
             }
+        }
+
+        public override fun read(data: Segment<*>): Int {
+            require(data.limit.floorMod(TypeSize.int) == 0)
+
+            if (counter > Int.MAX_VALUE) revitalize()
+            counter += data.limit / TypeSize.int
+
+            (0 until data.limit step TypeSize.int).forEach { data.setInt(it, round()) }
+
+            return data.limit
         }
     }
 }

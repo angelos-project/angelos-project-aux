@@ -24,6 +24,11 @@ public abstract class FlowBuffer protected constructor(
     segment: Segment<*>, view: Boolean = false
 ): Buffer(segment, view) {
 
+    private var _innerOffset: Int = 0
+    private var _count: Long = 0
+     public val count: Long
+         get() = _count + (_position - _innerOffset)
+
     /**
      * Gives the max capacity of the buffer
      * */
@@ -43,7 +48,9 @@ public abstract class FlowBuffer protected constructor(
      * */
     public fun positionAt(newPos: Int) {
         require(newPos in _mark.._segment.limit)
+        _count += _position - _innerOffset
         _position = newPos
+        _innerOffset = _position
     }
 
     /**
@@ -60,7 +67,7 @@ public abstract class FlowBuffer protected constructor(
     public fun limitAt(newLimit: Int) {
         require(newLimit in _mark.._segment.size)
         _segment.limitAt(newLimit)
-        if(_position > newLimit) _position = newLimit
+        if(_position > newLimit) positionAt(newLimit) //_position = newLimit
     }
 
     private var _mark: Int = 0
@@ -81,7 +88,7 @@ public abstract class FlowBuffer protected constructor(
      * Reset the current position to the latest defined mark.
      * */
     public fun reset() {
-        _position = _mark
+        positionAt(_mark) //_position = _mark
     }
 
     /**
@@ -106,7 +113,7 @@ public abstract class FlowBuffer protected constructor(
      * */
     public fun rewind() {
         _mark = 0
-        _position = 0
+        positionAt(0) // _position = 0
     }
 
     /**

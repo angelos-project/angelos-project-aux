@@ -17,44 +17,52 @@ package org.angproj.aux.pipe
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.isNull
-import org.angproj.aux.io.segment
 import org.angproj.aux.mem.Default
 import org.angproj.aux.mem.MemoryManager
-import org.angproj.aux.util.NullObject
-import org.angproj.aux.util.Reifiable
-import org.angproj.aux.util.Reify
 
 public abstract class AbstractPipe<T: PipeType>(
     public val segSize: DataSize = DataSize._1K,
     public val bufSize: DataSize = DataSize._4K,
-    private val memMgr: MemoryManager<*> = Default
+    protected val memMgr: MemoryManager<*> = Default
 ) {
-    internal val buf: MutableList<Segment<*>> = mutableListOf()
 
-    public fun<reified : Reifiable> totSize(): Int = buf.sumOf { it.size }
-
-    public fun<reified : Reifiable> dispose() { while(buf.isNotEmpty()) recycle<Reify>(buf.pop<Reify>()) }
-
-    public fun<reified : Reifiable> allocate(size: DataSize): Segment<*> = memMgr.allocate(size)
-
-    public fun<reified : Reifiable> recycle(seg: Segment<*>) {
-        if(!seg.isNull()) seg.close()
+    init {
+        require(bufSize.size >= segSize.size) { "A pipe must be configured for at least one segment" }
     }
 
     /**
-     * Adds FIFO push abilities to the List of Segment.
+     * Segment capacity of buffer
      * */
-    protected fun<reified : Reifiable> MutableList<Segment<*>>.push(seg: Segment<*>) { this.add(0, seg) }
+    public val queueCap: Int = bufSize.size / segSize.size
 
     /**
-     * Adds FIFO pop abilities to the List of Segment
+     * Current number of segments queued in buffer
      * */
-    protected fun<reified : Reifiable> MutableList<Segment<*>>.pop(): Segment<*> = when {
-        isEmpty() -> NullObject.segment
-        last().limit == 0 -> {
-            recycle<Reify>(removeLast())
-            NullObject.segment
+    public val queueLen: Int
+        get() = buf.size
+
+    protected val buf: ArrayDeque<Segment<*>> = ArrayDeque(queueCap)
+
+    protected var _bufUse: Int = 0
+    /**
+     * Total bytes in buffer that has not been absorbed
+     * */
+    public val bufUse: Int
+        get() {
+            if(_bufUse < 0) _bufUse = buf.sumOf { it.limit }
+            return _bufUse
         }
-        else -> removeLast()
-    }
+
+    protected var _segCnt: Long = 0
+    /**
+     * Total segments fully absorbed
+     * */
+    public val totalSegmentCount: Long
+        get() = _segCnt
+
+    public fun<reified : Any> dispose() { while(buf.isNotEmpty()) recycle<Unit>(buf.removeLast()) }
+
+    public  fun<reified : Any> allocate(size: DataSize): Segment<*> = memMgr.allocate(size)
+
+    public fun<reified : Any> recycle(seg: Segment<*>) { if(!seg.isNull()) seg.close() }
 }

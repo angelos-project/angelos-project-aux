@@ -20,14 +20,18 @@ import org.angproj.aux.TestInformationStub.latinLipsum
 import org.angproj.aux.io.*
 import org.angproj.aux.util.writeGlyphAt
 import kotlin.math.min
-import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.*
 import kotlin.time.measureTime
 
 
 class BlobReader(private val blob: Binary) : PumpReader {
     private var pos = 0
+
+    override val count: Long
+        get() = pos.toLong()
+
+    override val stale: Boolean
+        get() = remaining() <= 0
 
     private fun remaining(): Int = blob.limit - pos
 
@@ -44,6 +48,12 @@ class BlobReader(private val blob: Binary) : PumpReader {
 
 class TestPumpReader(private val bin: Binary, private val half: Boolean = false) : PumpReader {
     private var pos = 0
+
+    override val count: Long
+        get() = pos.toLong()
+
+    override val stale: Boolean
+        get() = remaining() <= 0
 
     private fun remaining(): Int = bin.limit - pos
 
@@ -86,7 +96,7 @@ class PullTextTest {
      * The goal is to pull all data from the TextSource.
      * */
     @Test
-    fun testStreamPull() {
+    fun testStreamPullClose() {
 
         val text = latinLipsum + greekLipsum + chineseLipsum
         val copy = text.encodeToByteArray()
@@ -103,11 +113,14 @@ class PullTextTest {
         }
         println(time)
         assertContentEquals(copy, canvas)
-        assertFailsWith<UnsupportedOperationException> { readable.readGlyph() }
+        readable.close()
+        //assertEquals(readable.memUse(), 0)
+        assertFalse { readable.isOpen() }
+        assertFailsWith<PipeException> { readable.readGlyph() }
     }
 
     @Test
-    fun testStreamPullClose() {
+    fun testStreamPullAutoClose() {
 
         val text = latinLipsum + greekLipsum + chineseLipsum
         val copy = text.encodeToByteArray()
@@ -118,9 +131,14 @@ class PullTextTest {
         do {
             val cp = readable.readGlyph()
             pos += canvas.writeGlyphAt(pos, cp)
-        } while (pos < canvas.size / 2)
+        } while (pos < canvas.size)
 
-        readable.close()
-        assertFailsWith<UnsupportedOperationException> { readable.readGlyph() }
+        assertContentEquals(copy, canvas)
+        assertFailsWith<StaleException> { readable.readGlyph() }
+        assertFailsWith<StaleException> { readable.readGlyph() }
+        assertTrue { readable.isOpen() } // Still open
+        assertFailsWith<StaleException> { readable.readGlyph() }
+        assertFalse { readable.isOpen() } // Closes on third strike
+        assertFailsWith<PipeException> { readable.readGlyph() }
     }
 }

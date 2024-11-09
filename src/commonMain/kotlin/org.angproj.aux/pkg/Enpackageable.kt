@@ -23,6 +23,7 @@ import org.angproj.aux.pkg.arb.BigIntType
 import org.angproj.aux.pkg.arb.StringType
 import org.angproj.aux.pkg.arb.StructType
 import org.angproj.aux.pkg.arb.Uuid4Type
+import org.angproj.aux.pkg.coll.ArrayType
 import org.angproj.aux.pkg.coll.DictType
 import org.angproj.aux.pkg.coll.ListType
 import org.angproj.aux.pkg.coll.ObjectType
@@ -40,96 +41,99 @@ public interface Enpackageable {
     public fun withEnfold(outData: Storable, offset: Int = 0, action: StorageIter.() -> Unit): Int {
         val storage = StorageIter(outData, offset)
         storage.action()
-        return storage.index
+        return storage.index - offset
     }
 
     public fun BinaryWritable.saveBlock(type: BlockType): Int = type.enfoldToStream(this)
 
-    public fun BinaryWritable.saveByte(value: Byte): Int = ByteType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveShort(value: Short): Int = ShortType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveInt(value: Int): Int = IntType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveLong(value: Long): Int = LongType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveFloat(value: Float): Int = FloatType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveDouble(value: Double): Int = DoubleType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveUByte(value: UByte): Int = UByteType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveUShort(value: UShort): Int = UShortType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveUInt(value: UInt): Int = UIntType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveULong(value: ULong): Int = ULongType(value).enfoldToStream(this)
+    public fun BinaryWritable.saveByte(value: Byte): Int = ByteType(value).enfoldStream(this)
+    public fun BinaryWritable.saveShort(value: Short): Int = ShortType(value).enfoldStream(this)
+    public fun BinaryWritable.saveInt(value: Int): Int = IntType(value).enfoldStream(this)
+    public fun BinaryWritable.saveLong(value: Long): Int = LongType(value).enfoldStream(this)
+    public fun BinaryWritable.saveFloat(value: Float): Int = FloatType(value).enfoldStream(this)
+    public fun BinaryWritable.saveDouble(value: Double): Int = DoubleType(value).enfoldStream(this)
+    public fun BinaryWritable.saveUByte(value: UByte): Int = UByteType(value).enfoldStream(this)
+    public fun BinaryWritable.saveUShort(value: UShort): Int = UShortType(value).enfoldStream(this)
+    public fun BinaryWritable.saveUInt(value: UInt): Int = UIntType(value).enfoldStream(this)
+    public fun BinaryWritable.saveULong(value: ULong): Int = ULongType(value).enfoldStream(this)
 
 
-    public fun BinaryWritable.saveByteArray(value: ByteBuffer): Int = ByteArrayType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveShortArray(value: ShortBuffer): Int = ShortArrayType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveIntArray(value: IntBuffer): Int = IntArrayType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveLongArray(value: LongBuffer): Int = LongArrayType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveFloatArray(value: FloatBuffer): Int = FloatArrayType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveDoubleArray(value: DoubleBuffer): Int = DoubleArrayType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveUByteArray(value: UByteBuffer): Int = UByteArrayType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveUShortArray(value: UShortBuffer): Int = UShortArrayType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveUIntArray(value: UIntBuffer): Int = UIntArrayType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveULongArray(value: ULongBuffer): Int = ULongArrayType(value).enfoldToStream(this)
+    public fun BinaryWritable.saveByteArray(value: ByteBuffer): Int = ByteArrayType(value).enfoldStream(this)
+    public fun BinaryWritable.saveShortArray(value: ShortBuffer): Int = ShortArrayType(value).enfoldStream(this)
+    public fun BinaryWritable.saveIntArray(value: IntBuffer): Int = IntArrayType(value).enfoldStream(this)
+    public fun BinaryWritable.saveLongArray(value: LongBuffer): Int = LongArrayType(value).enfoldStream(this)
+    public fun BinaryWritable.saveFloatArray(value: FloatBuffer): Int = FloatArrayType(value).enfoldStream(this)
+    public fun BinaryWritable.saveDoubleArray(value: DoubleBuffer): Int = DoubleArrayType(value).enfoldStream(this)
+    public fun BinaryWritable.saveUByteArray(value: UByteBuffer): Int = UByteArrayType(value).enfoldStream(this)
+    public fun BinaryWritable.saveUShortArray(value: UShortBuffer): Int = UShortArrayType(value).enfoldStream(this)
+    public fun BinaryWritable.saveUIntArray(value: UIntBuffer): Int = UIntArrayType(value).enfoldStream(this)
+    public fun BinaryWritable.saveULongArray(value: ULongBuffer): Int = ULongArrayType(value).enfoldStream(this)
 
 
-    public fun BinaryWritable.saveUuid4(value: Uuid4): Int = Uuid4Type(value).enfoldToStream(this)
-    public fun BinaryWritable.saveString(value: Text): Int = StringType(value).enfoldToStream(this)
-    public fun BinaryWritable.saveBigInt(value: BigInt): Int = BigIntType(value).enfoldToStream(this)
+    public fun BinaryWritable.saveUuid4(value: Uuid4): Int = Uuid4Type(value).enfoldStream(this)
+    public fun BinaryWritable.saveString(value: Text): Int = StringType(value).enfoldStream(this)
+    public fun BinaryWritable.saveBigInt(value: BigInt): Int = BigIntType(value).enfoldStream(this)
 
     public fun <P: Packageable>BinaryWritable.saveStruct(type: StructType<P>): Int =
-        type.enfoldToStream(this)
+        type.enfoldStream(this)
     public fun <P: Packageable>BinaryWritable.saveObject(type: ObjectType<P>): Int =
-        type.enfoldToStream(this)
-    public fun <P: Packageable>BinaryWritable.saveDict(type: DictType<P>): Int =
-        type.enfoldToStream(this)
-    public fun <P: Packageable>BinaryWritable.saveList(type: ListType<P>): Int =
-        type.enfoldToStream(this)
-
+        type.enfoldStream(this)
+    public fun <P: Packageable>BinaryWritable.saveDict(type: MutableMap<Text, P>): Int =
+        DictType(type).enfoldStream(this)
+    public fun <P: Packageable>BinaryWritable.saveList(type: MutableList<P>): Int =
+        ListType(type).enfoldStream(this)
+    public fun <P: Packageable>BinaryWritable.saveArray(type: Array<P>): Int =
+        ArrayType(type).enfoldStream(this)
 
     public class StorageIter(public val storage: Storable, public var index: Int = 0)
 
     public fun StorageIter.saveByte(value: Byte): Int = ByteType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveShort(value: Short): Int = ShortType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveInt(value: Int): Int = IntType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveLong(value: Long): Int = LongType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveFloat(value: Float): Int = FloatType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveDouble(value: Double): Int = DoubleType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveUByte(value: UByte): Int = UByteType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveUShort(value: UShort): Int = UShortType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveUInt(value: UInt): Int = UIntType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveULong(value: ULong): Int = ULongType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
 
 
     public fun StorageIter.saveByteArray(value: ByteBuffer): Int = ByteArrayType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveShortArray(value: ShortBuffer): Int = ShortArrayType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveIntArray(value: IntBuffer): Int = IntArrayType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveLongArray(value: LongBuffer): Int = LongArrayType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveFloatArray(value: FloatBuffer): Int = FloatArrayType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveDoubleArray(value: DoubleBuffer): Int = DoubleArrayType(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveUByteArray(value: UByteBuffer): Int =
-        UByteArrayType(value).enfoldToBlock(storage, index).also { index += it }
+        UByteArrayType(value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveUShortArray(value: UShortBuffer): Int =
-        UShortArrayType(value).enfoldToBlock(storage, index).also { index += it }
+        UShortArrayType(value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveUIntArray(value: UIntBuffer): Int =
-        UIntArrayType(value).enfoldToBlock(storage, index).also { index += it }
+        UIntArrayType(value).enfoldBlock(storage, index).also { index += it }
     public fun StorageIter.saveULongArray(value: ULongBuffer): Int =
-        ULongArrayType(value).enfoldToBlock(storage, index).also { index += it }
+        ULongArrayType(value).enfoldBlock(storage, index).also { index += it }
 
     public fun StorageIter.saveUuid4(value: Uuid4): Int = Uuid4Type(
-        value).enfoldToBlock(storage, index).also { index += it }
+        value).enfoldBlock(storage, index).also { index += it }
+    public fun <P : Packageable>StorageIter.saveArray(value: Array<P>): Int = ArrayType(
+        value).enfoldBlock(storage, index).also { index += it }
 
 
 

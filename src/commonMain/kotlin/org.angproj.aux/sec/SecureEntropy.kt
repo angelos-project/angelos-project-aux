@@ -28,6 +28,12 @@ import kotlin.native.concurrent.ThreadLocal
 @ThreadLocal
 public object SecureEntropy : AbstractSponge256(), PumpReader {
 
+    private var _count: Long = 0
+    override val count: Long
+        get() = _count
+
+    override val stale: Boolean = false
+
     init {
         revitalize()
     }
@@ -51,6 +57,7 @@ public object SecureEntropy : AbstractSponge256(), PumpReader {
         require(data.limit)
         revitalize()
         fill(data) { round() }
+        _count += data.size
         return data.size
     }
 }

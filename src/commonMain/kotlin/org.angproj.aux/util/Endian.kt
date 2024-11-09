@@ -25,5 +25,6 @@ public enum class Endian {
         private val assumeLittle = listOf(UNKNOWN, LITTLE)
 
         public val native: Endian = getCurrentEndian()
+        public val network: Endian = BIG
     }
 }

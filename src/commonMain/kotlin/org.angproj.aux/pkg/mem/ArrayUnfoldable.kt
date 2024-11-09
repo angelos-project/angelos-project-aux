@@ -26,7 +26,7 @@ public interface ArrayUnfoldable<G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>
 
     public val factory: (count: Int) -> F
 
-    public fun unfoldFromStream(inStream: BinaryReadable): E
+    public override fun unfoldStream(inStream: BinaryReadable): E
 
     public fun unfoldFromStream(inStream: BinaryReadable, value: F)
 
@@ -78,7 +78,7 @@ public interface ArrayUnfoldable<G, F: ArrayBuffer<G>, E : ArrayEnfoldable<G, F>
             array: F,
             stream: (inStream: BinaryReadable) -> G
         ) {
-            require(!array.isNull()) { "Null Array!" }
+            //require(!array.isNull()) { "Null Array!" }
             require(Unfoldable.getType(inStream, conventionType))
             require(Unfoldable.getCount(inStream) == array.limit)
             with(array) { indices.forEach { set(it, stream(inStream)) } }

@@ -31,6 +31,12 @@ public class Base64Encoder(
         private var mark = 0
         private val limit = buffer.limit
 
+        override val count: Long
+            get() = mark.toLong()
+
+        override val stale: Boolean
+            get() = limit - mark <= 0
+
         override fun read(data: Segment<*>): Int {
             val length = min(limit - mark, data.limit)
             buffer.copyInto(data, 0, mark, mark + length)
@@ -52,7 +58,7 @@ public class Base64Encoder(
             do {
                 octet = pipe.readByte().toInt()
                 bits = (bits shl 8) or octet and 0xff
-            } while(--cnt > 0 || !pipe.eofReached())
+            } while(--cnt > 0)
             when (cnt) {
                 0 -> {
                     tb.writeGlyph(alphabet[bits ushr 18 and 0x3f].toCodePoint())
@@ -73,7 +79,7 @@ public class Base64Encoder(
                     tb.writeGlyph(padding.toCodePoint())
                 }
             }
-        } while (!pipe.eofReached() || cnt == 0)
+        } while (cnt == 0)
         pipe.close()
 
         tb.flip()

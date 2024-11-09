@@ -48,6 +48,9 @@ public class BigInt(
     public fun ofIntArray(value: IntArray): BigInt = BigMath.fromIntArray(value) { m, s -> BigInt(m.toList(), s ) }
     public fun ofLong(value: Long): BigInt = BigMath.fromLong(value) { m, s -> BigInt(m.toList(), s) }
 
+    /**
+     * TODO(Investigate minusOne in all debugging and comparison testing immediately)
+     * */
     public companion object {
         public val minusOne: BigInt by lazy { BigMath.fromLong(-1) { m, s -> BigInt(m.toList(), s ) } }
         public val zero: BigInt by lazy { BigMath.fromLong(0) { m, s -> BigInt(m.toList(), s ) } }
@@ -58,7 +61,7 @@ public class BigInt(
 
 public fun BigInt.isNull(): Boolean = NullObject.bigInt === this
 
-private val nullBigInt = BigInt(NullObject.intArray.toList(), BigSigned.ZERO)
+private val nullBigInt = BigInt(emptyList(), BigSigned.ZERO)
 public val NullObject.bigInt: BigInt
     get() = nullBigInt
 
