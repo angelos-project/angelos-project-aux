@@ -42,6 +42,14 @@ class BigIntTest {
      * Rk: 1
      * kM 1
      * kS -1
+     *
+     * Vx: ffff
+     * Jx: ff
+     * Kx: ff
+     * Rj: 0
+     * Rk: 1
+     * kM 1
+     * kS -1
      * */
 
     /**

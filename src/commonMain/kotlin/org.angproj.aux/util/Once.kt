@@ -14,22 +14,17 @@
  */
 package org.angproj.aux.util
 
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-public class Once<E: Any> : ReadWriteProperty<Any, E> {
 
-    private var value: E? = null
+public class Once<E: Any> {
 
-    override fun getValue(thisRef: Any, property: KProperty<*>): E {
-        require(value != null) { "Property ${property.name} of $thisRef is not available yet." }
-        return value as E
+    private lateinit var handle: E
+
+    public operator fun getValue(thisRef: Any, property: KProperty<*>): E = handle
+
+    public operator fun setValue(thisRef: Any, property: KProperty<*>, value: E) {
+        if(::handle.isInitialized) throw IllegalStateException("Already initialized")
+        handle = value
     }
-
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: E) {
-        require(this.value == null) { "Property ${property.name} of $thisRef is already set." }
-        this.value = value
-    }
-
-    public fun isNull(): Boolean = value === null
 }

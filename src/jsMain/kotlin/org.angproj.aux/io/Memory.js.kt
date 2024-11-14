@@ -43,6 +43,12 @@ public actual open class Memory internal actual constructor(
         throw UnsupportedOperationException("No access to native memory.")
     }
 
+    actual override fun getRevShort(index: Int): Short = swapShort<Unit>(getShort(index))
+
+    actual override fun getRevInt(index: Int): Int = swapInt<Unit>(getInt(index))
+
+    actual override fun getRevLong(index: Int): Long = swapLong<Unit>(getLong(index))
+
     actual override fun setByte(index: Int, value: Byte) {
         throw UnsupportedOperationException("No access to native memory.")
     }
@@ -58,6 +64,12 @@ public actual open class Memory internal actual constructor(
     actual override fun setLong(index: Int, value: Long) {
         throw UnsupportedOperationException("No access to native memory.")
     }
+
+    actual override fun setRevShort(index: Int, value: Short) { setShort(index, swapShort<Unit>(value)) }
+
+    actual override fun setRevInt(index: Int, value: Int) { setInt(index, swapInt<Unit>(value)) }
+
+    actual override fun setRevLong(index: Int, value: Long) { setLong(index, swapLong<Unit>(value)) }
 
     @Deprecated("Not to be used with memory manager")
     actual override fun create(size: Int, idxLimit: Int): Memory = memCtx.allocate(DataSize.findLowestAbove(size))

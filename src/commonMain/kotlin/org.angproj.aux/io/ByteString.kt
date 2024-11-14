@@ -25,10 +25,18 @@ public interface ByteString: Limitable, Copyable, AutoCloseable {
     public fun getInt(index: Int): Int
     public override fun getLong(index: Int): Long
 
+    public fun getRevShort(index: Int): Short
+    public fun getRevInt(index: Int): Int
+    public fun getRevLong(index: Int): Long
+
     public override fun setByte(index: Int, value: Byte): Unit
     public fun setShort(index: Int, value: Short): Unit
     public fun setInt(index: Int, value: Int): Unit
     public override fun setLong(index: Int, value: Long): Unit
+
+    public fun setRevShort(index: Int, value: Short): Unit
+    public fun setRevInt(index: Int, value: Int): Unit
+    public fun setRevLong(index: Int, value: Long): Unit
 
     public override fun close()
 

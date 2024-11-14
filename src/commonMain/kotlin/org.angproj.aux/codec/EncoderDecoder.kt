@@ -14,7 +14,8 @@
  */
 package org.angproj.aux.codec
 
-public abstract class EncoderDecoder<I, O>: Encoder<I, O>, Decoder<O, I> {
-    protected abstract fun process()
+import org.angproj.aux.io.Segment
 
+public abstract class EncoderDecoder<I, O>: Encoder<I, O>, Decoder<O, I> {
+    protected abstract fun process(input: Segment<*>, inOff: Int, output: Segment<*>, outOff: Int): Int
 }

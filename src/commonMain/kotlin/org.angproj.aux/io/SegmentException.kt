@@ -12,6 +12,9 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.util
+package org.angproj.aux.io
 
-public interface Reifiable
+/**
+ * Indicates errors when reading or writing to memory or segment, almost a segfault.
+ * */
+public class SegmentException(msg: String) : InputOutputException(msg)

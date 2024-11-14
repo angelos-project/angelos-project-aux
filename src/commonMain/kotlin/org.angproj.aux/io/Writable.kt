@@ -39,13 +39,6 @@ public interface Writable {
     public fun writeUByte(value: UByte)
 
     /**
-     * Write next character.
-     *
-     * @param value A character of data.
-     */
-    //public fun writeChar(value: Char)
-
-    /**
      * Write next short integer.
      *
      * @param value A short integer of data.
@@ -100,4 +93,60 @@ public interface Writable {
      * @param value A double of data.
      */
     public fun writeDouble(value: Double)
+
+    /**
+     * Write next short integer.
+     *
+     * @param value A short integer of data.
+     */
+    public fun writeRevShort(value: Short)
+
+    /**
+     * Write next unsigned short integer.
+     *
+     * @param value An unsigned short integer of data.
+     */
+    public fun writeRevUShort(value: UShort)
+
+    /**
+     * Write next integer.
+     *
+     * @param value An integer of data.
+     */
+    public fun writeRevInt(value: Int)
+
+    /**
+     * Write next unsigned integer.
+     *
+     * @param value An unsigned integer of data.
+     */
+    public fun writeRevUInt(value: UInt)
+
+    /**
+     * Write next long integer.
+     *
+     * @param value A long integer of data.
+     */
+    public fun writeRevLong(value: Long)
+
+    /**
+     * Write next unsigned long integer.
+     *
+     * @param value An unsigned long integer of data.
+     */
+    public fun writeRevULong(value: ULong)
+
+    /**
+     * Write next float.
+     *
+     * @param value A float of data.
+     */
+    public fun writeRevFloat(value: Float)
+
+    /**
+     * Write next double.
+     *
+     * @param value A double of data.
+     */
+    public fun writeRevDouble(value: Double)
 }

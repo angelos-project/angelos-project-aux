@@ -12,16 +12,16 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.codec
+package org.angproj.aux.util
 
 import org.angproj.aux.buf.wrap
+import org.angproj.aux.codec.Encoder
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.utf.Ascii
-import org.angproj.aux.util.NullObject
-import org.angproj.aux.util.floorMod
 
-public class Base64Encoder : Encoder<Binary, Text> {
+
+public class BaseEncoder : Encoder<Binary, Text> {
     private var output: Segment<*> = NullObject.segment
 
     override val inputCount: Long
@@ -62,10 +62,10 @@ public class Base64Encoder : Encoder<Binary, Text> {
      * */
     override fun write(data: Segment<*>): Int {
         require(output.limit == proportion<Unit>(data.limit))
+        val remainder = data.limit.floorMod(3)
+        val len = data.limit - remainder - if(remainder == 0) 3 else 0
         BufMgr.asWrap(output) {
             this.wrap {
-                val remainder = data.limit.floorMod(3)
-                val len = data.limit - remainder - if(remainder == 0) 3 else 0
                 var idx = 0
                 while(idx < len) {
                     writeInt(convertLE<Unit>(data.getInt(idx).asBig() ushr 8))

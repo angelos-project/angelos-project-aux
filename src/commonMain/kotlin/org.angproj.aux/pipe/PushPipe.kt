@@ -23,8 +23,8 @@ import org.angproj.aux.mem.MemoryManager
 public class PushPipe<T: PipeType>(
     memMgr: MemoryManager<*>,
     public val sink: PumpSink<T>,
-    segSize: DataSize = DataSize._1K,
-    bufSize: DataSize = DataSize._1K
+    segSize: DataSize = DataSize._4K,
+    bufSize: DataSize = DataSize._32K
 ): AbstractPipe<T>(segSize, bufSize, memMgr), Close {
 
     init {
@@ -40,7 +40,6 @@ public class PushPipe<T: PipeType>(
      * Adds FIFO pop abilities to the List of Segment
      * */
     protected fun<reified : Any> ArrayDeque<Segment<*>>.pop(): Segment<*> = last() //
-    // OrNull() ?: NullObject.segment
 
     public fun<reified : Any> isCrammed(): Boolean = queueCap <= queueLen
 

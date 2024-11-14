@@ -14,8 +14,6 @@
  */
 package org.angproj.aux.rand
 
-import org.angproj.aux.io.BinaryWritable
-
 /**
  * Qualifies both using ent for a balanced natural random, and with die-harder on a high level when running:
  * > dieharder -g AES_OFB -a -f random.bin
@@ -59,7 +57,7 @@ public abstract class AbstractSponge512 : AbstractSponge(9, 8) {
         counter++
     }
 
-    override fun squeeze(data: BinaryWritable) {
+    /*override fun squeeze(data: BinaryWritable) {
         data.writeLong((sponge[0] xor (mask * 3)))
         data.writeLong((sponge[1] xor (mask * 7)))
         data.writeLong((sponge[2] xor (mask * 11)))
@@ -68,5 +66,5 @@ public abstract class AbstractSponge512 : AbstractSponge(9, 8) {
         data.writeLong((sponge[5] xor (mask * 31)))
         data.writeLong((sponge[6] xor (mask * 43)))
         data.writeLong((sponge[7] xor (mask * 47)))
-    }
+    }*/
 }

@@ -22,7 +22,7 @@ import org.angproj.aux.util.NumberAware
 
 public class ULongBuffer internal constructor(
     segment: Segment<*>, view: Boolean = false
-): ArrayBuffer<ULong>(segment, view, TypeSize.U_LONG), NumberAware {
+): ArrayBuffer<ULong>(segment, view, TypeSize.U_LONG) {
 
     public constructor(size: Int) : this(Default.allocate(size * TypeSize.uLong))
 
@@ -30,10 +30,10 @@ public class ULongBuffer internal constructor(
 
     override fun create(segment: Segment<*>): ULongBuffer = ULongBuffer(segment)
 
-    override fun get(index: Int): ULong = _segment.getLong(index * TypeSize.uLong).conv2uL()
+    override fun get(index: Int): ULong = _segment.getLong(index * TypeSize.uLong).conv2uL<Unit>()
 
     override fun set(index: Int, value: ULong) {
-        _segment.setLong(index * TypeSize.uLong, value.conv2L())
+        _segment.setLong(index * TypeSize.uLong, value.conv2L<Unit>())
     }
 }
 

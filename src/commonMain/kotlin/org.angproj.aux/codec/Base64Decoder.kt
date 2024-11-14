@@ -25,16 +25,16 @@ import kotlin.math.min
 public class Base64Decoder(
     protected val alphabet: Map<Int, Int> = Base64.base2bin,
     protected val padding: Int = Base64.padding
-) : Decoder<TextBuffer, Binary>{
+) /*: Decoder<TextBuffer, Binary>*/{
 
     private class TextBufferReader(private val buffer: TextBuffer): PumpReader {
         private var mark = buffer.mark
         private val limit = buffer.limit
 
-        override val count: Long
+        override val outputCount: Long
             get() = (mark - buffer.mark).toLong()
 
-        override val stale: Boolean
+        override val outputStale: Boolean
             get() = limit - mark <= 0
 
         override fun read(data: Segment<*>): Int {
@@ -45,7 +45,7 @@ public class Base64Decoder(
         }
     }
 
-    override fun decode(data: TextBuffer): Binary {
+    public fun decode(data: TextBuffer): Binary {
         require((data.limit - data.mark).mod(4) == 0) { "Base64 block must be divisible by 4." }
 
         val fullBlkCnt = data.limit - data.mark / 4

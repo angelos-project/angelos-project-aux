@@ -2,7 +2,6 @@ package org.angproj.aux.rand
 
 import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.sec.SecureRandom
-import org.angproj.aux.util.DataBuffer
 import java.io.File
 
 class ExportTest {

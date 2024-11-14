@@ -17,13 +17,12 @@ package org.angproj.aux.pipe
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.isNull
-import org.angproj.aux.mem.Default
 import org.angproj.aux.mem.MemoryManager
 
 public abstract class AbstractPipe<T: PipeType>(
-    public val segSize: DataSize = DataSize._1K,
-    public val bufSize: DataSize = DataSize._4K,
-    protected val memMgr: MemoryManager<*> = Default
+    public val segSize: DataSize,
+    public val bufSize: DataSize,
+    protected val memMgr: MemoryManager<*>
 ) {
 
     init {

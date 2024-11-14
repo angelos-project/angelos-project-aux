@@ -14,7 +14,8 @@
  */
 package org.angproj.aux.codec
 
-public interface Decoder<I, O> {
-    public fun decode(data: I): O
+import org.angproj.aux.io.PumpReader
 
+public interface Decoder<I, O>: PumpReader {
+    public fun decode(data: I): O
 }

@@ -22,7 +22,7 @@ import org.angproj.aux.util.NumberAware
 
 public class FloatBuffer internal constructor(
     segment: Segment<*>, view: Boolean = false
-): ArrayBuffer<Float>(segment, view, TypeSize.FLOAT), NumberAware {
+): ArrayBuffer<Float>(segment, view, TypeSize.FLOAT) {
 
     public constructor(size: Int) : this(Default.allocate(size * TypeSize.float))
 
@@ -30,10 +30,10 @@ public class FloatBuffer internal constructor(
 
     override fun create(segment: Segment<*>): FloatBuffer = FloatBuffer(segment)
 
-    override fun get(index: Int): Float = _segment.getInt(index * TypeSize.float).conv2F()
+    override fun get(index: Int): Float = _segment.getInt(index * TypeSize.float).conv2F<Unit>()
 
     override fun set(index: Int, value: Float) {
-        _segment.setInt(index * TypeSize.float, value.conv2I())
+        _segment.setInt(index * TypeSize.float, value.conv2I<Unit>())
     }
 }
 

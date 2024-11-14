@@ -22,7 +22,7 @@ import org.angproj.aux.util.NumberAware
 
 public class UShortBuffer internal constructor(
     segment: Segment<*>, view: Boolean = false
-): ArrayBuffer<UShort>(segment, view, TypeSize.U_SHORT), NumberAware {
+): ArrayBuffer<UShort>(segment, view, TypeSize.U_SHORT) {
 
     public constructor(size: Int) : this(Default.allocate(size * TypeSize.uShort))
 
@@ -30,10 +30,10 @@ public class UShortBuffer internal constructor(
 
     override fun create(segment: Segment<*>): UShortBuffer = UShortBuffer(segment)
 
-    override fun get(index: Int): UShort = _segment.getShort(index * TypeSize.uShort).conv2uS()
+    override fun get(index: Int): UShort = _segment.getShort(index * TypeSize.uShort).conv2uS<Unit>()
 
     override fun set(index: Int, value: UShort) {
-        _segment.setShort(index * TypeSize.uShort, value.conv2S())
+        _segment.setShort(index * TypeSize.uShort, value.conv2S<Unit>())
     }
 }
 

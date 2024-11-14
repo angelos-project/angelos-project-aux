@@ -18,7 +18,7 @@ import org.angproj.aux.codec.Decoder
 import org.angproj.aux.codec.Encoder
 
 
-public object Unicode: Encoder<ByteArray, String>, Decoder<String, ByteArray> {
+public object Unicode /*: Encoder<ByteArray, String>, Decoder<String, ByteArray>*/ {
 
     private inline fun <reified R : Number> isSurrogate(char: Char): Boolean = char.code in SURROGATE_RANGE
 
@@ -80,11 +80,11 @@ public object Unicode: Encoder<ByteArray, String>, Decoder<String, ByteArray> {
         fsm.state = Sanitizer.SIX_COMPLETED
     }*/
 
-    override fun decode(data: String): ByteArray {
+    /*override fun decode(data: String): ByteArray {
         TODO("Not yet implemented")
     }
 
     override fun encode(data: ByteArray): String {
         TODO("Not yet implemented")
-    }
+    }*/
 }

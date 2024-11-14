@@ -17,14 +17,56 @@ package org.angproj.aux.pipe
 import org.angproj.aux.buf.wrap
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.*
-import org.angproj.aux.pipe.BuildPipe.PullConfig
-import org.angproj.aux.pipe.BuildPipe.PushConfig
-import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.Uuid4
 import kotlin.test.*
 import kotlin.time.measureTime
 
-class PushBinaryTest {
+class PushBinaryTest : AbstractPushTest() {
+
+    override var debugMode: Boolean = false
+
+    @Test
+    override fun testPushManualClose() {
+        pushBinaryManualClose(DataSize._4K.size + DataSize._1K.size, DataSize._1K, DataSize._4K)
+        pushBinaryManualClose(DataSize._4K.size + DataSize._1K.size + DataSize._512B.size, DataSize._1K, DataSize._4K)
+        pushBinaryManualClose(DataSize._4K.size + DataSize._1K.size, DataSize._1K, DataSize._1K)
+        pushBinaryManualClose(DataSize._4K.size + DataSize._1K.size + DataSize._512B.size, DataSize._1K, DataSize._1K)
+    }
+
+    @Test
+    override fun testPushAutoClose() {
+        pushBinaryAutomaticClose(DataSize._4K.size, DataSize._1K, DataSize._4K)
+
+        // Buffer bigger than segment, bigger payload
+        pushBinaryAutomaticClose(
+            DataSize._4K.size + DataSize._1K.size, DataSize._1K, DataSize._4K)
+        pushBinaryAutomaticClose(
+            DataSize._4K.size + DataSize._1K.size + DataSize._512B.size, DataSize._1K, DataSize._4K)
+
+        // Buffer bigger than segment, smaller payload
+        pushBinaryAutomaticClose(
+            DataSize._2K.size + DataSize._1K.size, DataSize._1K, DataSize._4K)
+        pushBinaryAutomaticClose(
+            DataSize._2K.size + DataSize._1K.size + DataSize._512B.size, DataSize._1K, DataSize._4K)
+
+        // Buffer bigger than segment, smaller payload
+        pushBinaryAutomaticClose(
+            DataSize._2K.size, DataSize._1K, DataSize._4K)
+        pushBinaryAutomaticClose(
+            DataSize._2K.size + DataSize._512B.size, DataSize._1K, DataSize._4K)
+
+        // Buffer and segment same size, larger payload
+        pushBinaryAutomaticClose(
+            DataSize._4K.size + DataSize._1K.size, DataSize._1K, DataSize._1K)
+        pushBinaryAutomaticClose(
+            DataSize._4K.size + DataSize._1K.size + DataSize._512B.size, DataSize._1K, DataSize._1K)
+    }
+
+    @Test
+    override fun testPushBrokenPump() {
+        pushBinaryBroken()
+    }
+
     /**
      * The goal is to pull all data from the BinarySource.
      * */
@@ -268,50 +310,4 @@ class PushBinaryTest {
             writeable.flush()
         }
     }
-
-    @Test
-    fun fixTrix() {
-        val sink = buildSink { pull(SecureRandom).mem(MemoryFree).buf(DataSize._4K).seg(DataSize._1K).bin() }
-    }
-
 }
-
-interface BuildPipe {
-
-    abstract class Config {
-        var pipeMemMgr: MemoryManager<*> = Default
-        var pipeSegSize: DataSize = DataSize._2K
-        var pipeBufSize: DataSize = DataSize._8K
-    }
-
-    class PullConfig(val reader: PumpReader) : Config()
-    class PushConfig(val writer: PumpWriter) : Config()
-
-    fun <C : Config> C.mem(ctx: MemoryManager<*>): C = this.also { pipeMemMgr = ctx }
-    fun <C : Config> C.buf(size: DataSize): C = this.also { pipeBufSize = size }
-    fun <C : Config> C.seg(size: DataSize): C = this.also { pipeSegSize = size }
-
-    fun PullConfig.txt(): TextSink = TextSink(PullPipe(pipeMemMgr, PumpSource(reader), pipeSegSize, pipeBufSize))
-    fun PullConfig.bin(): BinarySink = BinarySink(PullPipe(pipeMemMgr, PumpSource(reader), pipeSegSize, pipeBufSize))
-    fun PullConfig.pkg(): PackageSink = PackageSink(bin())
-
-    fun PushConfig.txt(): TextSource = TextSource(PushPipe(pipeMemMgr, PumpSink(writer), pipeSegSize, pipeBufSize))
-    fun PushConfig.bin(): BinarySource = BinarySource(PushPipe(pipeMemMgr, PumpSink(writer), pipeSegSize, pipeBufSize))
-    fun PushConfig.pkg(): PackageSource = PackageSource(bin())
-}
-
-object BuildSinkContext : BuildPipe {
-    fun BuildPipe.pull(reader: PumpReader): PullConfig = PullConfig(reader)
-}
-
-object BuildSourceContext : BuildPipe {
-    fun BuildPipe.push(writer: PumpWriter): PushConfig = PushConfig(writer)
-}
-
-fun <T : PipeType> buildSink(
-    action: BuildSinkContext.() -> AbstractSink<T>
-): AbstractSink<T> = BuildSinkContext.action()
-
-fun <T : PipeType> buildSource(
-    action: BuildSourceContext.() -> AbstractSource<T>
-): AbstractSource<T> = BuildSourceContext.action()

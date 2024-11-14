@@ -17,14 +17,14 @@ package org.angproj.aux.io
 import org.angproj.aux.mem.Default
 import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.rand.InitializationVector
-import org.angproj.aux.res.speedMemCpy
+import org.angproj.aux.util.AbstractBufferAware
 import org.angproj.aux.util.Copy
 import org.angproj.aux.util.NullObject
 import kotlin.jvm.JvmStatic
 
 public abstract class Segment<S: Segment<S>>(
     size: Int, mem: MemoryManager<S>
-): ByteString, Comparable<Segment<*>> {
+): AbstractBufferAware(), ByteString, Comparable<Segment<*>> {
 
     protected val memCtx: MemoryManager<S> = mem
 
@@ -70,6 +70,22 @@ public abstract class Segment<S: Segment<S>>(
         !in 0..<_limit-7 -> throw IllegalArgumentException("Out of bounds. Long - $this")
         else -> Unit
     }
+
+    /*protected inline fun<reified R: Any> joinLong(u: Int, l: Int): Long = ((u.toLong() shl 32 and -0x100000000) or (l.toLong() and 0xFFFFFFFF))
+    protected inline fun<reified R: Any> joinInt(u: Short, l: Short): Int = (u.toInt() shl 16 and -0x10000) or (l.toInt() and 0xFFFF)
+    protected inline fun<reified R: Any> joinShort(u: Byte, l: Byte): Short = ((u.toInt() shl 8 and 0xFF00) or (l.toInt() and 0xFF)).toShort()
+
+    protected inline fun<reified R: Any> upperLong(value: Long): Int = (value ushr 32).toInt()
+    protected inline fun<reified R: Any> upperInt(value: Int): Short = (value ushr 16).toShort()
+    protected inline fun<reified R: Any> upperShort(value: Short): Byte = (value.toInt() ushr 8).toByte()
+
+    protected inline fun<reified R: Any> lowerLong(value: Long): Int = value.toInt()
+    protected inline fun<reified R: Any> lowerInt(value: Int): Short = value.toShort()
+    protected inline fun<reified R: Any> lowerShort(value: Short): Byte = value.toByte()
+
+    protected inline fun<reified R: Any> swapLong(value: Long): Long = joinLong<R>(swapInt<R>(lowerLong<R>(value)), swapInt<R>(upperLong<R>(value)))
+    protected inline fun<reified R: Any> swapInt(value: Int): Int = joinInt<R>(swapShort<R>(lowerInt<R>(value)), swapShort<R>(upperInt<R>(value)))
+    protected inline fun<reified R: Any> swapShort(value: Short): Short = joinShort<R>(lowerShort<R>(value), upperShort<R>(value))*/
 
     @Deprecated("To disappear")
     public inline fun <reified T: Any> Long.reverse(): Long = (
@@ -166,10 +182,16 @@ private val nullSegment = object : Segment<Nothing>(0, object : MemoryManager<No
     override fun getShort(index: Int): Short { none() }
     override fun getInt(index: Int): Int { none() }
     override fun getLong(index: Int): Long { none() }
+    override fun getRevShort(index: Int): Short { none() }
+    override fun getRevInt(index: Int): Int { none() }
+    override fun getRevLong(index: Int): Long { none() }
     override fun setByte(index: Int, value: Byte) { none() }
     override fun setShort(index: Int, value: Short) { none() }
     override fun setInt(index: Int, value: Int) { none() }
     override fun setLong(index: Int, value: Long) { none() }
+    override fun setRevShort(index: Int, value: Short) { none() }
+    override fun setRevInt(index: Int, value: Int) { none() }
+    override fun setRevLong(index: Int, value: Long) { none() }
 
     override fun close() { none() }
 }

@@ -14,9 +14,14 @@
  */
 package org.angproj.aux.util
 
+
+public object Dsl
+
 public interface DslBlock
 
 public inline operator fun <reified E : DslBlock> E.invoke(block: E.() -> Unit): E = this.also { block() }
+
+public inline operator fun <reified E : DslBlock, R: Any> E.invoke(block: E.() -> R): R = this.block()
 
 
 public fun interface Lambda<E> {

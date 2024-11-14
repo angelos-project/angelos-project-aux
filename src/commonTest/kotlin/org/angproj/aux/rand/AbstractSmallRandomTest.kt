@@ -1,6 +1,6 @@
 package org.angproj.aux.rand
 
-import org.angproj.aux.buf.BinaryReader
+import org.angproj.aux.buf.*
 import org.angproj.aux.io.*
 import org.angproj.aux.util.*
 import kotlin.math.PI
@@ -9,16 +9,13 @@ import kotlin.test.Test
 
 class TestSmallRandom: AbstractSmallRandom(
     binOf(16).also { InitializationVector.realTimeGatedEntropy(it) }
-), OldReader, BufferAware {
+), Reader {
 
-    override fun read(data: ByteArray): Int {
-        require(data.size.floorMod(Int.SIZE_BYTES) == 0)
-        (data.indices step Int.SIZE_BYTES).forEach { data.writeIntAt(it, round()) }
-        return data.size
-    }
-
-    override fun read(length: Int): ByteArray {
-        TODO("Will not be implemented!")
+    override fun read(bin: Binary): Int {
+        require(bin.limit.floorMod(Int.SIZE_BYTES) == 0)
+        val wrap = bin.asWrapped()
+        repeat(bin.limit / Int.SIZE_BYTES) { _ -> wrap.writeInt(round()) }
+        return bin.limit
     }
 }
 
@@ -27,11 +24,11 @@ class AbstractSmallRandomTest {
     fun testMonteCarlo() {
         val monteCarlo = Benchmark()
         val random = TestSmallRandom()
-        val buffer = DataBuffer()
+        val buffer = BinaryBuffer()
         repeat(10_000_000) {
             if(buffer.remaining == 0) {
                 buffer.reset()
-                random.read(buffer.asByteArray())
+                random.read(buffer.asBinary())
             }
             monteCarlo.scatterPoint(buffer.readLong(), buffer.readLong())
         }

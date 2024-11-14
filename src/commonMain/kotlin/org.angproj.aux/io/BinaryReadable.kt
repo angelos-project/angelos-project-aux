@@ -97,6 +97,62 @@ public interface BinaryReadable: Readable, ByteCount {
      * @return A double of data.
      */
     public override fun readDouble(): Double
+
+    /**
+     * Read next short integer.
+     *
+     * @return A short integer of data.
+     */
+    public override fun readRevShort(): Short
+
+    /**
+     * Read next unsigned short integer.
+     *
+     * @return An unsigned short integer of data.
+     */
+    public override fun readRevUShort(): UShort
+
+    /**
+     * Read next integer.
+     *
+     * @return An integer of data.
+     */
+    public override fun readRevInt(): Int
+
+    /**
+     * Read next unsigned integer.
+     *
+     * @return An unsigned integer of data.
+     */
+    public override fun readRevUInt(): UInt
+
+    /**
+     * Read next long integer.
+     *
+     * @return A long integer of data.
+     */
+    public override fun readRevLong(): Long
+
+    /**
+     * Read next unsigned long integer.
+     *
+     * @return An unsigned long integer of data
+     */
+    public override fun readRevULong(): ULong
+
+    /**
+     * Read next float.
+     *
+     * @return A float of data.
+     */
+    public override fun readRevFloat(): Float
+
+    /**
+     * Read next double.
+     *
+     * @return A double of data.
+     */
+    public override fun readRevDouble(): Double
 }
 
 /*public inline fun <reified T: BinaryReadable, E: Any> T.measureBytes(expected: Int, block: Int.() -> E): E {

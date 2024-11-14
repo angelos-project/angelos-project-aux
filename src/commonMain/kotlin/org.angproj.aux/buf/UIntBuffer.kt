@@ -22,7 +22,7 @@ import org.angproj.aux.util.NumberAware
 
 public class UIntBuffer internal constructor(
     segment: Segment<*>, view: Boolean = false
-): ArrayBuffer<UInt>(segment, view, TypeSize.U_INT), NumberAware {
+): ArrayBuffer<UInt>(segment, view, TypeSize.U_INT) {
 
     public constructor(size: Int) : this(Default.allocate(size * TypeSize.uInt))
 
@@ -30,10 +30,10 @@ public class UIntBuffer internal constructor(
 
     override fun create(segment: Segment<*>): UIntBuffer = UIntBuffer(segment)
 
-    override fun get(index: Int): UInt = _segment.getInt(index * TypeSize.uInt).conv2uI()
+    override fun get(index: Int): UInt = _segment.getInt(index * TypeSize.uInt).conv2uI<Unit>()
 
     override fun set(index: Int, value: UInt) {
-        _segment.setInt(index * TypeSize.uInt, value.conv2I())
+        _segment.setInt(index * TypeSize.uInt, value.conv2I<Unit>())
     }
 }
 

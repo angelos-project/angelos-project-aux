@@ -14,14 +14,10 @@
  */
 package org.angproj.aux.sec
 
-import org.angproj.aux.io.BinaryReadable
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.PumpReader
-import org.angproj.aux.io.Segment
+import org.angproj.aux.io.*
 import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.mem.Default
 import org.angproj.aux.pipe.*
-import org.angproj.aux.util.Reify
 import org.angproj.aux.util.chunkLoop
 import kotlin.native.concurrent.ThreadLocal
 
@@ -29,7 +25,7 @@ import kotlin.native.concurrent.ThreadLocal
  * Portions a secure feed of random into a serviceable format of data for cryptographically secure use.
  * */
 @ThreadLocal
-public object SecureRandom : BinaryReadable, PumpReader {
+public object SecureRandom : BinaryReadable, PumpReader, Reader {
 
     private val sink: BinarySink = PullPipe<BinaryType>(
         Default,
@@ -41,7 +37,11 @@ public object SecureRandom : BinaryReadable, PumpReader {
     override val count: Long
         get() = sink.count
 
-    override val stale: Boolean
+    private var _outputCnt: Long = 0
+    override val outputCount: Long
+        get() = _outputCnt
+
+    override val outputStale: Boolean
         get() = !sink.isOpen()
 
     override fun readByte(): Byte = sink.readByte()
@@ -55,12 +55,23 @@ public object SecureRandom : BinaryReadable, PumpReader {
     override fun readFloat(): Float = sink.readFloat()
     override fun readDouble(): Double = sink.readDouble()
 
+    override fun readRevShort(): Short = sink.readRevShort()
+    override fun readRevUShort(): UShort = sink.readRevUShort()
+    override fun readRevInt(): Int = sink.readRevInt()
+    override fun readRevUInt(): UInt = sink.readRevUInt()
+    override fun readRevLong(): Long = sink.readRevLong()
+    override fun readRevULong(): ULong = sink.readRevULong()
+    override fun readRevFloat(): Float = sink.readRevFloat()
+    override fun readRevDouble(): Double = sink.readRevDouble()
+
     override fun read(data: Segment<*>): Int = BufMgr.asWrap(data) {
-        val index = chunkLoop<Reify>(0, limit, Long.SIZE_BYTES) {
+        val index = chunkLoop<Unit>(0, limit, Long.SIZE_BYTES) {
             storeLong(it, readLong())
         }
-        chunkLoop<Reify>(index, limit, Byte.SIZE_BYTES) {
+        chunkLoop<Unit>(index, limit, Byte.SIZE_BYTES) {
             storeByte(it, readByte())
-        }
+        }.also { _outputCnt += it }
     }
+
+    override fun read(bin: Binary): Int = read(bin._segment)
 }

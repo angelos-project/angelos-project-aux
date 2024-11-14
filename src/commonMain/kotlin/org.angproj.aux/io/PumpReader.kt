@@ -24,14 +24,14 @@ package org.angproj.aux.io
  * by implementers and unnecessary debugging. In case the PumpReaders state is broken
  * it has to return -1 and with the current given segment totally untouched.
  * */
-public interface PumpReader: ByteCount {
+public interface PumpReader {
 
-    public override val count: Long
+    public val outputCount: Long
 
     /**
      * Stale mode indicates that the reader is temporarily out of data.
      * */
-    public val stale: Boolean
+    public val outputStale: Boolean
 
     /**
      * The read segments limit will be forcefully updated to that of the returned value of read bytes.

@@ -14,11 +14,7 @@
  */
 package org.angproj.aux.rand
 
-import org.angproj.aux.buf.asWrapped
-import org.angproj.aux.io.BinaryWritable
-import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.util.EndianAware
 import org.angproj.aux.util.floorMod
 
@@ -29,11 +25,11 @@ import org.angproj.aux.util.floorMod
 public abstract class AbstractSponge(
     spongeSize: Int = 0,
     public val visibleSize: Int = 0,
-): EndianAware {
+) : EndianAware {
 
     protected var counter: Long = 0
     protected var mask: Long = 0
-    protected val sponge: LongArray = LongArray(spongeSize) { InitializationVector.entries[it+1].iv }
+    protected val sponge: LongArray = LongArray(spongeSize) { InitializationVector.entries[it + 1].iv }
     public val byteSize: Int = visibleSize * TypeSize.long
 
     init {
@@ -49,17 +45,16 @@ public abstract class AbstractSponge(
         sponge[offset] = sponge[offset] xor value
     }
 
-    protected abstract fun squeeze(data: BinaryWritable)
+    protected fun squeeze(position: Int): Long {
+        val offset = position.floorMod(visibleSize)
+        return sponge[offset] xor (mask * export[offset])
+    }
 
     protected fun scramble() {
         repeat(sponge.size) { round() }
     }
 
-    protected fun fill(data: Segment<*>, cycle: () -> Unit): Unit = BufMgr.asWrap(data) {
-        val writable = asWrapped()
-        repeat(data.limit / byteSize) {
-            squeeze(writable)
-            cycle()
-        }
+    protected companion object {
+        protected val export: IntArray = intArrayOf(3, 7, 11, 19, 23, 31, 43, 47, 59, 67, 71, 79, 83, 103, 107, 127)
     }
 }

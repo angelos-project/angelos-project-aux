@@ -18,6 +18,8 @@ import org.angproj.aux.io.*
 import org.angproj.aux.pkg.*
 import org.angproj.aux.pkg.arb.StructType
 import org.angproj.aux.pkg.type.BlockType
+import org.angproj.aux.util.NullObject
+import org.angproj.aux.util.Once
 import kotlin.jvm.JvmInline
 
 @JvmInline

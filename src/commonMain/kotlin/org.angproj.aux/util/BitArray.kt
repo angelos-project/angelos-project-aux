@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.util
 
+import org.angproj.aux.buf.asWrapped
+import org.angproj.aux.io.*
 import kotlin.jvm.JvmInline
 
 @JvmInline
@@ -31,27 +33,6 @@ public value class BitArray(private val array: ByteArray) : Collection<Boolean> 
         throw UnsupportedOperationException()
     }
 
-    override fun iterator(): Iterator<Boolean> = BitIterator(array)
+    override fun iterator(): Iterator<Boolean> = BitIterator(array.toBinary().asWrapped())
 }
 
-public class BitIterator(private val bytes: ByteArray) : Iterator<Boolean> {
-    private val size = bytes.size * 8
-    private var position = 0
-
-    override fun hasNext(): Boolean = position < size
-
-    override fun next(): Boolean {
-        val index = position / 8
-        return when ((position++).floorMod(8)) {
-            0 -> bytes[index].checkFlag7()
-            1 -> bytes[index].checkFlag6()
-            2 -> bytes[index].checkFlag5()
-            3 -> bytes[index].checkFlag4()
-            4 -> bytes[index].checkFlag3()
-            5 -> bytes[index].checkFlag2()
-            6 -> bytes[index].checkFlag1()
-            7 -> bytes[index].checkFlag0()
-            else -> error("Won't happen!")
-        }
-    }
-}

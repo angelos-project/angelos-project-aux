@@ -22,7 +22,7 @@ import org.angproj.aux.util.NumberAware
 
 public class DoubleBuffer internal constructor(
     segment: Segment<*>, view: Boolean = false
-): ArrayBuffer<Double>(segment, view, TypeSize.DOUBLE), NumberAware {
+): ArrayBuffer<Double>(segment, view, TypeSize.DOUBLE) {
 
     public constructor(size: Int) : this(Default.allocate(size * TypeSize.double))
 
@@ -30,10 +30,10 @@ public class DoubleBuffer internal constructor(
 
     override fun create(segment: Segment<*>): DoubleBuffer = DoubleBuffer(segment)
 
-    override fun get(index: Int): Double = _segment.getLong(index * TypeSize.long).conv2D()
+    override fun get(index: Int): Double = _segment.getLong(index * TypeSize.long).conv2D<Unit>()
 
     override fun set(index: Int, value: Double) {
-        _segment.setLong(index * TypeSize.long, value.conv2L())
+        _segment.setLong(index * TypeSize.long, value.conv2L<Unit>())
     }
 }
 

@@ -19,7 +19,7 @@ import org.angproj.aux.io.Segment
 
 public class PumpSink<T: PipeType>(
     private val pump: PumpWriter
-): Sink, PipeType  {
+): Sink<T>/*, PipeType*/  {
     private var _open: Boolean = true
     private var _staleCnt: Int = 0
 
@@ -27,14 +27,14 @@ public class PumpSink<T: PipeType>(
         get() = _staleCnt
 
     public override val count: Long
-        get() = pump.count
+        get() = pump.inputCount
 
     /**
      *
      * */
     public fun<reified : Any> absorb(seg: Segment<*>): Int = when {
         !isOpen() -> throw PipeException("Sink is closed")
-        !pump.stale -> {
+        !pump.inputStale -> {
             _staleCnt = 0
             pump.write(seg)//.also { if(it < seg.limit) _staleCnt++ }
         }

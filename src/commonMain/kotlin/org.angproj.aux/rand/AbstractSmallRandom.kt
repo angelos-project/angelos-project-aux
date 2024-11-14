@@ -48,6 +48,6 @@ public abstract class AbstractSmallRandom(iv: Binary) {
         val temp = -state.inv() * 5
         state = -state1.inv() * 13
         state1 = temp.rotateLeft(32)
-        return state.toInt() xor state1.toInt()
+        return (state xor state1).toInt()
     }
 }

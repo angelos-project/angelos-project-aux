@@ -20,9 +20,13 @@ public object DevNull : BinaryWritable, TextWritable, PumpWriter {
 
     private var _count = 0L
     override val count: Long
-        get() = _count
-    
-    override val stale: Boolean = false
+        get() = _count + _inputCnt
+
+    private var _inputCnt: Long = 0
+    override val inputCount: Long
+        get() = _inputCnt
+
+    override val inputStale: Boolean = false
 
     override fun writeByte(value: Byte) { _count += TypeSize.byte}
     override fun writeUByte(value: UByte) { _count += TypeSize.uByte }
@@ -35,7 +39,16 @@ public object DevNull : BinaryWritable, TextWritable, PumpWriter {
     override fun writeFloat(value: Float) { _count += TypeSize.float }
     override fun writeDouble(value: Double) { _count += TypeSize.double }
 
-    override fun write(data: Segment<*>): Int = data.limit.also { _count += it }
+    override fun writeRevShort(value: Short) { _count += TypeSize.short }
+    override fun writeRevUShort(value: UShort) { _count += TypeSize.uShort }
+    override fun writeRevInt(value: Int) { _count += TypeSize.int }
+    override fun writeRevUInt(value: UInt) { _count += TypeSize.uInt }
+    override fun writeRevLong(value: Long) { _count += TypeSize.long }
+    override fun writeRevULong(value: ULong) { _count += TypeSize.uLong }
+    override fun writeRevFloat(value: Float) { _count += TypeSize.float }
+    override fun writeRevDouble(value: Double) { _count += TypeSize.double }
+
+    override fun write(data: Segment<*>): Int = data.limit.also { _inputCnt += it }
 
     override fun writeGlyph(codePoint: CodePoint): Int = codePoint.octetSize().also { _count += it }
 }

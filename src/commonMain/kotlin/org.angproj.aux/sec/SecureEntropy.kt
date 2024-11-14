@@ -14,7 +14,9 @@
  */
 package org.angproj.aux.sec
 
+import org.angproj.aux.buf.asWrapped
 import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.rand.AbstractSponge256
 import org.angproj.aux.rand.InitializationVector
 import org.angproj.aux.util.floorMod
@@ -26,13 +28,13 @@ import kotlin.native.concurrent.ThreadLocal
  * Supposed to pass Monte Carlo testing and security requirements of output quality.
  * */
 @ThreadLocal
-public object SecureEntropy : AbstractSponge256(), PumpReader {
+public object SecureEntropy : AbstractSponge256(), PumpReader, Reader {
 
     private var _count: Long = 0
-    override val count: Long
+    override val outputCount: Long
         get() = _count
 
-    override val stale: Boolean = false
+    override val outputStale: Boolean = false
 
     init {
         revitalize()
@@ -53,11 +55,21 @@ public object SecureEntropy : AbstractSponge256(), PumpReader {
         require(length <= DataSize._1K.size) { "Length must not surpass 1 Kilobyte." }
     }
 
+    private fun fill(data: Segment<*>): Unit = BufMgr.asWrap(data) {
+        val writable = asWrapped()
+        repeat(data.limit / byteSize) {
+            repeat(visibleSize) { writable.writeLong(squeeze(it))}
+            round()
+        }
+    }
+
     override fun read(data: Segment<*>): Int {
         require(data.limit)
         revitalize()
-        fill(data) { round() }
+        fill(data)
         _count += data.size
         return data.size
     }
+
+    override fun read(bin: Binary): Int = read(bin._segment)
 }

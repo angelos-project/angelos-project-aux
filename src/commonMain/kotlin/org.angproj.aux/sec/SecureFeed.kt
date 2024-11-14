@@ -14,9 +14,9 @@
  */
 package org.angproj.aux.sec
 
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.PumpReader
-import org.angproj.aux.io.Segment
+import org.angproj.aux.buf.asWrapped
+import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.mem.Default
 import org.angproj.aux.pipe.*
 import org.angproj.aux.rand.AbstractSponge512
@@ -28,17 +28,17 @@ import kotlin.native.concurrent.ThreadLocal
  * about every 4th to 12th megabyte for high quality of secure output.
  * */
 @ThreadLocal
-public object SecureFeed : AbstractSponge512(), PumpReader {
+public object SecureFeed : AbstractSponge512(), PumpReader, Reader {
     private val ROUNDS_64K: Int = DataSize._64K.size
     private val ROUNDS_128K: Int = DataSize._128K.size
 
     private var next: Int = 0
 
     private var _count: Long = 0
-    override val count: Long
+    override val outputCount: Long
         get() = _count
 
-    override val stale: Boolean = false
+    override val outputStale: Boolean = false
 
     private val sink: BinarySink = PullPipe<BinaryType>(
         Default,
@@ -73,11 +73,21 @@ public object SecureFeed : AbstractSponge512(), PumpReader {
         require(length <= DataSize._8K.size) { "Length must not surpass 8 Kilobyte." }
     }
 
+    private fun fill(data: Segment<*>): Unit = BufMgr.asWrap(data) {
+        val writable = asWrapped()
+        repeat(data.limit / byteSize) {
+            repeat(visibleSize) { writable.writeLong(squeeze(it))}
+            cycle()
+        }
+    }
+
     override fun read(data: Segment<*>): Int {
         require(data.limit)
         revitalize()
-        fill(data) { cycle() }
+        fill(data)
         _count += data.size
         return data.size
     }
+
+    override fun read(bin: Binary): Int = read(bin._segment)
 }

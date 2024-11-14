@@ -17,8 +17,6 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.util.DataBuffer
-import org.angproj.aux.util.Reify
 import org.angproj.aux.util.chunkLoop
 import kotlin.math.min
 import kotlin.test.Test
@@ -59,13 +57,13 @@ Maecenas vehicula ligula ac orci sodales fermentum. Suspendisse vel enim in lacu
 Fusce volutpat hendrerit sapien ut mollis.
 """.trimIndent()
 
-class BinaryReader(data: ByteArray) : PumpReader {
+/*class BinaryReader(data: ByteArray) : PumpReader {
     val data = DataBuffer(data)
 
-    override val count: Long
+    override val outputCount: Long
         get() = data.position.toLong()
 
-    override val stale: Boolean
+    override val outputStale: Boolean
         get() = data.limit - data.position <= 0
 
     override fun read(data: Segment<*>): Int {
@@ -80,7 +78,7 @@ class BinaryReader(data: ByteArray) : PumpReader {
         return index
     }
 
-}
+}*/
 
 class BinaryPipeTest {
     /*@Test

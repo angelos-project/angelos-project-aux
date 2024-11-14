@@ -93,4 +93,60 @@ public interface Storable {
      * @param value A double of data.
      */
     public fun storeDouble(position: Int, value: Double)
+
+    /**
+     * Store a short integer unto said position.
+     *
+     * @param value A short integer of data.
+     */
+    public fun storeRevShort(position: Int, value: Short)
+
+    /**
+     * Store an unsigned short integer unto said position.
+     *
+     * @param value An unsigned short integer of data.
+     */
+    public fun storeRevUShort(position: Int, value: UShort)
+
+    /**
+     * Store an integer unto said position.
+     *
+     * @param value An integer of data.
+     */
+    public fun storeRevInt(position: Int, value: Int)
+
+    /**
+     * Store an unsigned integer unto said position.
+     *
+     * @param value An unsigned integer of data.
+     */
+    public fun storeRevUInt(position: Int, value: UInt)
+
+    /**
+     * Store a long integer unto said position.
+     *
+     * @param value A long integer of data.
+     */
+    public fun storeRevLong(position: Int, value: Long)
+
+    /**
+     * Store an unsigned long integer unto said position.
+     *
+     * @param value An unsigned long integer of data.
+     */
+    public fun storeRevULong(position: Int, value: ULong)
+
+    /**
+     * Store a float unto said position.
+     *
+     * @param value A float of data.
+     */
+    public fun storeRevFloat(position: Int, value: Float)
+
+    /**
+     * Store a double unto said position.
+     *
+     * @param value A double of data.
+     */
+    public fun storeRevDouble(position: Int, value: Double)
 }

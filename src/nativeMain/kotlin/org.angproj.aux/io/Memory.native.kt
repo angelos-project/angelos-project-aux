@@ -73,6 +73,21 @@ public actual open class Memory internal actual constructor(
         return (ptr + index).toCPointer<LongVar>()!!.pointed.value
     }
 
+    actual override fun getRevShort(index: Int): Short {
+        index.checkRangeLong<Unit>()
+        return swapShort<Unit>((ptr + index).toCPointer<ShortVar>()!!.pointed.value)
+    }
+
+    actual override fun getRevInt(index: Int): Int {
+        index.checkRangeInt<Unit>()
+        return swapInt<Unit>((ptr + index).toCPointer<IntVar>()!!.pointed.value)
+    }
+
+    actual override fun getRevLong(index: Int): Long {
+        index.checkRangeLong<Unit>()
+        return swapLong<Unit>((ptr + index).toCPointer<LongVar>()!!.pointed.value)
+    }
+
     actual override fun setByte(index: Int, value: Byte) {
         index.checkRangeByte<Unit>()
         (ptr + index).toCPointer<ByteVar>()!!.pointed.value = value
@@ -91,6 +106,21 @@ public actual open class Memory internal actual constructor(
     actual override fun setLong(index: Int, value: Long) {
         index.checkRangeLong<Unit>()
         (ptr + index).toCPointer<LongVar>()!!.pointed.value = value
+    }
+
+    actual override fun setRevShort(index: Int, value: Short) {
+        index.checkRangeShort<Unit>()
+        (ptr + index).toCPointer<ShortVar>()!!.pointed.value = swapShort<Unit>(value)
+    }
+
+    actual override fun setRevInt(index: Int, value: Int) {
+        index.checkRangeInt<Unit>()
+        (ptr + index).toCPointer<IntVar>()!!.pointed.value = swapInt<Unit>(value)
+    }
+
+    actual override fun setRevLong(index: Int, value: Long) {
+        index.checkRangeLong<Unit>()
+        (ptr + index).toCPointer<LongVar>()!!.pointed.value = swapLong<Unit>(value)
     }
 
     @Deprecated("Not to be used with memory manager")

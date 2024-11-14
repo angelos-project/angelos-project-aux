@@ -18,7 +18,6 @@ import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.copyInto
 import org.angproj.aux.mem.*
-import org.angproj.aux.util.Reify
 import org.angproj.aux.util.Uuid4
 import org.angproj.aux.util.ifNotJs
 import kotlin.random.Random
@@ -47,32 +46,32 @@ class MemoryTest {
 
         // Validates that negative length fails
         assertFailsWith<IllegalArgumentException> ("Negative length is invalid.") {
-            mem1.copyInto<Reify>(mem2, 0, 0, -1)
+            mem1.copyInto<Unit>(mem2, 0, 0, -1)
         }
 
         // Validates that negative start index fails
         assertFailsWith<IllegalArgumentException> ("Negative start index is invalid.") {
-            mem1.copyInto<Reify>(mem2, 0, -1, 0)
+            mem1.copyInto<Unit>(mem2, 0, -1, 0)
         }
 
         // Validates that negative destination offset fails
         assertFailsWith<IllegalArgumentException> ("Negative destination offset is invalid.") {
-            mem1.copyInto<Reify>(mem2, -1, 0, 0)
+            mem1.copyInto<Unit>(mem2, -1, 0, 0)
         }
 
         // Validates that end index escape fails
         assertFailsWith<IllegalArgumentException> ("End index breach is invalid.") {
-            mem2.copyInto<Reify>(mem1, 0, 0 ,65)
+            mem2.copyInto<Unit>(mem1, 0, 0 ,65)
         }
 
         // Validates that destination end escape fails
         assertFailsWith<IllegalArgumentException> ("Destination offset end breach is invalid.") {
-            mem2.copyInto<Reify>(mem1, 64, 0 ,65)
+            mem2.copyInto<Unit>(mem1, 64, 0 ,65)
         }
 
         // Validates that destination end 2 escape fails
         assertFailsWith<IllegalArgumentException> ("Destination offset end 2 breach is invalid.") {
-            mem2.copyInto<Reify>(mem1, 65, 0 ,64)
+            mem2.copyInto<Unit>(mem1, 65, 0 ,64)
         }
 
         mem1.dispose()
@@ -134,7 +133,7 @@ class MemoryTest {
         assertFails { println(arr1[mem1.size]) }
 
         // Copy chunk 2 into the middle of chunk 1
-        mem2.copyInto<Reify>(mem1, 32, 0, 64)
+        mem2.copyInto<Unit>(mem1, 32, 0, 64)
         arr2.copyInto(arr1, 32, 0, 64)
         arr1.indices.forEach { // Verify similarity between the two operations carried out simultaneously
             assertEquals(mem1.getByte(it), arr1[it]) } // Memory segment broken here, index 32 is not same
@@ -149,7 +148,7 @@ class MemoryTest {
             val mem1 = allocateMemory(vol.size)
             val mem2 = allocateMemory(vol.size)
 
-            var time = measureTime { mem1.copyInto<Reify>(mem2, 0, 0, mem1.size) }
+            var time = measureTime { mem1.copyInto<Unit>(mem2, 0, 0, mem1.size) }
             println(time)
 
             val arr1 = ByteArray(vol.size)

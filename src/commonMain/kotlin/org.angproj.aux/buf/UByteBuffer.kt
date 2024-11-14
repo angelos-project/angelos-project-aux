@@ -22,7 +22,7 @@ import org.angproj.aux.util.NumberAware
 
 public class UByteBuffer internal constructor(
     segment: Segment<*>, view: Boolean = false
-): ArrayBuffer<UByte>(segment, view, TypeSize.U_BYTE), NumberAware{
+): ArrayBuffer<UByte>(segment, view, TypeSize.U_BYTE) {
 
     public constructor(size: Int) : this(Default.allocate(size * TypeSize.uByte))
 
@@ -30,10 +30,10 @@ public class UByteBuffer internal constructor(
 
     override fun create(segment: Segment<*>): UByteBuffer = UByteBuffer(segment)
 
-    override fun get(index: Int): UByte = _segment.getByte(index).conv2uB()
+    override fun get(index: Int): UByte = _segment.getByte(index).conv2uB<Unit>()
 
     override fun set(index: Int, value: UByte) {
-        _segment.setByte(index, value.conv2B())
+        _segment.setByte(index, value.conv2B<Unit>())
     }
 }
 

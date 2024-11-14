@@ -24,16 +24,16 @@ import org.angproj.aux.util.Hex
 import kotlin.math.min
 
 
-public class HexDecoder : Decoder<TextBuffer, Binary> {
+public class HexDecoder /*: Decoder<TextBuffer, Binary>*/ {
 
     private class TextBufferReader(private val buffer: TextBuffer): PumpReader {
         private var mark = buffer.mark
         private val limit = buffer.limit
 
-        override val count: Long
+        override val outputCount: Long
             get() = (mark - buffer.mark).toLong()
 
-        override val stale: Boolean
+        override val outputStale: Boolean
             get() = limit - mark <= 0
 
         override fun read(data: Segment<*>): Int {
@@ -53,7 +53,7 @@ public class HexDecoder : Decoder<TextBuffer, Binary> {
         error("Invalid Hex value at position " + (pipe.count - 1))
     }
 
-    override fun decode(data: TextBuffer): Binary {
+    public fun decode(data: TextBuffer): Binary {
         require((data.limit - data.mark).mod(2) == 0) { "Hexadecimals must be divisible by two." }
 
         val limit = data.limit - data.mark

@@ -23,16 +23,16 @@ import org.angproj.aux.util.toCodePoint
 import kotlin.math.min
 
 
-public class HexEncoder : Encoder<Binary, TextBuffer> {
+public class HexEncoder /*: Encoder<Binary, TextBuffer>*/ {
 
     private class BinaryBufferReader(private val buffer: Binary): PumpReader {
         private var mark = 0
         private val limit = buffer.limit
 
-        override val count: Long
+        override val outputCount: Long
             get() = mark.toLong()
 
-        override val stale: Boolean
+        override val outputStale: Boolean
             get() = limit - mark <= 0
 
         override fun read(data: Segment<*>): Int {
@@ -43,7 +43,7 @@ public class HexEncoder : Encoder<Binary, TextBuffer> {
         }
     }
 
-    override fun encode(data: Binary): TextBuffer {
+    public fun encode(data: Binary): TextBuffer {
         val limit = data.limit
         val tb = BufMgr.text(limit * 2)
         val pipe = Pipe.buildBinaryPullPipe(BinaryBufferReader(data))

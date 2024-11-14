@@ -15,16 +15,54 @@
 package org.angproj.aux.pipe
 
 import org.angproj.aux.buf.wrap
+import org.angproj.aux.io.DataSize
 import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.util.Uuid4
 import kotlin.test.*
 import kotlin.time.measureTime
 
-class PullBinaryTest {
+class PullBinaryTest : AbstractPullTest() {
 
-    /**
-     * The goal is to pull all data from the BinarySource.
-     * */
+    override var debugMode: Boolean = false
+
+
+    @Test
+    override fun testPullManualClose() {
+        pullBinaryManualClose(DataSize._4K.size + DataSize._1K.size, DataSize._1K, DataSize._4K)
+        pullBinaryManualClose(DataSize._4K.size + DataSize._1K.size + DataSize._512B.size, DataSize._1K, DataSize._4K)
+        pullBinaryManualClose(DataSize._4K.size + DataSize._1K.size, DataSize._1K, DataSize._1K)
+        pullBinaryManualClose(DataSize._4K.size + DataSize._1K.size + DataSize._512B.size, DataSize._1K, DataSize._1K)
+    }
+
+    @Test
+    override fun testPullAutoClose() {
+        pullBinaryAutomaticClose(DataSize._4K.size, DataSize._1K, DataSize._4K)
+
+        // Buffer bigger than segment, bigger payload
+       pullBinaryAutomaticClose(
+           DataSize._4K.size + DataSize._1K.size, DataSize._1K, DataSize._4K)
+        pullBinaryAutomaticClose(
+            DataSize._4K.size + DataSize._1K.size + DataSize._512B.size, DataSize._1K, DataSize._4K)
+
+        // Buffer bigger than segment, smaller payload
+        pullBinaryAutomaticClose(
+            DataSize._2K.size + DataSize._1K.size, DataSize._1K, DataSize._4K)
+        pullBinaryAutomaticClose(
+            DataSize._2K.size + DataSize._1K.size + DataSize._512B.size, DataSize._1K, DataSize._4K)
+
+        // Buffer bigger than segment, smaller payload
+        pullBinaryAutomaticClose(
+            DataSize._2K.size, DataSize._1K, DataSize._4K)
+        pullBinaryAutomaticClose(
+            DataSize._2K.size + DataSize._512B.size, DataSize._1K, DataSize._4K)
+
+        // Buffer and segment same size, larger payload
+        pullBinaryAutomaticClose(
+            DataSize._4K.size + DataSize._1K.size, DataSize._1K, DataSize._1K)
+        pullBinaryAutomaticClose(
+            DataSize._4K.size + DataSize._1K.size + DataSize._512B.size, DataSize._1K, DataSize._1K)
+    }
+
     @Test
     fun testStreamPullClose() {
 

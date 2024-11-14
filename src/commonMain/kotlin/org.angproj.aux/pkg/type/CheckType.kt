@@ -35,6 +35,16 @@ public value class CheckType(public val block: Binary) : Storable, Retrievable, 
     override fun retrieveFloat(position: Int): Float = block.retrieveFloat(position)
     override fun retrieveDouble(position: Int): Double = block.retrieveDouble(position)
 
+    override fun retrieveRevShort(position: Int): Short = block.retrieveRevShort(position)
+    override fun retrieveRevUShort(position: Int): UShort = block.retrieveRevUShort(position)
+    override fun retrieveRevInt(position: Int): Int = block.retrieveRevInt(position)
+    override fun retrieveRevUInt(position: Int): UInt = block.retrieveRevUInt(position)
+    override fun retrieveRevLong(position: Int): Long = block.retrieveRevLong(position)
+    override fun retrieveRevULong(position: Int): ULong = block.retrieveRevULong(position)
+    override fun retrieveRevFloat(position: Int): Float = block.retrieveRevFloat(position)
+    override fun retrieveRevDouble(position: Int): Double = block.retrieveRevDouble(position)
+
+
     override fun storeByte(position: Int, value: Byte): Unit = block.storeByte(position, value)
     override fun storeUByte(position: Int, value: UByte): Unit = block.storeUByte(position, value)
     override fun storeShort(position: Int, value: Short): Unit = block.storeShort(position, value)
@@ -45,6 +55,15 @@ public value class CheckType(public val block: Binary) : Storable, Retrievable, 
     override fun storeULong(position: Int, value: ULong): Unit = block.storeULong(position, value)
     override fun storeFloat(position: Int, value: Float): Unit = block.storeFloat(position, value)
     override fun storeDouble(position: Int, value: Double): Unit = block.storeDouble(position, value)
+
+    override fun storeRevShort(position: Int, value: Short): Unit = block.storeRevShort(position, value)
+    override fun storeRevUShort(position: Int, value: UShort): Unit = block.storeRevUShort(position, value)
+    override fun storeRevInt(position: Int, value: Int): Unit = block.storeRevInt(position, value)
+    override fun storeRevUInt(position: Int, value: UInt): Unit = block.storeRevUInt(position, value)
+    override fun storeRevLong(position: Int, value: Long): Unit = block.storeRevLong(position, value)
+    override fun storeRevULong(position: Int, value: ULong): Unit = block.storeRevULong(position, value)
+    override fun storeRevFloat(position: Int, value: Float): Unit = block.storeRevFloat(position, value)
+    override fun storeRevDouble(position: Int, value: Double): Unit = block.storeRevDouble(position, value)
 
     override fun foldSize(foldFormat: FoldFormat): Int = when (foldFormat) {
         FoldFormat.BLOCK -> error("Unsupported fold format.")

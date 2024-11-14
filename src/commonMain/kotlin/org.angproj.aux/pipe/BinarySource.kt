@@ -21,7 +21,7 @@ import kotlin.math.min
 
 public class BinarySource(
     pipe: PushPipe<BinaryType>
-): AbstractSource<BinaryType>(pipe), BinaryType, BinaryWritable, NumberAware {
+): AbstractSource<BinaryType>(pipe)/*, BinaryType*/, BinaryWritable/*, NumberAware*/ {
 
     private inline fun <reified E : Any> storeToSegment(length: Int, maxIter: Int, value: Long) {
         //var value = 0L
@@ -61,23 +61,60 @@ public class BinarySource(
         }
     }
 
+    private inline fun <reified E : Any> withSegmentRevShort(value: Short) {
+        when(seg.limit - pos < TypeSize.short) {
+            false -> seg.setRevShort(pos, value).also { pos += TypeSize.short }
+            else -> storeToSegment<Unit>(TypeSize.short, TypeSize.short, value.toLong())
+        }
+    }
+
+    private inline fun <reified E : Any> withSegmentRevInt(value: Int) {
+        when(seg.limit - pos < TypeSize.int) {
+            false -> seg.setRevInt(pos, value).also { pos += TypeSize.int }
+            else -> storeToSegment<Unit>(TypeSize.int, TypeSize.int, value.toLong())
+        }
+    }
+
+    private inline fun <reified E : Any> withSegmentRevLong(value: Long) {
+        when(seg.limit - pos < TypeSize.long) {
+            false -> seg.setRevLong(pos, value).also { pos += TypeSize.long }
+            else -> storeToSegment<Unit>(TypeSize.long, TypeSize.long, value)
+        }
+    }
+
     override fun writeByte(value: Byte): Unit = withSegmentByte<Unit>(value)
 
-    override fun writeUByte(value: UByte): Unit = withSegmentByte<Unit>(value.conv2B())
+    override fun writeUByte(value: UByte): Unit = withSegmentByte<Unit>(value.conv2B<Unit>())
 
     override fun writeShort(value: Short): Unit = withSegmentShort<Unit>(value)
 
-    override fun writeUShort(value: UShort): Unit = withSegmentShort<Unit>(value.conv2S())
+    override fun writeUShort(value: UShort): Unit = withSegmentShort<Unit>(value.conv2S<Unit>())
 
     override fun writeInt(value: Int): Unit = withSegmentInt<Unit>(value)
 
-    override fun writeUInt(value: UInt): Unit = withSegmentInt<Unit>(value.conv2I())
+    override fun writeUInt(value: UInt): Unit = withSegmentInt<Unit>(value.conv2I<Unit>())
 
     override fun writeLong(value: Long): Unit = withSegmentLong<Unit>(value)
 
-    override fun writeULong(value: ULong): Unit = withSegmentLong<Unit>(value.conv2L())
+    override fun writeULong(value: ULong): Unit = withSegmentLong<Unit>(value.conv2L<Unit>())
 
-    override fun writeFloat(value: Float): Unit = withSegmentInt<Unit>(value.conv2I())
+    override fun writeFloat(value: Float): Unit = withSegmentInt<Unit>(value.conv2I<Unit>())
 
-    override fun writeDouble(value: Double): Unit = withSegmentLong<Unit>(value.conv2L())
+    override fun writeDouble(value: Double): Unit = withSegmentLong<Unit>(value.conv2L<Unit>())
+
+    override fun writeRevShort(value: Short): Unit = withSegmentRevShort<Unit>(value)
+
+    override fun writeRevUShort(value: UShort): Unit = withSegmentRevShort<Unit>(value.conv2S<Unit>())
+
+    override fun writeRevInt(value: Int): Unit = withSegmentRevInt<Unit>(value)
+
+    override fun writeRevUInt(value: UInt): Unit = withSegmentRevInt<Unit>(value.conv2I<Unit>())
+
+    override fun writeRevLong(value: Long): Unit = withSegmentRevLong<Unit>(value)
+
+    override fun writeRevULong(value: ULong): Unit = withSegmentRevLong<Unit>(value.conv2L<Unit>())
+
+    override fun writeRevFloat(value: Float): Unit = withSegmentRevInt<Unit>(value.conv2I<Unit>())
+
+    override fun writeRevDouble(value: Double): Unit = withSegmentRevLong<Unit>(value.conv2L<Unit>())
 }

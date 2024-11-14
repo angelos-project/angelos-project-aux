@@ -16,16 +16,15 @@ package org.angproj.aux.pipe
 
 import org.angproj.aux.io.TextReadable
 import org.angproj.aux.util.CodePoint
-import org.angproj.aux.util.Reify
 import org.angproj.aux.util.withUnicodeAware
 
 public class TextSink(
     pipe: PullPipe<TextType>
-): AbstractSink<TextType>(pipe), TextType, TextReadable {
+): AbstractSink<TextType>(pipe)/*, TextType*/, TextReadable {
 
     override fun readGlyph(): CodePoint = withUnicodeAware {
         readGlyphStrm {
-            if(pos == seg.limit) pullSegment<Reify>()
+            if(pos == seg.limit) pullSegment<Unit>()
             seg.getByte(pos++)
         }
     }

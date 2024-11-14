@@ -96,6 +96,62 @@ public interface BinaryWritable: Writable, ByteCount {
      * @param value A double of data.
      */
     public override fun writeDouble(value: Double)
+
+    /**
+     * Write next short integer.
+     *
+     * @param value A short integer of data.
+     */
+    public override fun writeRevShort(value: Short)
+
+    /**
+     * Write next unsigned short integer.
+     *
+     * @param value An unsigned short integer of data.
+     */
+    public override fun writeRevUShort(value: UShort)
+
+    /**
+     * Write next integer.
+     *
+     * @param value An integer of data.
+     */
+    public override fun writeRevInt(value: Int)
+
+    /**
+     * Write next unsigned integer.
+     *
+     * @param value An unsigned integer of data.
+     */
+    public override fun writeRevUInt(value: UInt)
+
+    /**
+     * Write next long integer.
+     *
+     * @param value A long integer of data.
+     */
+    public override fun writeRevLong(value: Long)
+
+    /**
+     * Write next unsigned long integer.
+     *
+     * @param value An unsigned long integer of data.
+     */
+    public override fun writeRevULong(value: ULong)
+
+    /**
+     * Write next float.
+     *
+     * @param value A float of data.
+     */
+    public override fun writeRevFloat(value: Float)
+
+    /**
+     * Write next double.
+     *
+     * @param value A double of data.
+     */
+    public override fun writeRevDouble(value: Double)
 }
 
 /*public inline fun <reified T: BinaryWritable, E: Any> T.measureBytes(expected: Int, block: Int.() -> E): E {

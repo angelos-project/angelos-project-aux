@@ -19,7 +19,7 @@ import org.angproj.aux.io.Segment
 
 public class PumpSource<T: PipeType>(
     private val pump: PumpReader
-): Source, PipeType  {
+): Source<T>/*, PipeType*/  {
     private var _open: Boolean = true
     private var _staleCnt: Int = 0
 
@@ -27,7 +27,7 @@ public class PumpSource<T: PipeType>(
         get() = _staleCnt
 
     public override val count: Long
-        get() = pump.count
+        get() = pump.outputCount
 
     /**
      * This function forcefully sets the limit of the segment to the returned value
@@ -35,10 +35,9 @@ public class PumpSource<T: PipeType>(
      * */
     public fun<reified : Any> squeeze(seg: Segment<*>): Int = when {
         !isOpen() -> throw PipeException("Source is closed")
-        !pump.stale -> {
+        !pump.outputStale -> {
             _staleCnt = 0
-            seg.clear()
-            pump.read(seg).also { seg.limitAt(it) }
+            pump.read(seg).also { if(pump.outputStale || it == 0) _staleCnt++ }
         }
         _staleCnt >= 3 -> 0.also { close() }
         else -> 0.also { _staleCnt++ }

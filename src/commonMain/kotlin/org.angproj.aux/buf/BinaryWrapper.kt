@@ -65,6 +65,16 @@ public class BinaryWrapper(
     override fun writeFloat(value: Float): Unit = bin.storeFloat(_position, value).also { _position += TypeSize.float }
     override fun writeDouble(value: Double): Unit = bin.storeDouble(_position, value).also { _position += TypeSize.double }
 
+    override fun writeRevShort(value: Short): Unit = bin.storeRevShort(_position, value).also { _position += TypeSize.short }
+    override fun writeRevUShort(value: UShort): Unit = bin.storeRevUShort(_position, value).also { _position += TypeSize.uShort }
+    override fun writeRevInt(value: Int): Unit = bin.storeRevInt(_position, value).also { _position += TypeSize.int }
+    override fun writeRevUInt(value: UInt): Unit = bin.storeRevUInt(_position, value).also { _position += TypeSize.uInt }
+    override fun writeRevLong(value: Long): Unit = bin.storeRevLong(_position, value).also { _position += TypeSize.long }
+    override fun writeRevULong(value: ULong): Unit = bin.storeRevULong(_position, value).also { _position += TypeSize.uLong }
+    override fun writeRevFloat(value: Float): Unit = bin.storeRevFloat(_position, value).also { _position += TypeSize.float }
+    override fun writeRevDouble(value: Double): Unit = bin.storeRevDouble(_position, value).also { _position += TypeSize.double }
+
+
     override fun readByte(): Byte = bin.retrieveByte(_position).also { _position += TypeSize.byte }
     override fun readUByte(): UByte = bin.retrieveUByte(_position).also { _position += TypeSize.uByte }
     override fun readShort(): Short = bin.retrieveShort(_position).also { _position += TypeSize.short }
@@ -75,6 +85,15 @@ public class BinaryWrapper(
     override fun readULong(): ULong = bin.retrieveULong(_position).also { _position += TypeSize.uLong }
     override fun readFloat(): Float = bin.retrieveFloat(_position).also { _position += TypeSize.float }
     override fun readDouble(): Double = bin.retrieveDouble(_position).also { _position += TypeSize.double }
+
+    override fun readRevShort(): Short = bin.retrieveRevShort(_position).also { _position += TypeSize.short }
+    override fun readRevUShort(): UShort = bin.retrieveRevUShort(_position).also { _position += TypeSize.uShort }
+    override fun readRevInt(): Int = bin.retrieveRevInt(_position).also { _position += TypeSize.int }
+    override fun readRevUInt(): UInt = bin.retrieveRevUInt(_position).also { _position += TypeSize.uInt }
+    override fun readRevLong(): Long = bin.retrieveRevLong(_position).also { _position += TypeSize.long }
+    override fun readRevULong(): ULong = bin.retrieveRevULong(_position).also { _position += TypeSize.uLong }
+    override fun readRevFloat(): Float = bin.retrieveRevFloat(_position).also { _position += TypeSize.float }
+    override fun readRevDouble(): Double = bin.retrieveRevDouble(_position).also { _position += TypeSize.double }
 
     public operator fun<E: Any> invoke(block: BinaryWrapper.() -> E): E = this.block()
 

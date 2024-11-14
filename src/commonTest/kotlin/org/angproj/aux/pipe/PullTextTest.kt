@@ -24,35 +24,13 @@ import kotlin.test.*
 import kotlin.time.measureTime
 
 
-class BlobReader(private val blob: Binary) : PumpReader {
-    private var pos = 0
-
-    override val count: Long
-        get() = pos.toLong()
-
-    override val stale: Boolean
-        get() = remaining() <= 0
-
-    private fun remaining(): Int = blob.limit - pos
-
-    override fun read(data: Segment<*>): Int {
-        val length = min(data.limit, remaining())
-
-        if(length > 0) blob.copyInto(data, 0, pos, pos + length)
-        data.limitAt(length)
-        pos += length
-
-        return length
-    }
-}
-
 class TestPumpReader(private val bin: Binary, private val half: Boolean = false) : PumpReader {
     private var pos = 0
 
-    override val count: Long
+    override val outputCount: Long
         get() = pos.toLong()
 
-    override val stale: Boolean
+    override val outputStale: Boolean
         get() = remaining() <= 0
 
     private fun remaining(): Int = bin.limit - pos
@@ -61,16 +39,16 @@ class TestPumpReader(private val bin: Binary, private val half: Boolean = false)
         var length = min(data.limit, remaining())
 
         // Error simulation
-        if(half) if (remaining() < (bin.capacity / 2)) length /= 2
+        if (half) if (remaining() < (bin.capacity / 2)) length /= 2
 
-        if(length > 0) bin.copyInto(data, 0, pos, pos + length)
+        if (length > 0) bin.copyInto(data, 0, pos, pos + length)
         data.limitAt(length)
         pos += length
 
         return length
     }
 
-    constructor(text: String, half: Boolean = false): this(text.toText().asBinary(), half)
+    constructor(text: String, half: Boolean = false) : this(text.toText().asBinary(), half)
 
     /*val txt = DataBuffer(text.encodeToByteArray())
 
@@ -90,7 +68,24 @@ class TestPumpReader(private val bin: Binary, private val half: Boolean = false)
     }*/
 }
 
-class PullTextTest {
+class PullTextTest : AbstractPullTest() {
+
+    override var debugMode: Boolean = false
+
+    @Test
+    override fun testPullManualClose() {
+        pullTextManualClose(DataSize._1K, DataSize._4K)
+        pullTextManualClose(DataSize._1K, DataSize._1K)
+
+        pullTextManualCloseRefill(DataSize._1K, DataSize._4K)
+        pullTextManualCloseRefill(DataSize._1K, DataSize._1K)
+    }
+
+    @Test
+    override fun testPullAutoClose() {
+        pullTextAutomaticClose(DataSize._1K, DataSize._4K)
+        pullTextAutomaticClose(DataSize._1K, DataSize._1K)
+    }
 
     /**
      * The goal is to pull all data from the TextSource.
@@ -109,7 +104,7 @@ class PullTextTest {
             do {
                 val cp = readable.readGlyph()
                 pos += canvas.writeGlyphAt(pos, cp)
-            } while(pos < canvas.size)
+            } while (pos < canvas.size)
         }
         println(time)
         assertContentEquals(copy, canvas)

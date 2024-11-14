@@ -15,8 +15,6 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.mem.MemoryManager
-import org.angproj.aux.res.copyInto
-import org.angproj.aux.util.Reify
 import org.angproj.aux.res.Memory as Chunk
 
 public abstract class AbstractMemory protected constructor(
@@ -42,6 +40,12 @@ public abstract class AbstractMemory protected constructor(
 
     abstract override fun getLong(index: Int): Long
 
+    abstract override fun getRevShort(index: Int): Short
+
+    abstract override fun getRevInt(index: Int): Int
+
+    abstract override fun getRevLong(index: Int): Long
+
     abstract override fun setByte(index: Int, value: Byte)
 
     abstract override fun setShort(index: Int, value: Short)
@@ -49,6 +53,12 @@ public abstract class AbstractMemory protected constructor(
     abstract override fun setInt(index: Int, value: Int)
 
     abstract override fun setLong(index: Int, value: Long)
+
+    abstract override fun setRevShort(index: Int, value: Short)
+
+    abstract override fun setRevInt(index: Int, value: Int)
+
+    abstract override fun setRevLong(index: Int, value: Long)
 
     /*public companion object {
         public val typeSize: TypeSize = TypeSize.BYTE

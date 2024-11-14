@@ -15,7 +15,6 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.mem.MemoryManager
-import org.angproj.aux.util.Reify
 import org.angproj.aux.util.chunkLoop
 import kotlin.jvm.JvmStatic
 
@@ -55,6 +54,12 @@ public class Model internal constructor(
         return data.chunkGet<Unit>(index / TypeSize.long, index % TypeSize.long, TypeSize.long)
     }
 
+    override fun getRevShort(index: Int): Short = swapShort<Unit>(getShort(index))
+
+    override fun getRevInt(index: Int): Int = swapInt<Unit>(getInt(index))
+
+    override fun getRevLong(index: Int): Long = swapLong<Unit>(getLong(index))
+
     override fun setByte(index: Int, value: Byte) {
         index.checkRangeByte<Unit>()
         data.chunkSet<Unit>(index / TypeSize.long, index % TypeSize.long, value.toLong(), byteMask, TypeSize.byte)
@@ -74,6 +79,12 @@ public class Model internal constructor(
         index.checkRangeLong<Unit>()
         data.chunkSet<Unit>(index / TypeSize.long, index % TypeSize.long, value, longMask, TypeSize.long)
     }
+
+    override fun setRevShort(index: Int, value: Short) { setShort(index, swapShort<Unit>(value)) }
+
+    override fun setRevInt(index: Int, value: Int) { setInt(index, swapInt<Unit>(value)) }
+
+    override fun setRevLong(index: Int, value: Long) { setLong(index, swapLong<Unit>(value)) }
 
     private inline fun <reified R: Any> LongArray.chunkGet(off: Int, idx: Int, size: Int): Long = ((
             get(off) ushr (idx * TypeSize.long)) or if(idx > TypeSize.long - size) ((
@@ -181,13 +192,13 @@ internal inline fun Model.innerCopy(dest: Model, destOff: Int, idxFrom: Int, idx
     require(destOff + length in 0..dest.size) {
         "End index (${destOff + length}) outside of memory range" }
 
-    val index = chunkLoop<Reify>(0, length, TypeSize.long) {
+    val index = chunkLoop<Unit>(0, length, TypeSize.long) {
         dest.setLong(
             destOff + it,
             getLong(idxFrom + it)
         )
     }
-    chunkLoop<Reify>(index, length, TypeSize.byte) {
+    chunkLoop<Unit>(index, length, TypeSize.byte) {
         dest.setByte(
             destOff + it,
             getByte(idxFrom + it)

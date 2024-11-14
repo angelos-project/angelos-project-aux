@@ -93,4 +93,60 @@ public interface Retrievable {
      * @return A double of data.
      */
     public fun retrieveDouble(position: Int): Double
+
+    /**
+     * Retrieve a short integer from said position.
+     *
+     * @return A short integer of data.
+     */
+    public fun retrieveRevShort(position: Int): Short
+
+    /**
+     * Retrieve an unsigned short integer from said position.
+     *
+     * @return An unsigned short integer of data.
+     */
+    public fun retrieveRevUShort(position: Int): UShort
+
+    /**
+     * Retrieve an integer from said position.
+     *
+     * @return An integer of data.
+     */
+    public fun retrieveRevInt(position: Int): Int
+
+    /**
+     * Retrieve an unsigned integer from said position.
+     *
+     * @return An unsigned integer of data.
+     */
+    public fun retrieveRevUInt(position: Int): UInt
+
+    /**
+     * Retrieve a long integer from said position.
+     *
+     * @return A long integer of data.
+     */
+    public fun retrieveRevLong(position: Int): Long
+
+    /**
+     * Retrieve an unsigned long integer from said position.
+     *
+     * @return An unsigned long integer of data.
+     */
+    public fun retrieveRevULong(position: Int): ULong
+
+    /**
+     * Retrieve a float from said position.
+     *
+     * @return A float of data.
+     */
+    public fun retrieveRevFloat(position: Int): Float
+
+    /**
+     * Retrieve a double from said position.
+     *
+     * @return A double of data.
+     */
+    public fun retrieveRevDouble(position: Int): Double
 }

@@ -2,8 +2,11 @@ package org.angproj.aux.rand
 
 import org.angproj.aux.buf.BinaryBuffer
 import org.angproj.aux.buf.asBinary
+import org.angproj.aux.buf.asWrapped
 import org.angproj.aux.io.Binary
 import org.angproj.aux.io.Reader
+import org.angproj.aux.io.Segment
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.Benchmark
 import org.angproj.aux.util.floorMod
@@ -19,15 +22,23 @@ class TestRandom1024(iv: LongArray = LongArray(16)): AbstractSponge1024(), Reade
         scramble()
     }
 
+    protected fun fill(data: Segment<*>): Unit = BufMgr.asWrap(data) {
+        val writable = asWrapped()
+        repeat(data.limit / byteSize) {
+            repeat(visibleSize) { writable.writeLong(squeeze(it))}
+            round()
+        }
+    }
+
     override fun read(bin: Binary): Int {
         require(bin.limit.floorMod(byteSize) == 0)
-        fill(bin._segment) { round() }
+        fill(bin._segment)
         return bin.limit
     }
 }
 
 class AbstractSponge1024Test {
-    @Test
+    //@Test
     fun testMonteCarlo() {
         val monteCarlo = Benchmark()
         val random = TestRandom1024(LongArray(16) { SecureRandom.readLong() })

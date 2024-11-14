@@ -14,82 +14,72 @@
  */
 package org.angproj.aux.sec
 
-import org.angproj.aux.io.DataSize
-import org.angproj.aux.io.OldReader
-import org.angproj.aux.io.OldWriter
+import org.angproj.aux.buf.asWrapped
+import org.angproj.aux.buf.wrap
+import org.angproj.aux.io.*
+import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.rand.AbstractSponge1024
-import org.angproj.aux.util.DataBuffer
-import org.angproj.aux.util.NullObject
-import kotlin.time.Duration
-import kotlin.time.TimeSource
+import org.angproj.aux.rand.InitializationVector
+import org.angproj.aux.util.floorMod
+
 
 public class GarbageGarbler(
-    public val maxSize: DataSize = DataSize._1G,
-    public val maxTime: Duration = Duration.parse("1 min"),
-    public val maxQueue: Int = 8
-): AbstractSponge1024(), OldReader, OldWriter {
+    public val staleSize: DataSize = DataSize._1G,
+): AbstractSponge1024(), PumpWriter, PumpReader {
 
-    private val inQueue: ArrayDeque<ByteArray> = ArrayDeque(maxQueue)
-    private var inBuffer = DataBuffer(NullObject.byteArray)
-
-    private var dataCount = 0
-    private var timeCount = TimeSource.Monotonic.markNow() + maxTime
+    private var inputCnt: Long = 0
+    private var outputCnt: Long = 0
+    private var _count: Int = 0
 
     init {
-        revitalize()
+        val start = binOf(byteSize)
+        InitializationVector.realTimeGatedEntropy(start)
+        start.wrap { repeat(16) { absorb(readLong(), it) } }
     }
 
-    private fun revitalize() {
-        if(inBuffer.remaining < DataSize._1K.size) {
-            if(inQueue.isEmpty()) {
-                val entropy = ByteArray(DataSize._1K.size)
-                //InitializationVector.realTimeGatedEntropy(entropy)
-                inQueue.addLast(entropy)
-            }
-            inBuffer = DataBuffer(inQueue.removeFirst())
-        }
-        (0 until visibleSize).forEach { absorb(inBuffer.readLong(), it) }
-        scramble()
-    }
+    override val outputCount: Long
+        get() = inputCnt + outputCnt
 
-    private fun cycle() {
-        if((dataCount >= maxSize.size) || timeCount.hasPassedNow()) {
-            revitalize()
-            dataCount = 0
-            timeCount = TimeSource.Monotonic.markNow() + maxTime
-        }
-        round()
-    }
+    override val inputCount: Long
+        get() =  inputCnt
+
+    override val inputStale: Boolean = false
+
+    override val outputStale: Boolean
+        get() = _count >= staleSize.size
 
     private fun require(length: Int) {
-        require(length.mod(DataSize._1K.size) == 0) { "Garble must be divisible by the length of the inner sponge." }
+        require(length.floorMod(byteSize) == 0) { "Garble must be divisible by the length of the inner sponge." }
     }
 
-    override fun read(length: Int): ByteArray {
-        require(length)
-        return ByteArray(length).also {
-            /*fill(it) {
-                dataCount += dataSize.size
-                cycle()
-            }*/
+    override fun write(data: Segment<*>): Int {
+        require(data.limit)
+        BufMgr.asWrap(data) {
+            val wrap = asWrapped(0)
+            repeat(data.limit / byteSize) {
+                repeat(16) { absorb(wrap.readLong(), it) }
+                scramble()
+            }
+        }
+        inputCnt += data.limit
+        _count = 0
+        return data.limit
+    }
+
+    private fun fill(data: Segment<*>): Unit = BufMgr.asWrap(data) {
+        val writable = asWrapped()
+        repeat(data.limit / byteSize) {
+            repeat(visibleSize) { writable.writeLong(squeeze(it))}
+            round()
         }
     }
 
-    override fun read(data: ByteArray): Int {
-        require(data.size)
-        /*fill(data) {
-            dataCount += dataSize.size
-            cycle()
-        }*/
-        return data.size
-    }
-
-    override fun write(data: ByteArray): Int {
-        require(data.size)
-        if(inQueue.size >= maxQueue) {
-            inBuffer = DataBuffer(inQueue.removeFirst())
-        }
-        inQueue.addLast(data)
+    public override fun read(data: Segment<*>): Int {
+        require(data.limit)
+        if(data.limit + _count > staleSize.size) return 0
+        fill(data)
+        outputCnt += data.size
+        _count += data.size
         return data.size
     }
 }

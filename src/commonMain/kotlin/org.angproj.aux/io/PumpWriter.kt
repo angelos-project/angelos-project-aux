@@ -25,14 +25,14 @@ package org.angproj.aux.io
 /**
  * A [PumpWriter] must never send partial data if it indicates itself as stale.
  * */
-public interface PumpWriter: ByteCount {
+public interface PumpWriter {
 
-    public override val count: Long
+    public val inputCount: Long
 
     /**
      * Stale mode means that the writer is currently busy digesting data.
      * */
-    public val stale: Boolean
+    public val inputStale: Boolean
 
     public fun write(data: Segment<*>): Int
 }

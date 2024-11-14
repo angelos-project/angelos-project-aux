@@ -14,6 +14,8 @@
  */
 package org.angproj.aux.ui
 
+import org.angproj.aux.util.Once
+
 public interface Padding : Measure {
     public var left: Float
     public var right: Float

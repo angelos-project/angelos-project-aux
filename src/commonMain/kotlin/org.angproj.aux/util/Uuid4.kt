@@ -78,10 +78,10 @@ public class Uuid4(private val uuid: Binary) {
         }
 
         private var _count: Long = 0
-        override val count: Long
+        override val outputCount: Long
             get() = _count + counter
 
-        override val stale: Boolean = false
+        override val outputStale: Boolean = false
 
         private fun revitalize() {
             binOf(16).useWith {

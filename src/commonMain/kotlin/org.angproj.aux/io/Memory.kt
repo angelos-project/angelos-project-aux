@@ -37,6 +37,12 @@ public expect open class Memory internal constructor(
 
     override fun getLong(index: Int): Long
 
+    override fun getRevShort(index: Int): Short
+
+    override fun getRevInt(index: Int): Int
+
+    override fun getRevLong(index: Int): Long
+
     override fun setByte(index: Int, value: Byte)
 
     override fun setShort(index: Int, value: Short)
@@ -44,6 +50,12 @@ public expect open class Memory internal constructor(
     override fun setInt(index: Int, value: Int)
 
     override fun setLong(index: Int, value: Long)
+
+    override fun setRevShort(index: Int, value: Short)
+
+    override fun setRevInt(index: Int, value: Int)
+
+    override fun setRevLong(index: Int, value: Long)
 }
 
 /**

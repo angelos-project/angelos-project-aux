@@ -40,27 +40,35 @@ import org.angproj.aux.mem.MemoryManager
  * */
 public object Pipe: PipeBuilder {
 
+    public fun buildTextSink(reader: PumpReader): TextSink = buildSink { pull(reader).txt() }
+    public fun buildBinarySink(reader: PumpReader): BinarySink = buildSink { pull(reader).bin() }
+    public fun buildPackageSink(reader: PumpReader): PackageSink = buildSink { pull(reader).pkg() }
+
+    public fun buildTextSource(writer: PumpWriter): TextSource = buildSource { push(writer).txt() }
+    public fun buildBinarySource(writer: PumpWriter): BinarySource = buildSource { push(writer).bin() }
+    public fun buildPackageSource(writer: PumpWriter): PackageSource = buildSource { push(writer).pkg() }
+
     public fun buildTextPullPipe(reader: PumpReader): TextSink = buildTextPullPipe(reader, Default)
-    override fun buildTextPullPipe(reader: PumpReader, memCtx: MemoryManager<*>): TextSink = PullPipe<TextType>(
+    public fun buildTextPullPipe(reader: PumpReader, memCtx: MemoryManager<*>): TextSink = PullPipe<TextType>(
         memCtx, PumpSource(reader)).getSink()
 
     public fun buildBinaryPullPipe(reader: PumpReader): BinarySink = buildBinaryPullPipe(reader, Default)
-    override fun buildBinaryPullPipe(reader: PumpReader, memCtx: MemoryManager<*>): BinarySink = PullPipe<BinaryType>(
+    public fun buildBinaryPullPipe(reader: PumpReader, memCtx: MemoryManager<*>): BinarySink = PullPipe<BinaryType>(
         memCtx, PumpSource(reader)).getSink()
 
     public fun buildPackagePullPipe(reader: PumpReader): PackageSink = buildPackagePullPipe(reader, Default)
-    override fun buildPackagePullPipe(reader: PumpReader, memCtx: MemoryManager<*>): PackageSink = PackageSink(
+    public fun buildPackagePullPipe(reader: PumpReader, memCtx: MemoryManager<*>): PackageSink = PackageSink(
         buildBinaryPullPipe(reader, memCtx))
 
     public fun buildTextPushPipe(writer: PumpWriter): TextSource = buildTextPushPipe(writer, Default)
-    override fun buildTextPushPipe(writer: PumpWriter, memCtx: MemoryManager<*>): TextSource = PushPipe<TextType>(
+    public fun buildTextPushPipe(writer: PumpWriter, memCtx: MemoryManager<*>): TextSource = PushPipe<TextType>(
         memCtx, PumpSink(writer)).getSource()
 
     public fun buildBinaryPushPipe(writer: PumpWriter): BinarySource = buildBinaryPushPipe(writer, Default)
-    override fun buildBinaryPushPipe(writer: PumpWriter, memCtx: MemoryManager<*>): BinarySource = PushPipe<BinaryType>(
+    public fun buildBinaryPushPipe(writer: PumpWriter, memCtx: MemoryManager<*>): BinarySource = PushPipe<BinaryType>(
         memCtx, PumpSink(writer)).getSource()
 
     public fun buildPackagePushPipe(writer: PumpWriter): PackageSource = buildPackagePushPipe(writer, Default)
-    override fun buildPackagePushPipe(writer: PumpWriter, memCtx: MemoryManager<*>): PackageSource = PackageSource(
+    public fun buildPackagePushPipe(writer: PumpWriter, memCtx: MemoryManager<*>): PackageSource = PackageSource(
         buildBinaryPushPipe(writer, memCtx))
 }

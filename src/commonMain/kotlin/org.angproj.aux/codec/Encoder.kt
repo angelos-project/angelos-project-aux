@@ -14,8 +14,8 @@
  */
 package org.angproj.aux.codec
 
-public interface Encoder<I, O> {
+import org.angproj.aux.io.PumpWriter
+
+public interface Encoder<I, O>: PumpWriter {
     public fun encode(data: I): O
-
-
 }

@@ -86,6 +86,7 @@ public fun <E: MemBlock>E.toByteArray(): ByteArray = object : Copy {
             override fun setLong(index: Int, value: Long) { outArr.writeLongAt(index, value) }
             override fun setByte(index: Int, value: Byte) { outArr.set(index, value)}
         }
+        if(limit == 0) return byteArrayOf()
         require(0, limit, 0, _segment, dst)
         innerCopy(0, limit, 0, _segment, dst)
         return dst.outArr

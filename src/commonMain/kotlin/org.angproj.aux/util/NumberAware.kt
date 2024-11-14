@@ -16,27 +16,27 @@ package org.angproj.aux.util
 
 public interface NumberAware {
 
-    public fun Short.swapEndian(): Short = withNumeral(this) { swapShort<Unit>(it) }
-    public fun UShort.swapEndian(): UShort = withNumeral(this) { swapShort<Unit>(it.convUS2S<Unit>()).convS2US<Unit>() }
-    public fun Int.swapEndian(): Int = withNumeral(this) { swapInt<Unit>(it) }
-    public fun UInt.swapEndian(): UInt = withNumeral(this) { swapInt<Unit>(it.convUI2I<Unit>()).convI2UI<Unit>() }
-    public fun Long.swapEndian(): Long = withNumeral(this) { swapLong<Long>(it) }
-    public fun ULong.swapEndian(): ULong = withNumeral(this) { swapLong<Long>(it.convUL2L<Unit>()).convL2UL<Unit>() }
-    public fun Float.swapEndian(): Float = withNumeral(this) { swapInt<Unit>(it.convF2I<Unit>()).convI2F<Unit>() }
-    public fun Double.swapEndian(): Double = withNumeral(this) { swapLong<Long>(it.convD2L<Unit>()).convL2D<Unit>() }
+    public fun Short.swapEndian(): Short = I.swapShort<Unit>(this)
+    public fun UShort.swapEndian(): UShort = I.convS2US<Unit>(I.swapShort<Unit>(I.convUS2S<Unit>(this)))
+    public fun Int.swapEndian(): Int = I.swapInt<Unit>(this)
+    public fun UInt.swapEndian(): UInt = I.convI2UI<Unit>(I.swapInt<Unit>(I.convUI2I<Unit>(this)))
+    public fun Long.swapEndian(): Long = I.swapLong<Long>(this)
+    public fun ULong.swapEndian(): ULong = I.convL2UL<Unit>(I.swapLong<Long>(I.convUL2L<Unit>(this)))
+    public fun Float.swapEndian(): Float = I.convI2F<Unit>(I.swapInt<Unit>(I.convF2I<Unit>(this)))
+    public fun Double.swapEndian(): Double = I.convL2D<Unit>(I.swapLong<Long>(I.convD2L<Unit>(this)))
 
-    public fun Byte.conv2uB(): UByte = withNumeral(this) { it.convB2UB<Unit>() }
-    public fun UByte.conv2B(): Byte = withNumeral(this) { it.convUB2B<Unit>() }
-    public fun Short.conv2uS(): UShort = withNumeral(this) { it.convS2US<Unit>() }
-    public fun UShort.conv2S(): Short = withNumeral(this) { it.convUS2S<Unit>() }
-    public fun Int.conv2uI(): UInt = withNumeral(this) { it.convI2UI<Unit>() }
-    public fun UInt.conv2I(): Int = withNumeral(this) { it.convUI2I<Unit>() }
-    public fun Int.conv2F(): Float = withNumeral(this) { it.convI2F<Unit>() }
-    public fun Float.conv2I(): Int = withNumeral(this) { it.convF2I<Unit>() }
-    public fun Long.conv2uL(): ULong = withNumeral(this) { it.convL2UL<Unit>() }
-    public fun ULong.conv2L(): Long = withNumeral(this) { it.convUL2L<Unit>() }
-    public fun Long.conv2D(): Double = withNumeral(this) { it.convL2D<Unit>() }
-    public fun Double.conv2L(): Long = withNumeral(this) { it.convD2L<Unit>() }
+    public fun Byte.conv2uB(): UByte = I.convB2UB<Unit>(this)
+    public fun UByte.conv2B(): Byte = I.convUB2B<Unit>(this)
+    public fun Short.conv2uS(): UShort = I.convS2US<Unit>(this)
+    public fun UShort.conv2S(): Short = I.convUS2S<Unit>(this)
+    public fun Int.conv2uI(): UInt = I.convI2UI<Unit>(this)
+    public fun UInt.conv2I(): Int = I.convUI2I<Unit>(this)
+    public fun Int.conv2F(): Float = I.convI2F<Unit>(this)
+    public fun Float.conv2I(): Int = I.convF2I<Unit>(this)
+    public fun Long.conv2uL(): ULong = I.convL2UL<Unit>(this)
+    public fun ULong.conv2L(): Long = I.convUL2L<Unit>(this)
+    public fun Long.conv2D(): Double = I.convL2D<Unit>(this)
+    public fun Double.conv2L(): Long = I.convD2L<Unit>(this)
 }
 
 

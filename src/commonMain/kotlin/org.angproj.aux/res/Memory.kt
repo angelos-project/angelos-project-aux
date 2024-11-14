@@ -29,7 +29,7 @@ internal fun validateAskedMemorySize(size: Int) = require(size in 1..DataSize._1
     "Tried to allocate an illegal amount ($size) of memory" }
 
 @PublishedApi
-internal inline fun <reified T: Reifiable> Memory.copyInto(
+internal inline fun <reified T: Any> Memory.copyInto(
     destination: Memory, destinationOffset: Int, idxFrom: Int, idxTo: Int
 ): Int = object : Copy {
     operator fun invoke(): Int {

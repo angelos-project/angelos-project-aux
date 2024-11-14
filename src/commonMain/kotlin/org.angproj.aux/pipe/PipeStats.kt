@@ -41,5 +41,15 @@ public data class PipeStats(
     val curSegCnt: Int,
     val totSegCnt: Long,
 ) : StateCount {
-
+    override fun toString(): String {
+        return "PumpOpen: $pumpOpen\n" +
+        "PipeOpen: $pipeOpen\n" +
+        "StaleCnt: $staleCnt\n" +
+        "PumpCnt: $pumpCnt\n" +
+        "PipeCnt: $pipeCnt\n" +
+        "UsedMem: $usedMem\n" +
+        "AllocMem: $allocMem\n" +
+        "CurSegCnt: $curSegCnt\n" +
+        "TotSegCnt: $totSegCnt"
+    }
 }

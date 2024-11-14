@@ -24,8 +24,8 @@ import org.angproj.aux.util.NullObject
 public class PullPipe<T: PipeType>(
     memMgr: MemoryManager<*>,
     public val src: PumpSource<T>,
-    segSize: DataSize = DataSize._1K,
-    bufSize: DataSize = DataSize._1K
+    segSize: DataSize = DataSize._4K,
+    bufSize: DataSize = DataSize._32K
 ): AbstractPipe<T>(segSize, bufSize, memMgr), Close {
 
     init {
@@ -35,18 +35,15 @@ public class PullPipe<T: PipeType>(
     /**
      * Adds FIFO push abilities to the List of Segment.
      * */
-    private inline fun<reified E: Any> ArrayDeque<Segment<*>>.push(seg: Segment<*>) {
-        if(seg.limit > 0) this.addFirst(seg)
-        else recycle<Unit>(seg)
+    private inline fun<reified E: Any> ArrayDeque<Segment<*>>.push(seg: Segment<*>): Unit = when(seg.limit > 0) {
+        true -> addFirst(seg)
+        else -> recycle<Unit>(seg).also { addFirst(NullObject.segment) }
     }
 
     /**
      * Adds FIFO pop abilities to the List of Segment
      * */
-    private inline fun<reified E: Any> ArrayDeque<Segment<*>>.pop(): Segment<*> = when {
-        isNotEmpty() -> removeLast()
-        else -> NullObject.segment
-    }
+    private inline fun<reified E: Any> ArrayDeque<Segment<*>>.pop(): Segment<*> = removeLastOrNull() ?: NullObject.segment
 
     public fun<reified : Any> isExhausted(): Boolean = buf.isEmpty()
 
@@ -59,8 +56,7 @@ public class PullPipe<T: PipeType>(
             val seg = allocate<Unit>(segSize)
             seg.clear()
             val length = src.squeeze<Unit>(seg)
-            if(length == 0)
-                seg.limitAt(0)
+            seg.limitAt(length)
             buf.push<Unit>(seg)
             _segCnt++
         } while(length > 0 && --capacity > 0)
