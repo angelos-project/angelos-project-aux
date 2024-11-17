@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
+ * Copyright (c) 2022 by Kristoffer Paulsson <kristoffer.paulsson@talenten.se>.
  *
  * This software is available under the terms of the MIT license. Parts are licensed
  * under different terms if stated. The legal terms are attached to the LICENSE file
@@ -14,14 +14,16 @@
  */
 package org.angproj.aux.util
 
+import kotlin.jvm.JvmInline
 
-public interface DslBlock
-
-public operator fun <E : DslBlock> E.invoke(block: E.() -> Unit): E = this.also { block() }
-
-public inline operator fun <reified E : DslBlock, R: Any> E.invoke(block: E.() -> R): R = this.block()
-
-
-public fun interface Lambda<E> {
-    public operator fun invoke(): E
+/**
+ * TypePointer holds a native memory raw pointer while adding type assertion.
+ *
+ * Imported from the old buffer package and reimplemented
+ *
+ * DON'T MESS WITH RAW POINTERS!
+ */
+@JvmInline
+public value class TypePointer(private val raw: Long) {
+    public fun toPointer(): Long = raw
 }

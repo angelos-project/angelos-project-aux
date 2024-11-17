@@ -27,4 +27,6 @@ public class Once<E: Any> {
         if(::handle.isInitialized) throw IllegalStateException("Already initialized")
         handle = value
     }
+
+    public fun isInitialized(): Boolean = ::handle.isInitialized
 }

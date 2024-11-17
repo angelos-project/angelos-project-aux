@@ -25,8 +25,8 @@ import kotlin.time.TimeSource
 
 
 public abstract class AbstractSink<T: PipeType>(
-    protected val pipe: PullPipe<T>
-) : AbstractBufferAware(), Sink<T>, Measurable<PipeStats>/*, PipeType*/ {
+    protected val pipe: PullPipe
+) : AbstractBufferAware(), Sink<T>, Measurable<PipeStats> {
 
     /**
      * The default [DataSize] of each segment used inside the pipe.
@@ -79,6 +79,11 @@ public abstract class AbstractSink<T: PipeType>(
         seg = pipe.pop<Unit>()
         if(seg.isNull()) throw StaleException("Source is stale")
     }
+
+    /**
+     * Number of bytes in the buffer and the sink left to read.
+     * */
+    public fun hasLeft(): Int = pipe.bufUse + seg.limit - pos
 
     override fun isOpen(): Boolean = pipe.isOpen() or !seg.isNull()
 

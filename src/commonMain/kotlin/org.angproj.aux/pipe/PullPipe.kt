@@ -21,12 +21,12 @@ import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.util.NullObject
 
 
-public class PullPipe<T: PipeType>(
+public class PullPipe(
     memMgr: MemoryManager<*>,
-    public val src: PumpSource<T>,
-    segSize: DataSize = DataSize._4K,
-    bufSize: DataSize = DataSize._32K
-): AbstractPipe<T>(segSize, bufSize, memMgr), Close {
+    public val src: PumpSource,
+    segSize: DataSize,
+    bufSize: DataSize
+): AbstractPipe(segSize, bufSize, memMgr), Close {
 
     init {
         require(src.isOpen()) { "A pipe must have a non-closed source" }
@@ -74,6 +74,6 @@ public class PullPipe<T: PipeType>(
     }
 }
 
-public fun PullPipe<TextType>.getSink(): TextSink = TextSink(this)
+public fun PullPipe.getTxtSink(): GlyphSink = GlyphSink(this)
 
-public fun PullPipe<BinaryType>.getSink(): BinarySink = BinarySink(this)
+public fun PullPipe.getBinSink(): BinarySink = BinarySink(this)

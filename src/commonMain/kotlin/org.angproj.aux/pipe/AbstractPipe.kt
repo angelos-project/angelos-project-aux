@@ -19,7 +19,7 @@ import org.angproj.aux.io.Segment
 import org.angproj.aux.io.isNull
 import org.angproj.aux.mem.MemoryManager
 
-public abstract class AbstractPipe<T: PipeType>(
+public abstract class AbstractPipe(
     public val segSize: DataSize,
     public val bufSize: DataSize,
     protected val memMgr: MemoryManager<*>

@@ -20,8 +20,8 @@ import org.angproj.aux.util.NumberAware
 import kotlin.math.min
 
 public class BinarySource(
-    pipe: PushPipe<BinaryType>
-): AbstractSource<BinaryType>(pipe)/*, BinaryType*/, BinaryWritable/*, NumberAware*/ {
+    pipe: PushPipe
+): AbstractSource<BinaryType>(pipe), BinaryWritable {
 
     private inline fun <reified E : Any> storeToSegment(length: Int, maxIter: Int, value: Long) {
         //var value = 0L

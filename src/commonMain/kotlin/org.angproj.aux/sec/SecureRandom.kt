@@ -27,12 +27,12 @@ import kotlin.native.concurrent.ThreadLocal
 @ThreadLocal
 public object SecureRandom : BinaryReadable, PumpReader, Reader {
 
-    private val sink: BinarySink = PullPipe<BinaryType>(
+    private val sink: BinarySink = PullPipe(
         Default,
         PumpSource(SecureFeed),
         DataSize._1K,
         DataSize._1K
-    ).getSink()
+    ).getBinSink()
 
     override val count: Long
         get() = sink.count

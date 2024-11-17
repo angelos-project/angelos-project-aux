@@ -39,11 +39,13 @@ public interface PipeBuilder {
     public fun <C : Config> C.buf(size: DataSize): C = this.also { pipeBufSize = size }
     public fun <C : Config> C.seg(size: DataSize): C = this.also { pipeSegSize = size }
 
-    public fun PullConfig.txt(): TextSink = TextSink(PullPipe(pipeMemMgr, PumpSource(reader), pipeSegSize, pipeBufSize))
+    public fun PullConfig.utf(): GlyphSink = GlyphSink(PullPipe(pipeMemMgr, PumpSource(reader), pipeSegSize, pipeBufSize))
+    public fun PullConfig.txt(): TextSink = TextSink(utf())
     public fun PullConfig.bin(): BinarySink = BinarySink(PullPipe(pipeMemMgr, PumpSource(reader), pipeSegSize, pipeBufSize))
     public fun PullConfig.pkg(): PackageSink = PackageSink(bin())
 
-    public fun PushConfig.txt(): TextSource = TextSource(PushPipe(pipeMemMgr, PumpSink(writer), pipeSegSize, pipeBufSize))
+    public fun PushConfig.utf(): GlyphSource = GlyphSource(PushPipe(pipeMemMgr, PumpSink(writer), pipeSegSize, pipeBufSize))
+    public fun PushConfig.txt(): TextSource = TextSource(utf())
     public fun PushConfig.bin(): BinarySource = BinarySource(PushPipe(pipeMemMgr, PumpSink(writer), pipeSegSize, pipeBufSize))
     public fun PushConfig.pkg(): PackageSource = PackageSource(bin())
 }

@@ -70,7 +70,7 @@ public abstract class FlowBuffer protected constructor(
         if(_position > newLimit) positionAt(newLimit) //_position = newLimit
     }
 
-    private var _mark: Int = 0
+    protected var _mark: Int = 0
     /**
      * Given mark at position zero or as latest defined.
      * */

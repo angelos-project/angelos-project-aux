@@ -24,7 +24,7 @@ import kotlin.math.min
 
 public class TextBuffer internal constructor(
     segment: Segment<*>, view: Boolean = false
-): FlowBuffer(segment, view), TextReadable, TextWritable {
+): FlowBuffer(segment, view), GlyphReadable, GlyphWritable {
 
     public constructor(size: Int) : this(Default.allocate(size))
 
@@ -54,6 +54,28 @@ public class TextBuffer internal constructor(
         check(last != null) { "Invalid end of last glyph" }
 
         first until  (last+hasGlyphSize(_segment.getByte(last)))
+    }
+
+    public fun seekNext(index: Int): Int = withUnicodeAware {
+        val size = hasGlyphSize(_segment.getByte(index))
+        if(size > 0) index + size
+        else {
+            var pos = index
+            while(!isGlyphStart(_segment.getByte(pos)) && pos < limit) pos++
+            pos
+        }
+    }
+
+    public fun seek(offset: Int): Int = withUnicodeAware {
+        /*var pos = 0
+        while(offset) {
+            if(pos >= limit) error("Position not reachable, limit at ")
+            val size = hasGlyphSize(_segment.getByte(pos))
+            if (size < 1) error("Not a glyph at position $pos")
+            pos += size
+        }
+        pos*/
+        0
     }
 }
 

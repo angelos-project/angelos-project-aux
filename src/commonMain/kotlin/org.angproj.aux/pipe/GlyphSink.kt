@@ -12,12 +12,20 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.ui
+package org.angproj.aux.pipe
 
+import org.angproj.aux.io.GlyphReadable
+import org.angproj.aux.util.CodePoint
+import org.angproj.aux.util.withUnicodeAware
 
-public interface Padding : Measure {
-    public var left: Float
-    public var right: Float
-    public var top: Float
-    public var bottom: Float
+public class GlyphSink(
+    pipe: PullPipe
+): AbstractSink<GlyphType>(pipe), GlyphReadable {
+
+    override fun readGlyph(): CodePoint = withUnicodeAware {
+        readGlyphStrm {
+            if(pos == seg.limit) pullSegment<Unit>()
+            seg.getByte(pos++)
+        }
+    }
 }

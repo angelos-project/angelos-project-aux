@@ -17,5 +17,5 @@ package org.angproj.aux.io
 import org.angproj.aux.util.CodePoint
 
 public interface TextReadable {
-    public fun readGlyph(): CodePoint
+    public fun read(): CodePoint
 }

@@ -16,7 +16,7 @@ package org.angproj.aux.io
 
 import org.angproj.aux.util.CodePoint
 
-public object DevNull : BinaryWritable, TextWritable, PumpWriter {
+public object DevNull : BinaryWritable, GlyphWritable, PumpWriter {
 
     private var _count = 0L
     override val count: Long

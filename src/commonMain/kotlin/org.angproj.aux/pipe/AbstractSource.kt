@@ -25,8 +25,8 @@ import kotlin.time.TimeSource
 
 
 public abstract class AbstractSource<T: PipeType>(
-    protected val pipe: PushPipe<T>
-): AbstractBufferAware(), Source<T>, Measurable<PipeStats>/*, PipeType*/ {
+    protected val pipe: PushPipe
+): AbstractBufferAware(), Source<T>, Measurable<PipeStats> {
 
     /**
      * The default [DataSize] of each segment used inside the pipe.
@@ -82,6 +82,11 @@ public abstract class AbstractSource<T: PipeType>(
         _count += pos
         pos = 0
     }
+
+    /**
+     * Number of bytes in the buffer and source before forcefully drained.
+     * */
+    public fun hasLeft(): Int = (pipe.queueCap - pipe.queueLen) * pipe.segSize.size + seg.limit - pos
 
     /**
      * Flush allows the programmer to enforce a complete drainage of the pipe to the [PumpSink].

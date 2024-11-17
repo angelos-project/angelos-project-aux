@@ -147,7 +147,7 @@ abstract class AbstractPullTest {
 
         val receive = binOf(send.capacity)
 
-        val sink = buildSink { pull(BlobReader(send)).seg(segSize).buf(bufSize).txt() }
+        val sink = buildSink { pull(BlobReader(send)).seg(segSize).buf(bufSize).utf() }
 
         var index = 0
         receive.wrap {
@@ -201,7 +201,7 @@ abstract class AbstractPullTest {
         val witness = (latinLipsum + greekLipsum + chineseLipsum).toText().asBinary()
         val receive = binOf(send.sumOf { it.limit })
 
-        val sink = buildSink { pull(MultiBlobReader(send)).seg(segSize).buf(bufSize).txt() }
+        val sink = buildSink { pull(MultiBlobReader(send)).seg(segSize).buf(bufSize).utf() }
 
         var index = 0
         receive.wrap {
@@ -292,7 +292,7 @@ abstract class AbstractPullTest {
 
         val receive = binOf(send.capacity)
 
-        val sink = buildSink { pull(BlobReader(send)).seg(segSize).buf(bufSize).txt() }
+        val sink = buildSink { pull(BlobReader(send)).seg(segSize).buf(bufSize).utf() }
 
         var index = 0
         receive.wrap {

@@ -20,8 +20,8 @@ import org.angproj.aux.io.TypeSize
 import org.angproj.aux.util.NumberAware
 
 public class BinarySink(
-    pipe: PullPipe<BinaryType>
-): AbstractSink<BinaryType>(pipe)/*, BinaryType*/, BinaryReadable/*, NumberAware*/ {
+    pipe: PullPipe
+): AbstractSink<BinaryType>(pipe), BinaryReadable {
 
     private inline fun <reified E : Any> buildFromSegment(length: Int): Long {
         var value = 0L

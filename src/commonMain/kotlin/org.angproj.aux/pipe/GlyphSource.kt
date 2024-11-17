@@ -14,4 +14,18 @@
  */
 package org.angproj.aux.pipe
 
-public interface TextType: PipeType
+import org.angproj.aux.io.GlyphWritable
+import org.angproj.aux.util.CodePoint
+import org.angproj.aux.util.withUnicodeAware
+
+
+public class GlyphSource(
+    pipe: PushPipe
+): AbstractSource<GlyphType>(pipe), GlyphWritable {
+    override fun writeGlyph(codePoint: CodePoint): Int = withUnicodeAware {
+        writeGlyphStrm(codePoint) {
+            if(pos == seg.limit) pushSegment<Unit>()
+            seg.setByte(pos++, it)
+        }
+    }
+}

@@ -22,7 +22,9 @@ import org.angproj.aux.pkg.coll.ObjectType
 
 public class PackageSource(
     private val src: BinarySource
-): Source<PackageType>/*, PackageType*/, PackageWritable {
+): Source<PackageType>, PackageWritable {
+
+    public constructor(pipe: PushPipe) : this(BinarySource(pipe))
 
     override val count: Long
         get() = src.count

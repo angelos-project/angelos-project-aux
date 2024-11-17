@@ -14,18 +14,38 @@
  */
 package org.angproj.aux.pipe
 
+import org.angproj.aux.buf.TextBuffer
 import org.angproj.aux.io.TextReadable
+import org.angproj.aux.utf.Ascii
 import org.angproj.aux.util.CodePoint
-import org.angproj.aux.util.withUnicodeAware
+import org.angproj.aux.util.toCodePoint
 
 public class TextSink(
-    pipe: PullPipe<TextType>
-): AbstractSink<TextType>(pipe)/*, TextType*/, TextReadable {
+    private val sink: GlyphSink
+): Sink<TextType>, TextReadable {
 
-    override fun readGlyph(): CodePoint = withUnicodeAware {
-        readGlyphStrm {
-            if(pos == seg.limit) pullSegment<Unit>()
-            seg.getByte(pos++)
-        }
+    public constructor(pipe: PullPipe) : this(GlyphSink(pipe))
+
+    override val count: Long
+        get() = sink.count
+
+    override fun isOpen(): Boolean = sink.isOpen()
+
+    override fun close(): Unit = sink.close()
+
+    public fun readLine(text: TextBuffer): Int = readLine(text, Ascii.CTRL_LF.cp.toCodePoint())
+
+    public fun readLine(text: TextBuffer, newLine: CodePoint): Int {
+        var cnt = 0
+        do {
+            val cp = sink.readGlyph()
+            cnt++
+            text.writeGlyph(cp)
+        } while (cp != newLine && text.position < text.limit)
+        return cnt
+    }
+
+    override fun read(): CodePoint {
+        TODO("Not yet implemented")
     }
 }

@@ -19,7 +19,7 @@ import org.angproj.aux.buf.asBinary
 import org.angproj.aux.buf.wrap
 import org.angproj.aux.io.*
 import org.angproj.aux.pipe.Pipe
-import org.angproj.aux.pipe.TextSink
+import org.angproj.aux.pipe.GlyphSink
 import org.angproj.aux.util.Hex
 import kotlin.math.min
 
@@ -48,7 +48,7 @@ public class HexDecoder /*: Decoder<TextBuffer, Binary>*/ {
         error("Invalid Hex value before position " + data.position)
     }
 
-    private inline fun <reified E: Any> invalidHex(pipe: TextSink): E {
+    private inline fun <reified E: Any> invalidHex(pipe: GlyphSink): E {
         pipe.close()
         error("Invalid Hex value at position " + (pipe.count - 1))
     }

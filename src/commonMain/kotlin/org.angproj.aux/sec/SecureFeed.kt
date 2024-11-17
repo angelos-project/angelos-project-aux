@@ -40,12 +40,12 @@ public object SecureFeed : AbstractSponge512(), PumpReader, Reader {
 
     override val outputStale: Boolean = false
 
-    private val sink: BinarySink = PullPipe<BinaryType>(
+    private val sink: BinarySink = PullPipe(
         Default,
         PumpSource(SecureEntropy),
         DataSize._32B,
         DataSize._32B
-    ).getSink()
+    ).getBinSink()
 
     init {
         require(SecureEntropy.byteSize == DataSize._32B.size)

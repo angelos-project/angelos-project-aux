@@ -12,12 +12,6 @@
  * Contributors:
  *      Kristoffer Paulsson - initial implementation
  */
-package org.angproj.aux.ui
+package org.angproj.aux.pipe
 
-
-public interface Padding : Measure {
-    public var left: Float
-    public var right: Float
-    public var top: Float
-    public var bottom: Float
-}
+public interface GlyphType: PipeType

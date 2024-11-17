@@ -218,4 +218,28 @@ class UnicodeAwareTest {
     fun testReconstructChineseStream() {
         reconstructStream(chineseLipsum)
     }
+
+    @Test
+    fun testIsStartGlyph() = withUnicodeAware{
+        assertTrue { isGlyphStart(ascii.first[0]) }
+        assertTrue { isGlyphStart(stigma.first[0]) }
+        assertTrue { isGlyphStart(radical.first[0]) }
+        assertTrue { isGlyphStart(emoji.first[0]) }
+
+        assertFalse { isGlyphStart(stigma.first[1]) }
+        assertFalse { isGlyphStart(radical.first[1]) }
+        assertFalse { isGlyphStart(emoji.first[1]) }
+    }
+
+    @Test
+    fun testHasGlyphSize() = withUnicodeAware{
+        assertEquals(hasGlyphSize(ascii.first[0]), 1)
+        assertEquals(hasGlyphSize(stigma.first[0]), 2)
+        assertEquals(hasGlyphSize(radical.first[0]), 3)
+        assertEquals(hasGlyphSize(emoji.first[0]), 4)
+
+        assertEquals(hasGlyphSize(stigma.first[1]), 0)
+        assertEquals(hasGlyphSize(radical.first[1]), 0)
+        assertEquals(hasGlyphSize(emoji.first[1]), 0)
+    }
 }

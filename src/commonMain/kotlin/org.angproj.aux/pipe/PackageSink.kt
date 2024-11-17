@@ -22,7 +22,9 @@ import org.angproj.aux.pkg.coll.ObjectType
 
 public class PackageSink(
     private val sink: BinarySink
-): Sink<PackageType>/*, PackageType*/, PackageReadable {
+): Sink<PackageType>, PackageReadable {
+
+    public constructor(pipe: PullPipe) : this(BinarySink(pipe))
 
     override val count: Long
         get() = sink.count

@@ -20,12 +20,12 @@ import org.angproj.aux.io.Segment
 import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.mem.MemoryManager
 
-public class PushPipe<T: PipeType>(
+public class PushPipe(
     memMgr: MemoryManager<*>,
-    public val sink: PumpSink<T>,
-    segSize: DataSize = DataSize._4K,
-    bufSize: DataSize = DataSize._32K
-): AbstractPipe<T>(segSize, bufSize, memMgr), Close {
+    public val sink: PumpSink,
+    segSize: DataSize,
+    bufSize: DataSize
+): AbstractPipe(segSize, bufSize, memMgr), Close {
 
     init {
         require(sink.isOpen()) { "A pipe must have an open sink" }
@@ -81,6 +81,6 @@ public class PushPipe<T: PipeType>(
     }
 }
 
-public fun PushPipe<TextType>.getSource(): TextSource = TextSource(this)
+public fun PushPipe.getTxtSource(): GlyphSource = GlyphSource(this)
 
-public fun PushPipe<BinaryType>.getSource(): BinarySource = BinarySource(this)
+public fun PushPipe.getBinSource(): BinarySource = BinarySource(this)

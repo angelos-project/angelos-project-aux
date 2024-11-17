@@ -22,7 +22,7 @@ import org.angproj.aux.util.withUnicodeAware
 public class BinaryWrapper(
     private val bin: Binary,
     private val offset: Int = 0
-): EndianAware, BinaryReadable, BinaryWritable, TextReadable, TextWritable {
+): EndianAware, BinaryReadable, BinaryWritable, GlyphReadable, GlyphWritable {
 
     init { positionAt(offset) }
 

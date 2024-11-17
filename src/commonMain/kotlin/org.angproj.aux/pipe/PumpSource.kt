@@ -17,9 +17,9 @@ package org.angproj.aux.pipe
 import org.angproj.aux.io.PumpReader
 import org.angproj.aux.io.Segment
 
-public class PumpSource<T: PipeType>(
+public class PumpSource(
     private val pump: PumpReader
-): Source<T>/*, PipeType*/  {
+): Source<Nothing>  {
     private var _open: Boolean = true
     private var _staleCnt: Int = 0
 

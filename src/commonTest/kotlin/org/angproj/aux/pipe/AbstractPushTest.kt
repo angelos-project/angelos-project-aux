@@ -141,7 +141,7 @@ abstract class AbstractPushTest {
 
         val receive = binOf(send.capacity)
 
-        val source = buildSource { push(BlobWriter(receive)).seg(segSize).buf(bufSize).txt() }
+        val source = buildSource { push(BlobWriter(receive)).seg(segSize).buf(bufSize).utf() }
 
         var index = 0
         send.wrap {
@@ -190,7 +190,7 @@ abstract class AbstractPushTest {
         val witness = (latinLipsum + greekLipsum + chineseLipsum).toText().asBinary()
         val receive = binOf(send.sumOf { it.limit })
 
-        val source = buildSource { push(BlobWriter(receive)).seg(segSize).buf(bufSize).txt() }
+        val source = buildSource { push(BlobWriter(receive)).seg(segSize).buf(bufSize).utf() }
 
 
         send.forEach {
@@ -295,7 +295,7 @@ abstract class AbstractPushTest {
 
         val receive = binOf(send.capacity)
 
-        val source = buildSource { push(BlobWriter(receive)).seg(segSize).buf(bufSize).txt() }
+        val source = buildSource { push(BlobWriter(receive)).seg(segSize).buf(bufSize).utf() }
 
         var index = 0
         send.wrap {
@@ -396,7 +396,7 @@ abstract class AbstractPushTest {
             binOf(send.capacity - (DataSize._2K.size + DataSize._512B.size))
         )
 
-        val source = buildSource { push(MultiBlobWriter(receive)).seg(DataSize._1K).buf(DataSize._2K).txt() }
+        val source = buildSource { push(MultiBlobWriter(receive)).seg(DataSize._1K).buf(DataSize._2K).utf() }
 
         var index = 0
         send.wrap {

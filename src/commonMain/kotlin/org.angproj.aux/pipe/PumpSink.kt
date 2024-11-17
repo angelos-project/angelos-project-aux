@@ -17,9 +17,9 @@ package org.angproj.aux.pipe
 import org.angproj.aux.io.PumpWriter
 import org.angproj.aux.io.Segment
 
-public class PumpSink<T: PipeType>(
+public class PumpSink(
     private val pump: PumpWriter
-): Sink<T>/*, PipeType*/  {
+): Sink<Nothing>  {
     private var _open: Boolean = true
     private var _staleCnt: Int = 0
 
