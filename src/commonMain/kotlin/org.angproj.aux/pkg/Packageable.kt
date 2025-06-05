@@ -16,11 +16,8 @@ package org.angproj.aux.pkg
 
 import org.angproj.aux.buf.*
 import org.angproj.aux.io.*
-import org.angproj.aux.num.BigInt
-import org.angproj.aux.pkg.arb.BigIntType
 import org.angproj.aux.pkg.arb.StringType
 import org.angproj.aux.pkg.arb.StructType
-import org.angproj.aux.pkg.arb.Uuid4Type
 import org.angproj.aux.pkg.coll.ArrayType
 import org.angproj.aux.pkg.coll.DictType
 import org.angproj.aux.pkg.coll.ListType
@@ -28,11 +25,9 @@ import org.angproj.aux.pkg.coll.ObjectType
 import org.angproj.aux.pkg.mem.*
 import org.angproj.aux.pkg.prime.*
 import org.angproj.aux.pkg.type.BlockType
-import org.angproj.aux.util.EndianAware
-import org.angproj.aux.util.Uuid4
 
 
-public interface Packageable : Enpackageable, Unpackageable, EndianAware, Comparable<Packageable> {
+public interface Packageable : Enpackageable, Unpackageable, Comparable<Packageable> {
 
     override fun enfold(outStream: BinaryWritable) { TODO("Not yet implemented") }
     override fun enfold(outData: Storable, offset: Int): Int { TODO("Not yet implemented") }
@@ -70,9 +65,9 @@ public interface Packageable : Enpackageable, Unpackageable, EndianAware, Compar
     public fun FoldFormat.sizeOf(value: ULongBuffer): Int = ULongArrayType(value).foldSize(this)
 
 
-    public fun FoldFormat.sizeOf(value: Uuid4): Int = Uuid4Type(value).foldSize(this)
+    //public fun FoldFormat.sizeOf(value: Uuid4): Int = Uuid4Type(value).foldSize(this)
     public fun FoldFormat.sizeOf(value: Text): Int = StringType(value).foldSize(this)
-    public fun FoldFormat.sizeOf(value: BigInt): Int = BigIntType(value).foldSize(this)
+    //public fun FoldFormat.sizeOf(value: BigInt): Int = BigIntType(value).foldSize(this)
 
     public fun <P: Packageable>FoldFormat.sizeOf(type: StructType<P>): Int = type.foldSize(this)
     public fun <P: Packageable>FoldFormat.sizeOf(type: ObjectType<P>): Int = type.foldSize(this)

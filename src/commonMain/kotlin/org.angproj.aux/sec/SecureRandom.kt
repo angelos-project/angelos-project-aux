@@ -15,10 +15,7 @@
 package org.angproj.aux.sec
 
 import org.angproj.aux.io.*
-import org.angproj.aux.mem.BufMgr
-import org.angproj.aux.mem.Default
 import org.angproj.aux.pipe.*
-import org.angproj.aux.util.chunkLoop
 import kotlin.native.concurrent.ThreadLocal
 
 /**
@@ -27,12 +24,14 @@ import kotlin.native.concurrent.ThreadLocal
 @ThreadLocal
 public object SecureRandom : BinaryReadable, PumpReader, Reader {
 
-    private val sink: BinarySink = PullPipe(
+    private val sink: BinarySink = buildSink { pull(SecureFeed).seg(DataSize._1K).buf(DataSize._1K).bin() }
+
+    /*private val sink: BinarySink = PullPipe(
         Default,
         PumpSource(SecureFeed),
         DataSize._1K,
         DataSize._1K
-    ).getBinSink()
+    ).getBinSink()*/
 
     override val count: Long
         get() = sink.count
@@ -64,13 +63,18 @@ public object SecureRandom : BinaryReadable, PumpReader, Reader {
     override fun readRevFloat(): Float = sink.readRevFloat()
     override fun readRevDouble(): Double = sink.readRevDouble()
 
-    override fun read(data: Segment<*>): Int = BufMgr.asWrap(data) {
-        val index = chunkLoop<Unit>(0, limit, Long.SIZE_BYTES) {
-            storeLong(it, readLong())
+    override fun read(data: Segment<*>): Int {
+        var index = 0
+        repeat(data.limit / TypeSize.long) {
+            data.setLong(index, sink.readLong())
+            index += TypeSize.long
         }
-        chunkLoop<Unit>(index, limit, Byte.SIZE_BYTES) {
-            storeByte(it, readByte())
-        }.also { _outputCnt += it }
+        repeat(data.limit % TypeSize.long) {
+            data.setByte(index, sink.readByte())
+            index++
+        }
+        _outputCnt += index
+        return index
     }
 
     override fun read(bin: Binary): Int = read(bin._segment)

@@ -16,13 +16,12 @@ package org.angproj.aux.pipe
 
 import org.angproj.aux.buf.TextBuffer
 import org.angproj.aux.io.TextReadable
-import org.angproj.aux.utf.Ascii
 import org.angproj.aux.util.CodePoint
-import org.angproj.aux.util.toCodePoint
+import org.angproj.aux.util.Measurable
 
 public class TextSink(
     private val sink: GlyphSink
-): Sink<TextType>, TextReadable {
+): Sink<TextType>, TextReadable, Measurable<PipeStats> {
 
     public constructor(pipe: PullPipe) : this(GlyphSink(pipe))
 
@@ -33,19 +32,28 @@ public class TextSink(
 
     override fun close(): Unit = sink.close()
 
-    public fun readLine(text: TextBuffer): Int = readLine(text, Ascii.CTRL_LF.cp.toCodePoint())
+    public override fun telemetry(): PipeStats = sink.telemetry()
+
+    override fun read(): CodePoint = sink.readGlyph()
+
+    override fun read(text: TextBuffer, offset: Int, length: Int): Int {
+        text.positionAt(offset)
+        var cnt = 0
+        try {
+            while(cnt < length) { cnt += text.write(sink.readGlyph()) }
+        } catch (_: IllegalStateException) {}
+        return cnt
+    }
+
+    /*public fun readLine(text: TextBuffer): Int = readLine(text, Ascii.CTRL_LF.cp.toCodePoint())
 
     public fun readLine(text: TextBuffer, newLine: CodePoint): Int {
         var cnt = 0
         do {
             val cp = sink.readGlyph()
             cnt++
-            text.writeGlyph(cp)
+            text.write(cp)
         } while (cp != newLine && text.position < text.limit)
         return cnt
-    }
-
-    override fun read(): CodePoint {
-        TODO("Not yet implemented")
-    }
+    }*/
 }

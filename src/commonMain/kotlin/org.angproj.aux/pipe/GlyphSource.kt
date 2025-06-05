@@ -16,16 +16,14 @@ package org.angproj.aux.pipe
 
 import org.angproj.aux.io.GlyphWritable
 import org.angproj.aux.util.CodePoint
-import org.angproj.aux.util.withUnicodeAware
+import org.angproj.aux.util.UnicodeAware
 
 
 public class GlyphSource(
     pipe: PushPipe
-): AbstractSource<GlyphType>(pipe), GlyphWritable {
-    override fun writeGlyph(codePoint: CodePoint): Int = withUnicodeAware {
-        writeGlyphStrm(codePoint) {
-            if(pos == seg.limit) pushSegment<Unit>()
-            seg.setByte(pos++, it)
-        }
+): AbstractSource<GlyphType>(pipe), GlyphWritable, UnicodeAware {
+    override fun writeGlyph(codePoint: CodePoint): Int = writeGlyphStrm(codePoint) {
+        if(pos == seg.limit) pushSegment<Unit>()
+        seg.setByte(pos++, it)
     }
 }

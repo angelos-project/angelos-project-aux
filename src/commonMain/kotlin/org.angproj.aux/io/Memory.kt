@@ -56,6 +56,8 @@ public expect open class Memory internal constructor(
     override fun setRevInt(index: Int, value: Int)
 
     override fun setRevLong(index: Int, value: Long)
+
+    override fun close()
 }
 
 /**

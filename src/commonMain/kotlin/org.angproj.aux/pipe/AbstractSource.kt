@@ -18,7 +18,7 @@ import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.isNull
 import org.angproj.aux.io.segment
-import org.angproj.aux.util.AbstractBufferAware
+import org.angproj.aux.util.UtilityAware
 import org.angproj.aux.util.Measurable
 import org.angproj.aux.util.NullObject
 import kotlin.time.TimeSource
@@ -26,7 +26,7 @@ import kotlin.time.TimeSource
 
 public abstract class AbstractSource<T: PipeType>(
     protected val pipe: PushPipe
-): AbstractBufferAware(), Source<T>, Measurable<PipeStats> {
+): UtilityAware, Source<T>, Measurable<PipeStats> {
 
     /**
      * The default [DataSize] of each segment used inside the pipe.

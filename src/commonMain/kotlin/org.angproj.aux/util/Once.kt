@@ -24,7 +24,7 @@ public class Once<E: Any> {
     public operator fun getValue(thisRef: Any, property: KProperty<*>): E = handle
 
     public operator fun setValue(thisRef: Any, property: KProperty<*>, value: E) {
-        if(::handle.isInitialized) throw IllegalStateException("Already initialized")
+        check(!::handle.isInitialized) { "Already initialized" }
         handle = value
     }
 

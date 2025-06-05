@@ -16,10 +16,14 @@ package org.angproj.aux.util
 
 import org.angproj.aux.io.View
 
-public interface Auto: View, Closable {
+public interface Auto: View, Closeable {
 }
 
 public inline fun<reified T: Auto, R> T.useWith(block: (T) -> R
 ): R {
-    return block(this).also { if(!isView() && isMem()) close() }
+   return try {
+        block(this)
+    } finally {
+        if(!isView() && isMem()) close()
+    }
 }

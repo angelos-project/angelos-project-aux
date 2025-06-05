@@ -14,11 +14,8 @@
  */
 package org.angproj.aux.io
 
-import org.angproj.aux.buf.TextBuffer
-import org.angproj.aux.utf.Ascii
+
 import org.angproj.aux.util.CodePoint
-import org.angproj.aux.util.Unicode
-import org.angproj.aux.util.toCodePoint
 
 public interface GlyphWritable {
     public fun writeGlyph(codePoint: CodePoint): Int

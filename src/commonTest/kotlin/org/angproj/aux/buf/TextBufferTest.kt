@@ -16,6 +16,8 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.TestInformationStub
 import org.angproj.aux.io.DataSize
+import org.angproj.aux.io.asBinary
+import org.angproj.aux.io.toText
 import org.angproj.aux.toTextBuffer
 import org.angproj.aux.util.readGlyphAt
 import kotlin.test.Test
@@ -32,7 +34,7 @@ class TextBufferTest : AbstractFlowBufferTest<TextBuffer>() {
         while (idx < lipsum.size) {
             val cp = lipsum.readGlyphAt(idx)
             idx += cp.octetSize()
-            buf.writeGlyph(cp)
+            buf.write(cp)
         }
 
         return buf
@@ -48,7 +50,7 @@ class TextBufferTest : AbstractFlowBufferTest<TextBuffer>() {
         while (idx < lipsum.size) {
             val cp = lipsum.readGlyphAt(idx)
             idx += cp.octetSize()
-            assertEquals(buf.readGlyph().value, cp.value)
+            assertEquals(buf.read().value, cp.value)
         }
     }
 
@@ -67,7 +69,7 @@ class TextBufferTest : AbstractFlowBufferTest<TextBuffer>() {
         while (idx < lipsum.size) {
             val cp = lipsum.readGlyphAt(idx)
             idx += cp.octetSize()
-            buf.writeGlyph(cp)
+            buf.write(cp)
         }
 
         buf.flip()
@@ -75,7 +77,7 @@ class TextBufferTest : AbstractFlowBufferTest<TextBuffer>() {
         while (idx < lipsum.size) {
             val cp = lipsum.readGlyphAt(idx)
             idx += cp.octetSize()
-            assertEquals(buf.readGlyph().value, cp.value)
+            assertEquals(buf.read().value, cp.value)
         }
     }
 
@@ -87,21 +89,49 @@ class TextBufferTest : AbstractFlowBufferTest<TextBuffer>() {
     }
 
     @Test
-    fun select() {
-        val buf = """本格表世向駐供暮基造食四検内協案。山文提議負表崎何九被博特止点関通写覧馬。会出週朝野加交伊再謝神年拡員部禁辺。
-府構供投十隊済参国拐政意紛集癒夜治和。陸規地景何守谷困乱青購謝輸。同極価売現近題日稿売報革衛月塁両改。禁消情飯治刊読救南毎番五掲田夫意鈴。
-手新市要所由州時青拳数子。党詳半前象写鐘木亡情強万構図天報。🤪""".toTextBuffer()
+    fun testRead() {
+        val short = TestInformationStub.lipsumShort
+        val text0 = TextBuffer(short.length)
+        text0.write(short)
+        text0.flip()
+        val text1 = TextBuffer(short.length)
+        text0.read(text1)
 
-        val txt = buf.toText()
-        assertEquals(buf._segment, txt._segment)
+        assertEquals(text0.asBinary(), text1.asBinary())
+    }
+
+
+    @Test
+    fun testWrite() {
+        val short = TestInformationStub.lipsumShort
+        val text = TextBuffer(short.length)
+        text.write(short)
+
+        assertEquals(short.toText().asBinary(), text.asBinary())
     }
 
     @Test
-    fun toText() {
-        val buf = setInput()
-        buf.flip()
-        val txt = buf.toText()
+    fun testWrite1() {
+        val short = TestInformationStub.lipsumShort
+        val text0 = TextBuffer(short.length)
+        text0.write(short)
+        val text1 = TextBuffer(short.length)
+        text1.write(text0)
 
-        assertEquals(buf._segment, txt._segment)
+        assertEquals(text0.asBinary(), text1.asBinary())
     }
+
+    /*@Test
+    fun writeLine() {
+        val short = TestInformationStub.lipsumShort.toText()
+        val text = TextBuffer(short.limit + 1)
+        text.writeLine(short)
+
+        val wrap = text.asBinary().asWrapped()
+        wrap.positionAt(text.limit-1)
+        assertEquals(wrap.readGlyph(), Ascii.CTRL_LF.cp.toCodePoint())
+
+        text.limitAt(text.capacity - 1)
+        assertEquals(short.asBinary(), text.asBinary())
+    }*/
 }

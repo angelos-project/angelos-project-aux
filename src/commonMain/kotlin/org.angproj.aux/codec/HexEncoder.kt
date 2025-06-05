@@ -18,8 +18,7 @@ import org.angproj.aux.buf.TextBuffer
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.pipe.Pipe
-import org.angproj.aux.util.Hex
-import org.angproj.aux.util.toCodePoint
+import org.angproj.aux.util.withUtility
 import kotlin.math.min
 
 
@@ -49,10 +48,10 @@ public class HexEncoder /*: Encoder<Binary, TextBuffer>*/ {
         val pipe = Pipe.buildBinaryPullPipe(BinaryBufferReader(data))
 
         do {
-            with(Hex) {
+            withUtility {
                 val octet = pipe.readByte()
-                tb.writeGlyph(octet.upperToHex<Int>().toCodePoint())
-                tb.writeGlyph(octet.lowerToHex<Int>().toCodePoint())
+                tb.write(octet.upperToHex())
+                tb.write(octet.lowerToHex())
             }
         } while(pipe.count < limit)
         pipe.close()

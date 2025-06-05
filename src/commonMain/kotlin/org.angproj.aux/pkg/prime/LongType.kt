@@ -18,10 +18,7 @@ import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
-import org.angproj.aux.pkg.Convention
-import org.angproj.aux.pkg.Enfoldable
-import org.angproj.aux.pkg.FoldFormat
-import org.angproj.aux.pkg.Unfoldable
+import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline

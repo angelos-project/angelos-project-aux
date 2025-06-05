@@ -16,7 +16,6 @@ package org.angproj.aux.pipe
 
 import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.util.NumberAware
 import kotlin.math.min
 
 public class BinarySource(
@@ -84,37 +83,37 @@ public class BinarySource(
 
     override fun writeByte(value: Byte): Unit = withSegmentByte<Unit>(value)
 
-    override fun writeUByte(value: UByte): Unit = withSegmentByte<Unit>(value.conv2B<Unit>())
+    override fun writeUByte(value: UByte): Unit = withSegmentByte<Unit>(value.conv2B())
 
     override fun writeShort(value: Short): Unit = withSegmentShort<Unit>(value)
 
-    override fun writeUShort(value: UShort): Unit = withSegmentShort<Unit>(value.conv2S<Unit>())
+    override fun writeUShort(value: UShort): Unit = withSegmentShort<Unit>(value.conv2S())
 
     override fun writeInt(value: Int): Unit = withSegmentInt<Unit>(value)
 
-    override fun writeUInt(value: UInt): Unit = withSegmentInt<Unit>(value.conv2I<Unit>())
+    override fun writeUInt(value: UInt): Unit = withSegmentInt<Unit>(value.conv2I())
 
     override fun writeLong(value: Long): Unit = withSegmentLong<Unit>(value)
 
-    override fun writeULong(value: ULong): Unit = withSegmentLong<Unit>(value.conv2L<Unit>())
+    override fun writeULong(value: ULong): Unit = withSegmentLong<Unit>(value.conv2L())
 
-    override fun writeFloat(value: Float): Unit = withSegmentInt<Unit>(value.conv2I<Unit>())
+    override fun writeFloat(value: Float): Unit = withSegmentInt<Unit>(value.conv2I())
 
-    override fun writeDouble(value: Double): Unit = withSegmentLong<Unit>(value.conv2L<Unit>())
+    override fun writeDouble(value: Double): Unit = withSegmentLong<Unit>(value.conv2L())
 
     override fun writeRevShort(value: Short): Unit = withSegmentRevShort<Unit>(value)
 
-    override fun writeRevUShort(value: UShort): Unit = withSegmentRevShort<Unit>(value.conv2S<Unit>())
+    override fun writeRevUShort(value: UShort): Unit = withSegmentRevShort<Unit>(value.conv2S())
 
     override fun writeRevInt(value: Int): Unit = withSegmentRevInt<Unit>(value)
 
-    override fun writeRevUInt(value: UInt): Unit = withSegmentRevInt<Unit>(value.conv2I<Unit>())
+    override fun writeRevUInt(value: UInt): Unit = withSegmentRevInt<Unit>(value.conv2I())
 
     override fun writeRevLong(value: Long): Unit = withSegmentRevLong<Unit>(value)
 
-    override fun writeRevULong(value: ULong): Unit = withSegmentRevLong<Unit>(value.conv2L<Unit>())
+    override fun writeRevULong(value: ULong): Unit = withSegmentRevLong<Unit>(value.conv2L())
 
-    override fun writeRevFloat(value: Float): Unit = withSegmentRevInt<Unit>(value.conv2I<Unit>())
+    override fun writeRevFloat(value: Float): Unit = withSegmentRevInt<Unit>(value.conv2I())
 
-    override fun writeRevDouble(value: Double): Unit = withSegmentRevLong<Unit>(value.conv2L<Unit>())
+    override fun writeRevDouble(value: Double): Unit = withSegmentRevLong<Unit>(value.conv2L())
 }

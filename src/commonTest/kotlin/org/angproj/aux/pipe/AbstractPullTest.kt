@@ -147,12 +147,12 @@ abstract class AbstractPullTest {
 
         val receive = binOf(send.capacity)
 
-        val sink = buildSink { pull(BlobReader(send)).seg(segSize).buf(bufSize).utf() }
+        val sink = buildSink { pull(BlobReader(send)).seg(segSize).buf(bufSize).txt() }
 
         var index = 0
         receive.wrap {
             while (index < receive.limit) {
-                val octet = sink.readGlyph()
+                val octet = sink.read()
                 writeGlyph(octet)
                 index += octet.octetSize()
             }
@@ -170,7 +170,7 @@ abstract class AbstractPullTest {
         receive.limitAt(send.limit)
         assertEquals(send.checkSum(), receive.checkSum())
 
-        assertFailsWith<PipeException> { sink.readGlyph() }
+        assertFailsWith<PipeException> { sink.read() }
 
         debug {
             println(sink.telemetry())
@@ -201,12 +201,12 @@ abstract class AbstractPullTest {
         val witness = (latinLipsum + greekLipsum + chineseLipsum).toText().asBinary()
         val receive = binOf(send.sumOf { it.limit })
 
-        val sink = buildSink { pull(MultiBlobReader(send)).seg(segSize).buf(bufSize).utf() }
+        val sink = buildSink { pull(MultiBlobReader(send)).seg(segSize).buf(bufSize).txt() }
 
         var index = 0
         receive.wrap {
             while (index < witness.limit) {
-                val octet = sink.readGlyph()
+                val octet = sink.read()
                 writeGlyph(octet)
                 index += octet.octetSize()
             }
@@ -223,7 +223,7 @@ abstract class AbstractPullTest {
         receive.limitAt(witness.limit)
         assertEquals(witness.checkSum(), receive.checkSum())
 
-        assertFailsWith<PipeException> { sink.readGlyph() }
+        assertFailsWith<PipeException> { sink.read() }
 
         debug {
             println(sink.telemetry())
@@ -292,12 +292,12 @@ abstract class AbstractPullTest {
 
         val receive = binOf(send.capacity)
 
-        val sink = buildSink { pull(BlobReader(send)).seg(segSize).buf(bufSize).utf() }
+        val sink = buildSink { pull(BlobReader(send)).seg(segSize).buf(bufSize).txt() }
 
         var index = 0
         receive.wrap {
             while (index < receive.limit) {
-                val octet = sink.readGlyph()
+                val octet = sink.read()
                 writeGlyph(octet)
                 index += octet.octetSize()
             }
@@ -312,14 +312,14 @@ abstract class AbstractPullTest {
         receive.limitAt(send.limit)
         assertEquals(send.checkSum(), receive.checkSum())
 
-        assertFailsWith<StaleException> { sink.readGlyph() }
-        assertFailsWith<StaleException> { sink.readGlyph() }
+        assertFailsWith<StaleException> { sink.read() }
+        assertFailsWith<StaleException> { sink.read() }
         assertTrue { sink.isOpen() } // Still open
         assertTrue { sink.telemetry().pumpOpen } // Still open
-        assertFailsWith<StaleException> { sink.readGlyph() }
+        assertFailsWith<StaleException> { sink.read() }
         assertFalse { sink.isOpen() }
         assertFalse { sink.telemetry().pumpOpen } // Closes on third strike
-        assertFailsWith<PipeException> { sink.readGlyph() }
+        assertFailsWith<PipeException> { sink.read() }
 
         debug {
             println(sink.telemetry())

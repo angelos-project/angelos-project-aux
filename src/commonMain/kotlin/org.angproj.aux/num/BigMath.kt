@@ -14,9 +14,7 @@
  */
 package org.angproj.aux.num
 
-import org.angproj.aux.util.BufferAware
-import org.angproj.aux.util.ExcHelper
-import org.angproj.aux.util.swapEndian
+import org.angproj.aux.util.UtilityAware
 
 public interface BigMath<E : List<Int>>: BigScope {
     public val mag: E
@@ -88,7 +86,7 @@ public interface BigMath<E : List<Int>>: BigScope {
         mag.indices.forEach { output.writeIntAt(it * 4, getIdx(mag.lastIndex - it).swapEndian()) }
         val keep = keep(output, sigNum)
 
-        if (keep == output.size) return 0
+        if (keep == output.size) return 1
 
         val prepend = sigNum.isNonNegative() == output[keep] < 0
         return when {
@@ -119,9 +117,7 @@ public interface BigMath<E : List<Int>>: BigScope {
         }
     }
 
-    public companion object: ExcHelper<BigMathException>, BufferAware {
-
-        override fun thrower(msg: String): BigMathException = BigMathException(msg)
+    public companion object: UtilityAware {
 
         public fun bitSizeForInt(n: Int): Int = Int.SIZE_BITS - n.countLeadingZeroBits()
 
@@ -157,7 +153,7 @@ public interface BigMath<E : List<Int>>: BigScope {
             value: ByteArray,
             build: (IntArray, BigSigned) -> T
         ): T {
-            req(value.isNotEmpty()) { "ByteArray must not be of zero length." }
+            if(!value.isNotEmpty()) throw BigMathException("ByteArray must not be of zero length.")
             val negative = value.first().toInt() < 0
 
             val sigNum = when (negative) {
@@ -237,7 +233,7 @@ public interface BigMath<E : List<Int>>: BigScope {
             value: IntArray,
             build: (IntArray, BigSigned) -> T
         ): T {
-            req(value.isNotEmpty()) { "IntArray must not be of zero length." }
+            if(value.isEmpty()) throw BigMathException("IntArray must not be of zero length.")
             val negative = value.first() < 0
 
             val sigNum = when (negative) {

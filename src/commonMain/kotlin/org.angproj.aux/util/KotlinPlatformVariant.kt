@@ -19,12 +19,18 @@ public enum class KotlinPlatformVariant(public val code: String) {
     NATIVE("Kotlin/Native"),
     JVM("Kotlin/Jvm"),
     JS("Kotlin/Js"),
-    WASM("Kotlin/Wasm");
+    WASM("Kotlin/WasmJs"),
+    WASI("Kotlin/WasmWasi");
 
     public companion object
 }
 
 public expect fun KotlinPlatformVariant.Companion.getVariant(): KotlinPlatformVariant
+
+public inline fun<reified E: Any> ifJvmOrNative(block: () -> E): E = when(KotlinPlatformVariant.getVariant()) {
+    KotlinPlatformVariant.JVM, KotlinPlatformVariant.NATIVE -> block()
+    else -> Unit as E
+}
 
 public inline fun<reified E: Any> ifNative(block: () -> E): E = when(KotlinPlatformVariant.getVariant()) {
     KotlinPlatformVariant.NATIVE -> block()
@@ -43,5 +49,10 @@ public inline fun<reified E: Any> ifJs(block: () -> E): E = when(KotlinPlatformV
 
 public inline fun<reified E: Any> ifNotJs(block: () -> E): E = when(KotlinPlatformVariant.getVariant()) {
     KotlinPlatformVariant.JS -> Unit as E
+    else -> block()
+}
+
+public inline fun<reified E: Any> ifNotJsOrWasm(block: () -> E): E = when(KotlinPlatformVariant.getVariant()) {
+    KotlinPlatformVariant.JS, KotlinPlatformVariant.WASM, KotlinPlatformVariant.WASI -> Unit as E
     else -> block()
 }

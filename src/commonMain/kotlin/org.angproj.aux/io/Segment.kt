@@ -17,18 +17,19 @@ package org.angproj.aux.io
 import org.angproj.aux.mem.Default
 import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.rand.InitializationVector
-import org.angproj.aux.util.AbstractBufferAware
+import org.angproj.aux.util.AbstractUtilityAware
 import org.angproj.aux.util.Copy
 import org.angproj.aux.util.NullObject
+import org.angproj.aux.util.TypePointer
 import kotlin.jvm.JvmStatic
 
 public abstract class Segment<S: Segment<S>>(
     size: Int, mem: MemoryManager<S>
-): AbstractBufferAware(), ByteString, Comparable<Segment<*>> {
+): AbstractUtilityAware(), ByteString, Comparable<Segment<*>> {
 
     protected val memCtx: MemoryManager<S> = mem
 
-    private var _closed = false
+    internal var _closed = false
 
     public open val isOpen: Boolean
         get() = !_closed
@@ -125,6 +126,11 @@ public abstract class Segment<S: Segment<S>>(
 
     public override operator fun compareTo(other: Segment<*>): Int { return hashCode() - other.hashCode() }
 
+    public fun address(): TypePointer = when {
+        isOpen && this is Memory -> TypePointer(data.ptr)
+        else -> error("Invalid pointer")
+    }
+
     public companion object {
         @Deprecated("No use")
         @JvmStatic
@@ -169,6 +175,11 @@ public fun<S: Segment<S>> S.copyOfRange(
         this@copyOfRange.copyInto(this@apply, 0, fromIndex, toIndex) }
 
 public fun<S: Segment<S>> S.copyOf(): Bytes = copyOfRange(0, limit)
+
+/*public fun<S: Segment<S>> S.address(): TypePointer = when {
+    isOpen && this is Memory -> TypePointer(data.ptr)
+    else -> throw SegmentException("Invalid pointer")
+}*/
 
 public fun Segment<*>.isNull(): Boolean = NullObject.segment === this
 

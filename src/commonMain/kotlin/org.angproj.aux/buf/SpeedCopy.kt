@@ -17,11 +17,11 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.Memory
 import org.angproj.aux.io.Segment
 import org.angproj.aux.res.speedMemCpy
-import org.angproj.aux.util.AbstractBufferAware
+import org.angproj.aux.util.UtilityAware
 import org.angproj.aux.util.Copy
 
 
-public abstract class SpeedCopy internal constructor(segment: Segment<*>): AbstractBufferAware() {
+public abstract class SpeedCopy internal constructor(segment: Segment<*>): UtilityAware {
     public abstract val capacity: Int
     public abstract val limit: Int
     internal val _segment: Segment<*> = segment

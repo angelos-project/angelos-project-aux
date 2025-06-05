@@ -17,7 +17,6 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.Default
 import org.angproj.aux.util.NullObject
-import org.angproj.aux.util.NumberAware
 
 
 public class FloatBuffer internal constructor(
@@ -30,10 +29,10 @@ public class FloatBuffer internal constructor(
 
     override fun create(segment: Segment<*>): FloatBuffer = FloatBuffer(segment)
 
-    override fun get(index: Int): Float = _segment.getInt(index * TypeSize.float).conv2F<Unit>()
+    override fun get(index: Int): Float = _segment.getInt(index * TypeSize.float).conv2F()
 
     override fun set(index: Int, value: Float) {
-        _segment.setInt(index * TypeSize.float, value.conv2I<Unit>())
+        _segment.setInt(index * TypeSize.float, value.conv2I())
     }
 }
 

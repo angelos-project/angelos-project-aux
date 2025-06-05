@@ -16,16 +16,14 @@ package org.angproj.aux.pipe
 
 import org.angproj.aux.io.GlyphReadable
 import org.angproj.aux.util.CodePoint
-import org.angproj.aux.util.withUnicodeAware
+import org.angproj.aux.util.UnicodeAware
 
 public class GlyphSink(
     pipe: PullPipe
-): AbstractSink<GlyphType>(pipe), GlyphReadable {
+): AbstractSink<GlyphType>(pipe), GlyphReadable, UnicodeAware {
 
-    override fun readGlyph(): CodePoint = withUnicodeAware {
-        readGlyphStrm {
+    override fun readGlyph(): CodePoint = readGlyphStrm {
             if(pos == seg.limit) pullSegment<Unit>()
             seg.getByte(pos++)
         }
-    }
 }

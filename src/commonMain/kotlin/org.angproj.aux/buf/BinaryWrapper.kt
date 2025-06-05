@@ -16,15 +16,13 @@ package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
 import org.angproj.aux.util.CodePoint
-import org.angproj.aux.util.EndianAware
-import org.angproj.aux.util.withUnicodeAware
+import org.angproj.aux.util.UtilityAware
+import org.angproj.aux.util.withUnicode
 
 public class BinaryWrapper(
     private val bin: Binary,
     private val offset: Int = 0
-): EndianAware, BinaryReadable, BinaryWritable, GlyphReadable, GlyphWritable {
-
-    init { positionAt(offset) }
+): UtilityAware, BinaryReadable, BinaryWritable, GlyphReadable, GlyphWritable {
 
     private var _innerOffset: Int = offset
     private var _count: Long = 0
@@ -37,6 +35,9 @@ public class BinaryWrapper(
     private var _position: Int = 0
     public val position: Int
         get() = _position
+
+    // The init{} is moved down because of error in IR for JS
+    init { positionAt(offset) }
 
     public fun positionAt(newPos: Int) {
         //require(newPos in 0..bin.limit)
@@ -97,11 +98,11 @@ public class BinaryWrapper(
 
     public operator fun<E: Any> invoke(block: BinaryWrapper.() -> E): E = this.block()
 
-    override fun readGlyph(): CodePoint = withUnicodeAware {
+    override fun readGlyph(): CodePoint = withUnicode {
         readGlyphStrm { bin.retrieveByte(_position++) }
     }
 
-    override fun writeGlyph(codePoint: CodePoint): Int = withUnicodeAware {
+    override fun writeGlyph(codePoint: CodePoint): Int = withUnicode {
         writeGlyphStrm(codePoint) { bin.storeByte(_position++, it) }
     }
 }

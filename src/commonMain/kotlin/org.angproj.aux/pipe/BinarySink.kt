@@ -17,7 +17,6 @@ package org.angproj.aux.pipe
 import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.TypeBits
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.util.NumberAware
 
 public class BinarySink(
     pipe: PullPipe
@@ -69,37 +68,37 @@ public class BinarySink(
 
     override fun readByte(): Byte = withSegmentByte<Unit>()
 
-    override fun readUByte(): UByte = withSegmentByte<Unit>().conv2uB<Unit>()
+    override fun readUByte(): UByte = withSegmentByte<Unit>().conv2uB()
 
     override fun readShort(): Short = withSegmentShort<Unit>()
 
-    override fun readUShort(): UShort = withSegmentShort<Unit>().conv2uS<Unit>()
+    override fun readUShort(): UShort = withSegmentShort<Unit>().conv2uS()
 
     override fun readInt(): Int = withSegmentInt<Unit>()
 
-    override fun readUInt(): UInt = withSegmentInt<Unit>().conv2uI<Unit>()
+    override fun readUInt(): UInt = withSegmentInt<Unit>().conv2uI()
 
     override fun readLong(): Long = withSegmentLong<Unit>()
 
-    override fun readULong(): ULong = withSegmentLong<Unit>().conv2uL<Unit>()
+    override fun readULong(): ULong = withSegmentLong<Unit>().conv2uL()
 
-    override fun readFloat(): Float = withSegmentInt<Unit>().conv2F<Unit>()
+    override fun readFloat(): Float = withSegmentInt<Unit>().conv2F()
 
-    override fun readDouble(): Double = withSegmentLong<Unit>().conv2D<Unit>()
+    override fun readDouble(): Double = withSegmentLong<Unit>().conv2D()
 
     override fun readRevShort(): Short = withSegmentRevShort<Unit>()
 
-    override fun readRevUShort(): UShort = withSegmentRevShort<Unit>().conv2uS<Unit>()
+    override fun readRevUShort(): UShort = withSegmentRevShort<Unit>().conv2uS()
 
     override fun readRevInt(): Int = withSegmentRevInt<Unit>()
 
-    override fun readRevUInt(): UInt = withSegmentRevInt<Unit>().conv2uI<Unit>()
+    override fun readRevUInt(): UInt = withSegmentRevInt<Unit>().conv2uI()
 
     override fun readRevLong(): Long = withSegmentRevLong<Unit>()
 
-    override fun readRevULong(): ULong = withSegmentRevLong<Unit>().conv2uL<Unit>()
+    override fun readRevULong(): ULong = withSegmentRevLong<Unit>().conv2uL()
 
-    override fun readRevFloat(): Float = withSegmentRevInt<Unit>().conv2F<Unit>()
+    override fun readRevFloat(): Float = withSegmentRevInt<Unit>().conv2F()
 
-    override fun readRevDouble(): Double = withSegmentRevLong<Unit>().conv2D<Unit>()
+    override fun readRevDouble(): Double = withSegmentRevLong<Unit>().conv2D()
 }

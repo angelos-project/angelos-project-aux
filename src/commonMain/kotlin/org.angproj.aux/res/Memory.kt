@@ -21,6 +21,13 @@ import org.angproj.aux.util.*
 public expect class Memory: Copyable, Cleanable {
     public val size: Int
     public val ptr: Long
+    override val limit: Int
+
+    override fun getLong(index: Int): Long
+    override fun getByte(index: Int): Byte
+    override fun setLong(index: Int, value: Long)
+    override fun setByte(index: Int, value: Byte)
+    override fun dispose()
 }
 
 public expect fun allocateMemory(size: Int): Memory

@@ -15,7 +15,7 @@
 package org.angproj.aux.buf
 
 import org.angproj.aux.io.*
-import org.angproj.aux.util.BufferAware
+import org.angproj.aux.util.UtilityAware
 import org.angproj.aux.util.Copy
 import org.angproj.aux.util.Copyable
 
@@ -134,7 +134,7 @@ public abstract class FlowBuffer protected constructor(
 public fun FlowBuffer.toByteArray(): ByteArray = object : Copy {
     operator fun invoke(): ByteArray {
         check(_segment.isOpen) { "Closed memory" }
-        val dst = object : Copyable, BufferAware {
+        val dst = object : Copyable, UtilityAware {
             override val limit: Int = this@toByteArray.limit - this@toByteArray.mark
             val outArr = ByteArray(limit)
 

@@ -14,10 +14,14 @@
  */
 package org.angproj.aux.util
 
-import kotlin.experimental.ExperimentalNativeApi
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.staticCFunction
+import platform.posix.atexit
 
-@OptIn(ExperimentalNativeApi::class)
-internal actual fun getCurrentEndian(): Endian = when(Platform.isLittleEndian) {
-    true -> Endian.LITTLE
-    else -> Endian.BIG
+
+internal fun finalizeDispose() { Finalizer.dispose() }
+
+@OptIn(ExperimentalForeignApi::class)
+internal actual fun finalizeSetup() {
+    atexit(staticCFunction(::finalizeDispose))
 }

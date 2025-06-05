@@ -17,7 +17,7 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.Segment
 import org.angproj.aux.io.TypeSize
 import org.angproj.aux.io.segment
-import org.angproj.aux.util.BufferAware
+import org.angproj.aux.util.UtilityAware
 import org.angproj.aux.util.Copy
 import org.angproj.aux.util.Copyable
 import org.angproj.aux.util.NullObject
@@ -58,7 +58,7 @@ public abstract class ArrayBuffer<E> protected constructor(
 public fun <E: Any, T: ArrayBuffer<E>>T.toByteArray(): ByteArray = object : Copy {
     operator fun invoke(): ByteArray {
         check(_segment.isOpen) { "Closed memory" }
-        val dst = object : Copyable, BufferAware {
+        val dst = object : Copyable, UtilityAware {
             override val limit: Int = this@toByteArray.limit
             val outArr = ByteArray(limit)
 

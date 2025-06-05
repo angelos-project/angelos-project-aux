@@ -14,10 +14,11 @@
  */
 package org.angproj.aux.buf
 
+import org.angproj.aux.util.UtilityAware
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-abstract class AbstractBufferTest<E: Buffer> {
+abstract class AbstractBufferTest<E: Buffer>: UtilityAware {
 
     protected abstract fun setInput(): E
 

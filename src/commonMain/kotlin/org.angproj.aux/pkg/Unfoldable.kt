@@ -17,12 +17,13 @@ package org.angproj.aux.pkg
 import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.pkg.arb.StructType
-import org.angproj.aux.util.EndianAwareContext.asBig
+import org.angproj.aux.util.UtilityAware
+
 
 public interface Unfoldable<E : Enfoldable> {
     public val foldFormatSupport: List<FoldFormat>
 
-    public val conventionType: Convention
+    public val conventionType: Convention //Pair<Short, Byte> // Convention
 
     public val atomicSize: Int
 
@@ -46,7 +47,7 @@ public interface Unfoldable<E : Enfoldable> {
         throw UnsupportedOperationException()
     }
 
-    public companion object {
+    public companion object: UtilityAware {
 
         public fun getType(inStream: BinaryReadable, type: Convention): Boolean = inStream.readShort() == type.type
 
@@ -58,7 +59,7 @@ public interface Unfoldable<E : Enfoldable> {
 
         public fun getItem(inData: Retrievable, offset: Int = 0): Int = inData.retrieveInt(offset)
 
-        public fun getCheck(inStream: BinaryReadable): Long = inStream.readLong().asBig()
+        public fun getCheck(inStream: BinaryReadable): Long = inStream.readLong().asNet()
 
         public fun getLength(inStream: BinaryReadable): Int = inStream.readInt()
 

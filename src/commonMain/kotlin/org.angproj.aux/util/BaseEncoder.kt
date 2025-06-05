@@ -68,7 +68,7 @@ public class BaseEncoder : Encoder<Binary, Text> {
             this.wrap {
                 var idx = 0
                 while(idx < len) {
-                    writeInt(convertLE<Unit>(data.getInt(idx).asBig() ushr 8))
+                    writeInt(convertLE<Unit>(data.getInt(idx).asNet() ushr 8))
                     idx += 3
                 }
                 when (data.limit - idx) {

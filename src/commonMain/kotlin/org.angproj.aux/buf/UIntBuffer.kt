@@ -17,7 +17,6 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.Default
 import org.angproj.aux.util.NullObject
-import org.angproj.aux.util.NumberAware
 
 
 public class UIntBuffer internal constructor(
@@ -30,10 +29,10 @@ public class UIntBuffer internal constructor(
 
     override fun create(segment: Segment<*>): UIntBuffer = UIntBuffer(segment)
 
-    override fun get(index: Int): UInt = _segment.getInt(index * TypeSize.uInt).conv2uI<Unit>()
+    override fun get(index: Int): UInt = _segment.getInt(index * TypeSize.uInt).conv2uI()
 
     override fun set(index: Int, value: UInt) {
-        _segment.setInt(index * TypeSize.uInt, value.conv2I<Unit>())
+        _segment.setInt(index * TypeSize.uInt, value.conv2I())
     }
 }
 

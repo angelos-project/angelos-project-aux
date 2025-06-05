@@ -15,42 +15,16 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.buf.TextBuffer
-import org.angproj.aux.utf.Ascii
 import org.angproj.aux.util.CodePoint
-import org.angproj.aux.util.Unicode
-import org.angproj.aux.util.toCodePoint
 
 public interface TextWritable {
     public fun write(codePoint: CodePoint): Int
 
-    public fun write(str: String): Int {
-        var cnt = 0
-        Unicode.importUnicode(str) {
-            write(it)
-            cnt++
-        }
-        return cnt
-    }
+    public fun write(str: String): Int
 
-    public fun write(text: TextBuffer, offset: Int, count: Int): Int {
-        var cnt = 0
-        text.markAt() // Fix tomorrow
-        while(text.position < text.limit && cnt < count) {
-            this@TextWritable.write(text.readGlyph())
-            cnt++
-        }
-        return cnt
-    }
+    public fun write(txt: Text): Int
 
-    public fun write(text: TextBuffer): Int { return write(text.readGlyph()) } // FIX
+    public fun write(text: TextBuffer): Int = write(text, 0, text.limit)
 
-    public fun writeLine(text: Text, newLine: CodePoint = Ascii.CTRL_LF.cp.toCodePoint()): Int {
-        var cnt = 0
-        text.firstOrNull {
-            this@TextWritable.write(it)
-            cnt++
-            it == newLine
-        } ?: this@TextWritable.write(newLine).also { cnt++ }
-        return cnt
-    }
+    public fun write(text: TextBuffer, offset: Int, length: Int): Int
 }

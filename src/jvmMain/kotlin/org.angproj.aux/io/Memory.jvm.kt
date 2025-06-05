@@ -22,9 +22,7 @@ import org.angproj.aux.res.Memory as Chunk
 import sun.misc.Unsafe
 import java.lang.ref.Cleaner.Cleanable
 
-@Suppress(
-    "EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING",
-)
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual open class Memory internal actual constructor(
     size: Int, mem: MemoryManager<Memory>
 ) : AbstractMemory(size, mem) {
@@ -38,9 +36,9 @@ public actual open class Memory internal actual constructor(
     protected val ptr: Long = data.ptr
 
     private val cleanable: Cleanable = Manager.cleaner.register(this) { data.dispose() }
-    override fun close() {
+    actual override fun close() {
         super.close {
-            cleanable.clean()
+            //cleanable.clean() // Always let the memory manager deal with this
             memCtx.recycle(this)
         }
     }

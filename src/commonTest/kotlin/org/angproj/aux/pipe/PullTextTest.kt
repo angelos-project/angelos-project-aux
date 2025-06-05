@@ -17,6 +17,8 @@ package org.angproj.aux.pipe
 import org.angproj.aux.TestInformationStub.chineseLipsum
 import org.angproj.aux.TestInformationStub.greekLipsum
 import org.angproj.aux.TestInformationStub.latinLipsum
+import org.angproj.aux.buf.TextBuffer
+import org.angproj.aux.buf.asBinary
 import org.angproj.aux.io.*
 import org.angproj.aux.util.writeGlyphAt
 import kotlin.math.min
@@ -135,5 +137,20 @@ class PullTextTest : AbstractPullTest() {
         assertFailsWith<StaleException> { readable.readGlyph() }
         assertFalse { readable.isOpen() } // Closes on third strike
         assertFailsWith<PipeException> { readable.readGlyph() }
+    }
+
+    /**
+     * Testing the TextReadable implementation
+     * */
+    @Test
+    fun testRead() {
+        val text = chineseLipsum.toText()
+        val copy = TextBuffer(text.limit)
+
+        val sink = buildSink { pull(BlobReader(text.asBinary())).txt() }
+        sink.read(copy)
+        sink.close()
+
+        assertEquals(text.asBinary(), copy.asBinary())
     }
 }

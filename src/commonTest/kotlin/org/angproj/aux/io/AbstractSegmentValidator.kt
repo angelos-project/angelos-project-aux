@@ -15,13 +15,12 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.util.BinHex
-import org.angproj.aux.util.BufferAware
-import kotlin.test.Test
+import org.angproj.aux.util.UtilityAware
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
-abstract class AbstractSegmentValidator: BufferAware {
+abstract class AbstractSegmentValidator: UtilityAware {
 
     val arr1 = ByteArray(DataSize._128B.size) { (-it - 1).toByte() } // From -1 to -128
     val arr2 = ByteArray(DataSize._64B.size) { it.toByte() } // From 0 to 63
@@ -231,8 +230,11 @@ abstract class AbstractSegmentValidator: BufferAware {
         (0 until seg2.size).forEach {
             assertEquals(seg2.getByte(it), arr2[it]) }
 
+
+        // This fails to test under Js/Wasm
         // Prove that a chunk is fully saturated as the reflecting array
         assertFails { println(arr1[seg1.size]) }
+
 
         // Copy chunk 2 into the middle of chunk 1
         (32 until 48).forEach { idx ->

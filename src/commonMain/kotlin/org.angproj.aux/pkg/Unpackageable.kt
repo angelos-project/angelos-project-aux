@@ -83,9 +83,9 @@ public interface Unpackageable {
     public fun BinaryReadable.loadULongArray(value: ULongBuffer): Unit = ULongArrayType.unfoldFromStream(this, value)
 
 
-    public fun BinaryReadable.loadUuid4(): Uuid4 = Uuid4Type.unfoldStream(this).value
+    //public fun BinaryReadable.loadUuid4(): Uuid4 = Uuid4Type.unfoldStream(this).value
     public fun BinaryReadable.loadString(): Text = StringType.unfoldStream(this).value
-    public fun BinaryReadable.loadBigInt(): BigInt = BigIntType.unfoldStream(this).value
+    //public fun BinaryReadable.loadBigInt(): BigInt = BigIntType.unfoldStream(this).value
 
     public fun BinaryReadable.loadStruct(): StructType<*> = StructType.unfoldStream(this)
     public fun BinaryReadable.loadObject(): ObjectType<*> = ObjectType.unfoldStream(this)

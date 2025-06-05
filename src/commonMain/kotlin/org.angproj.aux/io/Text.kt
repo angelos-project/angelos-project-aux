@@ -20,38 +20,62 @@ import org.angproj.aux.util.*
 
 
 public class Text internal constructor(
-     segment: Segment<*>, view: Boolean = false
-) : MemBlock(segment, view), TextRetrievable, TextStorable, Iterable<CodePoint> {
+    segment: Segment<*>, view: Boolean = false
+) : MemBlock(segment, view), TextRetrievable, TextStorable, Iterable<CodePoint>, UnicodeAware {
 
     //public constructor(size: Int) : this(Bytes(size))
 
     //public constructor(size: DataSize = DataSize._4K) : this(size.size)
 
-    override fun iterator(): Iterator<CodePoint> = object: Iterator<CodePoint> {
+    public fun count(): Int {
+        var cnt = 0
+        var idx = 0
+        while (idx < limit) {
+            idx = jumpNext(idx)
+            cnt++
+        }
+        return cnt
+    }
+
+    protected fun jumpNext(index: Int): Int {
+        val offset: Int = hasGlyphSize(_segment.getByte(index)) + index
+        return when {
+            offset > index -> offset
+            else -> error("Index not beginning of UTF-8 glyph.")
+        }
+    }
+
+    override fun iterator(): Iterator<CodePoint> = object : Iterator<CodePoint> {
         private var position = 0
         override fun hasNext(): Boolean = remaining<Int>(position) > 0
         override fun next(): CodePoint = this@Text.retrieveGlyph(position).also { position += it.octetSize() }
     }
 
-    override fun retrieveGlyph(position: Int): CodePoint = withUnicodeAware {
+    override fun retrieveGlyph(position: Int): CodePoint {
         var offset = position
-        readGlyphBlk(remaining<Int>(offset)) { _segment.getByte(offset++) } }
+        return readGlyphBlk(remaining<Int>(offset)) { _segment.getByte(offset++) }
+    }
 
-    override fun storeGlyph(position: Int, codePoint: CodePoint): Int = withUnicodeAware {
+    override fun storeGlyph(position: Int, codePoint: CodePoint): Int {
         var offset = position
-        writeGlyphBlk(codePoint, remaining<Int>(offset)) { _segment.setByte(offset++, it) } }
+        return writeGlyphBlk(codePoint, remaining<Int>(offset)) { _segment.setByte(offset++, it) }
+    }
 }
 
-public fun String.toText(): Text = BufMgr.txt(Unicode.importByteSize(this)).also { tb ->
-    var offset = 0
-    Unicode.importUnicode(this) { offset += tb.storeGlyph(offset, it) }
+public fun String.toText(): Text = withUnicode {
+    BufMgr.txt(importByteSize(this@toText)).also { tb ->
+        var offset = 0
+        importUnicode(this@toText) { offset += tb.storeGlyph(offset, it) }
+    }
 }
 
 public operator fun Text.plus(other: Text): MutableList<Text> = mutableListOf(this, other)
 
 public operator fun MutableList<Text>.plus(other: Text): MutableList<Text> = also { add(other) }
 
-public operator fun MutableList<Text>.plusAssign(other: Text) { add(other) }
+public operator fun MutableList<Text>.plusAssign(other: Text) {
+    add(other)
+}
 
 public fun List<Text>.toBinary(): Text {
     val out = BufMgr.txt(sumOf { it.limit })

@@ -14,6 +14,9 @@
  */
 package org.angproj.aux.pipe
 
+import org.angproj.aux.TestInformationStub.chineseLipsum
+import org.angproj.aux.buf.TextBuffer
+import org.angproj.aux.buf.asBinary
 import org.angproj.aux.buf.copyInto
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.BufMgr
@@ -91,5 +94,62 @@ class PushTextTest  : AbstractPushTest() {
     @Test
     override fun testPushBrokenPump() {
         pushTextBroken()
+    }
+
+    /**
+     * Testing the TextWritable implementation
+     *
+     * Writing a Java/Kotlin String
+     * */
+    @Test
+    fun testWrite() {
+        val size = chineseLipsum.encodeToByteArray().size
+        val text = binOf(size)
+
+        val source = buildSource { push(BlobWriter(text)).txt() }
+        source.write(chineseLipsum)
+        source.flush()
+        source.close()
+
+        assertEquals(text, chineseLipsum.toText().asBinary())
+    }
+
+    /**
+     * Testing the TextWritable implementation
+     *
+     * Writing a Text
+     * */
+    @Test
+    fun testWrite1() {
+        val size = chineseLipsum.encodeToByteArray().size
+        val copy = binOf(size)
+        val text = chineseLipsum.toText()
+
+        val source = buildSource { push(BlobWriter(copy)).txt() }
+        source.write(text)
+        source.flush()
+        source.close()
+
+        assertEquals(text.asBinary(), copy)
+    }
+
+    /**
+     * Testing the TextWritable implementation
+     *
+     * Writing a TextBuffer
+     * */
+    @Test
+    fun testWrite2() {
+        val size = chineseLipsum.encodeToByteArray().size
+        val copy = binOf(size)
+        val text = TextBuffer(size)
+        text.write(chineseLipsum)
+
+        val source = buildSource { push(BlobWriter(copy)).txt() }
+        source.write(text)
+        source.flush()
+        source.close()
+
+        assertEquals(text.asBinary(), copy)
     }
 }

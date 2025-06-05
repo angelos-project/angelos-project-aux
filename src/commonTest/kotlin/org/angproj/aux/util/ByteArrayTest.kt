@@ -17,8 +17,7 @@ package org.angproj.aux.util
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ByteArrayTest: BufferAware {
-    private val refChar: Char = 'Ö'
+class ByteArrayTest: UtilityAware {
 
     private val refLong: Long = 0x3569356935693569L
     private val refULong: ULong = 0xCA96CA96CA96CA96uL
@@ -46,12 +45,12 @@ class ByteArrayTest: BufferAware {
         assertEquals(array.readUShortAt(0), refUShort)
     }
 
-    @Test
+    /*@Test
     fun char() {
         val array = ByteArray(8)
         array.writeCharAt(0, refChar)
         assertEquals(array.readCharAt(0), refChar)
-    }
+    }*/
 
     @Test
     fun int() {

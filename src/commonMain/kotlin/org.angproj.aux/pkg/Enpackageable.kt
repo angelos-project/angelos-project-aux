@@ -70,9 +70,9 @@ public interface Enpackageable {
     public fun BinaryWritable.saveULongArray(value: ULongBuffer): Int = ULongArrayType(value).enfoldStream(this)
 
 
-    public fun BinaryWritable.saveUuid4(value: Uuid4): Int = Uuid4Type(value).enfoldStream(this)
+    //public fun BinaryWritable.saveUuid4(value: Uuid4): Int = Uuid4Type(value).enfoldStream(this)
     public fun BinaryWritable.saveString(value: Text): Int = StringType(value).enfoldStream(this)
-    public fun BinaryWritable.saveBigInt(value: BigInt): Int = BigIntType(value).enfoldStream(this)
+    //public fun BinaryWritable.saveBigInt(value: BigInt): Int = BigIntType(value).enfoldStream(this)
 
     public fun <P: Packageable>BinaryWritable.saveStruct(type: StructType<P>): Int =
         type.enfoldStream(this)
@@ -130,8 +130,8 @@ public interface Enpackageable {
     public fun StorageIter.saveULongArray(value: ULongBuffer): Int =
         ULongArrayType(value).enfoldBlock(storage, index).also { index += it }
 
-    public fun StorageIter.saveUuid4(value: Uuid4): Int = Uuid4Type(
-        value).enfoldBlock(storage, index).also { index += it }
+    /*public fun StorageIter.saveUuid4(value: Uuid4): Int = Uuid4Type(
+        value).enfoldBlock(storage, index).also { index += it }*/
     public fun <P : Packageable>StorageIter.saveArray(value: Array<P>): Int = ArrayType(
         value).enfoldBlock(storage, index).also { index += it }
 

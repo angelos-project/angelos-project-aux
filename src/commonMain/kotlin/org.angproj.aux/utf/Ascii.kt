@@ -14,6 +14,7 @@
  */
 package org.angproj.aux.utf
 
+
 public enum class Ascii(public val cp: Int) {
     CTRL_NUL(0x00),
     CTRL_SOH(0x01),

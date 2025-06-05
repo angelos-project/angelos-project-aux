@@ -17,7 +17,6 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.Default
 import org.angproj.aux.util.NullObject
-import org.angproj.aux.util.NumberAware
 
 
 public class DoubleBuffer internal constructor(
@@ -30,10 +29,10 @@ public class DoubleBuffer internal constructor(
 
     override fun create(segment: Segment<*>): DoubleBuffer = DoubleBuffer(segment)
 
-    override fun get(index: Int): Double = _segment.getLong(index * TypeSize.long).conv2D<Unit>()
+    override fun get(index: Int): Double = _segment.getLong(index * TypeSize.long).conv2D()
 
     override fun set(index: Int, value: Double) {
-        _segment.setLong(index * TypeSize.long, value.conv2L<Unit>())
+        _segment.setLong(index * TypeSize.long, value.conv2L())
     }
 }
 

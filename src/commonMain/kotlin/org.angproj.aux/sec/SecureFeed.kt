@@ -14,10 +14,7 @@
  */
 package org.angproj.aux.sec
 
-import org.angproj.aux.buf.asWrapped
 import org.angproj.aux.io.*
-import org.angproj.aux.mem.BufMgr
-import org.angproj.aux.mem.Default
 import org.angproj.aux.pipe.*
 import org.angproj.aux.rand.AbstractSponge512
 import org.angproj.aux.util.floorMod
@@ -40,12 +37,14 @@ public object SecureFeed : AbstractSponge512(), PumpReader, Reader {
 
     override val outputStale: Boolean = false
 
-    private val sink: BinarySink = PullPipe(
+    private val sink: BinarySink = buildSink { pull(SecureEntropy).seg(DataSize._32B).buf(DataSize._32B).bin() }
+
+    /*private val sink: BinarySink = PullPipe(
         Default,
         PumpSource(SecureEntropy),
         DataSize._32B,
         DataSize._32B
-    ).getBinSink()
+    ).getBinSink()*/
 
     init {
         require(SecureEntropy.byteSize == DataSize._32B.size)
@@ -73,10 +72,13 @@ public object SecureFeed : AbstractSponge512(), PumpReader, Reader {
         require(length <= DataSize._8K.size) { "Length must not surpass 8 Kilobyte." }
     }
 
-    private fun fill(data: Segment<*>): Unit = BufMgr.asWrap(data) {
-        val writable = asWrapped()
+    private fun fill(data: Segment<*>) {
+        var index = 0
         repeat(data.limit / byteSize) {
-            repeat(visibleSize) { writable.writeLong(squeeze(it))}
+            repeat(visibleSize) {
+                data.setLong(index, squeeze(it))
+                index += TypeSize.long
+            }
             cycle()
         }
     }
@@ -85,8 +87,8 @@ public object SecureFeed : AbstractSponge512(), PumpReader, Reader {
         require(data.limit)
         revitalize()
         fill(data)
-        _count += data.size
-        return data.size
+        _count += data.limit
+        return data.limit
     }
 
     override fun read(bin: Binary): Int = read(bin._segment)

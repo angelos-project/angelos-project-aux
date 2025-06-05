@@ -17,6 +17,7 @@ package org.angproj.aux.pkg.mem
 import org.angproj.aux.buf.FloatBuffer
 import org.angproj.aux.buf.isNull
 import org.angproj.aux.io.*
+import org.angproj.aux.pkg.ARRAY_FLOAT
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.FoldFormat
 import kotlin.jvm.JvmInline

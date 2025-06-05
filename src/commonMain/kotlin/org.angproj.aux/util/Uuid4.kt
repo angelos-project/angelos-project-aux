@@ -19,10 +19,8 @@ import org.angproj.aux.buf.wrap
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.rand.AbstractSmallRandom
-import org.angproj.aux.rand.InitializationVector
+import org.angproj.aux.rand.Entropy
 import org.angproj.aux.utf.Ascii
-import org.angproj.aux.util.Hex.lowerToHex
-import org.angproj.aux.util.Hex.upperToHex
 import kotlin.native.concurrent.ThreadLocal
 
 public class Uuid4(private val uuid: Binary) {
@@ -36,16 +34,18 @@ public class Uuid4(private val uuid: Binary) {
     }
 
     private val hex: Text by lazy {
-        BufMgr.txt(36).apply {
-            val text = asBinary().asWrapped()
-            val data = uuid.asWrapped()
-            val hyphen = Ascii.PRNT_HYPHEN.cp.toCodePoint()
-            var octet: Byte = 0
-            "10101010-1010-1010-1010-101010101010".forEach {
-                when (it) {
-                    '1' -> { octet = data.readByte(); text.writeGlyph(octet.upperToHex<Int>().toCodePoint()) }
-                    '0' -> text.writeGlyph(octet.lowerToHex<Int>().toCodePoint())
-                    else -> text.writeGlyph(hyphen)
+        withUtility {
+            BufMgr.txt(36).apply {
+                val text = asBinary().asWrapped()
+                val data = uuid.asWrapped()
+                val hyphen = Ascii.PRNT_HYPHEN.cp.toCodePoint()
+                var octet: Byte = 0
+                "10101010-1010-1010-1010-101010101010".forEach {
+                    when (it) {
+                        '1' -> { octet = data.readByte(); text.writeGlyph(octet.upperToHex()) }
+                        '0' -> text.writeGlyph(octet.lowerToHex())
+                        else -> text.writeGlyph(hyphen)
+                    }
                 }
             }
         }
@@ -68,14 +68,10 @@ public class Uuid4(private val uuid: Binary) {
 
     @ThreadLocal
     public companion object : AbstractSmallRandom(
-        binOf(16).also { InitializationVector.realTimeGatedEntropy(it) }
+        binOf(16).also { Entropy.realTimeGatedEntropy(it) }
     ), PumpReader {
 
         private var counter: Long = 0
-
-        init {
-            revitalize()
-        }
 
         private var _count: Long = 0
         override val outputCount: Long
@@ -85,12 +81,15 @@ public class Uuid4(private val uuid: Binary) {
 
         private fun revitalize() {
             binOf(16).useWith {
-                InitializationVector.realTimeGatedEntropy(it)
+                Entropy.realTimeGatedEntropy(it)
                 reseed(it)
                 _count += counter
                 counter = 0
             }
         }
+
+        // The init{} is moved down because of error in IR for JS
+        init { revitalize() }
 
         private fun generate(): Binary {
             if (counter >= Int.MAX_VALUE) revitalize()
@@ -98,8 +97,8 @@ public class Uuid4(private val uuid: Binary) {
 
             return binOf(16).wrap {
                 writeInt(round())
-                writeInt(((round().toLong() and 0xffff0fff) or 0x4000).toInt().asBig())
-                writeInt(((round().toLong() and 0x3fffffff) or -0x80000000).toInt().asBig())
+                writeInt(((round().toLong() and 0xffff0fff) or 0x4000).toInt().asNet())
+                writeInt(((round().toLong() and 0x3fffffff) or -0x80000000).toInt().asNet())
                 writeInt(round())
             }
         }

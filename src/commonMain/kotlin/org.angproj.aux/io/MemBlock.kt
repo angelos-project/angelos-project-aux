@@ -16,7 +16,7 @@ package org.angproj.aux.io
 
 import org.angproj.aux.buf.SpeedCopy
 import org.angproj.aux.util.Auto
-import org.angproj.aux.util.BufferAware
+import org.angproj.aux.util.UtilityAware
 import org.angproj.aux.util.Copy
 import org.angproj.aux.util.Copyable
 
@@ -77,7 +77,7 @@ public fun <E: MemBlock>E.asBinary(): Binary = Binary(this._segment, true)
 public fun <E: MemBlock>E.toByteArray(): ByteArray = object : Copy {
     operator fun invoke(): ByteArray {
         check(_segment.isOpen) { "Closed memory" }
-        val dst = object : Copyable, BufferAware {
+        val dst = object : Copyable, UtilityAware {
             override val limit: Int = _segment.limit
             val outArr = ByteArray(limit)
 

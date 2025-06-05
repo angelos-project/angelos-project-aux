@@ -16,6 +16,7 @@ package org.angproj.aux.io
 
 import org.angproj.aux.buf.copyInto
 import org.angproj.aux.mem.BufMgr
+import org.angproj.aux.mem.MemoryFree
 import org.angproj.aux.rand.InitializationVector
 import org.angproj.aux.sec.SecureRandom
 import org.angproj.aux.util.*
@@ -43,109 +44,109 @@ public class Binary(
         _segment.getByte(position)
 
     override fun retrieveUByte(position: Int): UByte =
-        _segment.getByte(position).conv2uB<Unit>()
+        _segment.getByte(position).conv2uB()
 
     override fun retrieveShort(position: Int): Short =
         _segment.getShort(position)
 
     override fun retrieveUShort(position: Int): UShort =
-        _segment.getShort(position).conv2uS<Unit>()
+        _segment.getShort(position).conv2uS()
 
     override fun retrieveInt(position: Int): Int =
         _segment.getInt(position)
 
     override fun retrieveUInt(position: Int): UInt =
-        _segment.getInt(position).conv2uI<Unit>()
+        _segment.getInt(position).conv2uI()
 
     override fun retrieveLong(position: Int): Long =
         _segment.getLong(position)
 
     override fun retrieveULong(position: Int): ULong =
-        _segment.getLong(position).conv2uL<Unit>()
+        _segment.getLong(position).conv2uL()
 
     override fun retrieveFloat(position: Int): Float =
-       _segment.getInt(position).conv2F<Unit>()
+       _segment.getInt(position).conv2F()
 
     override fun retrieveDouble(position: Int): Double =
-        _segment.getLong(position).conv2D<Unit>()
+        _segment.getLong(position).conv2D()
 
     override fun retrieveRevShort(position: Int): Short =
         _segment.getRevShort(position)
 
     override fun retrieveRevUShort(position: Int): UShort =
-        _segment.getRevShort(position).conv2uS<Unit>()
+        _segment.getRevShort(position).conv2uS()
 
     override fun retrieveRevInt(position: Int): Int =
         _segment.getRevInt(position)
 
     override fun retrieveRevUInt(position: Int): UInt =
-        _segment.getRevInt(position).conv2uI<Unit>()
+        _segment.getRevInt(position).conv2uI()
 
     override fun retrieveRevLong(position: Int): Long =
         _segment.getRevLong(position)
 
     override fun retrieveRevULong(position: Int): ULong =
-        _segment.getRevLong(position).conv2uL<Unit>()
+        _segment.getRevLong(position).conv2uL()
 
     override fun retrieveRevFloat(position: Int): Float =
-        _segment.getRevInt(position).conv2F<Unit>()
+        _segment.getRevInt(position).conv2F()
 
     override fun retrieveRevDouble(position: Int): Double =
-        _segment.getRevLong(position).conv2D<Unit>()
+        _segment.getRevLong(position).conv2D()
 
     override fun storeByte(position: Int, value: Byte): Unit =
         _segment.setByte(position, value)
 
     override fun storeUByte(position: Int, value: UByte): Unit =
-        _segment.setByte(position, value.conv2B<Unit>())
+        _segment.setByte(position, value.conv2B())
 
     override fun storeShort(position: Int, value: Short): Unit =
         _segment.setShort(position, value)
 
     override fun storeUShort(position: Int, value: UShort): Unit =
-        _segment.setShort(position, value.conv2S<Unit>())
+        _segment.setShort(position, value.conv2S())
 
     override fun storeInt(position: Int, value: Int): Unit =
         _segment.setInt(position, value)
 
     override fun storeUInt(position: Int, value: UInt): Unit =
-        _segment.setInt(position, value.conv2I<Unit>())
+        _segment.setInt(position, value.conv2I())
 
     override fun storeLong(position: Int, value: Long): Unit =
         _segment.setLong(position, value)
 
     override fun storeULong(position: Int, value: ULong): Unit =
-        _segment.setLong(position, value.conv2L<Unit>())
+        _segment.setLong(position, value.conv2L())
 
     override fun storeFloat(position: Int, value: Float): Unit =
-        _segment.setInt(position, value.conv2I<Unit>())
+        _segment.setInt(position, value.conv2I())
 
     override fun storeDouble(position: Int, value: Double): Unit =
-        _segment.setLong(position, value.conv2L<Unit>())
+        _segment.setLong(position, value.conv2L())
 
     override fun storeRevShort(position: Int, value: Short): Unit =
         _segment.setRevShort(position, value)
 
     override fun storeRevUShort(position: Int, value: UShort): Unit =
-        _segment.setRevShort(position, value.conv2S<Unit>())
+        _segment.setRevShort(position, value.conv2S())
 
     override fun storeRevInt(position: Int, value: Int): Unit =
         _segment.setRevInt(position, value)
 
     override fun storeRevUInt(position: Int, value: UInt): Unit =
-        _segment.setRevInt(position, value.conv2I<Unit>())
+        _segment.setRevInt(position, value.conv2I())
 
     override fun storeRevLong(position: Int, value: Long): Unit =
         _segment.setRevLong(position, value)
 
     override fun storeRevULong(position: Int, value: ULong): Unit =
-        _segment.setRevLong(position, value.conv2L<Unit>())
+        _segment.setRevLong(position, value.conv2L())
 
     override fun storeRevFloat(position: Int, value: Float): Unit =
-        _segment.setRevInt(position, value.conv2I<Unit>())
+        _segment.setRevInt(position, value.conv2I())
 
     override fun storeRevDouble(position: Int, value: Double): Unit =
-        _segment.setRevLong(position, value.conv2L<Unit>())
+        _segment.setRevLong(position, value.conv2L())
 
     public fun checkSum(key: Long = 0): Long {
         var result: Long = InitializationVector.IV_CA96.iv xor key
@@ -164,9 +165,12 @@ public class Binary(
 
 public fun binOf(capacity: Int): Binary = BufMgr.bin(capacity)
 
+public fun memBinOf(capacity: Int): Binary = Binary(MemoryFree.allocate(capacity)) //BufMgr.bin(capacity)
+
+
 public fun Binary.securelyRandomize() { SecureRandom.read(_segment) }
 
-public fun ByteArray.toBinary(): Binary = withBufferAware(this){
+public fun ByteArray.toBinary(): Binary = withUtility(this){
     val binary = binOf(it.size)
     val index = chunkLoop<Unit>(0, binary.limit, TypeSize.long) { v ->
         binary.storeLong(v, it.readLongAt(v))
@@ -202,6 +206,8 @@ public fun List<Binary>.toBinary(): Binary {
     }
     return out
 }
+
+public fun Binary.address(): TypePointer = _segment.address()
 
 /**
  * It is hereby prohibited to use NullObject.binary for explicit use.

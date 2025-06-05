@@ -17,7 +17,6 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.Default
 import org.angproj.aux.util.NullObject
-import org.angproj.aux.util.NumberAware
 
 
 public class UShortBuffer internal constructor(
@@ -30,10 +29,10 @@ public class UShortBuffer internal constructor(
 
     override fun create(segment: Segment<*>): UShortBuffer = UShortBuffer(segment)
 
-    override fun get(index: Int): UShort = _segment.getShort(index * TypeSize.uShort).conv2uS<Unit>()
+    override fun get(index: Int): UShort = _segment.getShort(index * TypeSize.uShort).conv2uS()
 
     override fun set(index: Int, value: UShort) {
-        _segment.setShort(index * TypeSize.uShort, value.conv2S<Unit>())
+        _segment.setShort(index * TypeSize.uShort, value.conv2S())
     }
 }
 

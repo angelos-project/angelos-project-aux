@@ -15,7 +15,6 @@
 package org.angproj.aux.rand
 
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.util.EndianAware
 import org.angproj.aux.util.floorMod
 
 /**
@@ -25,7 +24,7 @@ import org.angproj.aux.util.floorMod
 public abstract class AbstractSponge(
     spongeSize: Int = 0,
     public val visibleSize: Int = 0,
-) : EndianAware {
+) {
 
     protected var counter: Long = 0
     protected var mask: Long = 0

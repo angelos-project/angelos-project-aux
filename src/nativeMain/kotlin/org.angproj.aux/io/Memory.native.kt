@@ -17,6 +17,7 @@ package org.angproj.aux.io
 import kotlinx.cinterop.*
 import org.angproj.aux.mem.MemoryManager
 import org.angproj.aux.res.allocateMemory
+import org.angproj.aux.util.Finalizer
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.Cleaner
 import kotlin.native.ref.createCleaner
@@ -38,10 +39,10 @@ public actual open class Memory internal actual constructor(
     actual final override val data: Chunk = allocateMemory(size)
     protected val ptr: Long = data.ptr
 
-    private val cleaner: Cleaner = createCleaner(data) { data.dispose() }
-    override fun close() {
+    private val cleaner: Cleaner = createCleaner(data) { it.dispose() }
+    actual override fun close() {
         super.close {
-            data.dispose()
+            //data.dispose() // Always let the memory manager deal with this
             memCtx.recycle(this)
         }
     }

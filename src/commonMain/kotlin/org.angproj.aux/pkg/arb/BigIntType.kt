@@ -58,3 +58,8 @@ public value class BigIntType(public val value: BigInt) : Enfoldable {
         }
     }
 }
+
+public val Convention.Companion.BIGINT: Convention by lazy { Convention(10050, -50) }
+public fun BinaryReadable.loadBigInt(): BigInt = BigIntType.unfoldStream(this).value
+public fun BinaryWritable.saveBigInt(value: BigInt): Int = BigIntType(value).enfoldStream(this)
+public fun FoldFormat.sizeOf(value: BigInt): Int = BigIntType(value).foldSize(this)

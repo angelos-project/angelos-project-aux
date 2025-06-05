@@ -17,7 +17,6 @@ package org.angproj.aux.buf
 import org.angproj.aux.io.*
 import org.angproj.aux.mem.Default
 import org.angproj.aux.util.NullObject
-import org.angproj.aux.util.NumberAware
 
 
 public class UByteBuffer internal constructor(
@@ -30,10 +29,10 @@ public class UByteBuffer internal constructor(
 
     override fun create(segment: Segment<*>): UByteBuffer = UByteBuffer(segment)
 
-    override fun get(index: Int): UByte = _segment.getByte(index).conv2uB<Unit>()
+    override fun get(index: Int): UByte = _segment.getByte(index).conv2uB()
 
     override fun set(index: Int, value: UByte) {
-        _segment.setByte(index, value.conv2B<Unit>())
+        _segment.setByte(index, value.conv2B())
     }
 }
 

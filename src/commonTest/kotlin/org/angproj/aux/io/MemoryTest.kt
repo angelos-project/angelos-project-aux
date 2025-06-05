@@ -15,6 +15,8 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.mem.MemoryFree
+import org.angproj.aux.util.KotlinPlatformVariant
+import org.angproj.aux.util.ifJvmOrNative
 import kotlin.test.Test
 
 class MemoryTest: AbstractSegmentValidator() {
@@ -22,52 +24,54 @@ class MemoryTest: AbstractSegmentValidator() {
     private val createNew: (size: Int) -> Memory = { MemoryFree.allocate(it) }
 
     @Test
-    fun testByteWriteReadSync() = byteWriteReadSync(createNew)
+    fun testByteWriteReadSync() = ifJvmOrNative { byteWriteReadSync(createNew) }
 
     @Test
-    fun testShortReadAsync() = shortReadAsync(createNew)
+    fun testShortReadAsync() = ifJvmOrNative { shortReadAsync(createNew) }
 
     @Test
-    fun testShortWriteAsync() = shortWriteAsync(createNew)
+    fun testShortWriteAsync() = ifJvmOrNative { shortWriteAsync(createNew) }
 
     @Test
-    fun testIntReadAsync() = intReadAsync(createNew)
+    fun testIntReadAsync() = ifJvmOrNative { intReadAsync(createNew) }
 
     @Test
-    fun testIntWriteAsync() = intWriteAsync(createNew)
+    fun testIntWriteAsync() = ifJvmOrNative { intWriteAsync(createNew) }
 
     @Test
-    fun testLongReadAsync() = longReadAsync(createNew)
+    fun testLongReadAsync() = ifJvmOrNative { longReadAsync(createNew) }
 
     @Test
-    fun testLongWriteAsync() = longWriteAsync(createNew)
+    fun testLongWriteAsync() = ifJvmOrNative { longWriteAsync(createNew) }
 
     @Test
-    fun testByteRWOutbound() = byteRWOutbound(createNew)
+    fun testByteRWOutbound() = ifJvmOrNative { byteRWOutbound(createNew) }
 
     @Test
-    fun testShortRWOutbound() = shortRWOutbound(createNew)
+    fun testShortRWOutbound() = ifJvmOrNative { shortRWOutbound(createNew) }
 
     @Test
-    fun testIntRWOutbound() = intRWOutbound(createNew)
+    fun testIntRWOutbound() = ifJvmOrNative { intRWOutbound(createNew) }
 
     @Test
-    fun testLongRWOutbound() = longRWOutbound(createNew)
+    fun testLongRWOutbound() = ifJvmOrNative { longRWOutbound(createNew) }
 
     @Test
-    fun testTryCopyInto() = tryCopyInto(createNew)
+    fun testTryCopyInto() = ifJvmOrNative { tryCopyInto(createNew) }
 
     @Test
-    fun testTryCopyOfRange() = tryCopyOfRange(createNew)
+    fun testTryCopyOfRange() = ifJvmOrNative { tryCopyOfRange(createNew) }
 
     @Test
-    fun testTryCopyOf() = tryCopyOf(createNew)
+    fun testTryCopyOf() = ifJvmOrNative { tryCopyOf(createNew) }
 
     @Test
     fun testOneSize() {
-        val seg = MemoryFree.allocate(9)
-        println(seg.size)
-        println(seg.limit)
-        seg.close()
+        ifJvmOrNative {
+            val seg = MemoryFree.allocate(9)
+            println(seg.size)
+            println(seg.limit)
+            seg.close()
+        }
     }
 }

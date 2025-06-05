@@ -18,10 +18,8 @@ import org.angproj.aux.io.BinaryReadable
 import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.io.Retrievable
 import org.angproj.aux.io.Storable
-import org.angproj.aux.pkg.Convention
-import org.angproj.aux.pkg.Enfoldable
-import org.angproj.aux.pkg.FoldFormat
-import org.angproj.aux.pkg.Unfoldable
+import org.angproj.aux.pkg.*
+import org.angproj.aux.pkg.Enpackageable.StorageIter
 import org.angproj.aux.pkg.type.BlockType
 import org.angproj.aux.util.Uuid4
 import org.angproj.aux.util.isNull
@@ -67,3 +65,9 @@ public value class Uuid4Type(public val value: Uuid4) : Enfoldable {
         }
     }
 }
+
+public val Convention.Companion.UUID4: Convention by lazy { Convention(10051, -51) }
+public fun BinaryWritable.saveUuid4(value: Uuid4): Int = Uuid4Type(value).enfoldStream(this)
+public fun StorageIter.saveUuid4(value: Uuid4): Int = Uuid4Type(value).enfoldBlock(storage, index).also { index += it }
+public fun BinaryReadable.loadUuid4(): Uuid4 = Uuid4Type.unfoldStream(this).value
+public fun FoldFormat.sizeOf(value: Uuid4): Int = Uuid4Type(value).foldSize(this)

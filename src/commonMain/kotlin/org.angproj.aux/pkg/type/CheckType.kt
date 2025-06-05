@@ -15,10 +15,7 @@
 package org.angproj.aux.pkg.type
 
 import org.angproj.aux.io.*
-import org.angproj.aux.pkg.Convention
-import org.angproj.aux.pkg.Enfoldable
-import org.angproj.aux.pkg.FoldFormat
-import org.angproj.aux.pkg.Unfoldable
+import org.angproj.aux.pkg.*
 import kotlin.jvm.JvmInline
 
 @JvmInline

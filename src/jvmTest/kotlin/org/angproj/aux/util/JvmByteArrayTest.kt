@@ -24,7 +24,7 @@ import java.nio.ByteOrder
 import java.nio.ByteBuffer as JavaByteBuffer
 import kotlin.test.Test
 
-class JvmByteArrayTest: BufferAware {
+class JvmByteArrayTest: UtilityAware {
 
 
     @Test

@@ -18,7 +18,7 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class FlagTest {
+class FlagTest : UtilityAware {
 
     @Test
     fun flag0() {

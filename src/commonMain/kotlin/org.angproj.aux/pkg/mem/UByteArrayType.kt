@@ -17,6 +17,7 @@ package org.angproj.aux.pkg.mem
 import org.angproj.aux.buf.UByteBuffer
 import org.angproj.aux.buf.isNull
 import org.angproj.aux.io.*
+import org.angproj.aux.pkg.ARRAY_UBYTE
 import org.angproj.aux.pkg.Convention
 import org.angproj.aux.pkg.FoldFormat
 import kotlin.jvm.JvmInline

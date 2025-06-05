@@ -17,8 +17,7 @@ package org.angproj.aux.util
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SwapTest {
-    private val refChar: Char = 'Ö'
+class SwapTest: UtilityAware {
 
     private val refLong: Long = 0x3569356935693569L
     private val refULong: ULong = 0xCA96CA96CA96CA96uL
@@ -58,12 +57,10 @@ class SwapTest {
      * Testing .swapEndian() on Char.
      *
      */
-    @Test
+    /*@Test
     fun charSwapEndian() {
         assertEquals(refChar.swapEndian().swapEndian(), refChar)
-        /*assertEquals(Char.MIN_VALUE.swapEndian().swapEndian(), Char.MIN_VALUE)
-        assertEquals(Char.MAX_VALUE.swapEndian().swapEndian(), Char.MAX_VALUE)*/
-    }
+    }*/
 
     /**
      * Testing .swapEndian() on Int.

@@ -14,12 +14,9 @@
  */
 package org.angproj.aux.sec
 
-import org.angproj.aux.buf.asWrapped
-import org.angproj.aux.buf.wrap
 import org.angproj.aux.io.*
-import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.rand.AbstractSponge1024
-import org.angproj.aux.rand.InitializationVector
+import org.angproj.aux.rand.Entropy
 import org.angproj.aux.util.floorMod
 
 
@@ -33,8 +30,8 @@ public class GarbageGarbler(
 
     init {
         val start = binOf(byteSize)
-        InitializationVector.realTimeGatedEntropy(start)
-        start.wrap { repeat(16) { absorb(readLong(), it) } }
+        Entropy.realTimeGatedEntropy(start)
+        repeat(16) { absorb(start.retrieveLong(it * TypeSize.long), it) }
     }
 
     override val outputCount: Long
@@ -54,22 +51,26 @@ public class GarbageGarbler(
 
     override fun write(data: Segment<*>): Int {
         require(data.limit)
-        BufMgr.asWrap(data) {
-            val wrap = asWrapped(0)
-            repeat(data.limit / byteSize) {
-                repeat(16) { absorb(wrap.readLong(), it) }
-                scramble()
+        var index = 0
+        repeat(data.limit / byteSize) {
+            repeat(16) {
+                absorb(data.getLong(index), it)
+                index += TypeSize.long
             }
+            scramble()
         }
         inputCnt += data.limit
         _count = 0
         return data.limit
     }
 
-    private fun fill(data: Segment<*>): Unit = BufMgr.asWrap(data) {
-        val writable = asWrapped()
+    private fun fill(data: Segment<*>) {
+        var index = 0
         repeat(data.limit / byteSize) {
-            repeat(visibleSize) { writable.writeLong(squeeze(it))}
+            repeat(visibleSize) {
+                data.setLong(index, squeeze(it))
+                index += TypeSize.long
+            }
             round()
         }
     }
@@ -78,8 +79,8 @@ public class GarbageGarbler(
         require(data.limit)
         if(data.limit + _count > staleSize.size) return 0
         fill(data)
-        outputCnt += data.size
-        _count += data.size
-        return data.size
+        outputCnt += data.limit
+        _count += data.limit
+        return data.limit
     }
 }

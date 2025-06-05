@@ -68,7 +68,7 @@ public class Base64Encoder : Encoder<Binary, Text> {
                 val len = data.limit - remainder - if(remainder == 0) 3 else 0
                 var idx = 0
                 while(idx < len) {
-                    writeInt(convertLE<Unit>(data.getInt(idx).asBig() ushr 8))
+                    writeInt(convertLE<Unit>(data.getInt(idx).asNet() ushr 8))
                     idx += 3
                 }
                 when (data.limit - idx) {

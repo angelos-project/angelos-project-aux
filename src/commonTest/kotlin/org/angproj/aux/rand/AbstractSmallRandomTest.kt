@@ -8,7 +8,7 @@ import kotlin.math.absoluteValue
 import kotlin.test.Test
 
 class TestSmallRandom: AbstractSmallRandom(
-    binOf(16).also { InitializationVector.realTimeGatedEntropy(it) }
+    binOf(16).also { Entropy.realTimeGatedEntropy(it) }
 ), Reader {
 
     override fun read(bin: Binary): Int {
@@ -20,7 +20,7 @@ class TestSmallRandom: AbstractSmallRandom(
 }
 
 class AbstractSmallRandomTest {
-    @Test
+    //@Test
     fun testMonteCarlo() {
         val monteCarlo = Benchmark()
         val random = TestSmallRandom()

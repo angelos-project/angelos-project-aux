@@ -40,7 +40,7 @@ import org.angproj.aux.TestInformationStub.refRevUShort
  *
  * */
 @OptIn(ExperimentalNativeApi::class)
-class NativeByteArrayTest: BufferAware {
+class NativeByteArrayTest: UtilityAware {
     /*private val refChar: Char = 'Ö'
 
     private val refShort: Short = 0B1010101_10101010

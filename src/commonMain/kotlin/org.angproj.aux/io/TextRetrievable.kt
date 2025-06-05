@@ -17,5 +17,6 @@ package org.angproj.aux.io
 import org.angproj.aux.util.CodePoint
 
 public interface TextRetrievable {
+
     public fun retrieveGlyph(position: Int): CodePoint
 }

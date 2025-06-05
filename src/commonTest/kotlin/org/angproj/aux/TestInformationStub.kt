@@ -2,8 +2,7 @@ package org.angproj.aux
 
 import org.angproj.aux.buf.TextBuffer
 import org.angproj.aux.io.DataSize
-import org.angproj.aux.util.Unicode
-import org.angproj.aux.util.toByteArray
+import org.angproj.aux.util.withUnicode
 
 object TestInformationStub {
 
@@ -300,7 +299,9 @@ Fusce volutpat hendrerit sapien ut mollis.
 """
 }
 
-fun String.toTextBuffer(size: DataSize = DataSize._4K): TextBuffer = TextBuffer(size).also { tb ->
-    Unicode.importUnicode(this) { tb.writeGlyph(it) }
-    tb.flip()
+fun String.toTextBuffer(size: DataSize = DataSize._4K): TextBuffer = withUnicode {
+    TextBuffer(size).also { tb ->
+        importUnicode(this@toTextBuffer) { tb.write(it) }
+        tb.flip()
+    }
 }

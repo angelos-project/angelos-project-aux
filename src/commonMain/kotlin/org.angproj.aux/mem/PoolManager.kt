@@ -18,8 +18,8 @@ import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Segment
 
 public abstract class PoolManager<S: Segment<S>>(
-    public val segSize: DataSize = DataSize._1K,
-    public val totSize: DataSize = DataSize._4K,
+    public val segSize: DataSize = DataSize._2K,
+    public val totSize: DataSize = DataSize._32K,
     public val maxCount: Int = 4
 ): MemoryManager<S> {
 
@@ -28,7 +28,8 @@ public abstract class PoolManager<S: Segment<S>>(
         require(totSize.size >= segSize.size * 3)
     }
 
-    protected var count: Int = 0
+    public abstract val allocCount: Int
+    public abstract val usedCount: Int
 
 
     abstract override fun allocate(dataSize: DataSize): S

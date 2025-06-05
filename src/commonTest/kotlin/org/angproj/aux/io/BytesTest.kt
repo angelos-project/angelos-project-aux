@@ -15,6 +15,8 @@
 package org.angproj.aux.io
 
 import org.angproj.aux.mem.Default
+import org.angproj.aux.util.ifJvmOrNative
+import org.angproj.aux.util.ifNotJsOrWasm
 import kotlin.test.Test
 
 class BytesTest: AbstractSegmentValidator() {
@@ -55,7 +57,7 @@ class BytesTest: AbstractSegmentValidator() {
     fun testLongRWOutbound() = longRWOutbound(createNew)
 
     @Test
-    fun testTryCopyInto() = tryCopyInto(createNew)
+    fun testTryCopyInto() = ifNotJsOrWasm { tryCopyInto(createNew) }
 
     @Test
     fun testTryCopyOfRange() = tryCopyOfRange(createNew)

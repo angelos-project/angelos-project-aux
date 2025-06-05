@@ -22,5 +22,5 @@ public object MemoryFree: FreeAlloc<Memory> {
 
     override fun allocate(dataSize: DataSize): Memory = allocate(dataSize.size)
 
-    override fun recycle(segment: Memory) { }
+    override fun recycle(segment: Memory) { segment.data.dispose() }
 }

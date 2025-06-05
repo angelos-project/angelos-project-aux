@@ -26,11 +26,11 @@ class StreamStub(val buffer: ByteArray) {
 
     var position: Int = 0
 
-    fun readGlyph(): CodePoint = withUnicodeAware {
+    fun readGlyph(): CodePoint = withUnicode {
         readGlyphStrm { buffer[position++] }
     }
 
-    fun writeGlyph(codePoint: CodePoint): Int = withUnicodeAware {
+    fun writeGlyph(codePoint: CodePoint): Int = withUnicode {
         writeGlyphStrm(codePoint) { buffer[position++] = it }
     }
 }
@@ -40,12 +40,12 @@ class BlockStub(val buffer: ByteArray) {
 
     constructor(len: Int): this(ByteArray(len))
 
-    fun readGlyphAt(offset: Int): CodePoint = withUnicodeAware(buffer) {
+    fun readGlyphAt(offset: Int): CodePoint = withUnicode(buffer) {
         var pos = offset
         return readGlyphBlk(buffer.size - pos) { it[pos++] }
     }
 
-    fun writeGlyphAt(offset: Int, value: CodePoint): Int = withUnicodeAware(buffer) {
+    fun writeGlyphAt(offset: Int, value: CodePoint): Int = withUnicode(buffer) {
         var pos = offset
         return writeGlyphBlk(value, buffer.size - pos) { it2 -> it[pos++] = it2 }
     }
@@ -55,7 +55,7 @@ class BlockStub(val buffer: ByteArray) {
 class CodePointTest {
 
     @Test
-    fun isValid() = withUnicodeAware {
+    fun isValid() = withUnicode {
         assertTrue { 0x10.toCodePoint().isValid() }
         assertTrue { 0x100.toCodePoint().isValid() }
         assertTrue { 0x1000.toCodePoint().isValid() }
@@ -66,7 +66,7 @@ class CodePointTest {
     }
 
     @Test
-    fun octetSize() = withUnicodeAware {
+    fun octetSize() = withUnicode {
         assertEquals(0x10.toCodePoint().octetSize(), 1)
         assertEquals(0x100.toCodePoint().octetSize(), 2)
         assertEquals(0x1000.toCodePoint().octetSize(), 3)
@@ -147,11 +147,11 @@ class UnicodeAwareTest {
         assertEquals(BlockStub(radical.first).readGlyphAt(0).value, radical.second)
         assertEquals(BlockStub(emoji.first).readGlyphAt(0).value, emoji.second)
 
-        assertFailsWith<IllegalArgumentException> { BlockStub(r1).readGlyphAt(0) }
-        assertFailsWith<IllegalArgumentException> { BlockStub(r2).readGlyphAt(0) }
-        assertFailsWith<IllegalArgumentException> { BlockStub(r3).readGlyphAt(0) }
-        assertFailsWith<IllegalArgumentException> { BlockStub(r4).readGlyphAt(0) }
-        assertFailsWith<IllegalArgumentException> { BlockStub(r5).readGlyphAt(0) }
+        assertFailsWith<IllegalStateException> { BlockStub(r1).readGlyphAt(0) }
+        assertFailsWith<IllegalStateException> { BlockStub(r2).readGlyphAt(0) }
+        assertFailsWith<IllegalStateException> { BlockStub(r3).readGlyphAt(0) }
+        assertFailsWith<IllegalStateException> { BlockStub(r4).readGlyphAt(0) }
+        assertFailsWith<IllegalStateException> { BlockStub(r5).readGlyphAt(0) }
     }
 
     @Test
@@ -161,9 +161,9 @@ class UnicodeAwareTest {
         assertContentEquals(radical.first, BlockStub(3).also { it.writeGlyphAt(0, radical.second.toCodePoint()) }.buffer)
         assertContentEquals(emoji.first, BlockStub(4).also { it.writeGlyphAt(0, emoji.second.toCodePoint()) }.buffer)
 
-        assertFailsWith<IllegalArgumentException> { BlockStub(w1).writeGlyphAt(0, 0x80.toCodePoint()) }
-        assertFailsWith<IllegalArgumentException> { BlockStub(w2).writeGlyphAt(0, 0x800.toCodePoint()) }
-        assertFailsWith<IllegalArgumentException> { BlockStub(w3).writeGlyphAt(0, 0x10000.toCodePoint()) }
+        assertFailsWith<IllegalStateException> { BlockStub(w1).writeGlyphAt(0, 0x80.toCodePoint()) }
+        assertFailsWith<IllegalStateException> { BlockStub(w2).writeGlyphAt(0, 0x800.toCodePoint()) }
+        assertFailsWith<IllegalStateException> { BlockStub(w3).writeGlyphAt(0, 0x10000.toCodePoint()) }
     }
 
     private fun reconstructBlock(lipsum: String) {
@@ -220,7 +220,7 @@ class UnicodeAwareTest {
     }
 
     @Test
-    fun testIsStartGlyph() = withUnicodeAware{
+    fun testIsStartGlyph() = withUnicode{
         assertTrue { isGlyphStart(ascii.first[0]) }
         assertTrue { isGlyphStart(stigma.first[0]) }
         assertTrue { isGlyphStart(radical.first[0]) }
@@ -232,7 +232,7 @@ class UnicodeAwareTest {
     }
 
     @Test
-    fun testHasGlyphSize() = withUnicodeAware{
+    fun testHasGlyphSize() = withUnicode{
         assertEquals(hasGlyphSize(ascii.first[0]), 1)
         assertEquals(hasGlyphSize(stigma.first[0]), 2)
         assertEquals(hasGlyphSize(radical.first[0]), 3)

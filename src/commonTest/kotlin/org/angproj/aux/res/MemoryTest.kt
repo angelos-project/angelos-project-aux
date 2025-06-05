@@ -16,10 +16,13 @@ package org.angproj.aux.res
 
 import org.angproj.aux.io.DataSize
 import org.angproj.aux.io.Segment
+import org.angproj.aux.io.address
 import org.angproj.aux.io.copyInto
+import org.angproj.aux.io.memBinOf
 import org.angproj.aux.mem.*
 import org.angproj.aux.util.Uuid4
-import org.angproj.aux.util.ifNotJs
+import org.angproj.aux.util.ifJvmOrNative
+import org.angproj.aux.util.useWith
 import kotlin.random.Random
 import kotlin.test.*
 import kotlin.time.Duration
@@ -27,7 +30,7 @@ import kotlin.time.measureTime
 
 class MemoryTest {
     @Test
-    fun testAllocateMemory(): Unit = ifNotJs {
+    fun testAllocateMemory(): Unit = ifJvmOrNative {
         // Validates that zero length fails
         assertFailsWith<IllegalArgumentException> ("Zero length is invalid.") {
             allocateMemory(0).dispose()
@@ -40,7 +43,7 @@ class MemoryTest {
     }
 
     @Test
-    fun testIllegalArgument(): Unit = ifNotJs {
+    fun testIllegalArgument(): Unit = ifJvmOrNative {
         val mem1 = allocateMemory(DataSize._128B.size)
         val mem2 = allocateMemory(DataSize._64B.size)
 
@@ -78,7 +81,7 @@ class MemoryTest {
         mem2.dispose()
     }
 
-   /* @Test
+    /*@Test
     fun testCopyInto(): Unit = ifNotJs {
         // Allocate two memory chunks
         val mem1 = allocateMemory(DataSize._128B.size)
@@ -111,7 +114,7 @@ class MemoryTest {
     }*/
 
     @Test
-    fun testCopyInto2(): Unit = ifNotJs {
+    fun testCopyInto2(): Unit = ifJvmOrNative {
         // Allocate two memory chunks
         val mem1 = allocateMemory(DataSize._128B.size)
         val mem2 = allocateMemory(DataSize._64B.size)
@@ -142,8 +145,8 @@ class MemoryTest {
         mem2.dispose()
     }
 
-    @Test
-    fun testSpeedMeasure() = ifNotJs {
+    //@Test
+    fun testSpeedMeasure() = ifJvmOrNative {
         val vol = DataSize._128M
             val mem1 = allocateMemory(vol.size)
             val mem2 = allocateMemory(vol.size)
@@ -167,7 +170,7 @@ class MemoryTest {
     }
 
     //@Test
-    fun testRandomMeasure() = ifNotJs {
+    fun testRandomMeasure() = ifJvmOrNative {
         val vol = DataSize._64M
         val iter = 128
         repeat(4) {
@@ -189,7 +192,7 @@ class MemoryTest {
     }
 
     //@Test
-    fun testCopyMeasure() = ifNotJs {
+    fun testCopyMeasure() = ifJvmOrNative {
         val vol = DataSize._64M
         val loops = 128
 
@@ -220,4 +223,18 @@ class MemoryTest {
         time /= loops
         println("1 Gigabyte in ${time.times(DataSize._1G.size / vol.size)}")
     }
+
+    @Test
+    fun testAddress() = ifJvmOrNative {
+        memBinOf(DataSize._1K.size).useWith {
+            println(it.address())
+        }
+    }
+
+    /*@Test
+    fun testFailAddress() = ifJvmOrNative {
+        binOf(DataSize._1K.size).useWith {
+            assertFailsWith<IllegalStateException> { it.address() }
+        }
+    }*/
 }

@@ -17,7 +17,7 @@ package org.angproj.aux.pkg
 import org.angproj.aux.io.BinaryWritable
 import org.angproj.aux.io.Storable
 import org.angproj.aux.io.TypeSize
-import org.angproj.aux.util.EndianAwareContext.asBig
+import org.angproj.aux.util.UtilityAware
 
 public interface Enfoldable {
 
@@ -31,7 +31,7 @@ public interface Enfoldable {
         throw UnsupportedOperationException()
     }
 
-    public companion object {
+    public companion object: UtilityAware {
         public const val TYPE_SIZE: Int = TypeSize.short
         public const val CONTENT_SIZE: Int = TypeSize.byte
         public const val COUNT_SIZE: Int = TypeSize.int
@@ -76,7 +76,7 @@ public interface Enfoldable {
         }
 
         public fun setCheck(outStream: BinaryWritable, checkSum: Long) {
-            outStream.writeLong(checkSum.asBig())
+            outStream.writeLong(checkSum.asNet())
         }
 
         public fun setLength(outStream: BinaryWritable, length: Int) {

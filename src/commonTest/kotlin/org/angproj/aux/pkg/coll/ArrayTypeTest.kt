@@ -18,6 +18,8 @@ import org.angproj.aux.io.*
 import org.angproj.aux.mem.BufMgr
 import org.angproj.aux.pkg.*
 import org.angproj.aux.pkg.arb.StructType
+import org.angproj.aux.pkg.arb.saveUuid4
+import org.angproj.aux.pkg.arb.sizeOf
 import org.angproj.aux.util.Uuid4
 import org.angproj.aux.util.uuid4
 import kotlin.test.Test

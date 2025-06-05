@@ -21,17 +21,17 @@ import org.angproj.aux.util.Copyable
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public actual class Memory(public actual val size: Int, public actual val ptr: Long): Copyable, Cleanable {
 
-    public override fun dispose() {}
+    public actual override fun dispose() {}
 
-    override val limit: Int = size
+    actual override val limit: Int = size
 
-    override fun getLong(index: Int): Long = throw UnsupportedOperationException("No access to native memory")
+    actual override fun getLong(index: Int): Long = throw UnsupportedOperationException("No access to native memory")
 
-    override fun getByte(index: Int): Byte = throw UnsupportedOperationException("No access to native memory")
+    actual override fun getByte(index: Int): Byte = throw UnsupportedOperationException("No access to native memory")
 
-    override fun setLong(index: Int, value: Long): Unit = throw UnsupportedOperationException("No access to native memory")
+    actual override fun setLong(index: Int, value: Long): Unit = throw UnsupportedOperationException("No access to native memory")
 
-    override fun setByte(index: Int, value: Byte): Unit = throw UnsupportedOperationException("No access to native memory")
+   actual override fun setByte(index: Int, value: Byte): Unit = throw UnsupportedOperationException("No access to native memory")
 }
 
 public actual fun allocateMemory(size: Int): Memory {

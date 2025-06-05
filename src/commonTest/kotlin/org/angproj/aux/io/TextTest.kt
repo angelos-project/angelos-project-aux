@@ -34,6 +34,7 @@ class TextTest: MemBlockTest<Text>() {
             assertEquals(iter.next().value, cp.value)
             idx += cp.octetSize()
         }
+        //assertEquals(buf.count(), text.codePoi) // Java: String.codePointCount()
     }
 
     @Test

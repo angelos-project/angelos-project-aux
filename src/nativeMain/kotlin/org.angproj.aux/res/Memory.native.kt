@@ -24,24 +24,24 @@ import org.angproj.aux.util.floorMod
 @OptIn(ExperimentalForeignApi::class)
 public actual class Memory(public actual val size: Int, public actual val ptr: Long): Copyable, Cleanable {
 
-    public override fun dispose() {
+    public actual override fun dispose() {
         nativeHeap.free(ptr.toCPointer<ByteVar>()!!)
     }
 
-    override val limit: Int = size
+    actual override val limit: Int = size
 
     private inline fun <reified T: Number> speedLongGet(index: Int): Long = (ptr + index).toCPointer<LongVar>()!!.pointed.value
     private inline fun <reified T: Number> speedLongSet(index: Int, value: Long) { (ptr + index).toCPointer<LongVar>()!!.pointed.value = value }
     private inline fun <reified T: Number> speedByteGet(index: Int): Byte = (ptr + index).toCPointer<ByteVar>()!!.pointed.value
     private inline fun <reified T: Number> speedByteSet(index: Int, value: Byte) { (ptr + index).toCPointer<ByteVar>()!!.pointed.value = value }
 
-    override fun getLong(index: Int): Long = speedLongGet<Int>(index)
+    actual override fun getLong(index: Int): Long = speedLongGet<Int>(index)
 
-    override fun getByte(index: Int): Byte = speedByteGet<Int>(index)
+    actual override fun getByte(index: Int): Byte = speedByteGet<Int>(index)
 
-    override fun setLong(index: Int, value: Long): Unit = speedLongSet<Int>(index, value)
+    actual override fun setLong(index: Int, value: Long): Unit = speedLongSet<Int>(index, value)
 
-    override fun setByte(index: Int, value: Byte): Unit = speedByteSet<Int>(index, value)
+    actual override fun setByte(index: Int, value: Byte): Unit = speedByteSet<Int>(index, value)
 }
 
 @OptIn(ExperimentalForeignApi::class)
@@ -77,22 +77,32 @@ internal inline fun <reified E: Any>speedMemCpyAddress(idxFrom: Int, idxTo: Int,
 }
 
 
-@OptIn(ExperimentalForeignApi::class)
+/**
+ * memcpy not implemented the same at 32-bit targets
+ * */
+/*@OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
 internal inline fun <reified E: Any>speedMemCpyAddress2(idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long): Int = memScoped {
     val tot = idxFrom - idxTo
-    val long = tot - tot.floorMod(TypeSize.long)
+    //val long = tot - tot.floorMod(TypeSize.long)
 
     val dstPtr: Long = dst + dstOff
     val srcPtr: Long = src + idxFrom
 
-    memcpy(srcPtr.toCPointer<LongVar>(), dstPtr.toCPointer<LongVar>(), long.toULong())
+    //memcpy(srcPtr.toCPointer<LongVar>(), dstPtr.toCPointer<LongVar>(), long.toULong())
+    memcpy(
+        dstPtr.toCPointer<CArrayPointerVar<ByteVar>>(),
+        srcPtr.toCPointer<CArrayPointerVar<ByteVar>>(),
+        tot.convert()
+    )
+
+
     var idx = long
     while (idx < tot) {
         (idx + dstPtr).toCPointer<ByteVar>()!!.pointed.value = (idx + srcPtr).toCPointer<ByteVar>()!!.pointed.value
         idx++
     }
     return tot
-}
+}*/
 
 @OptIn(ExperimentalForeignApi::class)
 internal inline fun <reified E: Any>speedMemCpyAddress3(idxFrom: Int, idxTo: Int, dstOff: Int, src: Long, dst: Long): Int = memScoped {
