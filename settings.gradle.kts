@@ -18,6 +18,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "angelos-project-aux"
 
+include(":library")
+
 /**
  * connectedAndroidTest		    - tests or so
  * connectedDebugAndroidTest	- tests or so
